@@ -17,7 +17,10 @@ class Login extends StatelessWidget {
       appBar: AppBar(
           elevation: 0.0,
           leading:
-              IconButton(onPressed: () {}, icon: Icon(Icons.arrow_back_ios))),
+              IconButton(onPressed: () {
+                Get.back();
+              }
+              , icon: Icon(Icons.arrow_back_ios))),
       body: SingleChildScrollView(
         child: Column(
           children: [
