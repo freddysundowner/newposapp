@@ -15,5 +15,10 @@ class User{
     return jsonDecode(user);
   }
 
+  updateAdmin({required Map<String, dynamic> body, required id}) async{
+    var user= await DbBase().databaseRequest(admin+"/update/${id}", DbBase().patchRequestType,body: body);
+    return jsonDecode(user);
+  }
+
 
 }
