@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterpos/services/user.dart';
+import 'package:flutterpos/widgets/snackBars.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -30,8 +31,8 @@ class AuthController extends GetxController {
         };
         var response = await User().createAdmin(body: body);
         signuserLoad.value = false;
-        if (response["status"] == false) {
-          Get.snackbar("", "email address or phone number already in use",
+        if (response["status"]==false) {
+          Get.snackbar("", "${response["message"]}",
               backgroundColor: Colors.red, colorText: Colors.white);
         } else {
           UserModel adminModel = UserModel.fromJson(response["body"]);
@@ -47,11 +48,9 @@ class AuthController extends GetxController {
         signuserLoad.value = false;
       } catch (e) {
         signuserLoad.value = false;
-        print(e);
       }
-
     } else {
-      print("form not validated");
+      showSnackBar(message: "please fill all fields", color: Colors.red);
     }
   }
 
@@ -83,11 +82,11 @@ class AuthController extends GetxController {
         signuserLoad.value = false;
       } catch (e) {
         loginuserLoad.value = false;
-        print(e);
+
       }
 
     } else {
-      print("form not validated");
+      showSnackBar(message: "please fill all fields", color: Colors.red);
     }
   }
 
