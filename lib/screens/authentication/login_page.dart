@@ -6,8 +6,8 @@ import 'package:get/get.dart';
 import '../../utils/themer.dart';
 import '../../widgets/header.dart';
 
-class LoginPage extends StatelessWidget {
-  LoginPage({Key? key}) : super(key: key);
+class Login extends StatelessWidget {
+  Login({Key? key}) : super(key: key);
   AuthController authController = Get.find<AuthController>();
   @override
   Widget build(BuildContext context) {
@@ -22,7 +22,7 @@ class LoginPage extends StatelessWidget {
           children: [
             Container(
               height: 200,
-              child: HeaderWidget(200, true, "assets/images/admin.svg"), //let's create a common header widget
+              child: Header(200, true, "assets/images/admin.svg"), //let's create a common header widget
             ),
             SizedBox(
               height: 40,

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutterpos/bindings.dart';
 import 'package:flutterpos/controllers/AuthController.dart';
-import 'package:flutterpos/screens/authentication/login.dart';
+import 'package:flutterpos/screens/authentication/login_page.dart';
 import 'package:flutterpos/utils/colors.dart';
 import 'package:get/get.dart';
 void main() {
@@ -20,7 +20,7 @@ AuthController authController=Get.put<AuthController>(AuthController());
         primarySwatch: AppColors.mainColor,
       ),
       initialBinding: AuthBinding(),
-      home:LoginPage(),
+      home:Login(),
     );
   }
 }

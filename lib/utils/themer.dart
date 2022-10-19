@@ -31,13 +31,6 @@ class ThemeHelper{
   BoxDecoration buttonBoxDecoration(BuildContext context, [String color1 = "", String color2 = ""]) {
     Color c1 = Theme.of(context).primaryColor;
     Color c2 = Theme.of(context).accentColor;
-    // if (color1.isEmpty == false) {
-    //   c1 = HexColor(color1);
-    // }
-    // if (color2.isEmpty == false) {
-    //   c2 = HexColor(color2);
-    // }
-
     return BoxDecoration(
       boxShadow: [
         BoxShadow(color: Colors.black26, offset: Offset(0, 4), blurRadius: 5.0)

@@ -1,22 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-class HeaderWidget extends StatefulWidget {
+class Header extends StatefulWidget {
   final double _height;
   final bool _showIcon;
   final String imagePath;
-
-  const HeaderWidget(this._height, this._showIcon, this.imagePath, {Key? key}) : super(key: key);
-
+  Header(this._height, this._showIcon, this.imagePath, {Key? key}) : super(key: key);
   @override
-  _HeaderWidgetState createState() => _HeaderWidgetState(_height, _showIcon, imagePath);
+  _HeaderState createState() => _HeaderState(_height, _showIcon, imagePath);
 }
 
-class _HeaderWidgetState extends State<HeaderWidget> {
+class _HeaderState extends State<Header> {
   double _height;
   bool _showIcon;
   String _imagePath;
 
-  _HeaderWidgetState(this._height, this._showIcon, this._imagePath);
+  _HeaderState(this._height, this._showIcon, this._imagePath);
 
   @override
   Widget build(BuildContext context) {
@@ -114,7 +112,6 @@ class _HeaderWidgetState extends State<HeaderWidget> {
                     bottom: 20.0,
                   ),
                   decoration: BoxDecoration(
-                    // borderRadius: BorderRadius.circular(20),
                     borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(0),
                       topRight: Radius.circular(70),
@@ -143,16 +140,9 @@ class ShapeClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
     var path = new Path();
-
     path.lineTo(0.0, size.height-20);
-
-    // path.quadraticBezierTo(size.width/5, size.height, size.width/2, size.height-40);
-    // path.quadraticBezierTo(size.width/5*4, size.height-80, size.width, size.height-20);
-
     path.quadraticBezierTo(_offsets[0].dx, _offsets[0].dy, _offsets[1].dx,_offsets[1].dy);
     path.quadraticBezierTo(_offsets[2].dx, _offsets[2].dy, _offsets[3].dx,_offsets[3].dy);
-
-    // path.lineTo(size.width, size.height-20);
     path.lineTo(size.width, 0.0);
     path.close();
 
