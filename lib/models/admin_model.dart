@@ -1,7 +1,7 @@
 import 'package:flutterpos/models/shop_model.dart';
 
-class UserModel {
-  UserModel({
+class AdminModel {
+  AdminModel({
     this.id,
     this.name,
     this.email,
@@ -15,7 +15,7 @@ class UserModel {
   String? phonenumber;
   List<ShopModel>? shops;
 
-  factory UserModel.fromJson(Map<String, dynamic> json) => UserModel(
+  factory AdminModel.fromJson(Map<String, dynamic> json) => AdminModel(
         id: json["_id"],
         name: json["name"],
         email: json["email"],

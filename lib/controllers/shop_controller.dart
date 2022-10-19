@@ -5,7 +5,6 @@ import 'package:flutterpos/widgets/snackBars.dart';
 import 'package:get/get.dart';
 
 import '../services/shop.dart';
-import '../utils/colors.dart';
 import 'AuthController.dart';
 
 class ShopController extends GetxController {
@@ -20,7 +19,7 @@ class ShopController extends GetxController {
     if (nameController.text == "" ||
         businessController.text == "" ||
         reqionController.text == "") {
-      showSnackBar(message: "please enter all field", color: Colors.red);
+      showSnackBar(message: "please enter all fields", color: Colors.red);
     } else if (terms.value == false) {
       showSnackBar(
           message: "Accept terms and conditons to continue", color: Colors.red);
