@@ -98,9 +98,7 @@ class AuthController extends GetxController {
       if (response["status"] == true) {
         clearDataFromTextFields();
         Get.back();
-        showSnackBar(
-            message: "Profile updated successfully",
-            color: AppColors.mainColor);
+        showSnackBar(message:response["message"], color: AppColors.mainColor);
       } else {
         showSnackBar(message: response["message"], color: AppColors.mainColor);
       }
