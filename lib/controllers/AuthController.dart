@@ -31,9 +31,8 @@ class AuthController extends GetxController {
         };
         var response = await User().createAdmin(body: body);
         signuserLoad.value = false;
-        if (response["status"]==false) {
-          Get.snackbar("", "${response["message"]}",
-              backgroundColor: Colors.red, colorText: Colors.white);
+        if (response["status"] == false) {
+          showSnackBar(message: "${response["message"]}", color: Colors.red);
         } else {
           UserModel adminModel = UserModel.fromJson(response["body"]);
           SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -43,7 +42,7 @@ class AuthController extends GetxController {
           emailController.text = "";
           phoneController.text = "";
           passwordController.text = "";
-          Get.off(()=>Home());
+          Get.off(() => Home());
         }
         signuserLoad.value = false;
       } catch (e) {
@@ -53,7 +52,6 @@ class AuthController extends GetxController {
       showSnackBar(message: "please fill all fields", color: Colors.red);
     }
   }
-
 
   login() async {
     if (loginKey.currentState!.validate()) {
@@ -65,7 +63,7 @@ class AuthController extends GetxController {
         };
         var response = await User().loginAdmin(body: body);
         loginuserLoad.value = false;
-        if (response["error"] !=null) {
+        if (response["error"] != null) {
           Get.snackbar("", "${response["error"]}",
               backgroundColor: Colors.red, colorText: Colors.white);
         } else {
@@ -77,17 +75,14 @@ class AuthController extends GetxController {
           emailController.text = "";
           phoneController.text = "";
           passwordController.text = "";
-          Get.off(()=>Home());
+          Get.off(() => Home());
         }
         signuserLoad.value = false;
       } catch (e) {
         loginuserLoad.value = false;
-
       }
-
     } else {
       showSnackBar(message: "please fill all fields", color: Colors.red);
     }
   }
-
 }
