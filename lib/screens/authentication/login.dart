@@ -1,6 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterpos/controllers/AuthController.dart';
+import 'package:flutterpos/screens/authentication/sign_up.dart';
 import 'package:get/get.dart';
 
 import '../../utils/themer.dart';
@@ -33,6 +34,7 @@ class Login extends StatelessWidget {
             ),
             SizedBox(height: 30.0),
             Form(
+              key: authController.loginKey,
                 child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 25),
               child: Column(
@@ -87,9 +89,12 @@ class Login extends StatelessWidget {
                     margin: EdgeInsets.fromLTRB(10, 20, 10, 20),
                     child: Text.rich(TextSpan(children: [
                       TextSpan(text: "Don\'t have an account? "),
+
                       TextSpan(
                         text: 'Create',
-                        recognizer: TapGestureRecognizer()..onTap = () {},
+                        recognizer: TapGestureRecognizer()..onTap = () {
+                          Get.to(SignUp());
+                        },
                         style: TextStyle(
                             fontWeight: FontWeight.bold,
                             color: Theme.of(context).accentColor),
