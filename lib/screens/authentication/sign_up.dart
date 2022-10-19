@@ -7,6 +7,7 @@ import '../../widgets/header.dart';
 
 class SignUp extends StatelessWidget {
   AuthController authController = Get.find<AuthController>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -110,21 +111,30 @@ class SignUp extends StatelessWidget {
                     decoration: ThemeHelper().inputBoxDecorationShaddow(),
                   ),
                   SizedBox(height: 20.0),
-                  ElevatedButton(
-                    style: ThemeHelper().buttonStyle(),
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(40, 10, 40, 10),
-                      child: Text(
-                        "Register".toUpperCase(),
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                    onPressed: () {},
-                  ),
+                  Obx(() {
+                    return authController.signuserLoad.value
+                        ? Center(
+                            child: CircularProgressIndicator(),
+                          )
+                        : ElevatedButton(
+                            style: ThemeHelper().buttonStyle(),
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.fromLTRB(40, 10, 40, 10),
+                              child: Text(
+                                "Register".toUpperCase(),
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                            onPressed: () {
+                              authController.signUser();
+                            },
+                          );
+                  }),
                   SizedBox(height: 30.0),
                 ],
               ),
