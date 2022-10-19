@@ -1,12 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterpos/services/user.dart';
+import 'package:flutterpos/services/admin.dart';
 import 'package:flutterpos/utils/colors.dart';
 import 'package:flutterpos/widgets/snackBars.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../models/user_model.dart';
+import '../models/admin_model.dart';
 import '../screens/home.dart';
 
 class AuthController extends GetxController {
@@ -20,7 +20,7 @@ class AuthController extends GetxController {
   RxBool signuserLoad = RxBool(false);
   RxBool loginuserLoad = RxBool(false);
   RxBool updateAdminLoad = RxBool(false);
-  Rxn<UserModel> currentUser = Rxn(null);
+  Rxn<AdminModel> currentUser = Rxn(null);
 
   signUser() async {
     if (signupkey.currentState!.validate()) {
@@ -32,12 +32,12 @@ class AuthController extends GetxController {
           "phonenumber": phoneController.text,
           "password": passwordController.text,
         };
-        var response = await User().createAdmin(body: body);
+        var response = await Admin().createAdmin(body: body);
         signuserLoad.value = false;
         if (response["status"] == false) {
           showSnackBar(message: "${response["message"]}", color: Colors.red);
         } else {
-          UserModel adminModel = UserModel.fromJson(response["body"]);
+          AdminModel adminModel = AdminModel.fromJson(response["body"]);
           SharedPreferences prefs = await SharedPreferences.getInstance();
           prefs.setString("userId", adminModel.id!);
           prefs.setString("token", response["token"]);
@@ -62,13 +62,13 @@ class AuthController extends GetxController {
           "email": emailController.text,
           "password": passwordController.text,
         };
-        var response = await User().loginAdmin(body: body);
+        var response = await Admin().loginAdmin(body: body);
         loginuserLoad.value = false;
         if (response["error"] != null) {
           Get.snackbar("", "${response["error"]}",
               backgroundColor: Colors.red, colorText: Colors.white);
         } else {
-          UserModel adminModel = UserModel.fromJson(response["body"]);
+          AdminModel adminModel = AdminModel.fromJson(response["body"]);
           SharedPreferences prefs = await SharedPreferences.getInstance();
           prefs.setString("userId", adminModel.id!);
           prefs.setString("token", response["token"]);
@@ -94,13 +94,11 @@ class AuthController extends GetxController {
         if (nameController.text != "") "name": nameController.text,
       };
       var response =
-          await User().updateAdmin(body: body, id: currentUser.value?.id);
+          await Admin().updateAdmin(body: body, id: currentUser.value?.id);
       if (response["status"] == true) {
         clearDataFromTextFields();
         Get.back();
-        showSnackBar(
-            message: "Profile updated successfully",
-            color: AppColors.mainColor);
+        showSnackBar(message:response["message"], color: AppColors.mainColor);
       } else {
         showSnackBar(message: response["message"], color: AppColors.mainColor);
       }
