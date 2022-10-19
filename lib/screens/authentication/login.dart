@@ -10,6 +10,7 @@ import '../../widgets/header.dart';
 class Login extends StatelessWidget {
   Login({Key? key}) : super(key: key);
   AuthController authController = Get.find<AuthController>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -17,7 +18,10 @@ class Login extends StatelessWidget {
       appBar: AppBar(
           elevation: 0.0,
           leading:
-              IconButton(onPressed: () {}, icon: Icon(Icons.arrow_back_ios))),
+              IconButton(onPressed: () {
+                Get.back();
+              }
+              , icon: Icon(Icons.arrow_back_ios))),
       body: SingleChildScrollView(
         child: Column(
           children: [

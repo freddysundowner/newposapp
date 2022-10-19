@@ -37,17 +37,6 @@ class SignUp extends StatelessWidget {
                   fontWeight: FontWeight.bold),
             ),
           ),
-          SizedBox(height: 5),
-          Padding(
-            padding: const EdgeInsets.only(left: 20.0, right: 20),
-            child: Text(
-              "and won't take longer than a couple of seconds",
-              style: TextStyle(
-                color: Colors.grey,
-                fontSize: 15,
-              ),
-            ),
-          ),
           SizedBox(height: 4),
           Container(
             padding: EdgeInsets.all(10),
