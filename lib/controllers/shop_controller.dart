@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterpos/models/shop_model.dart';
 import 'package:flutterpos/utils/constants.dart';
 import 'package:flutterpos/widgets/snackBars.dart';
 import 'package:get/get.dart';
@@ -14,6 +15,7 @@ class ShopController extends GetxController {
   RxString currency = RxString("");
   RxBool terms = RxBool(false);
   RxBool createShopLoad = RxBool(false);
+  Rxn<ShopModel> currentShop=Rxn(null);
 
   createShop() async {
     if (nameController.text == "" ||
@@ -38,7 +40,7 @@ class ShopController extends GetxController {
         };
 
         var response = await Shop().createShop(body: body);
-
+        print(response);
         if (response["status"] == false) {
           showSnackBar(message: response["message"], color: Colors.red);
         } else {

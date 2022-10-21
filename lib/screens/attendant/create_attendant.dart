@@ -1,18 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutterpos/controllers/attendant_controller.dart';
+import 'package:flutterpos/models/roles_model.dart';
 import 'package:get/get.dart';
 import 'package:switcher_button/switcher_button.dart';
 
+import '../../controllers/shop_controller.dart';
 import '../../utils/colors.dart';
 import '../../widgets/attendant_user_inputs.dart';
 import '../../widgets/bigtext.dart';
 
 class CreateAttendant extends StatelessWidget {
   CreateAttendant({Key? key}) : super(key: key);
-  AttendantController attendantController=Get.find<AttendantController>();
+  AttendantController attendantController = Get.find<AttendantController>();
+  ShopController shopController = Get.find<ShopController>();
+
   @override
   Widget build(BuildContext context) {
-
+    attendantController.getAttendantRoles();
     return Scaffold(
       appBar: AppBar(
         elevation: 0.3,
@@ -53,13 +57,11 @@ class CreateAttendant extends StatelessWidget {
                     children: [
                       attendantUserInputs(
                           name: "Attendant Username",
-                          controller:
-                          attendantController.nameController),
+                          controller: attendantController.nameController),
                       SizedBox(height: 10),
                       attendantUserInputs(
                           name: "Attendant Password",
-                          controller:
-                          attendantController.passwordController)
+                          controller: attendantController.passwordController)
                     ],
                   ),
                 ),
@@ -75,34 +77,49 @@ class CreateAttendant extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 elevation: 5,
-                child:Container(
-                    width: double.infinity,
-                    padding: EdgeInsets.all(10),
-                    child: ListView.builder(
+                child: Container(
+                  width: double.infinity,
+                  padding: EdgeInsets.all(10),
+                  child: Obx(() {
+                    return ListView.builder(
                       physics: NeverScrollableScrollPhysics(),
-                      itemCount:10,
+                      itemCount: attendantController.rolesFromApi.length,
                       shrinkWrap: true,
                       itemBuilder: (context, int) {
-
+                        RolesModel role =
+                            attendantController.rolesFromApi.elementAt(int);
                         return Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Row(
                             children: <Widget>[
-                              majorTitle(title: "Add sales",color: Colors.black,size: 12.0),
+                              majorTitle(
+                                  title: "${role.name}",
+                                  color: Colors.black,
+                                  size: 12.0),
                               Spacer(),
                               SwitcherButton(
                                 onColor: AppColors.mainColor,
                                 offColor: Colors.grey,
-                                value:false,
+                                value: false,
                                 onChange: (value) {
-
+                                  if (attendantController.roles.indexWhere(
+                                          (element) =>
+                                              element.key == role.key) ==
+                                      -1) {
+                                    attendantController.roles.add(role);
+                                  } else {
+                                    attendantController.roles.removeWhere(
+                                        (element) => element.key == role.key);
+                                  }
                                 },
                               ),
                             ],
                           ),
                         );
                       },
-                    )),
+                    );
+                  }),
+                ),
               ),
               SizedBox(height: 10),
             ],
@@ -113,21 +130,31 @@ class CreateAttendant extends StatelessWidget {
         child: Container(
           padding: EdgeInsets.all(10),
           height: kBottomNavigationBarHeight * 1.5,
-          child: InkWell(
-            onTap: () {},
-            child: Container(
-              padding: EdgeInsets.all(10),
-              width: double.infinity,
-              decoration: BoxDecoration(
-                  border: Border.all(width: 3, color: AppColors.mainColor),
-                  borderRadius: BorderRadius.circular(40)),
-              child: Center(
-                  child: majorTitle(
-                      title: "Create Attendant",
-                      color: AppColors.mainColor,
-                      size: 18.0)),
-            ),
-          ),
+          child: Obx(() {
+            return attendantController.creatingAttendantsLoad.value
+                ? Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : InkWell(
+                    onTap: () {
+                      attendantController.saveAttendant(
+                          shopId: shopController.currentShop.value?.id);
+                    },
+                    child: Container(
+                      padding: EdgeInsets.all(10),
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                          border:
+                              Border.all(width: 3, color: AppColors.mainColor),
+                          borderRadius: BorderRadius.circular(40)),
+                      child: Center(
+                          child: majorTitle(
+                              title: "Create Attendant",
+                              color: AppColors.mainColor,
+                              size: 18.0)),
+                    ),
+                  );
+          }),
         ),
       ),
     );
