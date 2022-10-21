@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutterpos/controllers/attendant_controller.dart';
+import 'package:flutterpos/models/roles_model.dart';
 import 'package:get/get.dart';
 import 'package:switcher_button/switcher_button.dart';
 
@@ -15,6 +16,7 @@ class CreateAttendant extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    attendantController.getAttendantRoles();
     return Scaffold(
       appBar: AppBar(
         elevation: 0.3,
@@ -76,19 +78,22 @@ class CreateAttendant extends StatelessWidget {
                 ),
                 elevation: 5,
                 child: Container(
-                    width: double.infinity,
-                    padding: EdgeInsets.all(10),
-                    child: ListView.builder(
+                  width: double.infinity,
+                  padding: EdgeInsets.all(10),
+                  child: Obx(() {
+                    return ListView.builder(
                       physics: NeverScrollableScrollPhysics(),
-                      itemCount: 10,
+                      itemCount: attendantController.rolesFromApi.length,
                       shrinkWrap: true,
                       itemBuilder: (context, int) {
+                        RolesModel role =
+                            attendantController.rolesFromApi.elementAt(int);
                         return Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Row(
                             children: <Widget>[
                               majorTitle(
-                                  title: "Add sales",
+                                  title: "${role.name}",
                                   color: Colors.black,
                                   size: 12.0),
                               Spacer(),
@@ -96,13 +101,25 @@ class CreateAttendant extends StatelessWidget {
                                 onColor: AppColors.mainColor,
                                 offColor: Colors.grey,
                                 value: false,
-                                onChange: (value) {},
+                                onChange: (value) {
+                                  if (attendantController.roles.indexWhere(
+                                          (element) =>
+                                              element.key == role.key) ==
+                                      -1) {
+                                    attendantController.roles.add(role);
+                                  } else {
+                                    attendantController.roles.removeWhere(
+                                        (element) => element.key == role.key);
+                                  }
+                                },
                               ),
                             ],
                           ),
                         );
                       },
-                    )),
+                    );
+                  }),
+                ),
               ),
               SizedBox(height: 10),
             ],
@@ -120,7 +137,8 @@ class CreateAttendant extends StatelessWidget {
                   )
                 : InkWell(
                     onTap: () {
-                      attendantController.saveAttendant(shopId: shopController.currentShop.value?.id);
+                      attendantController.saveAttendant(
+                          shopId: shopController.currentShop.value?.id);
                     },
                     child: Container(
                       padding: EdgeInsets.all(10),

@@ -1,0 +1,31 @@
+import 'package:flutterpos/models/shop_model.dart';
+
+class AttendantModel {
+  AttendantModel({
+    this.id,
+    this.fullnames,
+    this.attendid,
+    this.phonenumber,
+    this.shop,
+    // this.roles,
+  });
+
+  String? id;
+  String? fullnames;
+  String ?phonenumber;
+  int? attendid;
+  ShopModel? shop;
+  // List<Role>? roles;
+
+  factory AttendantModel.fromJson(Map<String, dynamic> json) {
+    return AttendantModel(
+      id: json["_id"],
+      fullnames: json["fullnames"],
+      attendid: json["attendid"],
+      phonenumber:json["phonenumber"],
+      shop: ShopModel.fromJson(json["shop"]),
+      // roles: List<Role>.from(json["roles"].map((x) => Role.fromJson(x))),
+
+    );
+  }
+}

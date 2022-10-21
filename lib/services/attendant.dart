@@ -8,4 +8,9 @@ class Attendant {
     var response=await DbBase().databaseRequest(attendant, DbBase().postRequestType,body: body);
     return jsonDecode(response);
   }
+
+  getRoles() async {
+    var response=await DbBase().databaseRequest(roles, DbBase().getRequestType);
+    return jsonDecode(response);
+  }
 }

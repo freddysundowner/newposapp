@@ -7,7 +7,7 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/admin_model.dart';
-import '../screens/home.dart';
+import '../screens/home/home.dart';
 
 class AuthController extends GetxController {
   TextEditingController emailController = TextEditingController();
