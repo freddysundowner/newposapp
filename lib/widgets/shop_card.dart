@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutterpos/models/shop_model.dart';
+import 'package:flutterpos/screens/shop/shop_details.dart';
 import 'package:flutterpos/widgets/smalltext.dart';
 import 'package:get/get.dart';
 
 import '../utils/colors.dart';
 import 'bigtext.dart';
 
-Widget shopCard({required ShopModel shopModel,required page }) {
+Widget shopCard({required ShopModel shopModel, required page}) {
   return InkWell(
-    onTap: (){},
+    onTap: () {
+      Get.to(ShopDetails(shopModel: shopModel));
+    },
     child: Container(
       margin: EdgeInsets.fromLTRB(3, 10, 3, 0),
       padding: EdgeInsets.all(10),

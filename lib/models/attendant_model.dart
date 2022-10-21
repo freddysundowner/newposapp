@@ -26,7 +26,6 @@ class AttendantModel {
       phonenumber:json["phonenumber"],
       shop: ShopModel.fromJson(json["shop"]),
       roles: List<RolesModel>.from(json["roles"].map((x) => RolesModel.fromJson(x))),
-
     );
   }
 }
