@@ -161,6 +161,7 @@ class ShopDetails extends StatelessWidget {
                           id: shopModel.id,
                           adminId: authController.currentUser.value?.id);
                     },
+
                     child: Container(
                       padding: EdgeInsets.all(10),
                       width: double.infinity,
