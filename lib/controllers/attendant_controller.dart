@@ -26,7 +26,6 @@ class AttendantController extends GetxController {
         };
 
         var response = await Attendant().createAttendant(body: body);
-        print(response);
         clearTextFields();
         Get.back();
         showSnackBar(message: response["message"], color: AppColors.mainColor);
