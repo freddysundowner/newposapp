@@ -1,3 +1,4 @@
+import 'package:flutterpos/models/roles_model.dart';
 import 'package:flutterpos/models/shop_model.dart';
 
 class AttendantModel {
@@ -7,7 +8,7 @@ class AttendantModel {
     this.attendid,
     this.phonenumber,
     this.shop,
-    // this.roles,
+    this.roles,
   });
 
   String? id;
@@ -15,7 +16,7 @@ class AttendantModel {
   String ?phonenumber;
   int? attendid;
   ShopModel? shop;
-  // List<Role>? roles;
+  List<RolesModel>? roles;
 
   factory AttendantModel.fromJson(Map<String, dynamic> json) {
     return AttendantModel(
@@ -24,7 +25,7 @@ class AttendantModel {
       attendid: json["attendid"],
       phonenumber:json["phonenumber"],
       shop: ShopModel.fromJson(json["shop"]),
-      // roles: List<Role>.from(json["roles"].map((x) => Role.fromJson(x))),
+      roles: List<RolesModel>.from(json["roles"].map((x) => RolesModel.fromJson(x))),
 
     );
   }
