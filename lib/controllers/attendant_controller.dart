@@ -11,6 +11,7 @@ class AttendantController extends GetxController {
   TextEditingController passwordController = TextEditingController();
   TextEditingController nameController = TextEditingController();
   RxBool creatingAttendantsLoad = RxBool(false);
+  RxBool getAttendantsLoad = RxBool(false);
   RxList<AttendantModel> attendants = RxList([]);
   RxList<RolesModel> roles = RxList([]);
   RxList<RolesModel> rolesFromApi = RxList([]);
@@ -25,13 +26,14 @@ class AttendantController extends GetxController {
         creatingAttendantsLoad.value = true;
         Map<String, dynamic> body = {
           "fullnames": nameController.text,
-          "shops": shopId,
+          "shop": shopId,
           "roles": roles.map((element) => element.toJson()).toList(),
           "password": passwordController.text,
         };
 
         var response = await Attendant().createAttendant(body: body);
         clearTextFields();
+        getAttendantsByShopId(shopId: shopId);
         Get.back();
         showSnackBar(message: response["message"], color: AppColors.mainColor);
 
@@ -55,6 +57,26 @@ class AttendantController extends GetxController {
         rolesFromApi.value = [];
       }
     } catch (e) {}
+  }
+
+  getAttendantsByShopId({required shopId}) async {
+    try {
+      getAttendantsLoad.value = true;
+      var response = await Attendant().getAttendantsById(shopId);
+      if (response != null) {
+        List attendantsData = response["body"];
+        print(attendantsData);
+        List<AttendantModel> attendantList =
+            attendantsData.map((e) => AttendantModel.fromJson(e)).toList();
+        print("hello ${attendantList}");
+        attendants.assignAll(attendantList);
+      } else {
+        attendants.value = [];
+      }
+      getAttendantsLoad.value = false;
+    } catch (e) {
+      getAttendantsLoad.value = false;
+    }
   }
 
   clearTextFields() {
