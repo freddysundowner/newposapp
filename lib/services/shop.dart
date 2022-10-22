@@ -20,4 +20,9 @@ class Shop {
     var response = await DbBase().databaseRequest(updateShop + id, DbBase().patchRequestType,body: body);
     return jsonDecode(response);
   }
+
+  deleteShop({required id}) async{
+    var response = await DbBase().databaseRequest(shop + id, DbBase().deleteRequestType);
+    return jsonDecode(response);
+  }
 }

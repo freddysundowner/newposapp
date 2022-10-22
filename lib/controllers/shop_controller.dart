@@ -19,6 +19,7 @@ class ShopController extends GetxController {
   RxBool createShopLoad = RxBool(false);
   RxBool gettingShopsLoad = RxBool(false);
   RxBool updateShopLoad = RxBool(false);
+  RxBool deleteShopLoad = RxBool(false);
   Rxn<ShopModel> currentShop = Rxn(null);
   RxList<ShopModel> AdminShops = RxList([]);
 
@@ -112,6 +113,20 @@ class ShopController extends GetxController {
       updateShopLoad.value = false;
     } catch (e) {
       updateShopLoad.value = false;
+    }
+  }
+
+  deleteShop({required id,required adminId}) async{
+    try {
+      deleteShopLoad.value = true;
+      var response = await Shop().deleteShop(id: id);
+      getShopsByAdminId(adminId: adminId);
+      Get.back();
+      showSnackBar(message: response["message"], color: AppColors.mainColor);
+
+      deleteShopLoad.value = false;
+    } catch (e) {
+      deleteShopLoad.value = false;
     }
   }
 }

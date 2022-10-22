@@ -3,6 +3,7 @@ import 'package:flutterpos/controllers/AuthController.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
 import 'package:flutterpos/models/shop_model.dart';
 import 'package:flutterpos/utils/constants.dart';
+import 'package:flutterpos/widgets/shop_delete_dialog.dart';
 import 'package:get/get.dart';
 
 import '../../utils/colors.dart';
@@ -108,7 +109,13 @@ class ShopDetails extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       InkWell(
-                        onTap: () {},
+                        onTap: () {
+                          deleteShopDialog(context, () {
+                            shopController.deleteShop(
+                                id: shopModel.id,
+                                adminId: authController.currentUser.value?.id);
+                          });
+                        },
                         child: Container(
                           width: double.infinity,
                           child: Row(
@@ -150,7 +157,8 @@ class ShopDetails extends StatelessWidget {
             border: Border.all(width: 1, color: Colors.grey),
           ),
           child: Obx(() {
-            return shopController.updateShopLoad.value
+            return shopController.updateShopLoad.value ||
+                    shopController.deleteShopLoad.value
                 ? Center(
                     child: CircularProgressIndicator(),
                   )
@@ -161,7 +169,6 @@ class ShopDetails extends StatelessWidget {
                           id: shopModel.id,
                           adminId: authController.currentUser.value?.id);
                     },
-
                     child: Container(
                       padding: EdgeInsets.all(10),
                       width: double.infinity,
