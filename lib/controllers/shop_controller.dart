@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterpos/models/shop_model.dart';
+import 'package:flutterpos/utils/colors.dart';
 import 'package:flutterpos/utils/constants.dart';
 import 'package:flutterpos/widgets/snackBars.dart';
 import 'package:get/get.dart';
@@ -17,6 +18,8 @@ class ShopController extends GetxController {
   RxBool terms = RxBool(false);
   RxBool createShopLoad = RxBool(false);
   RxBool gettingShopsLoad = RxBool(false);
+  RxBool updateShopLoad = RxBool(false);
+
   Rxn<ShopModel> currentShop = Rxn(null);
   RxList<ShopModel> AdminShops = RxList([]);
 
@@ -43,7 +46,6 @@ class ShopController extends GetxController {
         };
 
         var response = await Shop().createShop(body: body);
-
         if (response["status"] == false) {
           showSnackBar(message: response["message"], color: Colors.red);
         } else {
@@ -84,5 +86,33 @@ class ShopController extends GetxController {
     businessController.text = "";
     reqionController.text = "";
     terms.value = false;
+  }
+
+  initializeControllers({required ShopModel shopModel}) {
+    nameController.text = shopModel.name.toString();
+    businessController.text = shopModel.type.toString();
+    reqionController.text = shopModel.location.toString();
+    currency.value = shopModel.currency!;
+  }
+
+  updateShop({required id, required adminId}) async {
+    try {
+      updateShopLoad.value = true;
+      Map<String, dynamic> body = {
+        if (nameController.text != "") "name": nameController.text,
+        if (reqionController.text != "") "location": reqionController.text,
+        if (businessController.text != "") "type": businessController.text,
+        "currency":
+            currency.value == "" ? Constants.currenciesData[0] : currency.value,
+      };
+      var response = await Shop().updateShops(id: id, body: body);
+      getShopsByAdminId(adminId: adminId);
+      Get.back();
+      showSnackBar(message: response["message"], color: AppColors.mainColor);
+
+      updateShopLoad.value = false;
+    } catch (e) {
+      updateShopLoad.value = false;
+    }
   }
 }
