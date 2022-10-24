@@ -60,6 +60,7 @@ class AttendantDetails extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+
                       attendantUserInputs(
                           name: "Attendant Username",
                           controller: attendantController.nameController),
