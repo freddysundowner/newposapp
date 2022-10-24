@@ -16,9 +16,28 @@ class Attendant {
     return jsonDecode(response);
   }
 
-  getAttendantsById(shopId) async {
+  getAttendantsByShopId(shopId) async {
     var response = await DbBase()
         .databaseRequest(attendant + "shop/${shopId}", DbBase().getRequestType);
+    return jsonDecode(response);
+  }
+
+  getAttendantById(id) async {
+    var response =
+        await DbBase().databaseRequest(attendant + id, DbBase().getRequestType);
+    return jsonDecode(response);
+  }
+
+  updatePassword(id, Map<String, dynamic> body) async {
+    var response = await DbBase().databaseRequest(
+        attendant + "password/${id}", DbBase().patchRequestType,
+        body: body);
+    return jsonDecode(response);
+  }
+
+  deleteAttendant(id) async {
+    var response = await DbBase()
+        .databaseRequest(attendant + id, DbBase().deleteRequestType);
     return jsonDecode(response);
   }
 }

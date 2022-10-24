@@ -1,5 +1,5 @@
-
 import 'package:flutter/material.dart';
+import 'package:flutterpos/controllers/attendant_controller.dart';
 import 'package:flutterpos/widgets/bigtext.dart';
 import 'package:get/get.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
@@ -10,9 +10,11 @@ import '../../utils/colors.dart';
 class Home extends StatelessWidget {
   Home({Key? key}) : super(key: key);
   HomeController homeControler = Get.find<HomeController>();
+  AttendantController attendantController = Get.find<AttendantController>();
 
   @override
   Widget build(BuildContext context) {
+    attendantController.getAttendantRoles();
     return Scaffold(
       appBar: AppBar(
         titleSpacing: 0.0,
@@ -21,7 +23,7 @@ class Home extends StatelessWidget {
           color: AppColors.mainColor,
         ),
         title:
-        majorTitle(title: "Store Admin", color: Colors.black, size: 16.0),
+            majorTitle(title: "Store Admin", color: Colors.black, size: 16.0),
         elevation: 0.2,
         backgroundColor: Colors.white,
       ),

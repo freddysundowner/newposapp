@@ -16,7 +16,6 @@ class CreateAttendant extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    attendantController.getAttendantRoles();
     return Scaffold(
       appBar: AppBar(
         elevation: 0.3,
