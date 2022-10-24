@@ -4,6 +4,7 @@ const admin = BASE_URL + "admin";
 const adminLogin = admin + "/login";
 //shop
 const shop = BASE_URL + "shop/";
+const adminShop=shop+"owner/";
 //attendant
 const attendant = BASE_URL + "attendant/";
 //

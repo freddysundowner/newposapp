@@ -12,10 +12,13 @@ class ShopController extends GetxController {
   TextEditingController nameController = TextEditingController();
   TextEditingController businessController = TextEditingController();
   TextEditingController reqionController = TextEditingController();
+  TextEditingController searchController = TextEditingController();
   RxString currency = RxString("");
   RxBool terms = RxBool(false);
   RxBool createShopLoad = RxBool(false);
-  Rxn<ShopModel> currentShop=Rxn(null);
+  RxBool gettingShopsLoad = RxBool(false);
+  Rxn<ShopModel> currentShop = Rxn(null);
+  RxList<ShopModel> AdminShops = RxList([]);
 
   createShop() async {
     if (nameController.text == "" ||
@@ -40,18 +43,39 @@ class ShopController extends GetxController {
         };
 
         var response = await Shop().createShop(body: body);
-        print(response);
+
         if (response["status"] == false) {
           showSnackBar(message: response["message"], color: Colors.red);
         } else {
           clearTextFields();
+          getShopsByAdminId(adminId: userId);
           Get.back();
+          showSnackBar(message: response["message"], color: Colors.red);
         }
 
         createShopLoad.value = false;
       } catch (e) {
         createShopLoad.value = false;
       }
+    }
+  }
+
+  getShopsByAdminId({required adminId}) async {
+    try {
+      AdminShops.clear();
+      gettingShopsLoad.value = true;
+      var response = await Shop().getShopsByAdminId(adminId: adminId);
+      if (response != null) {
+        List shops = response["body"];
+        List<ShopModel> shopsData =
+            shops.map((e) => ShopModel.fromJson(e)).toList();
+        AdminShops.assignAll(shopsData);
+      } else {
+        AdminShops.value = [];
+      }
+      gettingShopsLoad.value = false;
+    } catch (e) {
+      gettingShopsLoad.value = false;
     }
   }
 
