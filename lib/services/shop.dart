@@ -22,4 +22,9 @@ class Shop {
 
     return jsonDecode(response);
   }
+
+  deleteShop({required id}) async{
+    var response = await DbBase().databaseRequest(shop + id, DbBase().deleteRequestType);
+    return jsonDecode(response);
+  }
 }

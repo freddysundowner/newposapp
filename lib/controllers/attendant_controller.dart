@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutterpos/models/attendant_model.dart';
 import 'package:flutterpos/models/roles_model.dart';
+import 'package:flutterpos/widgets/loading_dialog.dart';
 import 'package:get/get.dart';
 
 import '../services/attendant.dart';
@@ -8,10 +9,14 @@ import '../utils/colors.dart';
 import '../widgets/snackBars.dart';
 
 class AttendantController extends GetxController {
+  final GlobalKey<State> _keyLoader = new GlobalKey<State>();
   TextEditingController passwordController = TextEditingController();
   TextEditingController nameController = TextEditingController();
   RxBool creatingAttendantsLoad = RxBool(false);
+  RxBool getAttendantsLoad = RxBool(false);
+  RxBool getAttendantByIdLoad = RxBool(false);
   RxList<AttendantModel> attendants = RxList([]);
+  Rxn<AttendantModel> attendant = Rxn(null);
   RxList<RolesModel> roles = RxList([]);
   RxList<RolesModel> rolesFromApi = RxList([]);
 
@@ -25,13 +30,14 @@ class AttendantController extends GetxController {
         creatingAttendantsLoad.value = true;
         Map<String, dynamic> body = {
           "fullnames": nameController.text,
-          "shops": shopId,
+          "shop": shopId,
           "roles": roles.map((element) => element.toJson()).toList(),
           "password": passwordController.text,
         };
 
         var response = await Attendant().createAttendant(body: body);
         clearTextFields();
+        getAttendantsByShopId(shopId: shopId);
         Get.back();
         showSnackBar(message: response["message"], color: AppColors.mainColor);
 
@@ -57,8 +63,81 @@ class AttendantController extends GetxController {
     } catch (e) {}
   }
 
+  getAttendantsByShopId({required shopId}) async {
+    try {
+      getAttendantsLoad.value = true;
+      var response = await Attendant().getAttendantsByShopId(shopId);
+      if (response != null) {
+        List attendantsData = response["body"];
+        List<AttendantModel> attendantList =
+            attendantsData.map((e) => AttendantModel.fromJson(e)).toList();
+
+        attendants.assignAll(attendantList);
+      } else {
+        attendants.value = [];
+      }
+      getAttendantsLoad.value = false;
+    } catch (e) {
+      getAttendantsLoad.value = false;
+    }
+  }
+
   clearTextFields() {
     nameController.text = "";
     passwordController.text = "";
+  }
+
+  getAttendantsById(id) async {
+    try {
+      getAttendantByIdLoad.value = true;
+      var response = await Attendant().getAttendantById(id);
+      if (response != null) {
+        attendant.value = AttendantModel.fromJson(response["body"]);
+      } else {
+        attendant.value = AttendantModel();
+      }
+      getAttendantByIdLoad.value = false;
+    } catch (e) {
+      getAttendantByIdLoad.value = false;
+    }
+  }
+
+  updatePassword({required id, required BuildContext context}) async {
+    try {
+      Map<String, dynamic> body = {"password": passwordController.text};
+      LoadingDialog.showLoadingDialog(
+          context: context,
+          title: "Updating password please wait...",
+          key: _keyLoader);
+      var response = await Attendant().updatePassword(id, body);
+      Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
+      if (response["status"] == true) {
+        showSnackBar(message: response["message"], color: AppColors.mainColor);
+      } else {
+        showSnackBar(message: response["message"], color: AppColors.mainColor);
+      }
+    } catch (e) {
+      Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
+    }
+  }
+
+  deleteAttendant({required id, required BuildContext context, required shopId}) async{
+    try {
+      LoadingDialog.showLoadingDialog(
+          context: context,
+          title: "Deleting attendant please wait...",
+          key: _keyLoader);
+      var response = await Attendant().deleteAttendant(id);
+      Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
+      if (response["status"] == true) {
+        Get.back();
+        getAttendantsByShopId(shopId: shopId);
+        showSnackBar(message: response["message"], color: AppColors.mainColor);
+      } else {
+        showSnackBar(message: response["message"], color: AppColors.mainColor);
+      }
+    } catch (e) {
+      Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
+    }
   }
 }

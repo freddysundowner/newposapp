@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutterpos/models/attendant_model.dart';
 import 'package:flutterpos/widgets/smalltext.dart';
+import 'package:get/get.dart';
 
+import '../screens/attendant/attendant_details.dart';
 import '../utils/colors.dart';
 import 'bigtext.dart';
 
@@ -40,7 +42,9 @@ Widget attendantCard({required AttendantModel attendantModel}) {
         ),
         SizedBox(width: 10),
         InkWell(
-          onTap: () {},
+          onTap: () {
+            Get.to(() => AttendantDetails(attendantModel: attendantModel));
+          },
           child: Align(
             alignment: Alignment.bottomRight,
             child: Container(

@@ -18,6 +18,8 @@ class AttendantsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    attendantController.getAttendantsByShopId(
+        shopId: shopController.currentShop.value?.id);
     return Scaffold(
         body: SafeArea(
             child: SingleChildScrollView(
@@ -37,7 +39,7 @@ class AttendantsPage extends StatelessWidget {
                   padding: const EdgeInsets.all(3.0),
                   child: InkWell(
                     onTap: () {
-                      Get.to(()=>CreateAttendant());
+                      Get.to(() => CreateAttendant());
                     },
                     child: Container(
                       padding: EdgeInsets.fromLTRB(10, 5, 10, 5),
@@ -85,27 +87,30 @@ class AttendantsPage extends StatelessWidget {
             ),
             SizedBox(height: 20),
             Obx(() {
-              return attendantController.attendants.length == 0
-                  ? Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Center(
-                          child: minorTitle(
-                            title: "This shop doesn't have attendants yet",
-                            color: Colors.black,
-                          ),
-                        ),
-                      ],
-                    )
-                  : ListView.builder(
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemCount: attendantController.attendants.length,
-                      itemBuilder: (context, index) {
-                        AttendantModel attendantModel =
-                            attendantController.attendants.elementAt(index);
-                        return attendantCard(attendantModel: attendantModel);
-                      });
+              return attendantController.getAttendantsLoad.value
+                  ? Center(child: CircularProgressIndicator())
+                  : attendantController.attendants.length == 0
+                      ? Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Center(
+                              child: minorTitle(
+                                title: "This shop doesn't have attendants yet",
+                                color: Colors.black,
+                              ),
+                            ),
+                          ],
+                        )
+                      : ListView.builder(
+                          shrinkWrap: true,
+                          physics: NeverScrollableScrollPhysics(),
+                          itemCount: attendantController.attendants.length,
+                          itemBuilder: (context, index) {
+                            AttendantModel attendantModel =
+                                attendantController.attendants.elementAt(index);
+                            return attendantCard(
+                                attendantModel: attendantModel);
+                          });
             })
           ],
         ),
