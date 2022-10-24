@@ -10,7 +10,9 @@ import '../../widgets/shop_widget.dart';
 import '../../widgets/smalltext.dart';
 
 class CreateShop extends StatelessWidget {
-  CreateShop({Key? key}) : super(key: key);
+  final page;
+
+  CreateShop({Key? key, required this.page}) : super(key: key);
   ShopController shopController = Get.find<ShopController>();
 
   @override
@@ -130,11 +132,11 @@ class CreateShop extends StatelessWidget {
               BoxDecoration(border: Border.all(width: 1, color: Colors.grey)),
           child: Obx(() {
             return shopController.createShopLoad.value
-                ? Center()
+                ? Center(child: CircularProgressIndicator())
                 : InkWell(
                     splashColor: Colors.transparent,
                     onTap: () {
-                      shopController.createShop();
+                      shopController.createShop(page: page);
                     },
                     child: Container(
                       padding: EdgeInsets.all(10),

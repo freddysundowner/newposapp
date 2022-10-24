@@ -38,8 +38,8 @@ class HomePage extends StatelessWidget {
                 }),
                 InkWell(
                   onTap: () async {
-                    await shopController.getShopsByAdminId(
-                        adminId: authController.currentUser.value?.id);
+
+                    await shopController.getShopsByAdminId(adminId: authController.currentUser.value?.id);
                     showShopModalBottomSheet(context);
                   },
                   child: Container(

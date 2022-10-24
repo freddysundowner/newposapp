@@ -6,6 +6,7 @@ import 'package:flutterpos/utils/constants.dart';
 import 'package:flutterpos/widgets/snackBars.dart';
 import 'package:get/get.dart';
 
+import '../screens/home/home.dart';
 import '../services/shop.dart';
 import 'AuthController.dart';
 
@@ -23,7 +24,7 @@ class ShopController extends GetxController {
   Rxn<ShopModel> currentShop = Rxn(null);
   RxList<ShopModel> AdminShops = RxList([]);
 
-  createShop() async {
+  createShop({required page}) async {
     if (nameController.text == "" ||
         businessController.text == "" ||
         reqionController.text == "") {
@@ -50,8 +51,12 @@ class ShopController extends GetxController {
           showSnackBar(message: response["message"], color: Colors.red);
         } else {
           clearTextFields();
-          getShopsByAdminId(adminId: userId);
-          Get.back();
+          await getShopsByAdminId(adminId: userId);
+          if (page == "home") {
+            Get.off(() => Home());
+          } else {
+            Get.back();
+          }
           showSnackBar(message: response["message"], color: Colors.red);
         }
 
@@ -67,6 +72,7 @@ class ShopController extends GetxController {
       AdminShops.clear();
       gettingShopsLoad.value = true;
       var response = await Shop().getShopsByAdminId(adminId: adminId);
+      print(response);
       if (response != null) {
         List shops = response["body"];
         List<ShopModel> shopsData =
@@ -116,7 +122,7 @@ class ShopController extends GetxController {
     }
   }
 
-  deleteShop({required id,required adminId}) async{
+  deleteShop({required id, required adminId}) async {
     try {
       deleteShopLoad.value = true;
       var response = await Shop().deleteShop(id: id);
