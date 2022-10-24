@@ -20,5 +20,10 @@ class Admin{
     return jsonDecode(user);
   }
 
+  getUserById(String id) async{
+    var user= await DbBase().databaseRequest(admin+"/${id}", DbBase().getRequestType);
+    return jsonDecode(user);
+  }
+
 
 }

@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterpos/controllers/shop_controller.dart';
+import 'package:flutterpos/screens/shop/create_shop.dart';
 import 'package:flutterpos/services/admin.dart';
 import 'package:flutterpos/utils/colors.dart';
 import 'package:flutterpos/widgets/snackBars.dart';
@@ -8,8 +10,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/admin_model.dart';
 import '../screens/home/home.dart';
+import '../screens/landing/landing.dart';
 
 class AuthController extends GetxController {
+  ShopController shopController = Get.put(ShopController());
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   TextEditingController nameController = TextEditingController();
@@ -20,7 +24,9 @@ class AuthController extends GetxController {
   RxBool signuserLoad = RxBool(false);
   RxBool loginuserLoad = RxBool(false);
   RxBool updateAdminLoad = RxBool(false);
+  RxBool getUserByIdLoad = RxBool(false);
   Rxn<AdminModel> currentUser = Rxn(null);
+  RxString usertype = RxString("");
 
   signUser() async {
     if (signupkey.currentState!.validate()) {
@@ -41,9 +47,10 @@ class AuthController extends GetxController {
           SharedPreferences prefs = await SharedPreferences.getInstance();
           prefs.setString("userId", adminModel.id!);
           prefs.setString("token", response["token"]);
+          prefs.setString("type", "admin");
           currentUser.value = adminModel;
           clearDataFromTextFields();
-          Get.off(() => Home());
+          Get.off(() => CreateShop(page: "home"));
         }
         signuserLoad.value = false;
       } catch (e) {
@@ -64,7 +71,7 @@ class AuthController extends GetxController {
         };
         var response = await Admin().loginAdmin(body: body);
         loginuserLoad.value = false;
-        if (response["error"] != null) {
+        if (response == null) {
           Get.snackbar("", "${response["error"]}",
               backgroundColor: Colors.red, colorText: Colors.white);
         } else {
@@ -72,8 +79,11 @@ class AuthController extends GetxController {
           SharedPreferences prefs = await SharedPreferences.getInstance();
           prefs.setString("userId", adminModel.id!);
           prefs.setString("token", response["token"]);
+          prefs.setString("type", "admin");
           currentUser.value = adminModel;
           clearDataFromTextFields();
+          shopController.currentShop.value =
+              adminModel.shops!.isNotEmpty ? adminModel.shops![0] : null;
           Get.off(() => Home());
         }
         signuserLoad.value = false;
@@ -83,6 +93,40 @@ class AuthController extends GetxController {
     } else {
       showSnackBar(message: "please fill all fields", color: Colors.red);
     }
+  }
+
+  getUserById() async {
+    try {
+      getUserByIdLoad.value = true;
+      String id = await getUserId();
+      var user = await Admin().getUserById(id);
+
+      if (user["status"] == false) {
+        getUserByIdLoad.value = false;
+        logout();
+      }
+
+      getUserByIdLoad.value = false;
+      AdminModel userModel = AdminModel.fromJson(user["body"]);
+      shopController.currentShop.value =
+          userModel.shops!.isNotEmpty ? userModel.shops![0] : null;
+      currentUser.value = userModel;
+      return userModel;
+    } catch (e) {
+      getUserByIdLoad.value = false;
+    }
+  }
+
+  getUserId() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? user = prefs.getString("userId");
+    return user;
+  }
+
+  getUserType() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? user = prefs.getString("type");
+    return user;
   }
 
   updateAdmin() async {
@@ -98,7 +142,7 @@ class AuthController extends GetxController {
       if (response["status"] == true) {
         clearDataFromTextFields();
         Get.back();
-        showSnackBar(message:response["message"], color: AppColors.mainColor);
+        showSnackBar(message: response["message"], color: AppColors.mainColor);
       } else {
         showSnackBar(message: response["message"], color: AppColors.mainColor);
       }
@@ -119,5 +163,14 @@ class AuthController extends GetxController {
     emailController.text = "";
     phoneController.text = "";
     passwordController.text = "";
+  }
+
+  logout() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+    shopController.currentShop.value = null;
+    usertype.value = "";
+
+    Get.offAll(() => Landing());
   }
 }

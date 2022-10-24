@@ -31,7 +31,7 @@ class ShopsPage extends StatelessWidget {
               alignment: Alignment.centerRight,
               child: InkWell(
                 onTap: () {
-                  Get.to(CreateShop());
+                  Get.to(CreateShop(page: "shop",));
                 },
                 child: Container(
                   padding: EdgeInsets.fromLTRB(10, 2, 10, 2),
