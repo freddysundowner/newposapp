@@ -7,6 +7,7 @@ class Shop {
   createShop({required Map<String, dynamic> body}) async {
     var response = await DbBase()
         .databaseRequest(shop, DbBase().postRequestType, body: body);
+
     return jsonDecode(response);
   }
 
@@ -18,6 +19,7 @@ class Shop {
 
   updateShops({required id, required Map<String, dynamic> body})async{
     var response = await DbBase().databaseRequest(updateShop + id, DbBase().patchRequestType,body: body);
+
     return jsonDecode(response);
   }
 }

@@ -19,6 +19,7 @@ class ShopController extends GetxController {
   RxBool createShopLoad = RxBool(false);
   RxBool gettingShopsLoad = RxBool(false);
   RxBool updateShopLoad = RxBool(false);
+
   Rxn<ShopModel> currentShop = Rxn(null);
   RxList<ShopModel> AdminShops = RxList([]);
 
