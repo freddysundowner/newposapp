@@ -4,9 +4,12 @@ const admin = BASE_URL + "admin";
 const adminLogin = admin + "/login";
 //shop
 const shop = BASE_URL + "shop/";
-
 const adminShop = shop + "owner/";
 const updateShop = shop + "update/";
+//customer
+const customer=BASE_URL+"customer/";
+//supplier
+const supplier=BASE_URL+"supplier/";
 //product
 const product = BASE_URL + "product/";
 //category

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutterpos/controllers/AuthController.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
 import 'package:flutterpos/models/shop_model.dart';
+import 'package:flutterpos/screens/customers/customers_page.dart';
 import 'package:get/get.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
@@ -122,11 +123,15 @@ class HomePage extends StatelessWidget {
                   gridItems(
                       title: "Suppliers",
                       iconData: Icons.people_alt,
-                      function: () {}),
+                      function: () {
+                        Get.to(()=>CustomersPage(type: "suppliers"));
+                      }),
                   gridItems(
                       title: "Customers",
                       iconData: Icons.people_outline_outlined,
-                      function: () {}),
+                      function: () {
+                        Get.to(()=>CustomersPage(type: "customers"));
+                      }),
                   gridItems(
                       title: "Usage",
                       iconData: Icons.data_usage,
