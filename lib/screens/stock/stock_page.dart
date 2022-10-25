@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutterpos/controllers/product_controller.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
 import 'package:get/get.dart';
 
@@ -11,10 +12,13 @@ import '../product/products_page.dart';
 
 class StockPage extends StatelessWidget {
   StockPage({Key? key}) : super(key: key);
-  ShopController createShopController = Get.find<ShopController>();
+  ShopController shopController = Get.find<ShopController>();
+  ProductController productController = Get.find<ProductController>();
 
   @override
   Widget build(BuildContext context) {
+    productController.getProductsBySort(
+        shopId: "${shopController.currentShop.value?.id}", type: "all");
     return Scaffold(
       appBar: AppBar(
         titleSpacing: 0.0,
@@ -34,7 +38,7 @@ class StockPage extends StatelessWidget {
           children: [
             majorTitle(title: "Stock", color: Colors.black, size: 16.0),
             minorTitle(
-                title: "${createShopController.currentShop.value?.name}",
+                title: "${shopController.currentShop.value?.name}",
                 color: Colors.grey)
           ],
         ),
@@ -59,12 +63,12 @@ class StockPage extends StatelessWidget {
                               color: Colors.black,
                               size: 15.0),
                           Spacer(),
-                          // Obx(() {
-                          //   return normalText(
-                          //       title:
-                          //       "${createShopController.currentShop.value?.currency}.${productController.totalSale.value}",
-                          //       color: Colors.black,size: 14.0);
-                          // })
+                          Obx(() {
+                            return normalText(
+                                title:
+                                "${shopController.currentShop.value?.currency}.${productController.totalSale.value}",
+                                color: Colors.black,size: 14.0);
+                          })
                         ],
                       ),
                       SizedBox(height: 10),
@@ -75,12 +79,12 @@ class StockPage extends StatelessWidget {
                               color: Colors.black,
                               size: 15.0),
                           Spacer(),
-                          // Obx(() {
-                          //   return normalText(
-                          //       title:
-                          //       "${createShopController.currentShop.value?.currency}.${productController.totalProfit.value}",
-                          //       color: Colors.black,size: 14.0);
-                          // })
+                          Obx(() {
+                            return normalText(
+                                title:
+                                "${shopController.currentShop.value?.currency}.${productController.totalProfit.value}",
+                                color: Colors.black,size: 14.0);
+                          })
                         ],
                       ),
                       SizedBox(height: 10),
@@ -91,11 +95,11 @@ class StockPage extends StatelessWidget {
                               color: Colors.black,
                               size: 15.0),
                           Spacer(),
-                          // Obx(() {
-                          //   return minorTitle(
-                          //       title: "${productController.products.length}",
-                          //       color: Colors.black);
-                          // })
+                          Obx(() {
+                            return minorTitle(
+                                title: "${productController.products.length}",
+                                color: Colors.black);
+                          })
                         ],
                       ),
                       SizedBox(height: 20),
