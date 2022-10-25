@@ -7,7 +7,10 @@ const shop = BASE_URL + "shop/";
 
 const adminShop = shop + "owner/";
 const updateShop = shop + "update/";
-
+//product
+const product = BASE_URL + "product/";
+//category
+const category=BASE_URL+"category/";
 //attendant
 const attendant = BASE_URL + "attendant/";
 //

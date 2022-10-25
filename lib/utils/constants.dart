@@ -1,6 +1,42 @@
 class Constants{
  static final RegExp emailValidatorRegExp =
   RegExp(r"^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
+
+ var sortOrder = [
+  "All",
+  "Highest Stock Balance",
+  "Out Of Stock",
+  "Running Low",
+  "Recently Added",
+  "Highest Buying Price",
+  "Highest Selling Price"
+ ];
+ var sortOrderList = [
+  "all",
+  "higheststock",
+  "outofstock",
+  "runninglow",
+  "recentlyadded",
+  "highestbuying",
+  "highestselling"
+ ];
+ var sortOrderCaunt = [
+  "All",
+  "Counted Today",
+  "Not Counted Today",
+  "Never Counted"
+ ];
+ var sortOrderCauntList = [
+  "all",
+  "countedtoday",
+  "notcountedtoday",
+  "nevercounted"
+ ];
+
+
+
+
+
  static final currenciesData = [
   "USD",
   "CAD",
