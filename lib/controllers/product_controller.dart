@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:flutterpos/services/category.dart';
 import 'package:flutterpos/utils/colors.dart';
 import 'package:flutterpos/widgets/snackBars.dart';
@@ -221,6 +223,23 @@ class ProductController extends GetxController {
       getProductLoad.value = false;
     } catch (e) {
       getProductLoad.value = false;
+    }
+  }
+
+  Future<void> scanQR({required shopId, required type}) async {
+    String barcodeScanRes;
+    try {
+      barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
+          '#ff6666', 'Cancel', true, ScanMode.BARCODE);
+      if (type == "count") {
+        searchProductQuantityController.text = barcodeScanRes;
+      } else {
+        searchProductController.text = barcodeScanRes;
+      }
+
+      searchProduct(shopId, type);
+    } on PlatformException {
+      showSnackBar(message: 'Failed to get platform version.', color: Colors.red);
     }
   }
 

@@ -54,7 +54,6 @@ class ProductPage extends StatelessWidget {
                 children: [
                   Expanded(
                     child: TextFormField(
-
                       controller: productController.searchProductController,
                       onChanged: (value) {
                         productController.searchProduct(
@@ -64,7 +63,7 @@ class ProductPage extends StatelessWidget {
                             "product");
                       },
                       decoration: InputDecoration(
-                          contentPadding: EdgeInsets.fromLTRB(10,2,10,2),
+                          contentPadding: EdgeInsets.fromLTRB(10, 2, 10, 2),
                           suffixIcon: IconButton(
                             onPressed: () {
                               productController.searchProduct(
@@ -82,18 +81,17 @@ class ProductPage extends StatelessWidget {
                   ),
                   IconButton(
                       onPressed: () async {
-                        // productController.scanQR(
-                        //     shopId: createShopController.currentShop.value == null
-                        //         ? ""
-                        //         : "${createShopController.currentShop.value?.id}",
-                        //     type: "product"
-                        // );
+                        productController.scanQR(
+                            shopId: createShopController.currentShop.value == null
+                                ? ""
+                                : "${createShopController.currentShop.value?.id}",
+                            type: "product"
+                        );
                       },
                       icon: Icon(Icons.qr_code))
                 ],
               ),
             ),
-
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Row(
@@ -108,27 +106,29 @@ class ProductPage extends StatelessWidget {
                           return SimpleDialog(
                             children: List.generate(
                                 Constants().sortOrder.length,
-                                    (index) => SimpleDialogOption(
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                    productController.selectedSortOrder.value =
-                                        Constants().sortOrder
-                                            .elementAt(index);
-                                    productController
-                                        .selectedSortOrderSearch.value =
-                                        Constants().sortOrderList
-                                            .elementAt(index);
-                                    productController.getProductsBySort(
-                                        shopId:
-                                        "${createShopController.currentShop.value!.id}",
-                                        type: productController
-                                            .selectedSortOrderSearch.value);
-                                  },
-                                  child: Text(
-                                    Constants().sortOrder
-                                        .elementAt(index),
-                                  ),
-                                )),
+                                (index) => SimpleDialogOption(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                        productController
+                                                .selectedSortOrder.value =
+                                            Constants()
+                                                .sortOrder
+                                                .elementAt(index);
+                                        productController
+                                                .selectedSortOrderSearch.value =
+                                            Constants()
+                                                .sortOrderList
+                                                .elementAt(index);
+                                        productController.getProductsBySort(
+                                            shopId:
+                                                "${createShopController.currentShop.value!.id}",
+                                            type: productController
+                                                .selectedSortOrderSearch.value);
+                                      },
+                                      child: Text(
+                                        Constants().sortOrder.elementAt(index),
+                                      ),
+                                    )),
                           );
                         },
                       );
@@ -154,26 +154,27 @@ class ProductPage extends StatelessWidget {
               return productController.getProductLoad.value
                   ? Center(child: CircularProgressIndicator())
                   : productController.products.length == 0
-                  ? Center(
-                  child: Text(
-                    "No Entries found",
-                    style: TextStyle(color: AppColors.mainColor),
-                  ))
-                  : Container(
-                // height: MediaQuery.of(context).size.height*0.6,
-                child: ListView.builder(
-                    physics: NeverScrollableScrollPhysics(),
-                    itemCount: productController.products.length,
-                    shrinkWrap: true,
-                    itemBuilder: ((context, index) {
-                      ProductModel productModel = productController.products.elementAt(index);
-                      return productCard(
-                          shopId:
-                          "${createShopController.currentShop.value!.id}",
-                          context: context,
-                          product: productModel);
-                    })),
-              );
+                      ? Center(
+                          child: Text(
+                          "No Entries found",
+                          style: TextStyle(color: AppColors.mainColor),
+                        ))
+                      : Container(
+                          // height: MediaQuery.of(context).size.height*0.6,
+                          child: ListView.builder(
+                              physics: NeverScrollableScrollPhysics(),
+                              itemCount: productController.products.length,
+                              shrinkWrap: true,
+                              itemBuilder: ((context, index) {
+                                ProductModel productModel =
+                                    productController.products.elementAt(index);
+                                return productCard(
+                                    shopId:
+                                        "${createShopController.currentShop.value!.id}",
+                                    context: context,
+                                    product: productModel);
+                              })),
+                        );
             }),
             SizedBox(height: 20),
           ],
