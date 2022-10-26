@@ -9,14 +9,14 @@ class CustomerModel {
       this.gender,
       this.email,
       this.address,
-      this.wallet,
+      this.walletBalance,
       this.onCredit,
       this.credit});
 
   String? id;
   String? fullName;
   String? phoneNumber;
-  int? wallet;
+  int? walletBalance;
   bool? onCredit;
   int? credit;
   ShopModel? shopId;
@@ -28,11 +28,11 @@ class CustomerModel {
       id: json["_id"],
       fullName: json["fullName"],
       phoneNumber: json["phoneNumber"],
-      shopId: ShopModel.fromJson(json["shopId"]),
+      shopId: json["shopId"]==null?null:ShopModel.fromJson(json["shopId"]),
       gender: json["gender"] ?? "",
       email: json["email"] ?? "",
       address: json["address"] ?? "",
-      wallet: json["wallet"],
+      walletBalance: json["walletBalance"],
       onCredit: json["onCredit"],
       credit: json["credit"]);
 

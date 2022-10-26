@@ -12,7 +12,7 @@ showEditDialog({required user, required context}) {
       builder: (_) {
         return Dialog(
           child: Container(
-            height: MediaQuery.of(context).size.height * 0.80,
+            height: MediaQuery.of(context).size.height * 0.6,
             padding: EdgeInsets.all(10),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -99,7 +99,7 @@ showEditDialog({required user, required context}) {
                         onPressed: () {
                           Navigator.pop(context);
                           if (user == "suppliers") {
-
+                            supplierController.updateSupplier(context,customersController.customer.value?.id);
                           } else {
                             customersController.updateCustomer(context,customersController.customer.value?.id);
                           }

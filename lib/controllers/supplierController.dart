@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutterpos/controllers/product_controller.dart';
 import 'package:flutterpos/models/customer_model.dart';
 import 'package:flutterpos/services/supplier.dart';
 import 'package:flutterpos/utils/colors.dart';
@@ -8,6 +9,7 @@ import 'package:get/get.dart';
 import '../widgets/loading_dialog.dart';
 
 class SupplierController extends GetxController {
+  ProductController productController = Get.find<ProductController>();
   final GlobalKey<State> _keyLoader = new GlobalKey<State>();
   TextEditingController nameController = TextEditingController();
   TextEditingController phoneController = TextEditingController();
@@ -31,7 +33,7 @@ class SupplierController extends GetxController {
       Map<String, dynamic> body = {
         "fullName": nameController.text,
         "phoneNumber": phoneController.text,
-        "shop": shopId
+        "shopId": shopId
       };
       var response = await Supplier().createSupplier(body);
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
@@ -63,17 +65,37 @@ class SupplierController extends GetxController {
   getSuppliersInShop(shopId) async {
     try {
       getsupplierLoad.value = true;
+      suppliers.clear();
       var response = await Supplier().getSuppliersByShopId(shopId);
-      if (response["status"] == true) {
-        List fetchedCustomers = response["body"];
-        List<CustomerModel> customerData =
-            fetchedCustomers.map((e) => CustomerModel.fromJson(e)).toList();
-        suppliers.assignAll(customerData);
+      if (response != null) {
+        List fetchedData = response["body"];
+        print(fetchedData);
+        List<CustomerModel> customersData =
+            fetchedData.map((e) => CustomerModel.fromJson(e)).toList();
+        for (int i = 0; i < customersData.length; i++) {
+          productController.selectedSupplier.add({
+            "name": "${customersData[i].fullName}",
+            "id": "${customersData[i].id}"
+          });
+        }
+
+        suppliers.assignAll(customersData);
       } else {
         suppliers.value = [];
       }
+      // if (response["status"] == true) {
+      //   List fetchedCustomers = response["body"];
+      //   List customerData = fetchedCustomers.map((e) => CustomerModel.fromJson(e)).toList();
+      //   productController.supplierName =customerData[0].name;
+      //   productController.supplierId =customerData[0].name;
+      //
+      //   suppliers.assignAll(customerData);
+      // } else {
+      //   suppliers.value = [];
+      // }
       getsupplierLoad.value = false;
     } catch (e) {
+      print(e);
       getsupplierLoad.value = false;
     }
   }
@@ -98,6 +120,48 @@ class SupplierController extends GetxController {
     phoneController.text = supplier.value!.phoneNumber!;
     emailController.text = supplier.value!.email!;
     genderController.text = supplier.value!.gender!;
-    addressController.text =supplier.value!.address!;
+    addressController.text = supplier.value!.address!;
+  }
+
+  updateSupplier(BuildContext context, String? id) async {
+    try {
+      // LoadingDialog.showLoadingDialog(context: context, title: "Updating supplier...", key: _keyLoader);
+      Map<String, dynamic> body = {
+        if (nameController.text != "") "fullName": nameController.text,
+        "phoneNumber": phoneController.text,
+        "gender": genderController.text,
+        "email": emailController.text,
+        "address": addressController.text
+      };
+
+      var response = await Supplier().updateSupplier(body: body, id: id);
+
+      if (response["status"] == true) {
+        showSnackBar(message: response["message"], color: AppColors.mainColor);
+        clearTexts();
+        await getSupplierById(id);
+      } else {
+        showSnackBar(message: response["message"], color: AppColors.mainColor);
+      }
+    } catch (e) {}
+  }
+
+  deleteSuppler(
+      {required BuildContext context, required id, required shopId}) async {
+    try {
+      LoadingDialog.showLoadingDialog(
+          context: context, title: "deleting customer...", key: _keyLoader);
+      var response = await Supplier().deleteCustomer(id: id);
+      Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
+      if (response["status"] == true) {
+        showSnackBar(message: response["message"], color: AppColors.mainColor);
+
+        await getSuppliersInShop(shopId);
+      } else {
+        showSnackBar(message: response["message"], color: AppColors.mainColor);
+      }
+    } catch (e) {
+      Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
+    }
   }
 }

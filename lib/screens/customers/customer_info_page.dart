@@ -22,6 +22,7 @@ class CustomerInfoPage extends StatelessWidget {
       : super(key: key);
   CustomerController customerController = Get.find<CustomerController>();
   SupplierController supplierController = Get.find<SupplierController>();
+  ShopController shopController = Get.find<ShopController>();
 
   launchWhatsApp({required number, required message}) async {
     String url = "whatsapp://send?phone=+254${number}&text=$message";
@@ -75,8 +76,17 @@ class CustomerInfoPage extends StatelessWidget {
                   deleteDialog(
                       context: context,
                       onPressed: () {
-                        customerController.deleteCustomer(
-                            context, customerController.customer.value?.id);
+                        if (user == "suppliers") {
+                          supplierController.deleteSuppler(
+                              context: context,
+                              id: customerController.customer.value?.id,
+                              shopId: shopController.currentShop.value?.id);
+                        } else {
+                          customerController.deleteCustomer(
+                              context: context,
+                              id: customerController.customer.value?.id,
+                              shopId: shopController.currentShop.value?.id);
+                        }
                       });
                 },
                 icon: Icon(Icons.delete)),
@@ -86,7 +96,7 @@ class CustomerInfoPage extends StatelessWidget {
           child: Column(
             children: [
               Container(
-                height: MediaQuery.of(context).size.height * 0.4,
+                height: MediaQuery.of(context).size.height * 0.3,
                 color: AppColors.mainColor,
                 child: Column(
                   children: [

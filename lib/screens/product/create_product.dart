@@ -7,13 +7,14 @@ import '../../../controllers/product_controller.dart';
 import '../../../utils/colors.dart';
 import '../../../widgets/bigtext.dart';
 import '../../../widgets/smalltext.dart';
+import '../../controllers/supplierController.dart';
+import '../customers/create_customers.dart';
 
 class CreateProduct extends StatelessWidget {
   CreateProduct({Key? key}) : super(key: key);
   ShopController shopController = Get.find<ShopController>();
   ProductController productController = Get.find<ProductController>();
-
-  // SupplierController supplierController = Get.find<SupplierController>();
+  SupplierController supplierController = Get.find<SupplierController>();
   AuthController authController = Get.find<AuthController>();
   var measures = [
     'Kg',
@@ -25,7 +26,7 @@ class CreateProduct extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // supplierController.getSuppliersByAttendantId(createShopController.currentShop.value!.id!);
+    supplierController. getSuppliersInShop(shopController.currentShop.value!.id!);
     productController.getProductCategory(
         shopId: shopController.currentShop.value?.id);
     return Scaffold(
@@ -144,7 +145,7 @@ class CreateProduct extends StatelessWidget {
                         SizedBox(height: 5),
                         TextFormField(
                           controller:
-                          productController.minsellingPriceController,
+                              productController.minsellingPriceController,
                           keyboardType: TextInputType.number,
                           decoration: InputDecoration(
                             hintText: "0",
@@ -265,7 +266,7 @@ class CreateProduct extends StatelessWidget {
                                   builder: (BuildContext context) {
                                     return AlertDialog(
                                       content:
-                                      Text("Add Category to continue."),
+                                          Text("Add Category to continue."),
                                       actions: [
                                         TextButton(
                                           child: Text("OK"),
@@ -284,22 +285,18 @@ class CreateProduct extends StatelessWidget {
                                       children: List.generate(
                                           productController
                                               .productCategory.length,
-                                              (index) =>
-                                              SimpleDialogOption(
+                                          (index) => SimpleDialogOption(
                                                 onPressed: () {
                                                   productController
-                                                      .categoryName.value =
-                                                  productController
-                                                      .productCategory
-                                                      .elementAt(index)
-                                                      .name!;
+                                                          .categoryName.value =
+                                                      productController
+                                                          .productCategory
+                                                          .elementAt(index)
+                                                          .name!;
                                                   Navigator.pop(context);
                                                 },
                                                 child: Text(
-                                                    "${productController
-                                                        .productCategory
-                                                        .elementAt(index)
-                                                        .name}"),
+                                                    "${productController.productCategory.elementAt(index).name}"),
                                               )),
                                     );
                                   });
@@ -347,7 +344,7 @@ class CreateProduct extends StatelessWidget {
                                             hintText: "eg. fruits",
                                             border: OutlineInputBorder(
                                               borderRadius:
-                                              BorderRadius.circular(10),
+                                                  BorderRadius.circular(10),
                                             ))),
                                   ),
                                   actions: [
@@ -407,18 +404,16 @@ class CreateProduct extends StatelessWidget {
                                   return SimpleDialog(
                                     children: List.generate(
                                         measures.length,
-                                            (index) =>
-                                            SimpleDialogOption(
+                                        (index) => SimpleDialogOption(
                                               onPressed: () {
                                                 productController
-                                                    .selectedMeasure.value =
+                                                        .selectedMeasure.value =
                                                     measures.elementAt(index);
 
                                                 Navigator.pop(context);
                                               },
                                               child: Text(
-                                                  "${measures.elementAt(
-                                                      index)}"),
+                                                  "${measures.elementAt(index)}"),
                                             )),
                                   );
                                 });
@@ -466,7 +461,7 @@ class CreateProduct extends StatelessWidget {
                                   builder: (BuildContext context) {
                                     return AlertDialog(
                                       content:
-                                      Text("Add suppliers to continue."),
+                                          Text("Add suppliers to continue."),
                                       actions: [
                                         TextButton(
                                           child: Text("OK"),
@@ -485,29 +480,25 @@ class CreateProduct extends StatelessWidget {
                                       children: List.generate(
                                           productController
                                               .selectedSupplier.length,
-                                              (index) =>
-                                              SimpleDialogOption(
+                                          (index) => SimpleDialogOption(
                                                 onPressed: () {
                                                   productController
-                                                      .supplierName.value =
+                                                          .supplierName.value =
+                                                      productController
+                                                          .selectedSupplier
+                                                          .elementAt(
+                                                              index)["name"]!;
                                                   productController
-                                                      .selectedSupplier
-                                                      .elementAt(
-                                                      index)["name"]!;
-                                                  productController
-                                                      .supplierId.value =
-                                                  productController
-                                                      .selectedSupplier
-                                                      .elementAt(
-                                                      index)["id"]!;
+                                                          .supplierId.value =
+                                                      productController
+                                                          .selectedSupplier
+                                                          .elementAt(
+                                                              index)["id"]!;
 
                                                   Navigator.pop(context);
                                                 },
                                                 child: Text(
-                                                    "${productController
-                                                        .selectedSupplier
-                                                        .elementAt(
-                                                        index)["name"]}"),
+                                                    "${productController.selectedSupplier.elementAt(index)["name"]}"),
                                               )),
                                     );
                                   });
@@ -542,11 +533,9 @@ class CreateProduct extends StatelessWidget {
                       padding: const EdgeInsets.only(top: 10.0),
                       child: TextButton(
                         onPressed: () {
-                          // Get.to(() => CustomerCreate(
-                          //       type: "suppliers",
-                          //       shopId:
-                          //           createShopController.currentShop.value!.id,
-                          //     ));
+                          Get.to(() => CreateCustomer(
+                                type: "suppliers",
+                              ));
                         },
                         child: Container(
                             padding: EdgeInsets.all(8),
@@ -601,31 +590,34 @@ class CreateProduct extends StatelessWidget {
           padding: EdgeInsets.all(10),
           height: kToolbarHeight * 1.5,
           decoration:
-          BoxDecoration(border: Border.all(width: 1, color: Colors.grey)),
+              BoxDecoration(border: Border.all(width: 1, color: Colors.grey)),
           child: Obx(() {
-            return productController.creatingProductLoad.value ? Center(
-              child: CircularProgressIndicator(),) :
-            InkWell(
-              splashColor: Colors.transparent,
-              onTap: () {
-                productController.saveProducts(
-                    "${shopController.currentShop.value!.id}",
-                    authController.currentUser.value!.id!,
-                    context);
-              },
-              child: Container(
-                padding: EdgeInsets.all(10),
-                width: double.infinity,
-                decoration: BoxDecoration(
-                    border: Border.all(width: 3, color: AppColors.mainColor),
-                    borderRadius: BorderRadius.circular(40)),
-                child: Center(
-                    child: majorTitle(
-                        title: "Add Product",
-                        color: AppColors.mainColor,
-                        size: 18.0)),
-              ),
-            );
+            return productController.creatingProductLoad.value
+                ? Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : InkWell(
+                    splashColor: Colors.transparent,
+                    onTap: () {
+                      productController.saveProducts(
+                          "${shopController.currentShop.value!.id}",
+                          authController.currentUser.value!.id!,
+                          context);
+                    },
+                    child: Container(
+                      padding: EdgeInsets.all(10),
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                          border:
+                              Border.all(width: 3, color: AppColors.mainColor),
+                          borderRadius: BorderRadius.circular(40)),
+                      child: Center(
+                          child: majorTitle(
+                              title: "Add Product",
+                              color: AppColors.mainColor,
+                              size: 18.0)),
+                    ),
+                  );
           }),
         ),
       ),

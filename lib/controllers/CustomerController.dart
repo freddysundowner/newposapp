@@ -144,9 +144,9 @@ class CustomerController extends GetxController
         "email": emailController.text,
         "address": addressController.text
       };
-      print(body);
+
       var response = await Customer().updateCustomer(body: body, id: id);
-      print(response);
+
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
       if (response["status"] == true) {
         showSnackBar(message: response["message"], color: AppColors.mainColor);
@@ -160,16 +160,18 @@ class CustomerController extends GetxController
     }
   }
 
-  deleteCustomer(context, String? id) async {
+  deleteCustomer(
+      {required BuildContext context, required id, required shopId}) async {
     try {
       LoadingDialog.showLoadingDialog(
           context: context, title: "deleting customer...", key: _keyLoader);
       var response = await Customer().deleteCustomer(id: id);
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
       if (response["status"] == true) {
-        showSnackBar(message: response["message"], color: AppColors.mainColor);
         clearTexts();
-        await getCustomerById(id);
+        Get.back();
+        showSnackBar(message: response["message"], color: AppColors.mainColor);
+        await getCustomersInShop(shopId);
       } else {
         showSnackBar(message: response["message"], color: AppColors.mainColor);
       }

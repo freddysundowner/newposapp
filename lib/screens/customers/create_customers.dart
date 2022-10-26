@@ -9,7 +9,6 @@ import '../../widgets/bigtext.dart';
 import '../../widgets/smalltext.dart';
 
 class CreateCustomer extends StatelessWidget {
-
   final type;
   CreateCustomer({Key? key, required this.type})
       : super(key: key);
@@ -24,6 +23,7 @@ class CreateCustomer extends StatelessWidget {
       backgroundColor: Colors.white.withOpacity(0.96),
       appBar: AppBar(
           elevation: 0.3,
+          titleSpacing: 0.0,
           backgroundColor: Colors.white,
           automaticallyImplyLeading: false,
           leading: IconButton(

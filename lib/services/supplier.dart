@@ -22,4 +22,18 @@ class Supplier {
     return jsonDecode(response);
   }
 
+
+
+  updateSupplier({required Map<String, dynamic> body, id})async {
+    var response = await DbBase()
+        .databaseRequest(supplier + id, DbBase().patchRequestType);
+    return jsonDecode(response);
+  }
+
+  deleteCustomer({required id}) async{
+    var response = await DbBase()
+        .databaseRequest(supplier + id, DbBase().deleteRequestType);
+    return jsonDecode(response);
+  }
+
 }
