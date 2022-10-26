@@ -99,12 +99,13 @@ class ProductController extends GetxController {
           "supplier": supplierName.value == "None" ? "" : supplierId.value,
           "type": "stockin"
         };
-        var response = await Product().createProduct(body);
+        var response = await Products().createProduct(body);
 
         if (response["status"] == false) {
           showSnackBar(message: response["status"], color: Colors.red);
         } else {
           clearControllers();
+          await getProductsBySort(shopId: shopId, type: "all");
           Get.back();
           showSnackBar(
               message: response["message"], color: AppColors.mainColor);
@@ -169,7 +170,7 @@ class ProductController extends GetxController {
   getProductsBySort({required String shopId, required String type}) async {
     try {
       getProductLoad.value = true;
-      var response = await Product().getProductsBySort(shopId, type);
+      var response = await Products().getProductsBySort(shopId, type);
       products.clear();
       if (response != null) {
         totalSale.value = 0;
@@ -198,7 +199,7 @@ class ProductController extends GetxController {
   searchProduct(String shopId, String type) async {
     try {
       getProductLoad.value = true;
-      var response = await Product().searchProduct(
+      var response = await Products().searchProduct(
           shopId,
           type == "count"
               ? searchProductQuantityController.text.trim()
@@ -246,7 +247,7 @@ class ProductController extends GetxController {
   deleteProduct(
       {required id, required BuildContext context, required shopId}) async {
     try {
-      var response = await Product().deleteProduct(id: id);
+      var response = await Products().deleteProduct(id: id);
       if (response["status"] == true) {
         showSnackBar(message: response["message"], color: AppColors.mainColor);
         await getProductsBySort(shopId: shopId, type: "all");

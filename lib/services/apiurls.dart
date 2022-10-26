@@ -12,6 +12,7 @@ const customer=BASE_URL+"customer/";
 const supplier=BASE_URL+"supplier/";
 //product
 const product = BASE_URL + "product/";
+const productHistory  = BASE_URL+"producthistory/";
 //category
 const category=BASE_URL+"category/";
 //attendant

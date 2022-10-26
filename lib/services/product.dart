@@ -4,9 +4,8 @@ import 'package:flutterpos/services/apiurls.dart';
 
 import 'client.dart';
 
-
-class Product {
-  createProduct(Map<String, dynamic> body) async{
+class Products {
+  createProduct(Map<String, dynamic> body) async {
     var response = await DbBase()
         .databaseRequest(product, DbBase().postRequestType, body: body);
 
@@ -15,8 +14,10 @@ class Product {
 
   getProductsBySort(String shopId, String type) async {
     var response = await DbBase().databaseRequest(
-        type=="all"?product + "shop/${shopId}":
-        product + "${shopId}/${type}", DbBase().getRequestType);
+        type == "all"
+            ? product + "shop/${shopId}"
+            : product + "${shopId}/${type}",
+        DbBase().getRequestType);
     var data = jsonDecode(response);
     return data;
   }
@@ -28,9 +29,16 @@ class Product {
     return data;
   }
 
-  deleteProduct({required id}) async{
-    var response = await DbBase().databaseRequest(product+id, DbBase().deleteRequestType);
+  deleteProduct({required id}) async {
+    var response = await DbBase()
+        .databaseRequest(product + id, DbBase().deleteRequestType);
     return jsonDecode(response);
   }
 
+  getProductHistory(productId, String type) async {
+    var response = await DbBase().databaseRequest(productHistory + "type/${productId}/${type}", DbBase().getRequestType);
+    var data = jsonDecode(response);
+
+    return data;
+  }
 }

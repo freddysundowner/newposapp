@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 
 
 import '../../../../utils/Constants.dart';
+import '../screens/product/product_history.dart';
 import '../utils/colors.dart';
 import 'bigtext.dart';
 import 'delete_dialog.dart';
@@ -15,7 +16,6 @@ Widget productCard({required context, required product, required shopId}) {
   ShopController shopController=Get.find<ShopController>();
   return InkWell(
     onTap: () {
-
       showProductModal(context, product, shopId);
     },
     child: Padding(
@@ -101,6 +101,7 @@ showProductModal(context, ProductModel product, shopId) {
                   leading: Icon(Icons.list),
                   onTap: () {
                     Get.back();
+                    Get.to(()=>ProductHistory(product:product));
 
                   },
                   title: Text('Product History')),
