@@ -6,6 +6,7 @@ import 'package:flutterpos/widgets/pdf/bar_code_pdf.dart';
 import 'package:flutterpos/widgets/smalltext.dart';
 import 'package:get/get.dart';
 
+import '../screens/product/create_product.dart';
 import '../screens/product/product_history.dart';
 import '../utils/colors.dart';
 import 'bigtext.dart';
@@ -110,6 +111,7 @@ showProductModal(context, ProductModel product, shopId) {
                   leading: Icon(Icons.edit),
                   onTap: () {
                     Get.back();
+                    Get.to(()=>CreateProduct(page: "edit",productModel: product,));
                   },
                   title: Text('Edit')),
               ListTile(

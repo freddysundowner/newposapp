@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutterpos/controllers/product_controller.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
+import 'package:flutterpos/models/product_model.dart';
 import 'package:get/get.dart';
 
 import '../../utils/colors.dart';
@@ -135,7 +136,7 @@ class StockPage extends StatelessWidget {
                   subtitle: "introduce new product",
                   icon: Icons.production_quantity_limits,
                   onPresssed: () {
-                    Get.to(() => CreateProduct());
+                    Get.to(() => CreateProduct(page: "create",productModel:ProductModel(),));
                   },
                   color: Colors.amberAccent),
               stockContainers(

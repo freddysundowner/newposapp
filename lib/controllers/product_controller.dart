@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
@@ -22,15 +21,13 @@ class ProductController extends GetxController {
   RxString selectedMeasure = RxString("Kg");
   RxBool creatingProductLoad = RxBool(false);
   RxBool getProductLoad = RxBool(false);
-
+  RxBool updateProductLoad = RxBool(false);
   RxInt totalSale = RxInt(0);
   RxInt totalProfit = RxInt(0);
-
   RxString selectedSortOrder = RxString("All");
   RxString selectedSortOrderCount = RxString("All");
   RxString selectedSortOrderSearch = RxString("all");
   RxString selectedSortOrderCountSearch = RxString("all");
-
   RxString supplierName = RxString("None");
   RxString supplierId = RxString("");
 
@@ -82,13 +79,12 @@ class ProductController extends GetxController {
     } else {
       try {
         creatingProductLoad.value = true;
-
         Map<String, dynamic> body = {
           "name": name,
           "quantity": int.parse(qty),
           "buyingPrice": int.parse(buying),
           "sellingPrice": selling.toString(),
-          "minPrice": minSelling == "" ? selling : minSelling,
+          "minSellingPrice": minSelling == "" ? selling : minSelling,
           "shop": shopId,
           "attendant": attendantId,
           "unit": selectedMeasure.value,
@@ -139,7 +135,7 @@ class ProductController extends GetxController {
 
   getProductCategory({required shopId}) async {
     try {
-      // productCategory.clear();
+      productCategory.clear();
       var response = await Categories().getProductCategories(shopId);
       if (response["status"] == true) {
         List categoriesResponse = response["body"];
@@ -171,6 +167,7 @@ class ProductController extends GetxController {
     try {
       getProductLoad.value = true;
       var response = await Products().getProductsBySort(shopId, type);
+      print(response);
       products.clear();
       if (response != null) {
         totalSale.value = 0;
@@ -240,7 +237,8 @@ class ProductController extends GetxController {
 
       searchProduct(shopId, type);
     } on PlatformException {
-      showSnackBar(message: 'Failed to get platform version.', color: Colors.red);
+      showSnackBar(
+          message: 'Failed to get platform version.', color: Colors.red);
     }
   }
 
@@ -255,5 +253,60 @@ class ProductController extends GetxController {
         showSnackBar(message: response["message"], color: AppColors.mainColor);
       }
     } catch (e) {}
+  }
+
+  updateProduct(
+      {required id, required BuildContext context, required shopId}) async {
+    try {
+      updateProductLoad.value = true;
+      if (itemNameController.text == "" ||
+          qtyController.text == "" ||
+          sellingPriceController.text == "" ||
+          buyingPriceController.text == "") {
+        showSnackBar(message: "Please fill all the fields", color: Colors.red);
+      } else {
+        Map<String, dynamic> body = {
+          "name": itemNameController.text,
+          "quantity": int.parse(qtyController.text),
+          "buyingPrice": int.parse(buyingPriceController.text),
+          "sellingPrice": sellingPriceController.text,
+          "minSellingPrice": minsellingPriceController.text,
+          "measureUnit": selectedMeasure.value,
+          "category": categoryId.value,
+          "stockLevel": reOrderController.text,
+          "discount": int.parse(discountController.text),
+          "description": descriptionController.text,
+          "supplier": supplierName.value == "None" ? "" : supplierId.value,
+        };
+        var response = await Products().updateProduct(id: id, body: body);
+        if (response["status"] == true) {
+          clearControllers();
+          await getProductsBySort(shopId: shopId, type: "all");
+          Get.back();
+          showSnackBar(
+              message: response["message"], color: AppColors.mainColor);
+        } else {
+          showSnackBar(
+              message: response["message"], color: AppColors.mainColor);
+        }
+        updateProductLoad.value = false;
+      }
+    } catch (e) {
+      updateProductLoad.value = false;
+    }
+  }
+
+  assignTextFields(ProductModel productModel) {
+    itemNameController.text = productModel.name!;
+    qtyController.text = productModel.quantity!.toString();
+    buyingPriceController.text = productModel.buyingPrice!.toString();
+    sellingPriceController.text = productModel.selling!.toString();
+    reOrderController.text = productModel.stockLevel!.toString();
+    discountController.text = productModel.discount!.toString();
+    descriptionController.text = productModel.description!;
+    categoryName.value = productModel.category!.name!;
+    categoryId.value = productModel.category!.id!;
+    minsellingPriceController.text = productModel.minPrice.toString();
+    selectedMeasure.value = productModel.unit!;
   }
 }

@@ -63,12 +63,11 @@ class ProductModel {
         discount: json["discount"],
         supplier: json["supplier"],
         shop: json["shop"],
-        selling:
-            int.parse(List<String>.from(json["sellingPrice"].map((x) => x))[0]),
+        selling: int.parse(List<String>.from(json["sellingPrice"].map((x) => x))[0]),
         cartquantity: 1,
         deleted: json["deleted"],
         amount: 0,
-        minPrice: json["minPrice"],
+        minPrice: json["minSellingPrice"],
         allowedDiscount: 0,
         attendant: json["attendant"] == null
             ? null
@@ -76,7 +75,7 @@ class ProductModel {
         buyingPrice: json["buyingPrice"],
         badstock: json["badstock"],
         description: json["description"],
-        unit: json["unit"],
+        unit: json["measureUnit"],
         createdAt: DateTime.parse(json["createdAt"]),
         updatedAt: DateTime.parse(json["updatedAt"]),
       );

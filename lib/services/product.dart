@@ -16,7 +16,7 @@ class Products {
     var response = await DbBase().databaseRequest(
         type == "all"
             ? product + "shop/${shopId}"
-            : product + "${shopId}/${type}",
+            : product + "${type}/${shopId}",
         DbBase().getRequestType);
     var data = jsonDecode(response);
     return data;
@@ -40,5 +40,10 @@ class Products {
     var data = jsonDecode(response);
 
     return data;
+  }
+
+  updateProduct({required id, required Map<String, dynamic> body})async {
+    var response = await DbBase().databaseRequest(product +"update/${id}", DbBase().patchRequestType,body: body);
+    return jsonDecode(response);
   }
 }
