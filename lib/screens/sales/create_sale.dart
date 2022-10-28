@@ -337,7 +337,6 @@ class CreateSale extends StatelessWidget {
                                                                     controller:
                                                                         salesController
                                                                             .textEditingCredit,
-                                                                    on
                                                                     onChanged:
                                                                         (value) {
                                                                       if (int.parse(
