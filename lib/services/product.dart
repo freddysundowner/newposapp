@@ -36,14 +36,43 @@ class Products {
   }
 
   getProductHistory(productId, String type) async {
-    var response = await DbBase().databaseRequest(productHistory + "type/${productId}/${type}", DbBase().getRequestType);
+    var response = await DbBase().databaseRequest(
+        productHistory + "type/${productId}/${type}", DbBase().getRequestType);
     var data = jsonDecode(response);
 
     return data;
   }
 
-  updateProduct({required id, required Map<String, dynamic> body})async {
-    var response = await DbBase().databaseRequest(product +"update/${id}", DbBase().patchRequestType,body: body);
+  updateProduct({required id, required Map<String, dynamic> body}) async {
+    var response = await DbBase().databaseRequest(
+        product + "update/${id}", DbBase().patchRequestType,
+        body: body);
     return jsonDecode(response);
+  }
+
+  getProductCountInShop(String shopId, String type, startDate, endDate) async {
+    var response = await DbBase().databaseRequest(
+        type == "all"
+            ? product + "shop/${shopId}"
+            : type == "countedtoday"
+                ? product + "countedtoday/${shopId}/${startDate}/${endDate}"
+                : type == "notcountedtoday"
+                    ? product + "notcountedtoday/${shopId}/${startDate}"
+                    : type == "nevercounted"
+                        ? product + "nevercounted/${shopId}"
+                        : "",
+        DbBase().getRequestType);
+
+    var data = jsonDecode(response);
+    return data;
+  }
+
+  updateProductCount(id, Map<String, dynamic> body) async {
+    var response = await DbBase().databaseRequest(
+        product + "increasecount/${id}", DbBase().patchRequestType,
+        body: body);
+
+    var data = jsonDecode(response);
+    return data;
   }
 }

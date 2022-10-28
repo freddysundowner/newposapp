@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
+import 'package:flutterpos/controllers/shop_controller.dart';
 import 'package:flutterpos/services/category.dart';
 import 'package:flutterpos/utils/colors.dart';
 import 'package:flutterpos/widgets/snackBars.dart';
@@ -9,6 +10,7 @@ import 'package:get/get.dart';
 import '../models/product_category_model.dart';
 import '../models/product_model.dart';
 import '../services/product.dart';
+import '../utils/dates.dart';
 import '../widgets/loading_dialog.dart';
 
 class ProductController extends GetxController {
@@ -22,6 +24,7 @@ class ProductController extends GetxController {
   RxBool creatingProductLoad = RxBool(false);
   RxBool getProductLoad = RxBool(false);
   RxBool updateProductLoad = RxBool(false);
+  RxBool getProductCountLoad = RxBool(false);
   RxInt totalSale = RxInt(0);
   RxInt totalProfit = RxInt(0);
   RxString selectedSortOrder = RxString("All");
@@ -30,6 +33,9 @@ class ProductController extends GetxController {
   RxString selectedSortOrderCountSearch = RxString("all");
   RxString supplierName = RxString("None");
   RxString supplierId = RxString("");
+
+  RxInt initialProductValue = RxInt(0);
+  RxString quantityType = RxString("increment");
 
   TextEditingController itemNameController = TextEditingController();
   TextEditingController buyingPriceController = TextEditingController();
@@ -167,7 +173,7 @@ class ProductController extends GetxController {
     try {
       getProductLoad.value = true;
       var response = await Products().getProductsBySort(shopId, type);
-      print(response);
+
       products.clear();
       if (response != null) {
         totalSale.value = 0;
@@ -308,5 +314,57 @@ class ProductController extends GetxController {
     categoryId.value = productModel.category!.id!;
     minsellingPriceController.text = productModel.minPrice.toString();
     selectedMeasure.value = productModel.unit!;
+  }
+
+  getProductsByCount(String shopId, String type) async {
+    try {
+      getProductCountLoad.value = true;
+      var startDate = convertTimeToMilliSeconds()["startDate"];
+      var endDate = convertTimeToMilliSeconds()["endDate"];
+      var response = await Products()
+          .getProductCountInShop(shopId, type, startDate, endDate);
+      products.clear();
+      if (response != null) {
+        List fetchedProducts = response["body"];
+        List<ProductModel> listProducts =
+            fetchedProducts.map((e) => ProductModel.fromJson(e)).toList();
+        products.assignAll(listProducts);
+      } else {
+        products.value = [];
+      }
+      getProductCountLoad.value = false;
+    } catch (e) {
+      getProductCountLoad.value = false;
+    }
+  }
+
+  increamentInitial(index) {
+    quantityType.value = "increment";
+    products[index].quantity = int.parse("${products[index].quantity}") + 1;
+    products.refresh();
+  }
+
+  decreamentInitial(index) {
+    quantityType.value = "decrement";
+    if (products[index].quantity! > 0) {
+      products[index].quantity = int.parse("${products[index].quantity}") - 1;
+    }
+    products.refresh();
+  }
+
+  updateQuantity(product) async {
+    try {
+      Map<String, dynamic> body = {
+        "quantity": product.quantity,
+        "shop": Get.find<ShopController>().currentShop.value!.id,
+        "type": quantityType.value
+      };
+      var response = await Products().updateProductCount(product.id, body);
+      if (response["status"] == true) {
+        showSnackBar(message: response["message"], color: AppColors.mainColor);
+      } else {
+        showSnackBar(message: response["message"], color: AppColors.mainColor);
+      }
+    } catch (e) {}
   }
 }

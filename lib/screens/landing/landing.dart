@@ -5,9 +5,11 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../utils/colors.dart';
 import '../authentication/login.dart';
+import '../authentication/login_attendant.dart';
 
 class Landing extends StatelessWidget {
-   Landing({Key? key}) : super(key: key);
+  Landing({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -66,13 +68,14 @@ class Landing extends StatelessWidget {
                   padding: const EdgeInsets.only(left: 30.0, right: 30),
                   child: GestureDetector(
                     onTap: () {
-                      // Get.to(AttendantLoginPage());
+                      Get.to(AttendantLogin());
                     },
                     child: Container(
                       padding: EdgeInsets.all(10),
                       width: double.infinity,
                       decoration: BoxDecoration(
-                        border: Border.all(color: AppColors.mainColor, width: 2),
+                        border:
+                            Border.all(color: AppColors.mainColor, width: 2),
                         color: AppColors.mainColor,
                         borderRadius: BorderRadius.circular(50),
                       ),
@@ -107,7 +110,8 @@ class Landing extends StatelessWidget {
                       padding: EdgeInsets.all(10),
                       width: double.infinity,
                       decoration: BoxDecoration(
-                        border: Border.all(color: AppColors.mainColor, width: 2),
+                        border:
+                            Border.all(color: AppColors.mainColor, width: 2),
                         borderRadius: BorderRadius.circular(50),
                       ),
                       child: Row(

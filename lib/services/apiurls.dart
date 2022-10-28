@@ -7,14 +7,14 @@ const shop = BASE_URL + "shop/";
 const adminShop = shop + "owner/";
 const updateShop = shop + "update/";
 //customer
-const customer=BASE_URL+"customer/";
+const customer = BASE_URL + "customer/";
 //supplier
-const supplier=BASE_URL+"supplier/";
+const supplier = BASE_URL + "supplier/";
 //product
 const product = BASE_URL + "product/";
-const productHistory  = BASE_URL+"producthistory/";
+const productHistory = BASE_URL + "producthistory/";
 //category
-const category=BASE_URL+"category/";
+const category = BASE_URL + "category/";
 //attendant
 const attendant = BASE_URL + "attendant/";
 //

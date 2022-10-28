@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
 import 'package:flutterpos/screens/shop/create_shop.dart';
 import 'package:flutterpos/services/admin.dart';
+import 'package:flutterpos/services/attendant.dart';
 import 'package:flutterpos/utils/colors.dart';
 import 'package:flutterpos/widgets/snackBars.dart';
 import 'package:get/get.dart';
@@ -20,17 +21,19 @@ class AuthController extends GetxController {
   TextEditingController passwordController = TextEditingController();
   TextEditingController nameController = TextEditingController();
   TextEditingController phoneController = TextEditingController();
-  TextEditingController textEditingControllerNewPassword =
-      TextEditingController();
-  TextEditingController textEditingControllerConfirmPassword =
-      TextEditingController();
+  TextEditingController textEditingControllerNewPassword = TextEditingController();
+  TextEditingController textEditingControllerConfirmPassword = TextEditingController();
+  TextEditingController attendantUidController = TextEditingController();
+  TextEditingController attendantPasswordController = TextEditingController();
 
   GlobalKey<FormState> signupkey = GlobalKey();
   GlobalKey<FormState> loginKey = GlobalKey();
+  GlobalKey<FormState> loginAttendantKey = GlobalKey();
   RxBool signuserLoad = RxBool(false);
   RxBool loginuserLoad = RxBool(false);
   RxBool updateAdminLoad = RxBool(false);
   RxBool getUserByIdLoad = RxBool(false);
+  RxBool LoginAttendantLoad = RxBool(false);
   Rxn<AdminModel> currentUser = Rxn(null);
   RxString usertype = RxString("");
 
@@ -218,5 +221,9 @@ class AuthController extends GetxController {
     } catch (e) {
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
     }
+  }
+
+  loginAttendant(context) async {
+
   }
 }
