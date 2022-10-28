@@ -17,5 +17,8 @@ const productHistory = BASE_URL + "producthistory/";
 const category = BASE_URL + "category/";
 //attendant
 const attendant = BASE_URL + "attendant/";
-//
+//roles
 const roles = BASE_URL + "roles";
+//sales
+const sales=BASE_URL+"sale/";
+
