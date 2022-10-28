@@ -10,6 +10,7 @@ import '../../controllers/sales_controller.dart';
 import '../../widgets/bigtext.dart';
 import '../../widgets/sales_card.dart';
 import '../../widgets/smalltext.dart';
+import '../product/product_selection.dart';
 
 
 class CreateSale extends StatelessWidget {

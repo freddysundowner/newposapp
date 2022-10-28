@@ -6,6 +6,7 @@ class SalesController extends GetxController {
   RxList<ProductModel> selectedList = RxList([]);
   RxInt grandTotal = RxInt(0);
   TextEditingController textEditingSellingPrice=TextEditingController();
+  var selecteProduct = ProductModel().obs;
 
   changeSelectedList(value) {
     var index = selectedList.indexWhere((element) => element.id == value.id);
