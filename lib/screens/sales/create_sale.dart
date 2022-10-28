@@ -155,13 +155,13 @@ class CreateSale extends StatelessWidget {
                               showDialog(
                                   context: context,
                                   builder: (_) {
-                                    return Container(
-                                      width: double.infinity,
-                                      child: AlertDialog(
-                                        title: Center(
-                                            child: Text("Confirm Payment")),
-                                        content: Obx(() {
-                                          return Container(
+                                    return AlertDialog(
+                                      contentPadding:EdgeInsets.only(bottom: 0.0,left: 20,right: 20s) ,
+                                      title: Center(
+                                          child: Text("Confirm Payment")),
+                                      content: Obx(() {
+                                        return SingleChildScrollView(
+                                          child: Container(
                                             height: salesController
                                                         .selectedPaymentMethod
                                                         .value ==
@@ -169,14 +169,15 @@ class CreateSale extends StatelessWidget {
                                                 ? MediaQuery.of(context)
                                                         .size
                                                         .height *
-                                                    0.6
+                                                    0.65
                                                 : MediaQuery.of(context)
                                                         .size
                                                         .height *
-                                                    0.5,
+                                                    0.6,
                                             child: Column(
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.start,
+                                              mainAxisSize: MainAxisSize.max,
                                               children: [
                                                 Row(
                                                   crossAxisAlignment:
@@ -334,6 +335,7 @@ class CreateSale extends StatelessWidget {
                                                                       color: Colors
                                                                           .black),
                                                                   TextFormField(
+                                                                    keyboardType: TextInputType.number,
                                                                     controller:
                                                                         salesController
                                                                             .textEditingCredit,
@@ -411,9 +413,7 @@ class CreateSale extends StatelessWidget {
                                                         )
                                                       : Container();
                                                 }),
-                                                SizedBox(
-                                                  height: 10,
-                                                ),
+                                                SizedBox(height: 10),
                                                 majorTitle(
                                                     title: "Select Customer",
                                                     color: Colors.black,
@@ -558,9 +558,9 @@ class CreateSale extends StatelessWidget {
                                                 )
                                               ],
                                             ),
-                                          );
-                                        }),
-                                      ),
+                                          ),
+                                        );
+                                      }),
                                     );
                                   });
                             }
