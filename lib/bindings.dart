@@ -3,6 +3,7 @@ import 'package:flutterpos/controllers/attendant_controller.dart';
 import 'package:flutterpos/controllers/home_controller.dart';
 import 'package:flutterpos/controllers/product_controller.dart';
 import 'package:flutterpos/controllers/product_history_controller.dart';
+import 'package:flutterpos/controllers/sales_controller.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
 import 'package:flutterpos/controllers/supplierController.dart';
 import 'package:flutterpos/screens/product/product_history.dart';
@@ -21,5 +22,6 @@ class AuthBinding extends Bindings {
     Get.put<CustomerController>(CustomerController(), permanent: true);
     Get.put<SupplierController>(SupplierController(), permanent: true);
     Get.put<ProductHistoryController>(ProductHistoryController(), permanent: true);
+    Get.put<SalesController>(SalesController(), permanent: true);
   }
 }
