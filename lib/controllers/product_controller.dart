@@ -102,7 +102,6 @@ class ProductController extends GetxController {
           "type": "stockin"
         };
         var response = await Products().createProduct(body);
-
         if (response["status"] == false) {
           showSnackBar(message: response["status"], color: Colors.red);
         } else {

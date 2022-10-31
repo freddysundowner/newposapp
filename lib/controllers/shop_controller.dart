@@ -53,6 +53,7 @@ class ShopController extends GetxController {
           clearTextFields();
           await getShopsByAdminId(adminId: userId);
           if (page == "home") {
+            await Get.find<AuthController>().getUserById();
             Get.off(() => Home());
           } else {
             Get.back();
@@ -72,7 +73,6 @@ class ShopController extends GetxController {
       AdminShops.clear();
       gettingShopsLoad.value = true;
       var response = await Shop().getShopsByAdminId(adminId: adminId);
-      print(response);
       if (response != null) {
         List shops = response["body"];
         List<ShopModel> shopsData =

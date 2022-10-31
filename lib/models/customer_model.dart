@@ -28,12 +28,12 @@ class CustomerModel {
       id: json["_id"],
       fullName: json["fullName"],
       phoneNumber: json["phoneNumber"],
-      shopId: json["shopId"]==null?null:ShopModel.fromJson(json["shopId"]),
+      shopId:
+          json["shopId"] == null ? null : ShopModel.fromJson(json["shopId"]),
       gender: json["gender"] ?? "",
       email: json["email"] ?? "",
       address: json["address"] ?? "",
       walletBalance: json["walletBalance"],
       onCredit: json["onCredit"],
       credit: json["credit"]);
-
 }

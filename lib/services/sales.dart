@@ -11,4 +11,32 @@ class Sales {
     var data = jsonDecode(response);
     return data;
   }
+
+  getSalesByDate(shopId, startDate, endDate) async{
+    var response = await DbBase().databaseRequest(
+        sales + "todaysales/" + shopId + "/" + startDate + "/" + endDate,
+        DbBase().getRequestType);
+    var data = jsonDecode(response);
+    return data;
+  }
+
+  getSalesBySaleId(uid) async {
+    var response = await DbBase()
+        .databaseRequest(singleSaleItems + uid, DbBase().getRequestType);
+
+    var data = jsonDecode(response);
+    return data;
+  }
+
+  getShopSales(shopId) async {
+    var response = await DbBase().databaseRequest(sales + "allsales/" + shopId, DbBase().getRequestType);
+    var data = jsonDecode(response);
+    return data;
+  }
+  getSalesOnCredit( shopId)async {
+    var response = await DbBase().databaseRequest(sales + "salesoncredit/${shopId}" ,
+        DbBase().getRequestType);
+    var data = jsonDecode(response);
+    return data;
+  }
 }

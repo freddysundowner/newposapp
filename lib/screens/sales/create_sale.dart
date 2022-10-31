@@ -156,7 +156,7 @@ class CreateSale extends StatelessWidget {
                                   context: context,
                                   builder: (_) {
                                     return AlertDialog(
-                                      contentPadding:EdgeInsets.only(bottom: 0.0,left: 20,right: 20s) ,
+                                      contentPadding:EdgeInsets.only(bottom: 0.0,left: 20,right: 20) ,
                                       title: Center(
                                           child: Text("Confirm Payment")),
                                       content: Obx(() {
@@ -169,11 +169,11 @@ class CreateSale extends StatelessWidget {
                                                 ? MediaQuery.of(context)
                                                         .size
                                                         .height *
-                                                    0.65
+                                                    0.5
                                                 : MediaQuery.of(context)
                                                         .size
                                                         .height *
-                                                    0.6,
+                                                    0.5,
                                             child: Column(
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.start,
@@ -537,7 +537,7 @@ class CreateSale extends StatelessWidget {
                                                                   authController
                                                                       .currentUser
                                                                       .value
-                                                                      ?.id,
+                                                                      ?.attendantId,
                                                               shopUID:
                                                                   createShopController
                                                                       .currentShop

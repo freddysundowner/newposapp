@@ -21,4 +21,8 @@ const attendant = BASE_URL + "attendant/";
 const roles = BASE_URL + "roles";
 //sales
 const sales=BASE_URL+"sale/";
+const singleSaleItems = sales + "getSale/";
+
+//transactions
+const transaction=BASE_URL+"transaction/";
 

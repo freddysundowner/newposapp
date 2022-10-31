@@ -25,6 +25,7 @@ class CountingPage extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0.3,
+        titleSpacing: 0.0,
         leading: IconButton(
           onPressed: () {
             Get.back();
