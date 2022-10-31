@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
+import 'package:flutterpos/models/sales_order_item_model.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -12,6 +13,7 @@ import '../../controllers/supplierController.dart';
 import '../../utils/colors.dart';
 import '../../widgets/delete_dialog.dart';
 import '../../widgets/edit_dialog.dart';
+import '../../widgets/purchase_card.dart';
 import '../../widgets/snackBars.dart';
 
 class CustomerInfoPage extends StatelessWidget {
@@ -236,10 +238,7 @@ class CustomerInfoPage extends StatelessWidget {
                           controller: customerController.tabController,
                           children: [
                             CreditInfo(id: id, user: user),
-                            Purchase(
-                                customerController: customerController,
-                                id: id,
-                                user: user),
+                            Purchase(id: id, user: user),
                             Returns(
                               id: id,
                               user: user,
@@ -342,36 +341,72 @@ class CustomerInfoPage extends StatelessWidget {
 }
 
 class Purchase extends StatelessWidget {
-  final customerController;
-  SupplierController supplierController = Get.find<SupplierController>();
-  ShopController createShopController = Get.find<ShopController>();
   final id;
   final user;
 
-  Purchase(
-      {Key? key,
-      required this.customerController,
-      required this.id,
-      required this.user})
-      : super(key: key);
+  Purchase({Key? key, required this.id, required this.user}) : super(key: key);
+  CustomerController customerController = Get.find<CustomerController>();
+  SupplierController supplierController = Get.find<SupplierController>();
+  ShopController createShopController = Get.find<ShopController>();
 
   @override
   Widget build(BuildContext context) {
-    return Container();
+    if (user == "suppliers") {
+    } else {
+      customerController.getCustomerPurchases(id);
+    }
+
+    return Obx(() {
+      return customerController.customerPurchaseLoad.value
+          ? Center(child: CircularProgressIndicator())
+          : customerController.customerPurchases.length == 0
+              ? Center(child: Text("No Entries Found"))
+              : ListView.builder(
+                  itemCount: customerController.customerPurchases.length,
+                  shrinkWrap: true,
+                  itemBuilder: (context, index) {
+                    print(customerController.customerPurchases.length);
+                    SaleOrderItemModel saleOrder =
+                        customerController.customerPurchases.elementAt(index);
+                    return purchaseCard(
+                        context: context, saleOrderItemModel: saleOrder);
+                  });
+    });
   }
 }
 
 class Returns extends StatelessWidget {
+  CustomerController customerController = Get.find<CustomerController>();
+  SupplierController supplierController = Get.find<SupplierController>();
+
   final id;
   final user;
 
   Returns({Key? key, required this.id, required this.user}) : super(key: key);
-  CustomerController customerController = Get.find<CustomerController>();
-  SupplierController supplierController = Get.find<SupplierController>();
 
   @override
   Widget build(BuildContext context) {
-    return Container();
+    if (user == "suppliers") {
+    } else {
+      customerController.getCustomerReturns(id);
+    }
+
+    return Obx(() {
+      return customerController.customerReturnsLoad.value
+          ? Center(child: CircularProgressIndicator())
+          : customerController.customerReturns.length == 0
+              ? Center(child: Text("No Returns Found"))
+              : ListView.builder(
+                  itemCount: customerController.customerReturns.length,
+                  shrinkWrap: true,
+                  itemBuilder: (context, index) {
+                    SaleOrderItemModel saleOrderItemModel =
+                        customerController.customerReturns.elementAt(index);
+                    return purchaseCard(
+                        context: context,
+                        saleOrderItemModel: saleOrderItemModel);
+                  });
+    });
   }
 }
 

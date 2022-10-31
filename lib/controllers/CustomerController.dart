@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutterpos/models/customer_model.dart';
+import 'package:flutterpos/models/sales_order_item_model.dart';
 import 'package:flutterpos/services/customer.dart';
 import 'package:get/get.dart';
 
@@ -18,9 +19,13 @@ class CustomerController extends GetxController
   TextEditingController amountController = TextEditingController();
   RxBool creatingCustomerLoad = RxBool(false);
   RxBool gettingCustomersLoad = RxBool(false);
+  RxBool customerReturnsLoad = RxBool(false);
   RxBool gettingCustomer = RxBool(false);
+  RxBool customerPurchaseLoad = RxBool(false);
   RxList<CustomerModel> customers = RxList([]);
   RxList<CustomerModel> customersOnCredit = RxList([]);
+  RxList<SaleOrderItemModel> customerPurchases = RxList([]);
+  RxList<SaleOrderItemModel> customerReturns = RxList([]);
   Rxn<CustomerModel> customer = Rxn(null);
   RxBool customerOnCreditLoad = RxBool(false);
 
@@ -100,9 +105,9 @@ class CustomerController extends GetxController
     amountController.text = "";
   }
 
-  void getCustomersOnCredit({String? shopId}) {}
+  getCustomersOnCredit({String? shopId}) {}
 
-  void getSuppliersOnCredit({String? shopId}) {}
+  getSuppliersOnCredit({String? shopId}) {}
 
   getCustomerById(id) async {
     try {
@@ -119,7 +124,7 @@ class CustomerController extends GetxController
     }
   }
 
-  void assignTextFields() {
+  assignTextFields() {
     nameController.text = customer.value!.fullName!;
     phoneController.text = customer.value!.phoneNumber!;
     emailController.text = customer.value!.email!;
@@ -177,6 +182,49 @@ class CustomerController extends GetxController
       }
     } catch (e) {
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
+    }
+  }
+
+  getCustomerPurchases(uid) async {
+    try {
+      customerPurchaseLoad.value = true;
+      var response = await Customer().getPurchases(uid);
+      if (response != null) {
+        customerPurchases.clear();
+        List fetchedProducts = response["body"];
+        List<SaleOrderItemModel> listProducts =
+            fetchedProducts.map((e) => SaleOrderItemModel.fromJson(e)).toList();
+        for (var i = 0; i < listProducts.length; i++) {
+          if (listProducts[i].returned != true) {
+            customerPurchases.add(listProducts[i]);
+          }
+        }
+      } else {
+        customerPurchases.value = [];
+      }
+
+      customerPurchaseLoad.value = false;
+    } catch (e) {
+      customerPurchaseLoad.value = false;
+    }
+  }
+
+  getCustomerReturns(uid) async {
+    try {
+      customerReturnsLoad.value = true;
+      var response = await Customer().getReturns(uid);
+      if (response != null) {
+        List fetchedProducts = response["body"];
+        List<SaleOrderItemModel> listProducts =
+            fetchedProducts.map((e) => SaleOrderItemModel.fromJson(e)).toList();
+        customerReturns.assignAll(listProducts);
+      } else {
+        customerReturns.value = [];
+      }
+
+      customerReturnsLoad.value = false;
+    } catch (e) {
+      customerReturnsLoad.value = false;
     }
   }
 }

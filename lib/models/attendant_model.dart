@@ -13,7 +13,7 @@ class AttendantModel {
 
   String? id;
   String? fullnames;
-  String ?phonenumber;
+  String? phonenumber;
   int? attendid;
   ShopModel? shop;
   List<RolesModel>? roles;
@@ -23,9 +23,10 @@ class AttendantModel {
       id: json["_id"],
       fullnames: json["fullnames"],
       attendid: json["attendid"],
-      phonenumber:json["phonenumber"],
-      shop:json["shop"]==null?null: ShopModel.fromJson(json["shop"]),
-      roles: List<RolesModel>.from(json["roles"].map((x) => RolesModel.fromJson(x))),
+      phonenumber: json["phonenumber"],
+      shop: json["shop"] == null ? null : ShopModel.fromJson(json["shop"]),
+      roles: List<RolesModel>.from(
+          json["roles"].map((x) => RolesModel.fromJson(x))),
     );
   }
 }

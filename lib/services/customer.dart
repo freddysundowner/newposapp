@@ -33,4 +33,18 @@ class Customer {
         .databaseRequest(customer + id, DbBase().deleteRequestType);
     return jsonDecode(response);
   }
+
+  getPurchases(uid) async {
+    var response = await DbBase()
+        .databaseRequest(customerPurchase + uid, DbBase().getRequestType);
+
+    var data = jsonDecode(response);
+    return data;
+  }
+
+  getReturns(uid) async {
+    var response = await DbBase().databaseRequest(customerReturns + uid, DbBase().getRequestType);
+    var data = jsonDecode(response);
+    return data;
+  }
 }

@@ -8,6 +8,8 @@ const adminShop = shop + "owner/";
 const updateShop = shop + "update/";
 //customer
 const customer = BASE_URL + "customer/";
+const customerPurchase = sales  + "customerpurchase/";
+const customerReturns = sales + "/" + "customerreturn/";
 //supplier
 const supplier = BASE_URL + "supplier/";
 //product
