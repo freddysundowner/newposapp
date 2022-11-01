@@ -7,17 +7,19 @@ import 'package:flutterpos/models/product_model.dart';
 import 'package:flutterpos/services/purchases.dart';
 import 'package:get/get.dart';
 
+import '../models/supply_order_model.dart';
 import '../utils/colors.dart';
 import '../widgets/snackBars.dart';
 
 class PurchaseController extends GetxController {
   RxList<ProductModel> selectedList = RxList([]);
+  RxList<SupplyOrderModel> purchaseByDate = RxList([]);
   RxInt grandTotal = RxInt(0);
   RxInt balance = RxInt(0);
   RxString selectedSupplier = RxString("");
   RxString selectedSupplierId = RxString("");
   RxBool savePurchaseLoad = RxBool(false);
-
+  RxBool getPurchaseByDateLoad = RxBool(false);
   TextEditingController textEditingControllerAmount = TextEditingController();
   ProductController productController = Get.find<ProductController>();
 

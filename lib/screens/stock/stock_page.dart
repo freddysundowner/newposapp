@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutterpos/controllers/product_controller.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
 import 'package:flutterpos/models/product_model.dart';
+import 'package:flutterpos/screens/stock/stock_transfer.dart';
+import 'package:flutterpos/screens/stock/view_purchases.dart';
 import 'package:get/get.dart';
 
 import '../../utils/colors.dart';
@@ -156,9 +158,11 @@ class StockPage extends StatelessWidget {
                   color: Colors.blueAccent),
               stockContainers(
                   title: "Purchase",
-                  subtitle: "view stock",
+                  subtitle: "view purchases",
                   icon: Icons.remove_red_eye_rounded,
-                  onPresssed: () {},
+                  onPresssed: () {
+                    Get.to(() => ViewPurchases());
+                  },
                   color: Colors.white),
               stockContainers(
                   title: "Count ",
@@ -172,7 +176,9 @@ class StockPage extends StatelessWidget {
                   title: "Transfer",
                   subtitle: "transfer stock to  another shop",
                   icon: Icons.compare_arrows,
-                  onPresssed: () {},
+                  onPresssed: () {
+                    Get.to(() => StockTransfer());
+                  },
                   color: Colors.green)
             ],
           ),

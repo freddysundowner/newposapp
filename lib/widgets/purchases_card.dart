@@ -1,9 +1,9 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
-
 import 'package:flutter/material.dart';
 import 'package:flutterpos/controllers/purchase_controller.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
 import 'package:flutterpos/models/product_model.dart';
+import 'package:flutterpos/screens/product/create_product.dart';
 import 'package:flutterpos/widgets/smalltext.dart';
 import 'package:get/get.dart';
 
@@ -14,7 +14,6 @@ Widget purchasesCard(
     {required context, required ProductModel productModel, required index}) {
   PurchaseController salesController = Get.find<PurchaseController>();
   ShopController shopController = Get.find<ShopController>();
-  TextEditingController textEditingController = TextEditingController();
   return Padding(
     padding: const EdgeInsets.all(10.0),
     child: Card(
@@ -70,7 +69,10 @@ Widget purchasesCard(
                           size: 14.0),
                       SizedBox(width: 10),
                       InkWell(
-                          onTap: () {},
+                          onTap: () {
+                            Get.to(() => CreateProduct(
+                                page: "edit", productModel: productModel));
+                          },
                           child: Text(
                             "Edit Price",
                             style: TextStyle(color: Colors.red),

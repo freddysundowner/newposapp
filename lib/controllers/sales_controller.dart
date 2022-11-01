@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterpos/controllers/shop_controller.dart';
 import 'package:flutterpos/models/product_model.dart';
 import 'package:flutterpos/models/sales_model.dart';
 import 'package:flutterpos/models/sales_order_item_model.dart';
@@ -164,10 +165,11 @@ class SalesController extends GetxController with SingleGetTickerProviderMixin {
         textEditingCredit.text = "0";
         selectedPaymentMethod.value == "Cash";
         await getSalesByDates(
-            shopId: Get.find().currentShop.value?.id,
+            shopId: Get.find<ShopController>().currentShop.value?.id,
             startingDate: DateTime.now(),
             endingDate: DateTime.now(),
             type: "notcashflow");
+
         if (screen == "admin") {
           Get.back();
         }
@@ -313,7 +315,7 @@ class SalesController extends GetxController with SingleGetTickerProviderMixin {
       required type}) async {
     try {
       getSalesByDateLoad.value = true;
-      sales.clear();
+      sales.value = RxList([]);
       totalSalesByDate.value = 0;
       var now = type != "cashflow" ? endingDate : DateTime.now();
       var tomm = now.add(new Duration(days: 1));

@@ -69,7 +69,6 @@ class ProductSelection extends StatelessWidget {
             if (product.quantity <= 0) {
               Get.snackbar("", "Product is Already Out off Stock");
             } else {
-              // attendantController.changeSelectedList(product);
               Get.back();
             }
           } else if (type == "purchase") {
