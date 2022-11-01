@@ -11,6 +11,7 @@ import '../../widgets/smalltext.dart';
 import '../product/counting_page.dart';
 import '../product/create_product.dart';
 import '../product/products_page.dart';
+import 'create_purchase.dart';
 
 class StockPage extends StatelessWidget {
   StockPage({Key? key}) : super(key: key);
@@ -146,13 +147,15 @@ class StockPage extends StatelessWidget {
                   },
                   color: Colors.amberAccent),
               stockContainers(
-                  title: "Stock In",
+                  title: "Purchase",
                   subtitle: "add to an existing stock",
                   icon: Icons.add,
-                  onPresssed: () {},
+                  onPresssed: () {
+                    Get.to(() => CreatePurchase());
+                  },
                   color: Colors.blueAccent),
               stockContainers(
-                  title: "Stock In",
+                  title: "Purchase",
                   subtitle: "view stock",
                   icon: Icons.remove_red_eye_rounded,
                   onPresssed: () {},
