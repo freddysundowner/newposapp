@@ -4,6 +4,7 @@ import 'package:flutterpos/screens/shop/shop_details.dart';
 import 'package:flutterpos/widgets/smalltext.dart';
 import 'package:get/get.dart';
 
+import '../screens/stock/products_selection.dart';
 import '../utils/colors.dart';
 import 'bigtext.dart';
 
@@ -12,6 +13,9 @@ Widget shopCard({required ShopModel shopModel, required page}) {
     onTap: () {
       if (page == "shop") {
         Get.to(ShopDetails(shopModel: shopModel));
+      }else{
+        Get.to(()=>ProductSelections(shopModel:shopModel));
+
       }
     },
     child: Container(

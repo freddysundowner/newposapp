@@ -4,22 +4,25 @@ import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:flutterpos/controllers/product_controller.dart';
 import 'package:flutterpos/models/product_model.dart';
+import 'package:flutterpos/models/purchase_order.dart';
 import 'package:flutterpos/services/purchases.dart';
+import 'package:flutterpos/widgets/loading_dialog.dart';
 import 'package:get/get.dart';
 
-import '../models/supply_order_model.dart';
 import '../utils/colors.dart';
 import '../widgets/snackBars.dart';
 
 class PurchaseController extends GetxController {
+  final GlobalKey<State> _keyLoader = new GlobalKey<State>();
   RxList<ProductModel> selectedList = RxList([]);
-  RxList<SupplyOrderModel> purchaseByDate = RxList([]);
+  RxList<PurchaseOrder> purchaseByDate = RxList([]);
   RxInt grandTotal = RxInt(0);
   RxInt balance = RxInt(0);
   RxString selectedSupplier = RxString("");
   RxString selectedSupplierId = RxString("");
-  RxBool savePurchaseLoad = RxBool(false);
+  RxBool getPurchaseLoad = RxBool(false);
   RxBool getPurchaseByDateLoad = RxBool(false);
+  RxBool getPurchaseOrderItemLoad = RxBool(false);
   TextEditingController textEditingControllerAmount = TextEditingController();
   ProductController productController = Get.find<ProductController>();
 
@@ -32,7 +35,10 @@ class PurchaseController extends GetxController {
       showSnackBar(message: "please select supplier", color: Colors.red);
     } else {
       try {
-        savePurchaseLoad.value = true;
+        LoadingDialog.showLoadingDialog(
+            context: context,
+            title: "adding purchase please wait...",
+            key: _keyLoader);
         var products = selectedList.map((element) => element).toList();
         var supplier = {
           "supplier": selectedSupplierId.value,
@@ -41,24 +47,45 @@ class PurchaseController extends GetxController {
           "attendant": attendantid,
           "shop": shopId,
         };
-        await Purchases().createPurchase(shopId:shopId,body: {"supplier": supplier, "products": products});
-        balance.value = 0;
-        selectedList.value = [];
-        grandTotal.value = 0;
-        selectedSupplier.value = "";
-        selectedSupplierId.value = "";
-        textEditingControllerAmount.text = "0";
-        savePurchaseLoad.value = false;
-        if (screen == "admin") {
-          Get.back();
-        }
+        var response = await Purchases().createPurchase(
+            shopId: shopId, body: {"supplier": supplier, "products": products});
+        Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
+        if (response["status"] == true) {
+          balance.value = 0;
+          selectedList.value = [];
+          grandTotal.value = 0;
+          selectedSupplier.value = "";
+          selectedSupplierId.value = "";
+          textEditingControllerAmount.text = "0";
+          if (screen == "admin") {
+            Get.back();
+          }
 
-        showSnackBar(
-            message: "Stock has been successfully updated",
-            color: AppColors.mainColor);
+          showSnackBar(
+              message: response["message"], color: AppColors.mainColor);
+        }
       } catch (e) {
-        savePurchaseLoad.value = false;
+        Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
       }
+    }
+  }
+
+  getPurchase({required shopId}) async {
+    try {
+      getPurchaseLoad.value = true;
+      var response = await Purchases().getPurchase(shopId: shopId);
+
+      if (response["status"] == true) {
+        List fetchedResponse = response["body"];
+        List<PurchaseOrder> supply =
+            fetchedResponse.map((e) => PurchaseOrder.fromJson(e)).toList();
+        purchaseByDate.assignAll(supply);
+      } else {
+        purchaseByDate.value = RxList([]);
+      }
+      getPurchaseLoad.value = false;
+    } catch (e) {
+      getPurchaseLoad.value = false;
     }
   }
 

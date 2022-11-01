@@ -6,6 +6,7 @@ import 'package:flutterpos/controllers/product_history_controller.dart';
 import 'package:flutterpos/controllers/sales_controller.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
 import 'package:flutterpos/controllers/purchase_controller.dart';
+import 'package:flutterpos/controllers/stock_transfer_controller.dart';
 import 'package:flutterpos/controllers/supplierController.dart';
 import 'package:flutterpos/screens/product/product_history.dart';
 import 'package:get/get.dart';
@@ -25,5 +26,6 @@ class AuthBinding extends Bindings {
     Get.put<ProductHistoryController>(ProductHistoryController(), permanent: true);
     Get.put<SalesController>(SalesController(), permanent: true);
     Get.put<PurchaseController>(PurchaseController(), permanent: true);
+    Get.put<StockTransferController>(StockTransferController(), permanent: true);
   }
 }
