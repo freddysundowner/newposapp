@@ -8,7 +8,9 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
+import '../models/profit_model.dart';
 import '../services/sales.dart';
+import '../services/transactions.dart';
 import '../utils/colors.dart';
 import '../widgets/snackBars.dart';
 
@@ -17,9 +19,10 @@ class SalesController extends GetxController with SingleGetTickerProviderMixin {
   final GlobalKey<State> _keyLoader = new GlobalKey<State>();
   TextEditingController textEditingSellingPrice = TextEditingController();
   TextEditingController textEditingCredit = TextEditingController();
-
   RxList<ProductModel> selectedList = RxList([]);
   RxList<SalesModel> sales = RxList([]);
+  Rxn<ProfitModel> profitModel = Rxn();
+
   RxInt grandTotal = RxInt(0);
   RxInt balance = RxInt(0);
   RxInt totalSalesByDate = RxInt(0);
@@ -405,6 +408,31 @@ class SalesController extends GetxController with SingleGetTickerProviderMixin {
       salesOnCreditLoad.value = false;
     } catch (e) {
       salesOnCreditLoad.value = false;
+    }
+  }
+
+  getProfitTransaction(
+      {required start, required end, required type, required shopId}) async {
+    try {
+      var now = type == "finance" ? DateTime.now() : start;
+      var tomm = now.add(new Duration(days: 1));
+      var today = new DateFormat('yyyy-MM-dd')
+          .parse(new DateFormat('yyyy-MM-dd')
+              .format(type == "finance" ? DateTime.now() : end))
+          .toIso8601String();
+      var tomorrow = new DateFormat('yyyy-MM-dd')
+          .parse(new DateFormat('yyyy-MM-dd').format(tomm));
+      var response = await Transactions().getProfitTransactions(
+          shopId,
+          type == "finance" ? start : today,
+          type == "finance" ? end : tomorrow);
+      if (response != null) {
+        profitModel.value = ProfitModel.fromJson(response);
+      } else {
+        profitModel.value = ProfitModel();
+      }
+    } catch (e) {
+      print(e);
     }
   }
 
