@@ -16,9 +16,13 @@ class ExpensePage extends StatelessWidget {
   ExpensePage({Key? key}) : super(key: key);
   ExpenseController expenseController = Get.find<ExpenseController>();
   ShopController shopController = Get.find<ShopController>();
-
   @override
   Widget build(BuildContext context) {
+    expenseController.getExpenseByDate(
+        shopId: "${shopController.currentShop.value?.id}",
+        startingDate: expenseController.startdate.value,
+        endingDate: expenseController.enddate.value,
+        type: "notcashflow");
     return Scaffold(
       appBar: AppBar(
         titleSpacing: 0,
@@ -53,6 +57,11 @@ class ExpensePage extends StatelessWidget {
                     onConfirm: (start, end) {
                       expenseController.startdate.value = start;
                       expenseController.enddate.value = end;
+                      expenseController.getExpenseByDate(
+                          shopId: "${shopController.currentShop.value?.id}",
+                          startingDate: expenseController.startdate.value,
+                          endingDate: expenseController.enddate.value,
+                          type: "notcashflow");
                     }).showPicker(context);
               },
               child: Padding(
