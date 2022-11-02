@@ -10,6 +10,7 @@ import '../../utils/colors.dart';
 import '../../widgets/bigtext.dart';
 import '../../widgets/expense_card.dart';
 import '../../widgets/smalltext.dart';
+import 'create_expense.dart';
 
 class ExpensePage extends StatelessWidget {
   ExpensePage({Key? key}) : super(key: key);
@@ -133,7 +134,9 @@ class ExpensePage extends StatelessWidget {
               Align(
                 alignment: Alignment.centerRight,
                 child: InkWell(
-                  onTap: () {},
+                  onTap: () {
+                    Get.to(() => CreateExpense());
+                  },
                   child: Container(
                     padding: EdgeInsets.all(10),
                     decoration: BoxDecoration(
