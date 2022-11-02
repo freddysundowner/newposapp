@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutterpos/controllers/AuthController.dart';
 import 'package:flutterpos/controllers/expense_controller.dart';
+import 'package:flutterpos/controllers/shop_controller.dart';
 import 'package:get/get.dart';
 
 import '../../utils/colors.dart';
@@ -8,9 +10,13 @@ import '../../widgets/bigtext.dart';
 class CreateExpense extends StatelessWidget {
   CreateExpense({Key? key}) : super(key: key);
   ExpenseController expenseController = Get.find<ExpenseController>();
+  ShopController shopController = Get.find<ShopController>();
+  AuthController authController = Get.find<AuthController>();
 
   @override
   Widget build(BuildContext context) {
+    expenseController.getCategories(
+        shopController.currentShop.value?.id, "cash-out");
     return Scaffold(
       appBar: AppBar(
         titleSpacing: 0,
@@ -158,6 +164,12 @@ class CreateExpense extends StatelessWidget {
                                             TextButton(
                                               onPressed: () {
                                                 Navigator.pop(context);
+                                                expenseController.createExpenseCategory(
+                                                    shopController
+                                                        .currentShop
+                                                        .value
+                                                        ?.id,context);
+
                                               },
                                               child: Text(
                                                 "Save now".toUpperCase(),
@@ -222,7 +234,12 @@ class CreateExpense extends StatelessWidget {
                       SizedBox(height: 10),
                       Center(
                         child: InkWell(
-                          onTap: () {},
+                          onTap: () {
+                            expenseController.saveExpense(
+                                attendantId: authController.currentUser.value!.id,
+                                shopId: shopController
+                                    .currentShop.value!.id,context: context);
+                          },
                           child: Container(
                               padding: EdgeInsets.only(
                                   top: 10, bottom: 10, left: 60, right: 60),
