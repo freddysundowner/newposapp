@@ -11,6 +11,7 @@ import '../../widgets/bigtext.dart';
 import '../../widgets/normal_text.dart';
 import '../../widgets/smalltext.dart';
 import '../sales/all_sales_page.dart';
+import 'expense_page.dart';
 
 class FinancePage extends StatelessWidget {
   FinancePage({Key? key}) : super(key: key);
@@ -124,7 +125,7 @@ class FinancePage extends StatelessWidget {
                   title: "Expenses",
                   subtitle: "Expenditure",
                   onPresssed: () {
-                    // Get.to(() => ExpensesPage());
+                    Get.to(() => ExpensePage());
                   },
                   color: Colors.purple.shade100,
                   icon: Icons.show_chart,
