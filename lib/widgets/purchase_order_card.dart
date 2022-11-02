@@ -13,7 +13,9 @@ Widget purchaseOrderCard({required PurchaseOrder purchaseOrder}) {
   ShopController shopController = Get.find<ShopController>();
   return InkWell(
     onTap: () {
-      Get.to(()=>PurchaseOrderItem(id: purchaseOrder.id,));
+      Get.to(() => PurchaseOrderItems(
+            id: purchaseOrder.id,
+          ));
     },
     child: Container(
       margin: EdgeInsets.all(5),
@@ -41,7 +43,7 @@ Widget purchaseOrderCard({required PurchaseOrder purchaseOrder}) {
                     SizedBox(height: 3),
                     normalText(
                         title:
-                        "Amount: ${shopController.currentShop.value?.currency}.${purchaseOrder.total}",
+                            "Amount: ${shopController.currentShop.value?.currency}.${purchaseOrder.total}",
                         color: Colors.black,
                         size: 14.0),
                     SizedBox(height: 3),

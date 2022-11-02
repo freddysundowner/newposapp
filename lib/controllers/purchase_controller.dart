@@ -5,6 +5,7 @@ import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:flutterpos/controllers/product_controller.dart';
 import 'package:flutterpos/models/product_model.dart';
 import 'package:flutterpos/models/purchase_order.dart';
+import 'package:flutterpos/models/supply_order_model.dart';
 import 'package:flutterpos/services/purchases.dart';
 import 'package:flutterpos/widgets/loading_dialog.dart';
 import 'package:get/get.dart';
@@ -16,6 +17,7 @@ class PurchaseController extends GetxController {
   final GlobalKey<State> _keyLoader = new GlobalKey<State>();
   RxList<ProductModel> selectedList = RxList([]);
   RxList<PurchaseOrder> purchaseByDate = RxList([]);
+  RxList<SupplyOrderModel> purchaseOrderItems= RxList([]);
   RxInt grandTotal = RxInt(0);
   RxInt balance = RxInt(0);
   RxString selectedSupplier = RxString("");
@@ -86,6 +88,23 @@ class PurchaseController extends GetxController {
       getPurchaseLoad.value = false;
     } catch (e) {
       getPurchaseLoad.value = false;
+    }
+  }
+  getPurchaseOrderItems({required id})async{
+    try {
+      getPurchaseOrderItemLoad.value = true;
+      var response = await Purchases().getPurchaseOrderItems(id:id);
+      if (response["status"] == true) {
+        List fetchedResponse = response["body"];
+        List<SupplyOrderModel> supply =
+        fetchedResponse.map((e) => SupplyOrderModel.fromJson(e)).toList();
+        purchaseOrderItems.assignAll(supply);
+      } else {
+        purchaseOrderItems.value = RxList([]);
+      }
+      getPurchaseOrderItemLoad.value = false;
+    } catch (e) {
+      getPurchaseOrderItemLoad.value = false;
     }
   }
 
@@ -165,4 +184,6 @@ class PurchaseController extends GetxController {
           message: 'Failed to get platform version.', color: Colors.red);
     }
   }
+
+
 }

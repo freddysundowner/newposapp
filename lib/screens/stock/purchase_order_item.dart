@@ -1,22 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutterpos/controllers/purchase_controller.dart';
+import 'package:flutterpos/controllers/shop_controller.dart';
+import 'package:flutterpos/models/supply_order_model.dart';
 import 'package:get/get.dart';
 
 import '../../widgets/bigtext.dart';
+import '../../widgets/smalltext.dart';
+import '../../widgets/stocks_card.dart';
 
-class PurchaseOrderItem extends StatelessWidget {
+class PurchaseOrderItems extends StatelessWidget {
   final id;
-
-  PurchaseOrderItem({Key? key, required this.id}) : super(key: key);
+  PurchaseOrderItems({Key? key,required this.id}) : super(key: key);
+  ShopController createShopController = Get.find<ShopController>();
   PurchaseController purchaseController = Get.find<PurchaseController>();
 
   @override
   Widget build(BuildContext context) {
+    purchaseController.getPurchaseOrderItems(id:id);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0.3,
-        titleSpacing: 0.0,
         leading: IconButton(
           onPressed: () {
             Get.back();
@@ -26,17 +30,39 @@ class PurchaseOrderItem extends StatelessWidget {
             color: Colors.black,
           ),
         ),
-        title: majorTitle(
-            title: "Purchased Items", color: Colors.black, size: 16.0),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            majorTitle(title: "Stock Items", color: Colors.black, size: 16.0),
+            minorTitle(
+                title: "${createShopController.currentShop.value?.name}",
+                color: Colors.grey)
+          ],
+        ),
       ),
       body: Obx(() {
         return purchaseController.getPurchaseOrderItemLoad.value
             ? Center(
                 child: CircularProgressIndicator(),
               )
-            : ListView.builder(itemBuilder: (context, index) {
-                return Container();
-              });
+            : purchaseController.purchaseOrderItems.length == 0
+                ? Center(
+                    child: Text("No stock Entries Found"),
+                  )
+                : ListView.builder(
+                    itemCount: purchaseController.purchaseOrderItems.length,
+                    physics: NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemBuilder: (context, index) {
+                      SupplyOrderModel supplyOrderModel = purchaseController
+                          .purchaseOrderItems
+                          .elementAt(index);
+
+                      return stockCard(
+                          context: context,
+                          supplyOrderModel: supplyOrderModel,
+                          type: "today");
+                    });
       }),
     );
   }
