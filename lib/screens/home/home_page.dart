@@ -13,6 +13,7 @@ import '../../widgets/normal_text.dart';
 import '../../widgets/smalltext.dart';
 import '../../widgets/sold_card.dart';
 import '../customers/customers_page.dart';
+import '../finance/finance_page.dart';
 import '../sales/all_sales_page.dart';
 import '../stock/stock_page.dart';
 
@@ -140,7 +141,7 @@ class HomePage extends StatelessWidget {
                           title: "Finance",
                           iconData: Icons.request_quote_outlined,
                           function: () {
-                            // Get.to(()=>Finance());
+                            Get.to(()=>FinancePage());
                           }),
                       gridItems(
                           title: "Stock",
