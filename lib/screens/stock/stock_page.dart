@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutterpos/controllers/product_controller.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
+import 'package:flutterpos/models/product_model.dart';
 import 'package:get/get.dart';
 
 import '../../utils/colors.dart';
 import '../../widgets/bigtext.dart';
 import '../../widgets/normal_text.dart';
 import '../../widgets/smalltext.dart';
+import '../product/counting_page.dart';
 import '../product/create_product.dart';
 import '../product/products_page.dart';
 
@@ -66,8 +68,9 @@ class StockPage extends StatelessWidget {
                           Obx(() {
                             return normalText(
                                 title:
-                                "${shopController.currentShop.value?.currency}.${productController.totalSale.value}",
-                                color: Colors.black,size: 14.0);
+                                    "${shopController.currentShop.value?.currency}.${productController.totalSale.value}",
+                                color: Colors.black,
+                                size: 14.0);
                           })
                         ],
                       ),
@@ -82,8 +85,9 @@ class StockPage extends StatelessWidget {
                           Obx(() {
                             return normalText(
                                 title:
-                                "${shopController.currentShop.value?.currency}.${productController.totalProfit.value}",
-                                color: Colors.black,size: 14.0);
+                                    "${shopController.currentShop.value?.currency}.${productController.totalProfit.value}",
+                                color: Colors.black,
+                                size: 14.0);
                           })
                         ],
                       ),
@@ -135,7 +139,10 @@ class StockPage extends StatelessWidget {
                   subtitle: "introduce new product",
                   icon: Icons.production_quantity_limits,
                   onPresssed: () {
-                    Get.to(() => CreateProduct());
+                    Get.to(() => CreateProduct(
+                          page: "create",
+                          productModel: ProductModel(),
+                        ));
                   },
                   color: Colors.amberAccent),
               stockContainers(
@@ -154,7 +161,9 @@ class StockPage extends StatelessWidget {
                   title: "Count ",
                   subtitle: "tally with physical count",
                   icon: Icons.calculate_outlined,
-                  onPresssed: () {},
+                  onPresssed: () {
+                    Get.to(() => CountingPage());
+                  },
                   color: Colors.amberAccent),
               stockContainers(
                   title: "Transfer",
