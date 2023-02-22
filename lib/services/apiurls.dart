@@ -1,4 +1,4 @@
-const BASE_URL = "http://192.168.0.102:2000/";
+const BASE_URL = "http://192.168.0.106:2000/";
 //admin
 const admin = BASE_URL + "admin";
 const adminLogin = admin + "/login";
@@ -8,6 +8,8 @@ const adminShop = shop + "owner/";
 const updateShop = shop + "update/";
 //customer
 const customer = BASE_URL + "customer/";
+const customerPurchase = sales + "customerpurchase/";
+const customerReturns = sales + "/" + "customerreturn/";
 //supplier
 const supplier = BASE_URL + "supplier/";
 //product
@@ -20,9 +22,8 @@ const attendant = BASE_URL + "attendant/";
 //roles
 const roles = BASE_URL + "roles";
 //sales
-const sales=BASE_URL+"sale/";
+const sales = BASE_URL + "sale/";
 const singleSaleItems = sales + "getSale/";
 
 //transactions
-const transaction=BASE_URL+"transaction/";
-
+const transaction = BASE_URL + "transaction/";

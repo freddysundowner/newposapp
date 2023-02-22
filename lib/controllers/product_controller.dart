@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
+import 'package:flutterpos/controllers/purchase_controller.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
 import 'package:flutterpos/services/category.dart';
 import 'package:flutterpos/utils/colors.dart';
@@ -287,6 +288,16 @@ class ProductController extends GetxController {
         if (response["status"] == true) {
           clearControllers();
           await getProductsBySort(shopId: shopId, type: "all");
+          var stockinProducts = Get.find<PurchaseController>().selectedList;
+          int index = stockinProducts.indexWhere((e) =>
+              products.indexWhere((element) => element.id == e.id) != -1);
+          if (index != -1) {
+            Get.find<PurchaseController>().selectedList.removeAt(index);
+            Get.find<PurchaseController>().selectedList.add(products[index]);
+            Get.find<PurchaseController>().calculateAmount(index);
+          }
+          stockinProducts.refresh();
+          Get.find<PurchaseController>().selectedList.refresh();
           Get.back();
           showSnackBar(
               message: response["message"], color: AppColors.mainColor);

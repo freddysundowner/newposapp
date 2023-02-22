@@ -6,11 +6,10 @@ import 'package:flutterpos/models/product_model.dart';
 import 'package:get/get.dart';
 
 import '../../controllers/attendant_controller.dart';
+import '../../controllers/purchase_controller.dart';
 import '../../controllers/sales_controller.dart';
-import '../../controllers/stock_in_controller.dart';
 import '../../widgets/bigtext.dart';
 import '../../widgets/smalltext.dart';
-
 
 class ProductSelection extends StatelessWidget {
   final type;
@@ -24,7 +23,8 @@ class ProductSelection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    productController.getProductsBySort(shopId: "${shopController.currentShop.value?.id}", type: "all");
+    productController.getProductsBySort(
+        shopId: "${shopController.currentShop.value?.id}", type: "all");
     return Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
@@ -39,27 +39,28 @@ class ProductSelection extends StatelessWidget {
         body: Obx(() {
           return productController.getProductLoad.value
               ? Center(
-            child: CircularProgressIndicator(),
-          )
+                  child: CircularProgressIndicator(),
+                )
               : productController.products.length == 0
-              ? Center(
-            child: minorTitle(
-                title: "This shop doesn't have products yet",
-                color: Colors.black),
-          )
-              : ListView.builder(
-              itemCount: productController.products.length,
-              shrinkWrap: true,
-              itemBuilder: (BuildContext context, int index) {
-                ProductModel productModel = productController.products.elementAt(index);
-                return _shopcard(product: productModel, type: type);
-              });
+                  ? Center(
+                      child: minorTitle(
+                          title: "This shop doesn't have products yet",
+                          color: Colors.black),
+                    )
+                  : ListView.builder(
+                      itemCount: productController.products.length,
+                      shrinkWrap: true,
+                      itemBuilder: (BuildContext context, int index) {
+                        ProductModel productModel =
+                            productController.products.elementAt(index);
+                        return _shopcard(product: productModel, type: type);
+                      });
         }));
   }
 
   Widget _shopcard({required product, required type}) {
     SalesController salesController = Get.find<SalesController>();
-    StockInController stockInController = Get.find<StockInController>();
+    PurchaseController purchaseController = Get.find<PurchaseController>();
     return Padding(
       padding: const EdgeInsets.fromLTRB(0, 3, 0, 0),
       child: InkWell(
@@ -68,11 +69,10 @@ class ProductSelection extends StatelessWidget {
             if (product.quantity <= 0) {
               Get.snackbar("", "Product is Already Out off Stock");
             } else {
-              // attendantController.changeSelectedList(product);
               Get.back();
             }
-          } else if (type == "stockIn") {
-            // stockInController.changeSelectedList(product);
+          } else if (type == "purchase") {
+            purchaseController.changeSelectedList(product);
             Get.back();
           } else {
             if (product.quantity <= 0) {

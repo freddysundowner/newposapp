@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutterpos/controllers/product_controller.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
 import 'package:flutterpos/models/product_model.dart';
+import 'package:flutterpos/screens/stock/stock_transfer.dart';
+import 'package:flutterpos/screens/stock/view_purchases.dart';
 import 'package:get/get.dart';
 
 import '../../utils/colors.dart';
@@ -11,6 +13,7 @@ import '../../widgets/smalltext.dart';
 import '../product/counting_page.dart';
 import '../product/create_product.dart';
 import '../product/products_page.dart';
+import 'create_purchase.dart';
 
 class StockPage extends StatelessWidget {
   StockPage({Key? key}) : super(key: key);
@@ -146,16 +149,20 @@ class StockPage extends StatelessWidget {
                   },
                   color: Colors.amberAccent),
               stockContainers(
-                  title: "Stock In",
+                  title: "Purchase",
                   subtitle: "add to an existing stock",
                   icon: Icons.add,
-                  onPresssed: () {},
+                  onPresssed: () {
+                    Get.to(() => CreatePurchase());
+                  },
                   color: Colors.blueAccent),
               stockContainers(
-                  title: "Stock In",
-                  subtitle: "view stock",
+                  title: "Purchase",
+                  subtitle: "view purchases",
                   icon: Icons.remove_red_eye_rounded,
-                  onPresssed: () {},
+                  onPresssed: () {
+                    Get.to(() => ViewPurchases());
+                  },
                   color: Colors.white),
               stockContainers(
                   title: "Count ",
@@ -169,7 +176,9 @@ class StockPage extends StatelessWidget {
                   title: "Transfer",
                   subtitle: "transfer stock to  another shop",
                   icon: Icons.compare_arrows,
-                  onPresssed: () {},
+                  onPresssed: () {
+                    Get.to(() => StockTransfer());
+                  },
                   color: Colors.green)
             ],
           ),

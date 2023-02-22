@@ -20,6 +20,7 @@ class SupplierController extends GetxController {
   RxBool creatingSupplierLoad = RxBool(false);
   RxBool getsupplierLoad = RxBool(false);
   RxBool gettingSupplier = RxBool(false);
+  RxBool supliesReturnedLoad = RxBool(false);
   RxList<CustomerModel> suppliers = RxList([]);
   Rxn<CustomerModel> supplier = Rxn(null);
   RxList<CustomerModel> suppliersOnCredit = RxList([]);
@@ -164,4 +165,5 @@ class SupplierController extends GetxController {
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
     }
   }
+
 }
