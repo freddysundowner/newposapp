@@ -6,10 +6,12 @@ class AdminModel {
     this.name,
     this.email,
     this.phonenumber,
+    this.attendantId,
     this.shops,
   });
 
   String? id;
+  String? attendantId;
   String? name;
   String? email;
   String? phonenumber;
@@ -17,6 +19,7 @@ class AdminModel {
 
   factory AdminModel.fromJson(Map<String, dynamic> json) => AdminModel(
         id: json["_id"],
+        attendantId: json["attendantid"],
         name: json["name"],
         email: json["email"],
         shops: List<ShopModel>.from(
@@ -24,10 +27,4 @@ class AdminModel {
         phonenumber: json["phonenumber"],
       );
 
-  Map<String, dynamic> toJson() => {
-        "_id": id,
-        "name": name,
-        "email": email,
-        "phonenumber": phonenumber,
-      };
 }

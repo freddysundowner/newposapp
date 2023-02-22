@@ -622,11 +622,12 @@ class CreateProduct extends StatelessWidget {
                       if (page == "create") {
                         productController.saveProducts(
                             "${shopController.currentShop.value!.id}",
-                            authController.currentUser.value!.id!,
+                            authController.currentUser.value!.attendantId!,
                             context);
+
                       } else {
                         productController.updateProduct(
-                            id: productModel!.id,
+                            id: productModel.id,
                             context: context,
                             shopId: shopController.currentShop.value?.id);
                       }

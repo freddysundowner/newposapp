@@ -12,7 +12,7 @@ import '../utils/colors.dart';
 import 'bigtext.dart';
 import 'delete_dialog.dart';
 
-Widget productCard({required context, required product, required shopId}) {
+Widget productCard({required context, required ProductModel product, required shopId}) {
   ShopController shopController = Get.find<ShopController>();
   return InkWell(
     onTap: () {
@@ -44,7 +44,7 @@ Widget productCard({required context, required product, required shopId}) {
                           size: 16.0),
                       SizedBox(height: 5),
                       minorTitle(
-                          title: "Category: ${product.category.name}",
+                          title: "Category: ${product.category?.name}",
                           color: Colors.white),
                       SizedBox(height: 5),
                       minorTitle(
@@ -52,7 +52,7 @@ Widget productCard({required context, required product, required shopId}) {
                           color: Colors.white),
                       SizedBox(height: 5),
                       minorTitle(
-                          title: "By ~ ${product.attendant?.name}",
+                          title: "By ~ ${product.attendant?.fullnames}",
                           color: Colors.white),
                     ],
                   )

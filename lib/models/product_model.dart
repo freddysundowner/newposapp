@@ -33,21 +33,25 @@ class ProductModel {
   int? quantity;
   ProductCategoryModel? category;
   int? stockLevel;
-  bool? deleted;
   List<String>? sellingPrice;
-  int? discount;
-  String? supplier;
   String? shop;
-  int? cartquantity;
-  int? amount;
-  int? minPrice;
-  int? selling;
-  int? allowedDiscount;
+  int? discount;
   AttendantModel? attendant;
   int? buyingPrice;
+  int? minPrice;
   int? badstock;
   String? description;
   String? unit;
+  bool? deleted;
+  String? supplier;
+
+  int? cartquantity;
+  int? amount;
+  int? selling;
+  int? allowedDiscount;
+
+
+
   DateTime? createdAt;
   DateTime? updatedAt;
 

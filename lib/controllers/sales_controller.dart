@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterpos/models/product_model.dart';
+import 'package:flutterpos/models/sales_model.dart';
+import 'package:flutterpos/models/sales_order_item_model.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
@@ -9,19 +11,29 @@ import '../services/sales.dart';
 import '../utils/colors.dart';
 import '../widgets/snackBars.dart';
 
-class SalesController extends GetxController {
+class SalesController extends GetxController with SingleGetTickerProviderMixin {
+  late TabController tabController;
   final GlobalKey<State> _keyLoader = new GlobalKey<State>();
   TextEditingController textEditingSellingPrice = TextEditingController();
   TextEditingController textEditingCredit = TextEditingController();
 
   RxList<ProductModel> selectedList = RxList([]);
+  RxList<SalesModel> sales = RxList([]);
   RxInt grandTotal = RxInt(0);
   RxInt balance = RxInt(0);
+  RxInt totalSalesByDate = RxInt(0);
+  RxInt salesInitialIndex = RxInt(0);
   var selecteProduct = ProductModel().obs;
   RxBool saveSaleLoad = RxBool(false);
+  RxBool getSalesByDateLoad = RxBool(false);
+  RxBool salesOrderItemLoad = RxBool(false);
+  RxBool salesOnCreditLoad = RxBool(false);
+  RxBool salesByShopLoad = RxBool(false);
   RxString selectedPaymentMethod = RxString("Cash");
   RxString selectedCustomer = RxString("");
   RxString selectedCustomerId = RxString("");
+  RxList<SaleOrderItemModel> salesHistory = RxList([]);
+
   var dueDate = new DateFormat('MMMM/dd/yyyy hh:mm a')
       .parse(new DateFormat('MMMM/dd/yyyy hh:mm a').format(DateTime.now()))
       .toIso8601String()
@@ -142,19 +154,20 @@ class SalesController extends GetxController {
         "duedate": type == "noncredit" ? "" : dueDate.value
       };
       var products = selectedList.map((element) => element).toList();
-      var response = await Sales().createSales({"sale": sale, "products": products});
-      print("response is ${response}");
+      var response =
+          await Sales().createSales({"sale": sale, "products": products});
+
       if (response["status"] == true) {
         selectedList.value = [];
         grandTotal.value = 0;
         balance.value = 0;
         textEditingCredit.text = "0";
         selectedPaymentMethod.value == "Cash";
-        // getSalesByDates(
-        //     shopId: createShopController.currentShop.value?.id,
-        //     startingDate: DateTime.now(),
-        //     endingDate: DateTime.now(),
-        //     type: "notcashflow");
+        await getSalesByDates(
+            shopId: Get.find().currentShop.value?.id,
+            startingDate: DateTime.now(),
+            endingDate: DateTime.now(),
+            type: "notcashflow");
         if (screen == "admin") {
           Get.back();
         }
@@ -171,7 +184,6 @@ class SalesController extends GetxController {
       saveSaleLoad.value = false;
     } catch (e) {
       saveSaleLoad.value = false;
-      print(e);
     }
   }
 
@@ -292,5 +304,111 @@ class SalesController extends GetxController {
             ],
           );
         });
+  }
+
+  getSalesByDates(
+      {required shopId,
+      required startingDate,
+      required endingDate,
+      required type}) async {
+    try {
+      getSalesByDateLoad.value = true;
+      sales.clear();
+      totalSalesByDate.value = 0;
+      var now = type != "cashflow" ? endingDate : DateTime.now();
+      var tomm = now.add(new Duration(days: 1));
+      var today = new DateFormat('yyyy-MM-dd')
+          .parse(new DateFormat('yyyy-MM-dd')
+              .format(type != "cashflow" ? startingDate : now))
+          .toIso8601String();
+      var tomorrow = new DateFormat('yyyy-MM-dd')
+          .parse(new DateFormat('yyyy-MM-dd').format(tomm));
+      var response = await Sales().getSalesByDate(
+          shopId,
+          "${type != "cashflow" ? today : startingDate}",
+          "${type != "cashflow" ? tomorrow : endingDate}");
+
+      if (response["status"] == true) {
+        List fetchedProducts = response["body"];
+
+        List<SalesModel> listProducts =
+            fetchedProducts.map((e) => SalesModel.fromJson(e)).toList();
+        for (var i = 0; i < listProducts.length; i++) {
+          totalSalesByDate += int.parse("${listProducts[i].grandTotal}");
+        }
+        sales.assignAll(listProducts);
+      } else {
+        sales.value = [];
+      }
+
+      getSalesByDateLoad.value = false;
+    } catch (e) {
+      getSalesByDateLoad.value = false;
+    }
+  }
+
+  getSalesBySaleId(uid) async {
+    try {
+      salesOrderItemLoad.value = true;
+      salesHistory.value = [];
+      var response = await Sales().getSalesBySaleId(uid);
+      if (response != null) {
+        List fetchedProducts = response["body"];
+        List<SaleOrderItemModel> singleProduct =
+            fetchedProducts.map((e) => SaleOrderItemModel.fromJson(e)).toList();
+        salesHistory.assignAll(singleProduct);
+      } else {
+        salesHistory.value = [];
+      }
+      salesOrderItemLoad.value = false;
+    } catch (e) {
+      salesOrderItemLoad.value = false;
+    }
+  }
+
+  getSalesByShop({required id}) async {
+    try {
+      sales.value = [];
+      salesByShopLoad.value = true;
+      var response = await Sales().getShopSales(id);
+
+      if (response != null) {
+        List data = response["body"];
+        List<SalesModel> sales =
+            data.map((e) => SalesModel.fromJson(e)).toList();
+        sales.assignAll(sales);
+      } else {
+        sales.value = [];
+      }
+      salesByShopLoad.value = false;
+    } catch (e) {
+      salesByShopLoad.value = false;
+    }
+  }
+
+  getSalesOnCredit({String? shopId}) async {
+    try {
+      salesOnCreditLoad.value = true;
+      sales.clear();
+      var response = await Sales().getSalesOnCredit(shopId);
+      if (response != null) {
+        List fetchedProducts = response["body"];
+        List<SalesModel> listProducts =
+            fetchedProducts.map((e) => SalesModel.fromJson(e)).toList();
+        sales.assignAll(listProducts);
+      } else {
+        sales.value = [];
+      }
+
+      salesOnCreditLoad.value = false;
+    } catch (e) {
+      salesOnCreditLoad.value = false;
+    }
+  }
+
+  @override
+  void onInit() {
+    tabController = TabController(length: 3, vsync: this);
+    super.onInit();
   }
 }
