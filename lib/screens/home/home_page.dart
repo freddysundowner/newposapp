@@ -8,6 +8,7 @@ import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import '../../utils/colors.dart';
 import '../../widgets/bigtext.dart';
 import '../../widgets/smalltext.dart';
+import '../stock/stock_page.dart';
 
 class HomePage extends StatelessWidget {
   HomePage({Key? key}) : super(key: key);
@@ -38,8 +39,8 @@ class HomePage extends StatelessWidget {
                 }),
                 InkWell(
                   onTap: () async {
-
-                    await shopController.getShopsByAdminId(adminId: authController.currentUser.value?.id);
+                    await shopController.getShopsByAdminId(
+                        adminId: authController.currentUser.value?.id);
                     showShopModalBottomSheet(context);
                   },
                   child: Container(
@@ -115,7 +116,9 @@ class HomePage extends StatelessWidget {
                   gridItems(
                       title: "Stock",
                       iconData: Icons.production_quantity_limits,
-                      function: () {}),
+                      function: () {
+                        Get.to(() => StockPage());
+                      }),
                   gridItems(
                       title: "Suppliers",
                       iconData: Icons.people_alt,
