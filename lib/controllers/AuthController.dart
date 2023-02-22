@@ -11,13 +11,19 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/admin_model.dart';
 import '../screens/home/home.dart';
 import '../screens/landing/landing.dart';
+import '../widgets/loading_dialog.dart';
 
 class AuthController extends GetxController {
+  final GlobalKey<State> _keyLoader = new GlobalKey<State>();
   ShopController shopController = Get.put(ShopController());
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   TextEditingController nameController = TextEditingController();
   TextEditingController phoneController = TextEditingController();
+  TextEditingController textEditingControllerNewPassword =
+      TextEditingController();
+  TextEditingController textEditingControllerConfirmPassword =
+      TextEditingController();
 
   GlobalKey<FormState> signupkey = GlobalKey();
   GlobalKey<FormState> loginKey = GlobalKey();
@@ -170,7 +176,47 @@ class AuthController extends GetxController {
     await prefs.clear();
     shopController.currentShop.value = null;
     usertype.value = "";
-
+    clearDataFromTextFields();
     Get.offAll(() => Landing());
+  }
+
+  deleteAdmin({required BuildContext context, required id}) async {
+    try {
+      LoadingDialog.showLoadingDialog(
+          context: context,
+          title: "Deleting your account please wait...",
+          key: _keyLoader);
+      var response = await Admin().deleteAdmin(id);
+      Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
+      if (response["status"] == false) {
+        showSnackBar(message: response["message"], color: Colors.red);
+      } else {
+        showSnackBar(message: response["message"], color: Colors.redAccent);
+        Get.find<AuthController>().getUserById();
+      }
+    } catch (e) {
+      Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
+    }
+  }
+
+  updateUserPasswords(String? id, BuildContext context) async {
+    try {
+      LoadingDialog.showLoadingDialog(
+          context: context,
+          title: "Updating password please wait...",
+          key: _keyLoader);
+      Map<String, dynamic> body = {
+        "password": textEditingControllerNewPassword.text
+      };
+      var response = await Admin().updatePassword(id: id, body: body);
+      Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
+      if (response["status"] == true) {
+        showSnackBar(message: response["message"], color: AppColors.mainColor);
+      } else {
+        showSnackBar(message: response["message"], color: AppColors.mainColor);
+      }
+    } catch (e) {
+      Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
+    }
   }
 }
