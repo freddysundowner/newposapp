@@ -9,6 +9,11 @@ class Attendant {
         .databaseRequest(attendant, DbBase().postRequestType, body: body);
     return jsonDecode(response);
   }
+  loginAttendant({required Map<String, dynamic> body}) async {
+    var response = await DbBase()
+        .databaseRequest("${attendant}login", DbBase().postRequestType, body: body);
+    return jsonDecode(response);
+  }
 
   getRoles() async {
     var response =
