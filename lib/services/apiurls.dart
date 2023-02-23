@@ -1,4 +1,4 @@
-const BASE_URL = "http://192.168.0.106:2000/";
+const BASE_URL = "http://192.168.0.102:2000/";
 //admin
 const admin = BASE_URL + "admin";
 const adminLogin = admin + "/login";
@@ -26,4 +26,8 @@ const sales = BASE_URL + "sale/";
 const singleSaleItems = sales + "getSale/";
 
 //transactions
-const transaction = BASE_URL + "transaction/";
+const transaction = BASE_URL + "transaction";
+//expense
+const expense ="${transaction}/expense/";
+const allTransactions="$transaction/alltransactions";
+

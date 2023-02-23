@@ -36,10 +36,10 @@ class ExpenseController extends GetxController {
         "name": textEditingControllerCategory.text,
         "shop": shopId,
       };
-      LoadingDialog.showLoadingDialog(
-          context: context, key: _keyLoader, title: "creating category");
+      // LoadingDialog.showLoadingDialog(
+      //     context: context, key: _keyLoader, title: "creating category");
       var response = await Categories().createExpenseCategories(body: body);
-      Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
+      // Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
       if (response["status"] == true) {
         textEditingControllerCategory.text = "";
         showSnackBar(message: "Category created", color: AppColors.mainColor);
@@ -48,7 +48,7 @@ class ExpenseController extends GetxController {
         showSnackBar(message: "Category created", color: Colors.red);
       }
     } catch (e) {
-      Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
+      // Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
     }
   }
 
@@ -132,11 +132,11 @@ class ExpenseController extends GetxController {
           shopId: shopId,
           startDate: type == "cashflow" ? startingDate : today,
           endDate: type == "cashflow" ? endingDate : tomorrow);
+      print("expense response is $response");
 
       if (response["status"] == true) {
         List fetchedList = response["body"];
-        List<ExpenseModel> expenseBody =
-            fetchedList.map((e) => ExpenseModel.fromJson(e)).toList();
+        List<ExpenseModel> expenseBody = fetchedList.map((e) => ExpenseModel.fromJson(e)).toList();
         for (var i = 0; i < expenseBody.length; i++) {
           totalExpenses.value += int.parse("${expenseBody[i].amount}");
         }
