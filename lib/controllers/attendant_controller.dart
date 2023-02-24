@@ -121,7 +121,8 @@ class AttendantController extends GetxController {
     }
   }
 
-  deleteAttendant({required id, required BuildContext context, required shopId}) async{
+  deleteAttendant(
+      {required id, required BuildContext context, required shopId}) async {
     try {
       LoadingDialog.showLoadingDialog(
           context: context,
@@ -138,6 +139,31 @@ class AttendantController extends GetxController {
       }
     } catch (e) {
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
+    }
+  }
+
+  updateAttedant({required id,required rolesData}) async {
+    try {
+      creatingAttendantsLoad.value = true;
+      Map<String, dynamic> body = {
+        "fullnames": nameController.text,
+        "roles": rolesData.map((element) => element.toJson()).toList(),
+      };
+      print(body);
+      var response = await Attendant().updateAttendant(id: id, body: body);
+      print(response);
+      if (response != null) {
+        int index = attendants.indexWhere((element) => element.id == id);
+        if (index != -1) {
+          attendants[index] = AttendantModel.fromJson(response);
+          attendants.refresh();
+        }
+        Get.back();
+      }
+      creatingAttendantsLoad.value = false;
+    } catch (e) {
+      creatingAttendantsLoad.value = false;
+      print(e);
     }
   }
 }

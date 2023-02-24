@@ -26,7 +26,7 @@ class Supplier {
 
   updateSupplier({required Map<String, dynamic> body, id})async {
     var response = await DbBase()
-        .databaseRequest(supplier + id, DbBase().patchRequestType);
+        .databaseRequest(supplier + id, DbBase().patchRequestType,body: body);
     return jsonDecode(response);
   }
 

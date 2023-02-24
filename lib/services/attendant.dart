@@ -45,4 +45,10 @@ class Attendant {
         .databaseRequest(attendant + id, DbBase().deleteRequestType);
     return jsonDecode(response);
   }
+
+  updateAttendant({required id, required Map<String, dynamic> body})async  {
+    var response = await DbBase()
+        .databaseRequest(attendant + "update/${id}", DbBase().patchRequestType,body: body);
+    return jsonDecode(response);
+  }
 }

@@ -149,9 +149,10 @@ class CustomerController extends GetxController
         "email": emailController.text,
         "address": addressController.text
       };
-
+      print(body);
       var response = await Customer().updateCustomer(body: body, id: id);
 
+      print("response${response}");
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
       if (response["status"] == true) {
         showSnackBar(message: response["message"], color: AppColors.mainColor);

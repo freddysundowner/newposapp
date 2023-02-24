@@ -126,17 +126,19 @@ class SupplierController extends GetxController {
 
   updateSupplier(BuildContext context, String? id) async {
     try {
-      // LoadingDialog.showLoadingDialog(context: context, title: "Updating supplier...", key: _keyLoader);
+      LoadingDialog.showLoadingDialog(
+          context: context, title: "Updating supplier...", key: _keyLoader);
       Map<String, dynamic> body = {
         if (nameController.text != "") "fullName": nameController.text,
-        "phoneNumber": phoneController.text,
-        "gender": genderController.text,
-        "email": emailController.text,
-        "address": addressController.text
+        if (phoneController.text != "") "phoneNumber": phoneController.text,
+        if (genderController.text != "") "gender": genderController.text,
+        if (emailController.text != "") "email": emailController.text,
+        if (addressController.text != "") "address": addressController.text
       };
 
       var response = await Supplier().updateSupplier(body: body, id: id);
-
+      Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
+      print("response${response}");
       if (response["status"] == true) {
         showSnackBar(message: response["message"], color: AppColors.mainColor);
         clearTexts();
@@ -144,7 +146,9 @@ class SupplierController extends GetxController {
       } else {
         showSnackBar(message: response["message"], color: AppColors.mainColor);
       }
-    } catch (e) {}
+    } catch (e) {
+      Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
+    }
   }
 
   deleteSuppler(
@@ -165,5 +169,4 @@ class SupplierController extends GetxController {
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
     }
   }
-
 }
