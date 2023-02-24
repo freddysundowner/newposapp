@@ -25,8 +25,7 @@ class AllSalesPage extends StatelessWidget {
             type: "notcashflow");
         return true;
       },
-      child: Obx(
-        () => DefaultTabController(
+      child: DefaultTabController(
           length: salesController.tabController.length,
           initialIndex: 0,
           child: Scaffold(
@@ -52,7 +51,21 @@ class AllSalesPage extends StatelessWidget {
                 labelColor: AppColors.mainColor,
                 onTap: (value) {
                   salesController.salesInitialIndex.value = value;
-
+                  print(salesController.salesInitialIndex.value);
+                  if (value == 0) {
+                    salesController.getSalesByShop(
+                        id: shopController.currentShop.value?.id);
+                  } else if (value == 1) {
+                    salesController.getSalesOnCredit(
+                      shopId: shopController.currentShop.value?.id,
+                    );
+                  } else {
+                    salesController.getSalesByDates(
+                        shopId: shopController.currentShop.value?.id,
+                        startingDate: DateTime.now(),
+                        endingDate: DateTime.now(),
+                        type: "notcashflow");
+                  }
                 },
                 tabs: [
                   Tab(text: 'All Sales'),
@@ -61,20 +74,20 @@ class AllSalesPage extends StatelessWidget {
                 ],
               ),
             ),
-            body:TabBarView(
+            body: Obx(() => TabBarView(
                   controller: salesController.tabController,
                   physics: NeverScrollableScrollPhysics(),
                   children: [
-
-                       AllSales(),
-
-                         TodaySales(),
-                             SalesOnCredit()
+                    salesController.salesInitialIndex.value == 0
+                        ? AllSales()
+                        : salesController.salesInitialIndex.value == 1
+                            ? SalesOnCredit()
+                            : TodaySales()
                   ],
-                ),
+                )),
           ),
         ),
-      ),
+
     );
   }
 }
@@ -83,13 +96,10 @@ class AllSales extends StatelessWidget {
   SalesController salesController = Get.find<SalesController>();
   ShopController shopController = Get.find<ShopController>();
 
-  AllSales({Key? key}) : super(key: key){
-    salesController.getSalesByShop(id: shopController.currentShop.value?.id);
-  }
+  AllSales({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-
     return Obx(() {
       return salesController.salesByShopLoad.value
           ? Center(
@@ -98,7 +108,7 @@ class AllSales extends StatelessWidget {
           : salesController.sales.length == 0
               ? Center(
                   child: normalText(
-                      title: "No entries found",
+                      title: "No entries found${salesController.sales.length}",
                       color: Colors.black,
                       size: 14.0),
                 )
@@ -108,15 +118,18 @@ class AllSales extends StatelessWidget {
                   itemBuilder: (context, index) {
                     SalesModel salesModel =
                         salesController.sales.elementAt(index);
+                    print(salesModel.quantity);
                     return soldCard(salesModel: salesModel);
                   });
     });
   }
 }
 
-class TodaySales extends StatelessWidget {SalesController salesController = Get.find<SalesController>();
-ShopController createShopController = Get.find<ShopController>();
-  TodaySales({Key? key}) : super(key: key){
+class TodaySales extends StatelessWidget {
+  SalesController salesController = Get.find<SalesController>();
+  ShopController createShopController = Get.find<ShopController>();
+
+  TodaySales({Key? key}) : super(key: key) {
     salesController.getSalesByDates(
         shopId: createShopController.currentShop.value?.id,
         startingDate: DateTime.now(),
@@ -124,13 +137,10 @@ ShopController createShopController = Get.find<ShopController>();
         type: "notcashflow");
   }
 
-
   @override
   Widget build(BuildContext context) {
-
-
     return Obx(() {
-      return salesController.getSalesByDateLoad.value
+      return salesController.todaySalesLoad.value
           ? Center(
               child: CircularProgressIndicator(),
             )
@@ -155,18 +165,16 @@ ShopController createShopController = Get.find<ShopController>();
 
 class SalesOnCredit extends StatelessWidget {
   SalesController salesController = Get.find<SalesController>();
-ShopController shopController = Get.find<ShopController>();
-  SalesOnCredit({Key? key}) : super(key: key){
+  ShopController shopController = Get.find<ShopController>();
+
+  SalesOnCredit({Key? key}) : super(key: key) {
     salesController.getSalesOnCredit(
       shopId: shopController.currentShop.value?.id,
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
-
-
     return Obx(() {
       return salesController.salesOnCreditLoad.value
           ? Center(

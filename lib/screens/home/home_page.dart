@@ -103,6 +103,11 @@ class HomePage extends StatelessWidget {
                       InkWell(
                         onTap: () {
                           salesController.salesInitialIndex.value = 2;
+                          salesController.getSalesByDates(
+                              shopId: shopController.currentShop.value?.id,
+                              startingDate: DateTime.now(),
+                              endingDate: DateTime.now(),
+                              type: "notcashflow");
                           Get.to(() => AllSalesPage());
                         },
                         child: majorTitle(

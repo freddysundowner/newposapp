@@ -38,7 +38,7 @@ class SalesModel {
         receiptNumber: json["receiptNumber"],
         shop: json["shop"] == null ? null : ShopModel.fromJson(json["shop"]),
         attendantId: json["attendantId"] == null
-            ? null
+            ? AttendantModel()
             : AttendantModel.fromJson(json["attendantId"]),
         customerId: json["customerId"] == null
             ? null

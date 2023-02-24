@@ -87,6 +87,7 @@ class CustomerController extends GetxController
         List<CustomerModel> customerData =
             fetchedCustomers.map((e) => CustomerModel.fromJson(e)).toList();
         customers.assignAll(customerData);
+        print(customers.length);
       } else {
         customers.value = [];
       }

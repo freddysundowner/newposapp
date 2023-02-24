@@ -30,6 +30,7 @@ class SalesController extends GetxController with SingleGetTickerProviderMixin {
   var selecteProduct = ProductModel().obs;
   RxBool saveSaleLoad = RxBool(false);
   RxBool getSalesByDateLoad = RxBool(false);
+  RxBool todaySalesLoad = RxBool(false);
   RxBool salesOrderItemLoad = RxBool(false);
   RxBool salesOnCreditLoad = RxBool(false);
   RxBool salesByShopLoad = RxBool(false);
@@ -317,7 +318,7 @@ class SalesController extends GetxController with SingleGetTickerProviderMixin {
       required endingDate,
       required type}) async {
     try {
-      getSalesByDateLoad.value = true;
+      todaySalesLoad.value = true;
       sales.value = RxList([]);
       totalSalesByDate.value = 0;
       var now = type != "cashflow" ? endingDate : DateTime.now();
@@ -346,9 +347,9 @@ class SalesController extends GetxController with SingleGetTickerProviderMixin {
         sales.value = [];
       }
 
-      getSalesByDateLoad.value = false;
+      todaySalesLoad.value = false;
     } catch (e) {
-      getSalesByDateLoad.value = false;
+      todaySalesLoad.value = false;
     }
   }
 
@@ -373,15 +374,12 @@ class SalesController extends GetxController with SingleGetTickerProviderMixin {
 
   getSalesByShop({required id}) async {
     try {
-      sales.value = [];
       salesByShopLoad.value = true;
       var response = await Sales().getShopSales(id);
-
-      if (response != null) {
+      if (response["status"] ==true) {
         List data = response["body"];
-        List<SalesModel> sales =
-            data.map((e) => SalesModel.fromJson(e)).toList();
-        sales.assignAll(sales);
+        List<SalesModel> saleData = data.map((e) => SalesModel.fromJson(e)).toList();
+        sales.assignAll(saleData);
       } else {
         sales.value = [];
       }
@@ -389,6 +387,7 @@ class SalesController extends GetxController with SingleGetTickerProviderMixin {
     } catch (e) {
       salesByShopLoad.value = false;
     }
+    print("length is ${sales.value.length}");
   }
 
   getSalesOnCredit({String? shopId}) async {
@@ -396,6 +395,7 @@ class SalesController extends GetxController with SingleGetTickerProviderMixin {
       salesOnCreditLoad.value = true;
       sales.clear();
       var response = await Sales().getSalesOnCredit(shopId);
+      print("response is ${response}");
       if (response != null) {
         List fetchedProducts = response["body"];
         List<SalesModel> listProducts =

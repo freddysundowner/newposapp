@@ -15,7 +15,9 @@ import '../customers/create_customers.dart';
 import '../product/product_selection.dart';
 
 class CreateSale extends StatelessWidget {
-  CreateSale({Key? key}) : super(key: key);
+  CreateSale({Key? key}) : super(key: key){
+    customersController.getCustomersInShop(createShopController.currentShop.value?.id);
+  }
   SalesController salesController = Get.find<SalesController>();
   ShopController createShopController = Get.find<ShopController>();
   CustomerController customersController = Get.find<CustomerController>();
@@ -23,9 +25,6 @@ class CreateSale extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    customersController
-        .getCustomerById(createShopController.currentShop.value?.id);
-
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
