@@ -109,7 +109,7 @@ showbottomSheet(historyBody, context, salesId) {
                             "You cannot return a product that ha no customer",
                         color: Colors.red);
                   } else {
-                    // salesController.returnSale(historyBody, salesId);
+                    salesController.returnSale(historyBody, salesId);
                   }
                   Navigator.pop(context);
                 },

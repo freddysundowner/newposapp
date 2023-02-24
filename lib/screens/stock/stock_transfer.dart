@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
 import 'package:flutterpos/models/shop_model.dart';
+import 'package:flutterpos/screens/stock/transfer_history.dart';
 import 'package:flutterpos/widgets/shop_card.dart';
 import 'package:get/get.dart';
 
@@ -22,6 +23,16 @@ class StockTransfer extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0.3,
+        title: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          majorTitle(
+              title: "Stock Transfer", color: Colors.black, size: 16.0),
+          minorTitle(
+              title: "${shopController.currentShop.value?.name}",
+              color: Colors.grey)
+        ],
+      ),
         leading: IconButton(
           onPressed: () {
             Get.back();
@@ -34,7 +45,9 @@ class StockTransfer extends StatelessWidget {
         actions: [
           Center(
             child: InkWell(
-              onTap: () {},
+              onTap: () {
+                Get.to(()=>TransferHistory());
+              },
               child: Container(
                 margin: EdgeInsets.all(5),
                 padding: EdgeInsets.all(10),
@@ -49,16 +62,7 @@ class StockTransfer extends StatelessWidget {
             ),
           ),
         ],
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            majorTitle(
-                title: "Stock Transfer", color: Colors.black, size: 16.0),
-            minorTitle(
-                title: "${shopController.currentShop.value?.name}",
-                color: Colors.grey)
-          ],
-        ),
+
       ),
       body: SingleChildScrollView(
         child: Container(

@@ -139,6 +139,8 @@ class FinancePage extends StatelessWidget {
                   subtitle: "sales",
                   onPresssed: () {
                     Get.to(() => AllSalesPage());
+                    salesController.getSalesByShop(
+                        id: shopController.currentShop.value?.id);
                   },
                   color: Colors.blue.shade100,
                   icon: Icons.sell_rounded,

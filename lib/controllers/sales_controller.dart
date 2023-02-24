@@ -441,4 +441,6 @@ class SalesController extends GetxController with SingleGetTickerProviderMixin {
     tabController = TabController(length: 3, vsync: this);
     super.onInit();
   }
+
+  void returnSale(historyBody, salesId) {}
 }

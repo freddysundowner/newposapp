@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
+import 'package:flutterpos/models/sales_model.dart';
 import 'package:flutterpos/models/sales_order_item_model.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -9,10 +10,13 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../controllers/AuthController.dart';
 import '../../controllers/CustomerController.dart';
 import '../../controllers/attendant_controller.dart';
+import '../../controllers/credit_controller.dart';
 import '../../controllers/supplierController.dart';
+import '../../models/stock_in_credit.dart';
 import '../../utils/colors.dart';
 import '../../widgets/delete_dialog.dart';
 import '../../widgets/edit_dialog.dart';
+import '../../widgets/pdf/credit_history_card.dart';
 import '../../widgets/purchase_card.dart';
 import '../../widgets/snackBars.dart';
 
@@ -227,7 +231,9 @@ class CustomerInfoPage extends StatelessWidget {
                           indicatorColor: Colors.purple,
                           controller: customerController.tabController,
                           indicatorWeight: 3,
-                          onTap: (index) {},
+                          onTap: (index) {
+                            print(index);
+                          },
                           tabs: customerController.tabs),
                     ),
                     Expanded(
@@ -409,22 +415,94 @@ class Returns extends StatelessWidget {
     });
   }
 }
-
 class CreditInfo extends StatelessWidget {
+
   final id;
   final user;
-
-  CreditInfo({Key? key, required this.id, required this.user})
-      : super(key: key);
-  AttendantController attendantController = Get.find<AttendantController>();
-  ShopController shopController = Get.find<ShopController>();
-  AuthController authController = Get.find<AuthController>();
-
+  CreditController creditController = Get.find<CreditController>();
   SupplierController supplierController = Get.find<SupplierController>();
   CustomerController customerController = Get.find<CustomerController>();
 
+  CreditInfo(
+      {Key? key,
+        required this.id,
+        required this.user})
+      : super(key: key);
+  AttendantController attendantController = Get.find<AttendantController>();
+  ShopController createShopController = Get.find<ShopController>();
+  AuthController authController = Get.find<AuthController>();
+
   @override
   Widget build(BuildContext context) {
-    return Container();
+    if (user == "suppliers") {
+      supplierController.getSupplierCredit(
+          "${createShopController.currentShop.value!.id!}", id);
+    } else {
+      creditController.getCustomerCredit(authController.currentUser.value!.id,
+          "${createShopController.currentShop.value!.id!}", id);
+    }
+
+    return Obx(() {
+      return user == "suppliers"?
+      supplierController.stockInCredit.length == 0
+          ? Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Center(
+                child: Text(
+                  "No entries found.",
+                  style: TextStyle(color: Colors.black),
+                ),
+              ),
+              Center(
+                child: Text(
+                  "For now",
+                  style: TextStyle(color: Colors.grey),
+                ),
+              ),
+            ],
+          ))
+          : ListView.builder(
+          itemCount: supplierController.stockInCredit.length,
+          shrinkWrap: true,
+          physics: NeverScrollableScrollPhysics(),
+          itemBuilder: (context, index) {
+            StockInCredit salesBody =
+            supplierController.stockInCredit.elementAt(index);
+
+            return Container();
+          })
+          : creditController.getCreditLoad.value
+          ? Center(child: CircularProgressIndicator())
+          : creditController.credit.length == 0
+          ? Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Center(
+                child: Text(
+                  "No entries found.",
+                  style: TextStyle(color: Colors.black),
+                ),
+              ),
+              Center(
+                child: Text(
+                  "For now",
+                  style: TextStyle(color: Colors.grey),
+                ),
+              ),
+            ],
+          ))
+          : ListView.builder(
+          itemCount: creditController.credit.length,
+          shrinkWrap: true,
+          itemBuilder: (context, index) {
+            SalesModel salesBody =
+            creditController.credit.elementAt(index);
+
+            return CreditHistoryCard(context, salesBody);
+          });
+    });
   }
 }

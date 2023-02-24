@@ -6,6 +6,7 @@ import '../models/product_model.dart';
 class StockTransferController extends GetxController {
 
   RxList<ProductModel> selectedProducts =RxList([]);
+  RxBool gettingTransferHistoryLoad =RxBool(false);
 
   void addToList(ProductModel productModel) {
     checkProductExistence(productModel);

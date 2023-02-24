@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutterpos/controllers/product_controller.dart';
+import 'package:flutterpos/controllers/sales_controller.dart';
 import 'package:flutterpos/models/customer_model.dart';
 import 'package:flutterpos/services/supplier.dart';
 import 'package:flutterpos/utils/colors.dart';
 import 'package:flutterpos/widgets/snackBars.dart';
 import 'package:get/get.dart';
 
+import '../models/stock_in_credit.dart';
 import '../widgets/loading_dialog.dart';
+import 'CustomerController.dart';
 
 class SupplierController extends GetxController {
   ProductController productController = Get.find<ProductController>();
@@ -17,14 +20,37 @@ class SupplierController extends GetxController {
   TextEditingController genderController = TextEditingController();
   TextEditingController addressController = TextEditingController();
   TextEditingController amountController = TextEditingController();
+  TextEditingController namesController = TextEditingController();
+  TextEditingController contactController = TextEditingController();
+  TextEditingController quantityController = TextEditingController();
+
   RxBool creatingSupplierLoad = RxBool(false);
   RxBool getsupplierLoad = RxBool(false);
   RxBool gettingSupplier = RxBool(false);
   RxBool supliesReturnedLoad = RxBool(false);
   RxList<CustomerModel> suppliers = RxList([]);
+  RxList<StockInCredit> stockInCredit = RxList([]);
   Rxn<CustomerModel> supplier = Rxn(null);
   RxList<CustomerModel> suppliersOnCredit = RxList([]);
   RxBool suppliersOnCreditLoad = RxBool(false);
+
+  RxBool savesupplierLoad = RxBool(false);
+  RxBool getSinglesupplier = RxBool(false);
+  RxBool updatesupplierLoad = RxBool(false);
+  RxBool deletesupplierLoad = RxBool(false);
+  RxBool gettingSupplierSupliesLoad = RxBool(false);
+  RxBool gettingSuppliesLoad = RxBool(false);
+  RxBool returningLoad = RxBool(false);
+  RxBool getSupplierLoad = RxBool(false);
+  RxBool gettingSupliesReturnerLoad = RxBool(false);
+  var purchaseOrder = [].obs;
+  var returnedProducts = [].obs;
+  var supplies = [].obs;
+  var singleSupplier = CustomerModel().obs;
+  RxInt totals = RxInt(0);
+  RxInt totalsReturn = RxInt(0);
+
+  // RxList<StockInCredit> stockInCredit = RxList([]);
 
   createSupplier({required shopId, required BuildContext context}) async {
     try {
@@ -84,16 +110,6 @@ class SupplierController extends GetxController {
       } else {
         suppliers.value = [];
       }
-      // if (response["status"] == true) {
-      //   List fetchedCustomers = response["body"];
-      //   List customerData = fetchedCustomers.map((e) => CustomerModel.fromJson(e)).toList();
-      //   productController.supplierName =customerData[0].name;
-      //   productController.supplierId =customerData[0].name;
-      //
-      //   suppliers.assignAll(customerData);
-      // } else {
-      //   suppliers.value = [];
-      // }
       getsupplierLoad.value = false;
     } catch (e) {
       print(e);
@@ -169,4 +185,87 @@ class SupplierController extends GetxController {
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
     }
   }
+
+  returnOrderToSupplier(uid, quantity, shopId) async {
+    SalesController salesController = Get.find<SalesController>();
+    try {
+      returningLoad.value = true;
+      if (quantityController.text == "") {
+        showSnackBar(color: Colors.red, message: "Enter quantity to return");
+      } else if (int.parse(quantityController.text) > quantity) {
+        showSnackBar(
+            message: "Quantity cannot be greater than $quantity",
+            color: Colors.red);
+      } else {
+        Map<String, dynamic> body = {
+          "quantity": int.parse(quantityController.text)
+        };
+        await Supplier().returnOrderToSupplier(uid, body);
+        quantityController.text = "";
+        showSnackBar(
+            message: "Product Has been Returned", color: AppColors.mainColor);
+      }
+
+      returningLoad.value = false;
+    } catch (e) {
+      returningLoad.value = false;
+      print(e);
+    }
+  }
+
+  getSupplierCredit(shopId, uid) async {
+    try {
+      var response = await Supplier().getCredit(shopId, uid);
+      if (response != null) {
+        List fetchedCredit = response["body"];
+        List<StockInCredit> credits =
+            fetchedCredit.map((e) => StockInCredit.fromJson(e)).toList();
+        stockInCredit.assignAll(credits);
+      } else {
+        stockInCredit.value = [];
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  depositForSUpplier(StockInCredit stockInCredit) async {
+    try {
+      if (int.parse(amountController.text) >
+          int.parse("${stockInCredit.balance}")) {
+        showSnackBar(
+            message: "Amaunt cannot be greater than ${stockInCredit.balance}",
+            color: Colors.red);
+      } else {
+        Map<String, dynamic> body = {
+          "amount": int.parse(amountController.text)
+        };
+        var response = await Supplier().paySupplyCredit(stockInCredit, body);
+
+        if (response["status"] == true) {
+          showSnackBar(message: response["message"], color: AppColors.mainColor);
+          amountController.text = "";
+          getSupplierCredit(stockInCredit.shop, stockInCredit.supplier);
+
+        } else {
+          showSnackBar(message: "Payment failed", color: Colors.red);
+        }
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  deleteProductFromStock(String productId, String shopId) async {
+    SalesController salesController = Get.find<SalesController>();
+    var response = await Supplier().deleteStockProduct(productId);
+    if (response["status"] == true) {
+      showSnackBar(message: response["message"], color: AppColors.mainColor);
+
+    } else {
+      showSnackBar(message: response["message"], color: Colors.red);
+    }
+  }
+
+
 }

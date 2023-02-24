@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutterpos/models/stock_in_credit.dart';
 import 'package:flutterpos/services/apiurls.dart';
 import 'package:flutterpos/services/client.dart';
 
@@ -35,5 +36,35 @@ class Supplier {
         .databaseRequest(supplier + id, DbBase().deleteRequestType);
     return jsonDecode(response);
   }
+
+  deleteStockProduct(String productId) async{
+    var response = await DbBase()
+        .databaseRequest(product+"deletestockin/${productId}", DbBase().getRequestType);
+    print(response);
+    var data = jsonDecode(response);
+    return data;
+  }
+  paySupplyCredit(StockInCredit stockInCredit, Map<String, dynamic> body) async {
+    var response = await DbBase().databaseRequest(
+        supplier + "pay/${stockInCredit.id}", DbBase().patchRequestType,
+        body: body);
+    var data = jsonDecode(response);
+    return data;
+  }
+  getCredit(shopId, uid) async {
+    var response = await DbBase().databaseRequest(
+        supplier + "stockinhistory/${shopId}/${uid}", DbBase().getRequestType);
+    var data = jsonDecode(response);
+    return data;
+  }
+
+  returnOrderToSupplier(uid, body) async {
+    var response = await DbBase().databaseRequest(
+        supplier + "return/${uid}", DbBase().patchRequestType,
+        body: body);
+    var data = jsonDecode(response);
+    return data;
+  }
+
 
 }
