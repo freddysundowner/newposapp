@@ -75,4 +75,11 @@ class Products {
     var data = jsonDecode(response);
     return data;
   }
+
+  getProductCount(id) async {
+    var response = await DbBase().databaseRequest(
+        product + "productcount/${id}", DbBase().getRequestType);
+    var data = jsonDecode(response);
+    return data;
+  }
 }

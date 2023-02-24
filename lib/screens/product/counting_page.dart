@@ -9,6 +9,7 @@ import '../../controllers/product_controller.dart';
 import '../../utils/colors.dart';
 import '../../widgets/bigtext.dart';
 import '../../widgets/smalltext.dart';
+import 'count_history.dart';
 
 class CountingPage extends StatelessWidget {
   CountingPage({Key? key}) : super(key: key);
@@ -105,7 +106,7 @@ class CountingPage extends StatelessWidget {
                 Text('Count History'),
                 InkWell(
                   onTap: () {
-                    // Get.to(CountHistory());
+                    Get.to(CountHistory());
                   },
                   child: minorTitle(title: "View", color: AppColors.mainColor),
                 )
