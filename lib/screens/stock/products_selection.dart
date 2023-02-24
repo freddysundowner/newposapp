@@ -13,13 +13,17 @@ import '../../widgets/snackBars.dart';
 class ProductSelections extends StatelessWidget {
   final ShopModel shopModel;
 
-  ProductSelections({Key? key, required this.shopModel}) : super(key: key);
+  ProductSelections({Key? key, required this.shopModel}) : super(key: key) {
+    productController.searchProduct(shopModel.id!, "selection");
+  }
+
   ProductController productController = Get.find<ProductController>();
   StockTransferController stockTransferController =
       Get.find<StockTransferController>();
 
   @override
   Widget build(BuildContext context) {
+    productController.searchProduct(shopModel.id!, "selection");
     return Scaffold(
         appBar: AppBar(
           titleSpacing: 0.0,
@@ -43,76 +47,83 @@ class ProductSelections extends StatelessWidget {
           ),
         ),
         body: Obx(() {
-          return productController.products.length == 0
+          return productController.getProductLoad.value
               ? Center(
-                  child: Text("no products to transfer"),
+                  child: CircularProgressIndicator(),
                 )
-              : ListView.builder(
-                  itemCount: productController.products.length,
-                  // physics: NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  itemBuilder: (context, index) {
-                    ProductModel productBody =
-                        productController.products.elementAt(index);
+              : productController.products.length == 0
+                  ? Center(
+                      child: Text("no products to transfer"),
+                    )
+                  : ListView.builder(
+                      itemCount: productController.products.length,
+                      // physics: NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) {
+                        ProductModel productBody =
+                            productController.products.elementAt(index);
 
-                    return InkWell(
-                      onTap: () {
-                        if (productBody.quantity! > 0) {
-                          stockTransferController.addToList(productBody);
-                        } else {
-                          showSnackBar(
-                              message:
-                                  "You cannot transfer product that is outof stock",
-                              color: Colors.red);
-                        }
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.all(4.0),
-                        child: Card(
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10)),
-                          elevation: 4,
-                          child: Container(
-                            padding: EdgeInsets.all(10),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                        return InkWell(
+                          onTap: () {
+                            if (productBody.quantity! > 0) {
+                              stockTransferController.addToList(productBody);
+                            } else {
+                              showSnackBar(
+                                  message:
+                                      "You cannot transfer product that is outof stock",
+                                  color: Colors.red);
+                            }
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.all(4.0),
+                            child: Card(
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10)),
+                              elevation: 4,
+                              child: Container(
+                                padding: EdgeInsets.all(10),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
-                                    majorTitle(
-                                        title: "${productBody.name}",
-                                        color: Colors.black,
-                                        size: 16.0),
-                                    SizedBox(height: 10),
-                                    minorTitle(
-                                        title:
-                                            "Category: ${productBody.category!.name}",
-                                        color: Colors.grey),
-                                    SizedBox(height: 10),
-                                    Text(
-                                        "Qty Available: ${productBody.quantity}",
-                                        style: TextStyle(
-                                            color: Colors.grey, fontSize: 16))
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        majorTitle(
+                                            title: "${productBody.name}",
+                                            color: Colors.black,
+                                            size: 16.0),
+                                        SizedBox(height: 10),
+                                        minorTitle(
+                                            title:
+                                                "Category: ${productBody.category!.name}",
+                                            color: Colors.grey),
+                                        SizedBox(height: 10),
+                                        Text(
+                                            "Qty Available: ${productBody.quantity}",
+                                            style: TextStyle(
+                                                color: Colors.grey,
+                                                fontSize: 16))
+                                      ],
+                                    ),
+                                    Checkbox(
+                                        value: stockTransferController
+                                                    .selectedProducts
+                                                    .indexWhere((element) =>
+                                                        element.id ==
+                                                        productBody.id) !=
+                                                -1
+                                            ? true
+                                            : false,
+                                        onChanged: (value) {})
                                   ],
                                 ),
-                                Checkbox(
-                                    value: stockTransferController
-                                                .selectedProducts
-                                                .indexWhere((element) =>
-                                                    element.id ==
-                                                    productBody.id) !=
-                                            -1
-                                        ? true
-                                        : false,
-                                    onChanged: (value) {})
-                              ],
+                              ),
                             ),
                           ),
-                        ),
-                      ),
-                    );
-                  });
+                        );
+                      });
         }),
         bottomNavigationBar: BottomAppBar(
           color: Colors.white,

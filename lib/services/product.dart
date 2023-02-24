@@ -71,7 +71,7 @@ class Products {
     var response = await DbBase().databaseRequest(
         product + "increasecount/${id}", DbBase().patchRequestType,
         body: body);
-
+    print("called${response}");
     var data = jsonDecode(response);
     return data;
   }

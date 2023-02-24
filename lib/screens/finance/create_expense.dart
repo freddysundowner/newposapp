@@ -89,6 +89,8 @@ class CreateExpense extends StatelessWidget {
                                                     .categories.length,
                                                 (index) => SimpleDialogOption(
                                                   onPressed: () {
+                                                    expenseController.selectedExpense.value= expenseController
+                                                        .categories.elementAt(index).name!;
                                                     Navigator.pop(context);
                                                   },
                                                   child: Text(

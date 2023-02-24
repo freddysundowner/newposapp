@@ -78,6 +78,7 @@ Widget expenseCard({required context, required ExpenseModel expense}) {
                           Expanded(
                             flex: 3,
                             child: Text(
+                              expense.attendantId==null?"":
                               "By-${expense.attendantId!.fullnames}",
                               style: TextStyle(
                                   color: Color.fromRGBO(158, 158, 158, 1)),
