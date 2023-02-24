@@ -148,11 +148,10 @@ class AuthController extends GetxController {
       updateAdminLoad.value = true;
       Map<String, dynamic> body = {
         if (emailController.text != "") "email": emailController.text,
-        if (phoneController.text != "") "phone": phoneController.text,
+        if (phoneController.text != "") "phonenumber": phoneController.text,
         if (nameController.text != "") "name": nameController.text,
       };
-      var response =
-          await Admin().updateAdmin(body: body, id: currentUser.value?.id);
+      var response = await Admin().updateAdmin(body: body, id: currentUser.value?.id);
       if (response["status"] == true) {
         clearDataFromTextFields();
         Get.back();
