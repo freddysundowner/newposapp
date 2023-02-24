@@ -11,20 +11,24 @@ class Shop {
     return jsonDecode(response);
   }
 
-  getShopsByAdminId({required adminId}) async {
+  getShopsByAdminId({required adminId, String? name}) async {
+    var response = await DbBase().databaseRequest(
+        name == null ||name==""? adminShop + adminId : "${searchShop}/$name/$adminId",
+        DbBase().getRequestType);
+    return jsonDecode(response);
+  }
+
+  updateShops({required id, required Map<String, dynamic> body}) async {
+    var response = await DbBase().databaseRequest(
+        updateShop + id, DbBase().patchRequestType,
+        body: body);
+
+    return jsonDecode(response);
+  }
+
+  deleteShop({required id}) async {
     var response =
-        await DbBase().databaseRequest(adminShop+adminId, DbBase().getRequestType);
-    return jsonDecode(response);
-  }
-
-  updateShops({required id, required Map<String, dynamic> body})async{
-    var response = await DbBase().databaseRequest(updateShop + id, DbBase().patchRequestType,body: body);
-
-    return jsonDecode(response);
-  }
-
-  deleteShop({required id}) async{
-    var response = await DbBase().databaseRequest(shop + id, DbBase().deleteRequestType);
+        await DbBase().databaseRequest(shop + id, DbBase().deleteRequestType);
     return jsonDecode(response);
   }
 }

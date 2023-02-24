@@ -57,35 +57,6 @@ class AttendantsPage extends StatelessWidget {
               ],
             ),
             SizedBox(height: 5),
-            InkWell(
-              onTap: () async {
-                showShopModalBottomSheet(context);
-              },
-              child: Container(
-                padding: EdgeInsets.all(15),
-                width: double.infinity,
-                decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(20)),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Obx(() {
-                      return minorTitle(
-                          title:
-                              "${shopController.currentShop.value == null ? "" : shopController.currentShop.value?.name}",
-                          color: Colors.grey);
-                    }),
-                    Icon(
-                      Icons.arrow_drop_down,
-                      color: Colors.black,
-                    )
-                  ],
-                ),
-              ),
-            ),
-            SizedBox(height: 20),
             Obx(() {
               return attendantController.getAttendantsLoad.value
                   ? Center(child: CircularProgressIndicator())

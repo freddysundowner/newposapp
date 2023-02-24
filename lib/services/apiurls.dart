@@ -6,6 +6,7 @@ const adminLogin = admin + "/login";
 const shop = BASE_URL + "shop/";
 const adminShop = shop + "owner/";
 const updateShop = shop + "update/";
+const searchShop = shop + "search";
 //customer
 const customer = BASE_URL + "customer/";
 const customerPurchase = sales + "customerpurchase/";
