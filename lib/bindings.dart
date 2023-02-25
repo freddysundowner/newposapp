@@ -12,6 +12,7 @@ import 'package:flutterpos/controllers/sales_controller.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
 import 'package:flutterpos/controllers/stock_transfer_controller.dart';
 import 'package:flutterpos/controllers/supplierController.dart';
+import 'package:flutterpos/controllers/wallet_controller.dart';
 import 'package:get/get.dart';
 
 import 'controllers/AuthController.dart';
@@ -37,5 +38,6 @@ class AuthBinding extends Bindings {
     Get.put<BankController>(BankController(), permanent: true);
     Get.put<CashflowController>(CashflowController(), permanent: true);
     Get.put<ExpenseController>(ExpenseController(), permanent: true);
+    Get.put<WalletController>(WalletController(), permanent: true);
   }
 }

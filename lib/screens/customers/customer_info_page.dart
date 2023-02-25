@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
 import 'package:flutterpos/models/sales_model.dart';
 import 'package:flutterpos/models/sales_order_item_model.dart';
+import 'package:flutterpos/screens/cash_flow/wallet_page.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -191,7 +192,9 @@ class CustomerInfoPage extends StatelessWidget {
                               color: Colors.white),
                           if (user != "suppliers")
                             InkWell(
-                              onTap: () {},
+                              onTap: () {
+                                Get.to(()=>WalletPage(title:"Peter", uid: "1230"));
+                              },
                               child: Container(
                                 padding: EdgeInsets.only(
                                     top: 5, bottom: 5, left: 10, right: 15),
