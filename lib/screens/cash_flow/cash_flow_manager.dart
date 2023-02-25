@@ -12,6 +12,7 @@ import '../../controllers/expense_controller.dart';
 import '../../controllers/product_controller.dart';
 import '../../controllers/sales_controller.dart';
 import '../../controllers/shop_controller.dart';
+import 'cash_at_bank.dart';
 
 class CashFlowManager extends StatelessWidget {
   CashFlowManager({Key? key}) : super(key: key);
@@ -51,7 +52,6 @@ class CashFlowManager extends StatelessWidget {
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         titleSpacing: 0.0,
-
         iconTheme: IconThemeData(color: Colors.black),
         titleTextStyle: TextStyle(color: Colors.black),
         leading: IconButton(
@@ -98,21 +98,6 @@ class CashFlowManager extends StatelessWidget {
           ),
           IconButton(
               onPressed: () {
-                // List<CashFlow> data = [
-                //   CashFlow(
-                //       amount: cashInController.totalCashIn.value -
-                //           cashOutController.totalCashOut.value,
-                //       name: 'CashInHand'),
-                //   CashFlow(
-                //       amount: cashInController.totalCashIn.value,
-                //       name: 'CashIn'),
-                //   CashFlow(
-                //       amount: cashOutController.totalCashOut.value,
-                //       name: 'CashOut')
-                // ];
-                // CashFlowPdf(
-                //     shop: createShopController.currentShop.value?.name,
-                //     datas: data);
               },
               icon: Icon(Icons.download))
         ],
@@ -147,7 +132,7 @@ class CashFlowManager extends StatelessWidget {
                     padding: const EdgeInsets.only(left: 30.0, right: 30),
                     child: InkWell(
                       onTap: () {
-                        // Get.to(CashAtBank());
+                        Get.to(CashAtBank());
                       },
                       splashColor: Theme.of(context).splashColor,
                       child: Container(
