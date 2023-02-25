@@ -59,8 +59,8 @@ class ProductModel {
         id: json["_id"],
         name: json["name"],
         quantity: json["quantity"],
-        category: json["category"] == null
-            ? null
+        category: json["category"] == null|| json["category"].toString().length<=40
+            ? ProductCategoryModel()
             : ProductCategoryModel.fromJson(json["category"]),
         stockLevel: json["stockLevel"],
         sellingPrice: List<String>.from(json["sellingPrice"].map((x) => x)),
@@ -73,8 +73,8 @@ class ProductModel {
         amount: 0,
         minPrice: json["minSellingPrice"],
         allowedDiscount: 0,
-        attendant: json["attendant"] == null
-            ? null
+        attendant: json["attendant"] == null|| json["category"].toString().length<=40
+            ? AttendantModel()
             : AttendantModel.fromJson(json["attendant"]),
         buyingPrice: json["buyingPrice"],
         badstock: json["badstock"],

@@ -16,6 +16,9 @@ const supplier = BASE_URL + "supplier/";
 //product
 const product = BASE_URL + "product/";
 const productHistory = BASE_URL + "producthistory/";
+
+//transfer
+var stocktransfer="${product}"+"stocktransfer";
 //category
 const category = BASE_URL + "category/";
 //attendant

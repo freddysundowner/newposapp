@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutterpos/models/stockTransferHistoryModel.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 import '../screens/stock/transfer_history_view.dart';
 import '../utils/colors.dart';
 
-Widget transferHistoryCard(){
+Widget transferHistoryCard({required StockTransferHistory stockTransferHistory}){
   return InkWell(
     onTap: (){
-      Get.to(()=>TransferHistoryView());
+      Get.to(()=>TransferHistoryView( stockTransferHistory: stockTransferHistory));
     },
     child: Container(
       width: double.infinity,
@@ -20,28 +21,28 @@ Widget transferHistoryCard(){
       child: Column(
         children: [
           Text(
-            "Shop1 to shop2",
+            "${stockTransferHistory.from!.name} to ${stockTransferHistory.to!.name}".capitalize!,
             style: TextStyle(
                 color: Colors.white,
                 fontSize: 17,
                 fontWeight: FontWeight.w500),
           ),
           Text(
-            "Variance Transferred:2 ",
+            "Variance Transferred:${stockTransferHistory.product!.length}",
             style: TextStyle(
               color: Colors.white,
               fontSize: 14,
             ),
           ),
+          // Text(
+          //   "Transfered by: ${stockTransferHistory.}",
+          //   style: TextStyle(
+          //     color: Colors.white,
+          //     fontSize: 14,
+          //   ),
+          // ),
           Text(
-            "Transfered by: John",
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 14,
-            ),
-          ),
-          Text(
-            "${DateFormat("dd/MM/yyyy").format(DateTime.now())}",
+            "${DateFormat("dd/MM/yyyy").format(stockTransferHistory.createdAt!)}",
             style: TextStyle(
               color: Colors.white,
               fontSize: 14,

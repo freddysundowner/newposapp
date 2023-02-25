@@ -82,4 +82,17 @@ class Products {
     var data = jsonDecode(response);
     return data;
   }
+
+  transferProducts({required Map<String, dynamic> body}) async{
+    var response = await DbBase().databaseRequest(stocktransfer, DbBase().postRequestType, body: body);
+    var data = jsonDecode(response);
+    return data;
+
+  }
+
+  getTransHistory({required shopId, required type}) async{
+    var response = await DbBase().databaseRequest("${stocktransfer}/$shopId/$type", DbBase().getRequestType);
+    var data = jsonDecode(response);
+    return data;
+  }
 }

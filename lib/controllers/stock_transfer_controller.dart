@@ -1,16 +1,26 @@
+import 'package:flutter/material.dart';
 import 'package:flutterpos/controllers/product_controller.dart';
+import 'package:flutterpos/screens/stock/transfer_history.dart';
+import 'package:flutterpos/services/product.dart';
+import 'package:flutterpos/widgets/snackBars.dart';
 import 'package:get/get.dart';
 
 import '../models/product_model.dart';
+import '../models/stockTransferHistoryModel.dart';
+import '../widgets/loading_dialog.dart';
 
 class StockTransferController extends GetxController {
+  GlobalKey<State> _keyLoader = new GlobalKey<State>();
+  RxList<ProductModel> selectedProducts = RxList([]);
+  RxList<StockTransferHistory> transferHistory = RxList([]);
 
-  RxList<ProductModel> selectedProducts =RxList([]);
-  RxBool gettingTransferHistoryLoad =RxBool(false);
+
+  RxBool gettingTransferHistoryLoad = RxBool(false);
 
   void addToList(ProductModel productModel) {
     checkProductExistence(productModel);
-    var index = selectedProducts.indexWhere((element) => element.id == productModel.id);
+    var index =
+        selectedProducts.indexWhere((element) => element.id == productModel.id);
     if (index == -1) {
       selectedProducts.add(productModel);
     } else {
@@ -23,7 +33,7 @@ class StockTransferController extends GetxController {
 
   checkProductExistence(ProductModel productModel) {
     var index =
-    selectedProducts.indexWhere((element) => element.id == productModel.id);
+        selectedProducts.indexWhere((element) => element.id == productModel.id);
     if (index == -1) {
       return false;
     } else {
@@ -31,22 +41,52 @@ class StockTransferController extends GetxController {
     }
   }
 
-  void decrementItem(index) {
-    if (selectedProducts[index].cartquantity! > 1) {
-      selectedProducts[index].cartquantity=  selectedProducts[index].cartquantity! -1;
-      selectedProducts.refresh();
+  void submitTranster({required to, required from, required context}) async {
+    try {
+      LoadingDialog.showLoadingDialog(
+          context: context, title: "Transferring Product...", key: _keyLoader);
+      Map<String, dynamic> body = {
+        "from": from,
+        "to": to,
+        "products": selectedProducts.map((element) => element.id).toList(),
+      };
+      var response = await Products().transferProducts(body: body);
+      Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
+      if (response["status"] == true) {
+        Get.back();
+        Get.back();
+        selectedProducts.clear();
+        gettingTransferHistory(shopId: from, type: "in");
+
+        Get.to(() => TransferHistory());
+      } else {
+        showSnackBar(message: response["message"], color: Colors.red);
+      }
+    } catch (e) {
+      Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
+
+      print(e);
     }
   }
 
-  void incrementItem(index) {
-    if (selectedProducts[index].quantity! > selectedProducts[index].cartquantity!) {
-      selectedProducts[index].cartquantity=  selectedProducts[index].cartquantity! +1;
-      selectedProducts.refresh();
+  gettingTransferHistory({required shopId, required type}) async {
+    try {
+      gettingTransferHistoryLoad.value == true;
+      var response =
+          await Products().getTransHistory(shopId: shopId, type: type);
+      print(response);
+      if (response["status"] == true) {
+        List jsonData = response["body"];
+        List<StockTransferHistory> transfer =
+            jsonData.map((e) => StockTransferHistory.fromJson(e)).toList();
+        transferHistory.assignAll(transfer);
+      } else {
+        transferHistory.value = [];
+      }
+      gettingTransferHistoryLoad.value == false;
+    } catch (e) {
+      gettingTransferHistoryLoad.value == false;
+      print(e);
     }
-  }
-
-  void removeFromList(index) {
-    selectedProducts.removeAt(index);
-    selectedProducts.refresh();
   }
 }

@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutterpos/controllers/product_controller.dart';
+import 'package:flutterpos/controllers/shop_controller.dart';
 import 'package:flutterpos/controllers/stock_transfer_controller.dart';
 import 'package:flutterpos/models/product_model.dart';
 import 'package:flutterpos/utils/colors.dart';
 import 'package:get/get.dart';
 
 class StockSubmit extends StatelessWidget {
-  StockSubmit({Key? key}) : super(key: key);
+  final to;
+  StockSubmit({Key? key,required this.to}) : super(key: key);
   StockTransferController stockTransferController = Get.find<StockTransferController>();
   ProductController productController = Get.find<ProductController>();
+  ShopController shopController = Get.find<ShopController>();
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +37,9 @@ class StockSubmit extends StatelessWidget {
             return Padding(
               padding: const EdgeInsets.all(8.0),
               child: InkWell(
-                onTap: () {},
+                onTap: () {
+                  stockTransferController.submitTranster(to:to,from: shopController.currentShop.value!.id,context: context);
+                },
                 child: Row(
                   children: [
                     Text(

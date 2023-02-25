@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutterpos/controllers/shop_controller.dart';
 import 'package:flutterpos/controllers/stock_transfer_controller.dart';
 import 'package:flutterpos/models/product_model.dart';
 import 'package:flutterpos/models/shop_model.dart';
@@ -19,12 +20,14 @@ class ProductSelections extends StatelessWidget {
   }
 
   ProductController productController = Get.find<ProductController>();
-  StockTransferController stockTransferController =
-      Get.find<StockTransferController>();
+  StockTransferController stockTransferController = Get.find<StockTransferController>();
+  ShopController shopController = Get.find<ShopController>();
 
   @override
   Widget build(BuildContext context) {
-    productController.searchProduct(shopModel.id!, "selection");
+    productController.getProductsBySort(
+        shopId: "${shopController.currentShop.value?.id}",
+        type: productController.selectedSortOrderSearch.value);
     return WillPopScope(
       onWillPop: () async{
         stockTransferController.selectedProducts.value=[];
@@ -152,7 +155,7 @@ class ProductSelections extends StatelessWidget {
                       child: InkWell(
                         splashColor: Colors.transparent,
                         onTap: () {
-                          Get.to(()=>StockSubmit());
+                          Get.to(()=>StockSubmit(to: shopModel.id,));
                         },
                         child: Container(
                           padding: EdgeInsets.all(10),

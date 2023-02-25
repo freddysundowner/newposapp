@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutterpos/models/stockTransferHistoryModel.dart';
 import 'package:flutterpos/utils/colors.dart';
 import 'package:flutterpos/widgets/transfer_history_card.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
 
 import '../../controllers/shop_controller.dart';
 import '../../controllers/stock_transfer_controller.dart';
@@ -15,6 +15,8 @@ class TransferHistory extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    stockTransferController.gettingTransferHistory(
+        shopId: createShopController.currentShop.value!.id, type: "in");
     return DefaultTabController(
         length: 2,
         child: Scaffold(
@@ -46,7 +48,7 @@ class TransferHistory extends StatelessWidget {
               preferredSize: Size.fromHeight(50.0),
               child: Container(
                 height: 55,
-                margin: EdgeInsets.only(top: 2,bottom: 2,right: 5,left: 5),
+                margin: EdgeInsets.only(top: 2, bottom: 2, right: 5, left: 5),
                 decoration: BoxDecoration(
                   color: Colors.grey[300],
                   borderRadius: BorderRadius.circular(
@@ -54,6 +56,17 @@ class TransferHistory extends StatelessWidget {
                   ),
                 ),
                 child: TabBar(
+                  onTap: (value) {
+                    if (value == 0) {
+                      stockTransferController.gettingTransferHistory(
+                          shopId: createShopController.currentShop.value!.id,
+                          type: "in");
+                    } else {
+                      stockTransferController.gettingTransferHistory(
+                          shopId: createShopController.currentShop.value!.id,
+                          type: "out");
+                    }
+                  },
                   indicator: BoxDecoration(
                     borderRadius: BorderRadius.circular(
                       25.0,
@@ -85,51 +98,59 @@ class INWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return
-        // stockTransferController.tranferHistoryInShop.length == 0
-        //       ? Column(
-        //           mainAxisAlignment: MainAxisAlignment.center,
-        //           children: [
-        //             Icon(Icons.dangerous),
-        //             SizedBox(height: 10),
-        //             Text('No Transfer History'),
-        //             SizedBox(height: 10),
-        //             Row(
-        //               mainAxisAlignment: MainAxisAlignment.center,
-        //               children: [
-        //                 InkWell(
-        //                   onTap: () {
-        //                     Get.to(StockTransfer());
-        //                   },
-        //                   child: Container(
-        //                     decoration: BoxDecoration(
-        //                         borderRadius: BorderRadius.circular(20),
-        //                         border: Border.all(color: Colors.blueAccent)),
-        //                     child: Padding(
-        //                       padding: const EdgeInsets.all(8.0),
-        //                       child: Row(
-        //                         children: [
-        //                           Icon(
-        //                             Icons.cloud_upload,
-        //                             color: Colors.blue,
-        //                           ),
-        //                           Text('Transfer')
-        //                         ],
-        //                       ),
-        //                     ),
-        //                   ),
-        //                 ),
-        //               ],
-        //             )
-        //           ],
-        //         )
-        //       :
-        ListView.builder(
-            itemCount: 10,
-            shrinkWrap: true,
-            itemBuilder: (context, index) {
-              return transferHistoryCard();
-            });
+    return Obx(() {
+      return stockTransferController.gettingTransferHistoryLoad.value
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : stockTransferController.transferHistory.length == 0
+              ? Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.dangerous),
+                    SizedBox(height: 10),
+                    Text('No Transfer History'),
+                    SizedBox(height: 10),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            // Get.to(StockTransfer());
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(color: Colors.blueAccent)),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.cloud_upload,
+                                    color: Colors.blue,
+                                  ),
+                                  Text('Transfer')
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    )
+                  ],
+                )
+              : ListView.builder(
+                  itemCount: stockTransferController.transferHistory.length,
+                  shrinkWrap: true,
+                  itemBuilder: (context, index) {
+                    StockTransferHistory stockTransferHistory =
+                        stockTransferController.transferHistory
+                            .elementAt(index);
+                    return transferHistoryCard(
+                        stockTransferHistory: stockTransferHistory);
+                  });
+    });
   }
 }
 
@@ -138,57 +159,62 @@ class OutWidget extends StatelessWidget {
   StockTransferController stockTransferController =
       Get.find<StockTransferController>();
 
-  OutWidget({
-    Key? key,
-  }) : super(key: key);
+  OutWidget({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return
-
-          // stockTransferController.tranferHistoryOut.length == 0
-          // ? Column(
-          //     mainAxisAlignment: MainAxisAlignment.center,
-          //     children: [
-          //       Icon(Icons.dangerous),
-          //       SizedBox(height: 10),
-          //       Text('No Transfer History'),
-          //       SizedBox(height: 10),
-          //       Row(
-          //         mainAxisAlignment: MainAxisAlignment.center,
-          //         children: [
-          //           InkWell(
-          //             onTap: () {
-          //               Get.to(StockTransfer());
-          //             },
-          //             child: Container(
-          //               decoration: BoxDecoration(
-          //                   borderRadius: BorderRadius.circular(20),
-          //                   border: Border.all(color: Colors.blueAccent)),
-          //               child: Padding(
-          //                 padding: const EdgeInsets.all(8.0),
-          //                 child: Row(
-          //                   children: [
-          //                     Icon(
-          //                       Icons.cloud_upload,
-          //                       color: Colors.blue,
-          //                     ),
-          //                     Text('Transfer')
-          //                   ],
-          //                 ),
-          //               ),
-          //             ),
-          //           ),
-          //         ],
-          //       )
-          //     ],
-          //   )
-          ListView.builder(
-              itemCount: 10,
-              shrinkWrap: true,
-              itemBuilder: (context, index) {
-                return transferHistoryCard();
-              });
-
+    return Obx(() {
+      return stockTransferController.gettingTransferHistoryLoad.value
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : stockTransferController.transferHistory.length == 0
+              ? Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.dangerous),
+                    SizedBox(height: 10),
+                    Text('No Transfer History'),
+                    SizedBox(height: 10),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            // Get.to(StockTransfer());
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(color: Colors.blueAccent)),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.cloud_upload,
+                                    color: Colors.blue,
+                                  ),
+                                  Text('Transfer')
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    )
+                  ],
+                )
+              : ListView.builder(
+                  itemCount: stockTransferController.transferHistory.length,
+                  shrinkWrap: true,
+                  itemBuilder: (context, index) {
+                    StockTransferHistory stockTransferHistory =
+                        stockTransferController.transferHistory
+                            .elementAt(index);
+                    return transferHistoryCard(
+                        stockTransferHistory: stockTransferHistory);
+                  });
+    });
   }
 }
