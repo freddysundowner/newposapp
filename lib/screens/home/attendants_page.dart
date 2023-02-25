@@ -3,7 +3,6 @@ import 'package:flutterpos/controllers/shop_controller.dart';
 import 'package:flutterpos/screens/attendant/create_attendant.dart';
 import 'package:flutterpos/widgets/attendant_card.dart';
 import 'package:get/get.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 import '../../../../utils/colors.dart';
 import '../../controllers/attendant_controller.dart';
@@ -90,14 +89,13 @@ class AttendantsPage extends StatelessWidget {
   }
 
   showShopModalBottomSheet(context) {
-    showMaterialModalBottomSheet(
+    showModalBottomSheet(
       context: context,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
             topLeft: Radius.circular(10), topRight: Radius.circular(10)),
       ),
       builder: (context) => SingleChildScrollView(
-        controller: ModalScrollController.of(context),
         child: ListView.builder(
             itemCount: 3,
             shrinkWrap: true,

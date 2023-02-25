@@ -181,7 +181,7 @@ class CustomerInfoPage extends StatelessWidget {
                                         ? "we will be paying your debt very soon"
                                         : "Aquick reminde that you owe our shop please pay your debt ");
                               },
-                              icon: Icon(Icons.whatsapp),
+                              icon: Icon(Icons.whatshot),
                               color: Colors.white),
                           IconButton(
                               onPressed: () async {

@@ -6,7 +6,6 @@ import 'package:flutterpos/models/sales_model.dart';
 import 'package:flutterpos/models/sales_order_item_model.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 import '../models/profit_model.dart';
 import '../services/sales.dart';
@@ -14,7 +13,8 @@ import '../services/transactions.dart';
 import '../utils/colors.dart';
 import '../widgets/snackBars.dart';
 
-class SalesController extends GetxController with SingleGetTickerProviderMixin {
+class SalesController extends GetxController
+    with GetSingleTickerProviderStateMixin {
   late TabController tabController;
   final GlobalKey<State> _keyLoader = new GlobalKey<State>();
   TextEditingController textEditingSellingPrice = TextEditingController();
@@ -199,7 +199,7 @@ class SalesController extends GetxController with SingleGetTickerProviderMixin {
       required attendantsId,
       required customerIds,
       required screen}) {
-    showMaterialModalBottomSheet(
+    showModalBottomSheet(
         context: context,
         builder: (context) => Container(
               height: MediaQuery.of(context).copyWith().size.height * 0.50,
