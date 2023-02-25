@@ -47,9 +47,11 @@ class CashFlowManager extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        elevation: 0.0,
+        elevation: 0.3,
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
+        titleSpacing: 0.0,
+
         iconTheme: IconThemeData(color: Colors.black),
         titleTextStyle: TextStyle(color: Colors.black),
         leading: IconButton(
