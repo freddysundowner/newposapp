@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 
 import '../../controllers/bank_controller.dart';
 import '../../controllers/shop_controller.dart';
+import 'bank_history.dart';
 
 class CashAtBank extends StatelessWidget {
   CashAtBank({Key? key}) : super(key: key);
@@ -57,8 +58,7 @@ class CashAtBank extends StatelessWidget {
               decoration: BoxDecoration(
                   color: Colors.grey.withOpacity(0.8),
                   borderRadius: BorderRadius.circular(20)),
-              child:  Text("KES ${300}")
-            ,
+              child: Text("KES ${300}"),
             )
           ],
         ),
@@ -117,10 +117,8 @@ class CashAtBank extends StatelessWidget {
               children: [
                 GestureDetector(
                   onTap: () {
-                    // Get.to(() => CashHistory(
-                    //     title: bankBody.name,
-                    //     subtitle: "All records",
-                    //     id: bankBody.id));
+                    Get.to(() => CashHistory(
+                        title: "Faulu", subtitle: "All records", id: "1230"));
                   },
                   child: Text(
                     "View History",
