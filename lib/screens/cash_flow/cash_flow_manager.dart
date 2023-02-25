@@ -13,6 +13,7 @@ import '../../controllers/product_controller.dart';
 import '../../controllers/sales_controller.dart';
 import '../../controllers/shop_controller.dart';
 import 'cash_at_bank.dart';
+import 'cash_in_layout.dart';
 
 class CashFlowManager extends StatelessWidget {
   CashFlowManager({Key? key}) : super(key: key);
@@ -172,7 +173,7 @@ class CashFlowManager extends StatelessWidget {
                     children: [
                       TextButton(
                         onPressed: () {
-                          // Get.to(() => CashInLayout());
+                          Get.to(() => CashInLayout());
                         },
                         child: Container(
                           padding: EdgeInsets.only(

@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 
 import '../../controllers/bank_controller.dart';
 import '../../controllers/shop_controller.dart';
+import '../../utils/colors.dart';
 import 'bank_history.dart';
 
 class CashAtBank extends StatelessWidget {
@@ -122,7 +123,7 @@ class CashAtBank extends StatelessWidget {
                   },
                   child: Text(
                     "View History",
-                    style: TextStyle(color: Colors.blue),
+                    style: TextStyle(color: AppColors.mainColor),
                   ),
                 ),
                 IconButton(
