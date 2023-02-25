@@ -25,68 +25,73 @@ class AllSalesPage extends StatelessWidget {
             type: "notcashflow");
         return true;
       },
-      child: DefaultTabController(
-          length: salesController.tabController.length,
-          initialIndex: 0,
-          child: Scaffold(
+      child: Obx(()=>DefaultTabController(
+        length: salesController.tabController.length,
+        initialIndex: salesController.salesInitialIndex.value,
+        child: Scaffold(
+          backgroundColor: Colors.white,
+          appBar: AppBar(
             backgroundColor: Colors.white,
-            appBar: AppBar(
-              backgroundColor: Colors.white,
-              elevation: 0.3,
-              titleSpacing: 0.0,
-              title:
-                  majorTitle(title: "Sales", color: Colors.black, size: 18.0),
-              leading: IconButton(
-                onPressed: () {
-                  Get.back();
-                },
-                icon: Icon(
-                  Icons.arrow_back_ios,
-                  color: Colors.black,
-                ),
-              ),
-              bottom: TabBar(
-                indicatorColor: AppColors.mainColor,
-                unselectedLabelColor: Colors.black,
-                labelColor: AppColors.mainColor,
-                onTap: (value) {
-                  salesController.salesInitialIndex.value = value;
-                  print(salesController.salesInitialIndex.value);
-                  if (value == 0) {
-                    salesController.getSalesByShop(
-                        id: shopController.currentShop.value?.id);
-                  } else if (value == 1) {
-                    salesController.getSalesOnCredit(
-                      shopId: shopController.currentShop.value?.id,
-                    );
-                  } else {
-                    salesController.getSalesByDates(
-                        shopId: shopController.currentShop.value?.id,
-                        startingDate: DateTime.now(),
-                        endingDate: DateTime.now(),
-                        type: "notcashflow");
-                  }
-                },
-                tabs: [
-                  Tab(text: 'All Sales'),
-                  Tab(text: 'On Credit'),
-                  Tab(text: 'Today'),
-                ],
+            elevation: 0.3,
+            titleSpacing: 0.0,
+            title:
+            majorTitle(title: "Sales", color: Colors.black, size: 18.0),
+            leading: IconButton(
+              onPressed: () {
+                salesController.getSalesByDates(
+                    shopId: shopController.currentShop.value?.id,
+                    startingDate: DateTime.now(),
+                    endingDate: DateTime.now(),
+                    type: "notcashflow");
+                Get.back();
+              },
+              icon: Icon(
+                Icons.arrow_back_ios,
+                color: Colors.black,
               ),
             ),
-            body: Obx(() => TabBarView(
-                  controller: salesController.tabController,
-                  physics: NeverScrollableScrollPhysics(),
-                  children: [
-                    salesController.salesInitialIndex.value == 0
-                        ? AllSales()
-                        : salesController.salesInitialIndex.value == 1
-                            ? SalesOnCredit()
-                            : TodaySales()
-                  ],
-                )),
+            bottom: TabBar(
+              indicatorColor: AppColors.mainColor,
+              unselectedLabelColor: Colors.black,
+              labelColor: AppColors.mainColor,
+              onTap: (value) {
+                salesController.salesInitialIndex.value = value;
+                print(salesController.salesInitialIndex.value);
+                if (value == 0) {
+                  salesController.getSalesByShop(
+                      id: shopController.currentShop.value?.id);
+                } else if (value == 1) {
+                  salesController.getSalesOnCredit(
+                    shopId: shopController.currentShop.value?.id,
+                  );
+                } else {
+                  salesController.getSalesByDates(
+                      shopId: shopController.currentShop.value?.id,
+                      startingDate: DateTime.now(),
+                      endingDate: DateTime.now(),
+                      type: "notcashflow");
+                }
+              },
+              tabs: [
+                Tab(text: 'All Sales'),
+                Tab(text: 'On Credit'),
+                Tab(text: 'Today'),
+              ],
+            ),
           ),
+          body: Obx(() => TabBarView(
+            controller: salesController.tabController,
+            physics: NeverScrollableScrollPhysics(),
+            children: [
+              salesController.salesInitialIndex.value == 0
+                  ? AllSales()
+                  : salesController.salesInitialIndex.value == 1
+                  ? SalesOnCredit()
+                  : TodaySales()
+            ],
+          )),
         ),
+      )),
 
     );
   }

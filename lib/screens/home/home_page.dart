@@ -184,6 +184,8 @@ class HomePage extends StatelessWidget {
                     InkWell(
                         onTap: () {
                           salesController.salesInitialIndex.value = 0;
+                          salesController.getSalesByShop(
+                              id: shopController.currentShop.value?.id);
                           Get.to(() => AllSalesPage());
                         },
                         child: minorTitle(
