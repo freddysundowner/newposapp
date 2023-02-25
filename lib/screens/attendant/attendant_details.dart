@@ -24,7 +24,6 @@ class AttendantDetails extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     attendantController.getAttendantsById(attendantModel.id);
-
     attendantController.nameController.text = attendantModel.fullnames!;
     return Scaffold(
       appBar: AppBar(
@@ -60,7 +59,6 @@ class AttendantDetails extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-
                       attendantUserInputs(
                           name: "Attendant Username",
                           controller: attendantController.nameController),
@@ -186,29 +184,38 @@ class AttendantDetails extends StatelessWidget {
         // clipBehavior: Clip.antiAlias,
         // elevation: 0.5,
         color: Colors.white,
-        child: Container(
-          width: double.infinity,
-          padding: EdgeInsets.all(10),
-          height: kToolbarHeight * 1.5,
-          decoration:
-              BoxDecoration(border: Border.all(width: 1, color: Colors.grey)),
-          child: InkWell(
-            splashColor: Colors.transparent,
-            onTap: () {},
-            child: Container(
-              padding: EdgeInsets.all(10),
+        child: Obx(() => Container(
               width: double.infinity,
+              padding: EdgeInsets.all(10),
+              height: kToolbarHeight * 1.5,
               decoration: BoxDecoration(
-                  border: Border.all(width: 3, color: AppColors.mainColor),
-                  borderRadius: BorderRadius.circular(40)),
-              child: Center(
-                  child: majorTitle(
-                      title: "Update Changes",
-                      color: AppColors.mainColor,
-                      size: 18.0)),
-            ),
-          ),
-        ),
+                  border: Border.all(width: 1, color: Colors.grey)),
+              child: attendantController.creatingAttendantsLoad.value
+                  ? Center(
+                      child: CircularProgressIndicator(),
+                    )
+                  : InkWell(
+                      splashColor: Colors.transparent,
+                      onTap: () {
+                        attendantController.updateAttedant(
+                            id: attendantModel.id,
+                            rolesData: attendantModel.roles);
+                      },
+                      child: Container(
+                        padding: EdgeInsets.all(10),
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                            border: Border.all(
+                                width: 3, color: AppColors.mainColor),
+                            borderRadius: BorderRadius.circular(40)),
+                        child: Center(
+                            child: majorTitle(
+                                title: "Update Changes",
+                                color: AppColors.mainColor,
+                                size: 18.0)),
+                      ),
+                    ),
+            )),
       ),
     );
   }

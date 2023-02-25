@@ -54,11 +54,22 @@ class ShopsPage extends StatelessWidget {
                 Expanded(
                   child: TextFormField(
                     controller: shopController.searchController,
-                    onChanged: (value) {},
+                    onChanged: (value) {
+                      shopController.getShopsByAdminId(adminId: authController.currentUser.value?.id,name: value);
+                    },
                     decoration: InputDecoration(
                         contentPadding: EdgeInsets.fromLTRB(10, 5, 10, 5),
                         suffixIcon: IconButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            if (shopController.searchController.text=="") {
+
+                            }  else{
+                              shopController.getShopsByAdminId(
+                                  adminId: authController.currentUser.value?.id,
+                                  name: shopController.searchController.text);
+                            }
+
+                          },
                           icon: Icon(Icons.search),
                         ),
                         hintText: "Search Shop",

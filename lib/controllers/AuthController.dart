@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterpos/controllers/attendant_controller.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
+import 'package:flutterpos/models/attendant_model.dart';
 import 'package:flutterpos/screens/shop/create_shop.dart';
 import 'package:flutterpos/services/admin.dart';
 import 'package:flutterpos/services/attendant.dart';
@@ -10,6 +12,7 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/admin_model.dart';
+import '../screens/attendant/attendant_landing.dart';
 import '../screens/home/home.dart';
 import '../screens/landing/landing.dart';
 import '../widgets/loading_dialog.dart';
@@ -21,8 +24,10 @@ class AuthController extends GetxController {
   TextEditingController passwordController = TextEditingController();
   TextEditingController nameController = TextEditingController();
   TextEditingController phoneController = TextEditingController();
-  TextEditingController textEditingControllerNewPassword = TextEditingController();
-  TextEditingController textEditingControllerConfirmPassword = TextEditingController();
+  TextEditingController textEditingControllerNewPassword =
+      TextEditingController();
+  TextEditingController textEditingControllerConfirmPassword =
+      TextEditingController();
   TextEditingController attendantUidController = TextEditingController();
   TextEditingController attendantPasswordController = TextEditingController();
 
@@ -143,11 +148,10 @@ class AuthController extends GetxController {
       updateAdminLoad.value = true;
       Map<String, dynamic> body = {
         if (emailController.text != "") "email": emailController.text,
-        if (phoneController.text != "") "phone": phoneController.text,
+        if (phoneController.text != "") "phonenumber": phoneController.text,
         if (nameController.text != "") "name": nameController.text,
       };
-      var response =
-          await Admin().updateAdmin(body: body, id: currentUser.value?.id);
+      var response = await Admin().updateAdmin(body: body, id: currentUser.value?.id);
       if (response["status"] == true) {
         clearDataFromTextFields();
         Get.back();
@@ -224,6 +228,38 @@ class AuthController extends GetxController {
   }
 
   loginAttendant(context) async {
-
+    try {
+      if (loginAttendantKey.currentState!.validate()) {
+        LoginAttendantLoad.value = true;
+        Map<String, dynamic> data = {
+          "attend_id": attendantUidController.text,
+          "password": attendantPasswordController.text,
+        };
+        print(data);
+        var response = await Attendant().loginAttendant(body: data);
+        print(response);
+        if (response["error"] != null) {
+          String message = response["error"];
+          Get.snackbar("", message,
+              backgroundColor: Colors.red, colorText: Colors.white);
+        } else {
+          AttendantModel attendantModel = AttendantModel.fromJson(response["body"]);
+          Get.find<AttendantController>().attendant.value= attendantModel;
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          prefs.setString("userId", attendantModel.id!);
+          prefs.setString("token", response["token"]);
+          prefs.setString("type", "attendant");
+          attendantUidController.text = "";
+          attendantPasswordController.text = "";
+          Get.offAll(() => AttendantLanding());
+        }
+        LoginAttendantLoad.value = false;
+      } else {
+        print("form not validated");
+      }
+    } catch (e) {
+      LoginAttendantLoad.value = false;
+    }
   }
+
 }

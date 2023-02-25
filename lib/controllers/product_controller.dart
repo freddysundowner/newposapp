@@ -9,6 +9,7 @@ import 'package:flutterpos/widgets/snackBars.dart';
 import 'package:get/get.dart';
 
 import '../models/product_category_model.dart';
+import '../models/product_count_model.dart';
 import '../models/product_model.dart';
 import '../services/product.dart';
 import '../utils/dates.dart';
@@ -18,6 +19,8 @@ class ProductController extends GetxController {
   GlobalKey<State> _keyLoader = new GlobalKey<State>();
   RxList<ProductModel> products = RxList([]);
   RxList selectedSupplier = RxList([]);
+  RxList<ProductCountModel> countHistoryList =RxList([]);
+
   RxList<ProductCategoryModel> productCategory = RxList([]);
   RxString categoryName = RxString("");
   RxString categoryId = RxString("");
@@ -25,7 +28,8 @@ class ProductController extends GetxController {
   RxBool creatingProductLoad = RxBool(false);
   RxBool getProductLoad = RxBool(false);
   RxBool updateProductLoad = RxBool(false);
-  RxBool getProductCountLoad = RxBool(false);
+  RxBool getProductCountLoad = RxBool(false); 
+  RxBool  loadingCountHistory = RxBool(false);
   RxInt totalSale = RxInt(0);
   RxInt totalProfit = RxInt(0);
   RxString selectedSortOrder = RxString("All");
@@ -50,6 +54,9 @@ class ProductController extends GetxController {
   TextEditingController searchProductController = TextEditingController();
   TextEditingController searchProductQuantityController =
       TextEditingController();
+
+
+
 
   saveProducts(String shopId, String attendantId, context) async {
     var name = itemNameController.text;
@@ -370,11 +377,33 @@ class ProductController extends GetxController {
         "type": quantityType.value
       };
       var response = await Products().updateProductCount(product.id, body);
+      print(response);
       if (response["status"] == true) {
         showSnackBar(message: response["message"], color: AppColors.mainColor);
       } else {
         showSnackBar(message: response["message"], color: AppColors.mainColor);
       }
     } catch (e) {}
+  }
+
+  getProductCount(shopId) async {
+    try {
+      loadingCountHistory.value = true;
+      countHistoryList.clear();
+      var response = await Products().getProductCount(shopId);
+      if (response != null) {
+        List history = response["body"];
+        List<ProductCountModel> countHistory =
+        history.map((e) => ProductCountModel.fromJson(e)).toList();
+
+        countHistoryList.assignAll(countHistory);
+      } else {
+        countHistoryList.value = [];
+      }
+      loadingCountHistory.value = false;
+    } catch (e) {
+      loadingCountHistory.value = false;
+      print(e);
+    }
   }
 }

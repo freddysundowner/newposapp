@@ -10,7 +10,9 @@ import '../../widgets/attendant_user_inputs.dart';
 import '../../widgets/bigtext.dart';
 
 class CreateAttendant extends StatelessWidget {
-  CreateAttendant({Key? key}) : super(key: key);
+  CreateAttendant({Key? key}) : super(key: key){
+    attendantController.nameController.text="";
+  }
   AttendantController attendantController = Get.find<AttendantController>();
   ShopController shopController = Get.find<ShopController>();
 

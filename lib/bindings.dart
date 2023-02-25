@@ -1,5 +1,8 @@
 import 'package:flutterpos/controllers/CustomerController.dart';
 import 'package:flutterpos/controllers/attendant_controller.dart';
+import 'package:flutterpos/controllers/bank_controller.dart';
+import 'package:flutterpos/controllers/cashflow_controller.dart';
+import 'package:flutterpos/controllers/credit_controller.dart';
 import 'package:flutterpos/controllers/expense_controller.dart';
 import 'package:flutterpos/controllers/home_controller.dart';
 import 'package:flutterpos/controllers/product_controller.dart';
@@ -27,8 +30,12 @@ class AuthBinding extends Bindings {
         permanent: true);
     Get.put<SalesController>(SalesController(), permanent: true);
     Get.put<PurchaseController>(PurchaseController(), permanent: true);
-    Get.put<StockTransferController>(StockTransferController(),
-        permanent: true);
+    Get.put<StockTransferController>(StockTransferController(), permanent: true);
+    Get.put<ExpenseController>(ExpenseController(), permanent: true);
+    Get.put<CreditController>(CreditController(), permanent: true);
+    Get.put<StockTransferController>(StockTransferController(), permanent: true);
+    Get.put<BankController>(BankController(), permanent: true);
+    Get.put<CashflowController>(CashflowController(), permanent: true);
     Get.put<ExpenseController>(ExpenseController(), permanent: true);
   }
 }

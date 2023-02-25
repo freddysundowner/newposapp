@@ -68,15 +68,15 @@ class ShopController extends GetxController {
     }
   }
 
-  getShopsByAdminId({required adminId}) async {
+  getShopsByAdminId({required adminId,String? name}) async {
     try {
       AdminShops.clear();
       gettingShopsLoad.value = true;
-      var response = await Shop().getShopsByAdminId(adminId: adminId);
+      var response = await Shop().getShopsByAdminId(adminId: adminId,name:name);
+      print(response);
       if (response != null) {
         List shops = response["body"];
-        List<ShopModel> shopsData =
-            shops.map((e) => ShopModel.fromJson(e)).toList();
+        List<ShopModel> shopsData = shops.map((e) => ShopModel.fromJson(e)).toList();
         AdminShops.assignAll(shopsData);
       } else {
         AdminShops.value = [];
@@ -135,4 +135,5 @@ class ShopController extends GetxController {
       deleteShopLoad.value = false;
     }
   }
+
 }

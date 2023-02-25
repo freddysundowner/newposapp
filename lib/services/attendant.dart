@@ -9,6 +9,11 @@ class Attendant {
         .databaseRequest(attendant, DbBase().postRequestType, body: body);
     return jsonDecode(response);
   }
+  loginAttendant({required Map<String, dynamic> body}) async {
+    var response = await DbBase()
+        .databaseRequest("${attendant}login", DbBase().postRequestType, body: body);
+    return jsonDecode(response);
+  }
 
   getRoles() async {
     var response =
@@ -38,6 +43,12 @@ class Attendant {
   deleteAttendant(id) async {
     var response = await DbBase()
         .databaseRequest(attendant + id, DbBase().deleteRequestType);
+    return jsonDecode(response);
+  }
+
+  updateAttendant({required id, required Map<String, dynamic> body})async  {
+    var response = await DbBase()
+        .databaseRequest(attendant + "update/${id}", DbBase().patchRequestType,body: body);
     return jsonDecode(response);
   }
 }

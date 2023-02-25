@@ -94,104 +94,108 @@ class HomePage extends StatelessWidget {
                                 title: "Calculating...", color: Colors.white)
                             : normalText(
                                 title:
-                                    "${shopController.currentShop.value?.currency}.${salesController.totalSalesByDate.value}",
-                                color: Colors.white,
-                                size: 14.0);
-                      }),
+                                "${shopController.currentShop.value?.currency}.${salesController.totalSalesByDate.value}",
+                                color: Colors.white,size: 14.0);
+                          }),
+                        ],
+                      ),
+                      InkWell(
+                        onTap: () {
+                          salesController.salesInitialIndex.value = 2;
+                          salesController.getSalesByDates(
+                              shopId: shopController.currentShop.value?.id,
+                              startingDate: DateTime.now(),
+                              endingDate: DateTime.now(),
+                              type: "notcashflow");
+                          Get.to(() => AllSalesPage());
+                        },
+                        child: majorTitle(
+                            title: "View More", color: Colors.white, size: 18.0),
+                      ),
                     ],
                   ),
-                  InkWell(
-                    onTap: () {
-                      salesController.salesInitialIndex.value = 2;
-                      Get.to(() => AllSalesPage());
-                    },
-                    child: majorTitle(
-                        title: "View More", color: Colors.white, size: 18.0),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(height: 20),
-            majorTitle(
-                title: "Enterprise Operations",
-                color: Colors.black,
-                size: 20.0),
-            SizedBox(height: 20),
-            Container(
-              width: double.infinity,
-              padding: EdgeInsets.all(15),
-              decoration: BoxDecoration(
-                  color: AppColors.mainColor,
-                  borderRadius: BorderRadius.circular(20)),
-              child: GridView.count(
-                crossAxisCount: 3,
-                crossAxisSpacing: 10,
-                // physics: NeverScrollableScrollPhysics(),
-                mainAxisSpacing: 10,
-                shrinkWrap: true,
-                physics: ScrollPhysics(),
-                children: [
-                  gridItems(
-                      title: "Sell",
-                      iconData: Icons.sell_rounded,
-                      function: () {
-                        Get.to(() => CreateSale());
-                      }),
-                  gridItems(
-                      title: "Finance",
-                      iconData: Icons.request_quote_outlined,
-                      function: () {
-                        Get.to(() => FinancePage());
-                      }),
-                  gridItems(
-                      title: "Stock",
-                      iconData: Icons.production_quantity_limits,
-                      function: () {
-                        Get.to(() => StockPage());
-                      }),
-                  gridItems(
-                      title: "Suppliers",
-                      iconData: Icons.people_alt,
-                      function: () {
-                        Get.to(() => CustomersPage(type: "suppliers"));
-                      }),
-                  gridItems(
-                      title: "Customers",
-                      iconData: Icons.people_outline_outlined,
-                      function: () {
-                        Get.to(() => CustomersPage(type: "customers"));
-                      }),
-                  gridItems(
-                      title: "Usage",
-                      iconData: Icons.data_usage,
-                      function: () {
-                        // Get.to(()=>ExtendUsage());
-                      }),
-                ],
-              ),
-            ),
-            SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
+                ),
+                SizedBox(height: 20),
                 majorTitle(
-                    title: "Sales History", color: Colors.black, size: 20.0),
-                InkWell(
-                    onTap: () {
-                      salesController.salesInitialIndex.value = 0;
-                      Get.to(() => AllSalesPage());
-                    },
-                    child: minorTitle(
-                        title: "See all", color: AppColors.lightDeepPurple))
-              ],
-            ),
-            SizedBox(height: 10),
-            Obx(() {
-              return salesController.getSalesByDateLoad.value
-                  ? Center(
-                      child: CircularProgressIndicator(),
-                    )
-                  : ListView.builder(
+                    title: "Enterprise Operations",
+                    color: Colors.black,
+                    size: 20.0),
+                SizedBox(height: 20),
+                Container(
+                  width: double.infinity,
+                  padding: EdgeInsets.all(15),
+                  decoration: BoxDecoration(
+                      color: AppColors.mainColor,
+                      borderRadius: BorderRadius.circular(20)),
+                  child: GridView.count(
+                    crossAxisCount: 3,
+                    crossAxisSpacing: 10,
+                    // physics: NeverScrollableScrollPhysics(),
+                    mainAxisSpacing: 10,
+                    shrinkWrap: true,
+                    physics: ScrollPhysics(),
+                    children: [
+                      gridItems(
+                          title: "Sell",
+                          iconData: Icons.sell_rounded,
+                          function: () {
+                            Get.to(() =>CreateSale());
+                          }),
+                      gridItems(
+                          title: "Finance",
+                          iconData: Icons.request_quote_outlined,
+                          function: () {
+                            Get.to(()=>FinancePage());
+                          }),
+                      gridItems(
+                          title: "Stock",
+                          iconData: Icons.production_quantity_limits,
+                          function: () {
+                            Get.to(() => StockPage());
+                          }),
+                      gridItems(
+                          title: "Suppliers",
+                          iconData: Icons.people_alt,
+                          function: () {
+                            Get.to(()=>CustomersPage(type:"suppliers"));
+                          }),
+                      gridItems(
+                          title: "Customers",
+                          iconData: Icons.people_outline_outlined,
+                          function: () {
+                            Get.to(()=>CustomersPage(type:"customers"));
+                          }),
+                      gridItems(
+                          title: "Usage",
+                          iconData: Icons.data_usage,
+                          function: () {
+                            // Get.to(()=>ExtendUsage());
+                          }),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    majorTitle(
+                        title: "Sales History", color: Colors.black, size: 20.0),
+                    InkWell(
+                        onTap: () {
+                          salesController.salesInitialIndex.value = 0;
+                          Get.to(() => AllSalesPage());
+                        },
+                        child: minorTitle(
+                            title: "See all", color: AppColors.lightDeepPurple))
+                  ],
+                ),
+                SizedBox(height: 10),
+                Obx(() {
+                  return salesController.getSalesByDateLoad.value
+                      ? Center(
+                    child: CircularProgressIndicator(),
+                  )
+                      : ListView.builder(
                       physics: NeverScrollableScrollPhysics(),
                       itemCount: salesController.sales.length == 0
                           ? 0

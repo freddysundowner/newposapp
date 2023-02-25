@@ -132,11 +132,11 @@ class ExpenseController extends GetxController {
           shopId: shopId,
           startDate: type == "cashflow" ? startingDate : today,
           endDate: type == "cashflow" ? endingDate : tomorrow);
+      print("expense response is $response");
 
       if (response["status"] == true) {
         List fetchedList = response["body"];
-        List<ExpenseModel> expenseBody =
-            fetchedList.map((e) => ExpenseModel.fromJson(e)).toList();
+        List<ExpenseModel> expenseBody = fetchedList.map((e) => ExpenseModel.fromJson(e)).toList();
         for (var i = 0; i < expenseBody.length; i++) {
           totalExpenses.value += int.parse("${expenseBody[i].amount}");
         }
