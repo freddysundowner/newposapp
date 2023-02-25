@@ -14,6 +14,7 @@ import '../../controllers/sales_controller.dart';
 import '../../controllers/shop_controller.dart';
 import 'cash_at_bank.dart';
 import 'cash_in_layout.dart';
+import 'cashflow_categories.dart';
 import 'cashout_layout.dart';
 
 class CashFlowManager extends StatelessWidget {
@@ -212,7 +213,7 @@ class CashFlowManager extends StatelessWidget {
             ),
             GestureDetector(
               onTap: () {
-                // Get.to(CashFlowCategories());
+                Get.to(CashFlowCategories());
               },
               child: Container(
                 margin: EdgeInsets.all(10),

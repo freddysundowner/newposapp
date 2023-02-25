@@ -118,7 +118,43 @@ class CashInLayout extends StatelessWidget {
                             padding: const EdgeInsets.only(top: 10.0),
                             child: TextButton(
                               onPressed: () {
-                                // Get.to(CashFlowCategories());
+                                showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return AlertDialog(
+                                        title: Text("Add Category"),
+                                        content: Padding(
+                                          padding: const EdgeInsets.all(5.0),
+                                          child: TextFormField(
+                                              decoration: InputDecoration(
+                                                  hintText:
+                                                  "eg.Loan,Capital,Contribution etc",
+                                                  border: OutlineInputBorder(
+                                                    borderRadius: BorderRadius.circular(10),
+                                                  ))),
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                            },
+                                            child: Text(
+                                              "Cancel".toUpperCase(),
+                                              style: TextStyle(color: Colors.blue),
+                                            ),
+                                          ),
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                            },
+                                            child: Text(
+                                              "Save now".toUpperCase(),
+                                              style: TextStyle(color: Colors.blue),
+                                            ),
+                                          ),
+                                        ],
+                                      );
+                                    });
                               },
                               child: Container(
                                   padding: EdgeInsets.all(8),
