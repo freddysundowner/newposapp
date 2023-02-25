@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
+import 'package:flutterpos/screens/cash_flow/cash_flow_manager.dart';
 import 'package:flutterpos/screens/finance/profit_page.dart';
 import 'package:get/get.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
@@ -17,6 +18,7 @@ class FinancePage extends StatelessWidget {
   FinancePage({Key? key}) : super(key: key);
   SalesController salesController = Get.find<SalesController>();
   ShopController shopController = Get.find<ShopController>();
+
   @override
   Widget build(BuildContext context) {
     var startDate = converTimeToMonth()["startDate"];
@@ -149,7 +151,9 @@ class FinancePage extends StatelessWidget {
                 );
               }),
               InkWell(
-                onTap: () {},
+                onTap: () {
+             Get.to(()=>CashFlowManager());
+                },
                 child: Container(
                   width: double.infinity,
                   margin: EdgeInsets.only(top: 10),
