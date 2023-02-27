@@ -193,7 +193,10 @@ class CustomerInfoPage extends StatelessWidget {
                           if (user != "suppliers")
                             InkWell(
                               onTap: () {
-                                Get.to(()=>WalletPage(title:"Peter", uid: "1230"));
+                                Get.to(() => WalletPage(
+                                    title: "Peter",
+                                    uid:
+                                        "${customerController.customer.value?.id}"));
                               },
                               child: Container(
                                 padding: EdgeInsets.only(
@@ -418,18 +421,15 @@ class Returns extends StatelessWidget {
     });
   }
 }
-class CreditInfo extends StatelessWidget {
 
+class CreditInfo extends StatelessWidget {
   final id;
   final user;
   CreditController creditController = Get.find<CreditController>();
   SupplierController supplierController = Get.find<SupplierController>();
   CustomerController customerController = Get.find<CustomerController>();
 
-  CreditInfo(
-      {Key? key,
-        required this.id,
-        required this.user})
+  CreditInfo({Key? key, required this.id, required this.user})
       : super(key: key);
   AttendantController attendantController = Get.find<AttendantController>();
   ShopController createShopController = Get.find<ShopController>();
@@ -446,66 +446,66 @@ class CreditInfo extends StatelessWidget {
     }
 
     return Obx(() {
-      return user == "suppliers"?
-      supplierController.stockInCredit.length == 0
-          ? Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Center(
-                child: Text(
-                  "No entries found.",
-                  style: TextStyle(color: Colors.black),
-                ),
-              ),
-              Center(
-                child: Text(
-                  "For now",
-                  style: TextStyle(color: Colors.grey),
-                ),
-              ),
-            ],
-          ))
-          : ListView.builder(
-          itemCount: supplierController.stockInCredit.length,
-          shrinkWrap: true,
-          physics: NeverScrollableScrollPhysics(),
-          itemBuilder: (context, index) {
-            StockInCredit salesBody =
-            supplierController.stockInCredit.elementAt(index);
+      return user == "suppliers"
+          ? supplierController.stockInCredit.length == 0
+              ? Center(
+                  child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Center(
+                      child: Text(
+                        "No entries found.",
+                        style: TextStyle(color: Colors.black),
+                      ),
+                    ),
+                    Center(
+                      child: Text(
+                        "For now",
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                    ),
+                  ],
+                ))
+              : ListView.builder(
+                  itemCount: supplierController.stockInCredit.length,
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  itemBuilder: (context, index) {
+                    StockInCredit salesBody =
+                        supplierController.stockInCredit.elementAt(index);
 
-            return Container();
-          })
+                    return Container();
+                  })
           : creditController.getCreditLoad.value
-          ? Center(child: CircularProgressIndicator())
-          : creditController.credit.length == 0
-          ? Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Center(
-                child: Text(
-                  "No entries found.",
-                  style: TextStyle(color: Colors.black),
-                ),
-              ),
-              Center(
-                child: Text(
-                  "For now",
-                  style: TextStyle(color: Colors.grey),
-                ),
-              ),
-            ],
-          ))
-          : ListView.builder(
-          itemCount: creditController.credit.length,
-          shrinkWrap: true,
-          itemBuilder: (context, index) {
-            SalesModel salesBody =
-            creditController.credit.elementAt(index);
+              ? Center(child: CircularProgressIndicator())
+              : creditController.credit.length == 0
+                  ? Center(
+                      child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Center(
+                          child: Text(
+                            "No entries found.",
+                            style: TextStyle(color: Colors.black),
+                          ),
+                        ),
+                        Center(
+                          child: Text(
+                            "For now",
+                            style: TextStyle(color: Colors.grey),
+                          ),
+                        ),
+                      ],
+                    ))
+                  : ListView.builder(
+                      itemCount: creditController.credit.length,
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) {
+                        SalesModel salesBody =
+                            creditController.credit.elementAt(index);
 
-            return CreditHistoryCard(context, salesBody);
-          });
+                        return CreditHistoryCard(context, salesBody);
+                      });
     });
   }
 }

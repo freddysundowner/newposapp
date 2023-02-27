@@ -114,6 +114,7 @@ class CustomerController extends GetxController
     try {
       gettingCustomer.value = true;
       var response = await Customer().getCustomersById(id);
+      print(response);
       if (response["status"] == true) {
         customer.value = CustomerModel.fromJson(response["body"]);
       } else {
