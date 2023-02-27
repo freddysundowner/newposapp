@@ -162,7 +162,7 @@ class Debtors extends StatelessWidget {
       customersController.getSuppliersOnCredit(
           shopId: shopController.currentShop.value?.id);
     } else {
-      customersController.getCustomersOnCredit(shopId: shopController.currentShop.value?.id);
+      customersController.getCustomersOnCredit("${shopController.currentShop.value?.id!}");
     }
 
     return Obx(() {

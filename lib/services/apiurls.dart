@@ -11,6 +11,7 @@ const searchShop = shop + "search";
 const customer = BASE_URL + "customer/";
 const customerPurchase = sales + "customerpurchase/";
 const customerReturns = sales + "/" + "customerreturn/";
+const customersOnCredit="${customer}oncredit";
 //supplier
 const supplier = BASE_URL + "supplier/";
 //product

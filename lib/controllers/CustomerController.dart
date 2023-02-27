@@ -106,7 +106,24 @@ class CustomerController extends GetxController
     amountController.text = "";
   }
 
-  getCustomersOnCredit({String? shopId}) {}
+  getCustomersOnCredit(String shopId) async{
+    try {
+      customerOnCreditLoad.value = true;
+      var response = await Customer().getCustomersByShopIdOnCredit(shopId);
+      if (response["status"] == true) {
+        List fetchedCustomers = response["body"];
+        List<CustomerModel> customerData =
+        fetchedCustomers.map((e) => CustomerModel.fromJson(e)).toList();
+        customersOnCredit.assignAll(customerData);
+
+      } else {
+        customersOnCredit.value = [];
+      }
+      customerOnCreditLoad.value = false;
+    } catch (e) {
+      customerOnCreditLoad.value = false;
+    }
+  }
 
   getSuppliersOnCredit({String? shopId}) {}
 

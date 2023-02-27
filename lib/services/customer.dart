@@ -47,4 +47,10 @@ class Customer {
     var data = jsonDecode(response);
     return data;
   }
+
+  getCustomersByShopIdOnCredit(String shopId) async{
+    var response = await DbBase()
+        .databaseRequest( "$customersOnCredit/${shopId}", DbBase().getRequestType);
+    return jsonDecode(response);
+  }
 }
