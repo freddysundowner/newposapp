@@ -18,7 +18,7 @@ showEditDialog({required user, required context}) {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Edit Customer",
+                  "Edit ${user}".capitalize!,
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 SizedBox(

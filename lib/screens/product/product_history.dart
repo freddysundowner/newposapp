@@ -51,6 +51,18 @@ class ProductHistory extends StatelessWidget {
               labelColor: AppColors.mainColor,
               unselectedLabelColor: Colors.black,
               onTap: (index) {
+                if (index == 1) {
+                  productHistoryController.getProductHistory(
+                      productId: product.id, type: "purchase");
+                }
+                if (index == 2) {
+                  productHistoryController.getProductHistory(
+                      productId: product.id, type: "transfer");
+                }
+                if (index == 3) {
+                  productHistoryController.getProductHistory(
+                      productId: product.id, type: "badstock");
+                }
                 productHistoryController.changeTabIndex(index);
               },
               tabs: productHistoryController.tabs,
@@ -100,23 +112,25 @@ class HistoryPages extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    productHistoryController.getProductHistory(
-        productId: productId, type: type);
     return Obx(() {
-      return productHistoryController.product.length == 0
+      return productHistoryController.gettingHistoryLoad.value
           ? Center(
-              child: Text("There are no iems to display"),
+              child: CircularProgressIndicator(),
             )
-          : ListView.builder(
-              shrinkWrap: true,
-              itemCount: productHistoryController.product.length,
-              // physics: NeverScrollableScrollPhysics(),
-              itemBuilder: (context, index) {
-                ProductHistoryModel productBody =
-                    productHistoryController.product.elementAt(index);
+          : productHistoryController.product.length == 0
+              ? Center(
+                  child: Text("There are no iems to display"),
+                )
+              : ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: productHistoryController.product.length,
+                  // physics: NeverScrollableScrollPhysics(),
+                  itemBuilder: (context, index) {
+                    ProductHistoryModel productBody =
+                        productHistoryController.product.elementAt(index);
 
-                return productHistoryContainer(productBody);
-              });
+                    return productHistoryContainer(productBody);
+                  });
     });
   }
 
@@ -145,7 +159,7 @@ class HistoryPages extends StatelessWidget {
                             fontSize: 18),
                       ),
                       Text(
-                        "${productBody.product!.category}",
+                        "${productBody.product!.category ?? ""}",
                         style: TextStyle(color: Colors.grey, fontSize: 16),
                       ),
                       Text('Qty ${productBody.quantity}'),

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutterpos/widgets/smalltext.dart';
 import 'package:get/get.dart';
+
 import '../../../../utils/colors.dart';
 import '../models/customer_model.dart';
+import '../screens/customers/customer_info_page.dart';
 import 'bigtext.dart';
 
 Widget customerDebtCard({required CustomerModel customerModel, required type}) {
@@ -45,7 +47,10 @@ Widget customerDebtCard({required CustomerModel customerModel, required type}) {
               alignment: Alignment.centerRight,
               child: InkWell(
                 onTap: () {
-
+                  Get.to(() => CustomerInfoPage(
+                        id: customerModel.id,
+                        user: type,
+                      ));
                 },
                 child: Container(
                   padding: EdgeInsets.all(5),

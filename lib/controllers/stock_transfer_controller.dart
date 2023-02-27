@@ -65,7 +65,7 @@ class StockTransferController extends GetxController {
     } catch (e) {
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
 
-      print(e);
+
     }
   }
 
@@ -74,7 +74,7 @@ class StockTransferController extends GetxController {
       gettingTransferHistoryLoad.value == true;
       var response =
           await Products().getTransHistory(shopId: shopId, type: type);
-      print(response);
+
       if (response["status"] == true) {
         List jsonData = response["body"];
         List<StockTransferHistory> transfer =
@@ -86,7 +86,7 @@ class StockTransferController extends GetxController {
       gettingTransferHistoryLoad.value == false;
     } catch (e) {
       gettingTransferHistoryLoad.value == false;
-      print(e);
+
     }
   }
 }

@@ -96,7 +96,7 @@ class SupplierController extends GetxController {
       var response = await Supplier().getSuppliersByShopId(shopId);
       if (response != null) {
         List fetchedData = response["body"];
-        print(fetchedData);
+
         List<CustomerModel> customersData =
             fetchedData.map((e) => CustomerModel.fromJson(e)).toList();
         for (int i = 0; i < customersData.length; i++) {
@@ -112,7 +112,7 @@ class SupplierController extends GetxController {
       }
       getsupplierLoad.value = false;
     } catch (e) {
-      print(e);
+
       getsupplierLoad.value = false;
     }
   }
@@ -123,7 +123,6 @@ class SupplierController extends GetxController {
       var response = await Supplier().getSuppliersOnCredit(shopId);
       if (response != null) {
         List fetchedData = response["body"];
-        print(fetchedData);
         List<CustomerModel> customersData =
         fetchedData.map((e) => CustomerModel.fromJson(e)).toList();
         suppliersOnCredit.assignAll(customersData);
@@ -132,7 +131,6 @@ class SupplierController extends GetxController {
       }
       creatingSupplierLoad.value = false;
     } catch (e) {
-      print(e);
       creatingSupplierLoad.value = false;
     }
   }
@@ -174,7 +172,6 @@ class SupplierController extends GetxController {
 
       var response = await Supplier().updateSupplier(body: body, id: id);
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
-      print("response${response}");
       if (response["status"] == true) {
         showSnackBar(message: response["message"], color: AppColors.mainColor);
         clearTexts();
@@ -229,7 +226,7 @@ class SupplierController extends GetxController {
       returningLoad.value = false;
     } catch (e) {
       returningLoad.value = false;
-      print(e);
+
     }
   }
 
@@ -245,7 +242,7 @@ class SupplierController extends GetxController {
         stockInCredit.value = [];
       }
     } catch (e) {
-      print(e);
+
     }
   }
 
@@ -272,7 +269,7 @@ class SupplierController extends GetxController {
         }
       }
     } catch (e) {
-      print(e);
+
     }
   }
 
@@ -286,6 +283,7 @@ class SupplierController extends GetxController {
       showSnackBar(message: response["message"], color: Colors.red);
     }
   }
+
 
 
 }

@@ -12,7 +12,7 @@ class ProductModel {
     this.sellingPrice,
     this.discount,
     this.supplier,
-    this.shop,
+    // this.shop,
     this.attendant,
     this.buyingPrice,
     this.badstock,
@@ -34,7 +34,7 @@ class ProductModel {
   ProductCategoryModel? category;
   int? stockLevel;
   List<String>? sellingPrice;
-  String? shop;
+  // String? shop;
   int? discount;
   AttendantModel? attendant;
   int? buyingPrice;
@@ -60,13 +60,13 @@ class ProductModel {
         name: json["name"],
         quantity: json["quantity"],
         category: json["category"] == null|| json["category"].toString().length<=40
-            ? ProductCategoryModel()
+            ? null
             : ProductCategoryModel.fromJson(json["category"]),
         stockLevel: json["stockLevel"],
         sellingPrice: List<String>.from(json["sellingPrice"].map((x) => x)),
         discount: json["discount"],
         supplier: json["supplier"],
-        shop: json["shop"],
+        // shop: json["shop"],
         selling: int.parse(List<String>.from(json["sellingPrice"].map((x) => x))[0]),
         cartquantity: 1,
         deleted: json["deleted"],
@@ -93,7 +93,7 @@ class ProductModel {
         "sellingPrice": List<dynamic>.from(sellingPrice!.map((x) => x)),
         "discount": discount,
         "supplier": supplier,
-        "shop": shop,
+        // "shop": shop,
         "deleted": deleted,
         "cartquantity": cartquantity,
         "selling": selling,

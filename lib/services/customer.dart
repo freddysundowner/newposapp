@@ -34,7 +34,7 @@ class Customer {
     return jsonDecode(response);
   }
 
-  getPurchases(uid) async {
+  getPurchases(uid, type) async {
     var response = await DbBase()
         .databaseRequest(customerPurchase + uid, DbBase().getRequestType);
 
@@ -43,14 +43,15 @@ class Customer {
   }
 
   getReturns(uid) async {
-    var response = await DbBase().databaseRequest(customerReturns + uid, DbBase().getRequestType);
+    var response = await DbBase()
+        .databaseRequest(customerReturns + uid, DbBase().getRequestType);
     var data = jsonDecode(response);
     return data;
   }
 
-  getCustomersByShopIdOnCredit(String shopId) async{
-    var response = await DbBase()
-        .databaseRequest( "$customersOnCredit/${shopId}", DbBase().getRequestType);
+  getCustomersByShopIdOnCredit(String shopId) async {
+    var response = await DbBase().databaseRequest(
+        "$customersOnCredit/${shopId}", DbBase().getRequestType);
     return jsonDecode(response);
   }
 }

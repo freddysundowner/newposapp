@@ -356,17 +356,15 @@ class Purchase extends StatelessWidget {
   final id;
   final user;
 
-  Purchase({Key? key, required this.id, required this.user}) : super(key: key);
+  Purchase({Key? key, required this.id, required this.user}) : super(key: key){
+    customerController.getCustomerPurchases(id, user);
+  }
   CustomerController customerController = Get.find<CustomerController>();
   SupplierController supplierController = Get.find<SupplierController>();
   ShopController createShopController = Get.find<ShopController>();
 
   @override
   Widget build(BuildContext context) {
-    if (user == "suppliers") {
-    } else {
-      customerController.getCustomerPurchases(id);
-    }
 
     return Obx(() {
       return customerController.customerPurchaseLoad.value
@@ -394,15 +392,15 @@ class Returns extends StatelessWidget {
   final id;
   final user;
 
-  Returns({Key? key, required this.id, required this.user}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
+  Returns({Key? key, required this.id, required this.user}) : super(key: key) {
     if (user == "suppliers") {
     } else {
       customerController.getCustomerReturns(id);
     }
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Obx(() {
       return customerController.customerReturnsLoad.value
           ? Center(child: CircularProgressIndicator())
@@ -430,13 +428,7 @@ class CreditInfo extends StatelessWidget {
   CustomerController customerController = Get.find<CustomerController>();
 
   CreditInfo({Key? key, required this.id, required this.user})
-      : super(key: key);
-  AttendantController attendantController = Get.find<AttendantController>();
-  ShopController createShopController = Get.find<ShopController>();
-  AuthController authController = Get.find<AuthController>();
-
-  @override
-  Widget build(BuildContext context) {
+      : super(key: key) {
     if (user == "suppliers") {
       supplierController.getSupplierCredit(
           "${createShopController.currentShop.value!.id!}", id);
@@ -444,7 +436,14 @@ class CreditInfo extends StatelessWidget {
       creditController.getCustomerCredit(authController.currentUser.value!.id,
           "${createShopController.currentShop.value!.id!}", id);
     }
+  }
 
+  AttendantController attendantController = Get.find<AttendantController>();
+  ShopController createShopController = Get.find<ShopController>();
+  AuthController authController = Get.find<AuthController>();
+
+  @override
+  Widget build(BuildContext context) {
     return Obx(() {
       return user == "suppliers"
           ? supplierController.stockInCredit.length == 0

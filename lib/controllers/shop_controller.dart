@@ -73,7 +73,7 @@ class ShopController extends GetxController {
       AdminShops.clear();
       gettingShopsLoad.value = true;
       var response = await Shop().getShopsByAdminId(adminId: adminId,name:name);
-      print(response);
+
       if (response != null) {
         List shops = response["body"];
         List<ShopModel> shopsData = shops.map((e) => ShopModel.fromJson(e)).toList();

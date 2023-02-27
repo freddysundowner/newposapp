@@ -235,9 +235,8 @@ class AuthController extends GetxController {
           "attend_id": attendantUidController.text,
           "password": attendantPasswordController.text,
         };
-        print(data);
+
         var response = await Attendant().loginAttendant(body: data);
-        print(response);
         if (response["error"] != null) {
           String message = response["error"];
           Get.snackbar("", message,
@@ -255,7 +254,6 @@ class AuthController extends GetxController {
         }
         LoginAttendantLoad.value = false;
       } else {
-        print("form not validated");
       }
     } catch (e) {
       LoginAttendantLoad.value = false;

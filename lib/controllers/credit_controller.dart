@@ -25,7 +25,7 @@ class CreditController extends GetxController {
       getCreditLoad.value = false;
     } catch (e) {
       getCreditLoad.value = false;
-      print(e);
+
     }
   }
 
@@ -42,7 +42,6 @@ class CreditController extends GetxController {
       deleteCreditLoad.value = false;
     } catch (e) {
       deleteCreditLoad.value = false;
-      print(e);
     }
   }
 }

@@ -117,7 +117,6 @@ class ExpenseController extends GetxController {
       required startingDate,
       required type}) async {
     try {
-      print("object");
       totalExpenses.value = 0;
       expenses.clear();
       getExpenseByDateLoad.value = true;
@@ -133,7 +132,6 @@ class ExpenseController extends GetxController {
           shopId: shopId,
           startDate: type == "cashflow" ? startingDate : today,
           endDate: type == "cashflow" ? endingDate : tomorrow);
-      print("expense response is $response");
 
       if (response["status"] == true) {
         List fetchedList = response["body"];

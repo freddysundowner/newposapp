@@ -14,6 +14,7 @@ class DbBase {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String? token = prefs.getString("token");
+
       if (headers == null) {
         headers = {
           "Content-Type": "application/json",

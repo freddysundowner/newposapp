@@ -388,22 +388,22 @@ class SalesController extends GetxController
     } catch (e) {
       salesByShopLoad.value = false;
     }
-    print("length is ${sales.value.length}");
+
   }
 
   getSalesOnCredit({String? shopId}) async {
     try {
       salesOnCreditLoad.value = true;
       var response = await Sales().getSalesOnCredit(shopId);
-      print("response is ${response}");
+
       if (response["status"]==true) {
         sales.clear();
-        print("hello");
+
         List fetchedProducts = response["body"];
         List<SalesModel> listProducts =
             fetchedProducts.map((e) => SalesModel.fromJson(e)).toList();
         sales.assignAll(listProducts);
-        print("hello${sales.length}");
+
       } else {
         sales.value = [];
       }
@@ -435,7 +435,7 @@ class SalesController extends GetxController
         profitModel.value = ProfitModel();
       }
     } catch (e) {
-      print(e);
+
     }
   }
 

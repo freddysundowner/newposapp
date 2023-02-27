@@ -377,7 +377,6 @@ class ProductController extends GetxController {
         "type": quantityType.value
       };
       var response = await Products().updateProductCount(product.id, body);
-      print(response);
       if (response["status"] == true) {
         showSnackBar(message: response["message"], color: AppColors.mainColor);
       } else {
@@ -403,7 +402,7 @@ class ProductController extends GetxController {
       loadingCountHistory.value = false;
     } catch (e) {
       loadingCountHistory.value = false;
-      print(e);
+
     }
   }
 }

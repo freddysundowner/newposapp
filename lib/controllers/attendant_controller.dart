@@ -67,6 +67,7 @@ class AttendantController extends GetxController {
     try {
       getAttendantsLoad.value = true;
       var response = await Attendant().getAttendantsByShopId(shopId);
+      print(response);
       if (response != null) {
         List attendantsData = response["body"];
         List<AttendantModel> attendantList =
@@ -149,9 +150,8 @@ class AttendantController extends GetxController {
         "fullnames": nameController.text,
         "roles": rolesData.map((element) => element.toJson()).toList(),
       };
-      print(body);
+
       var response = await Attendant().updateAttendant(id: id, body: body);
-      print(response);
       if (response != null) {
         int index = attendants.indexWhere((element) => element.id == id);
         if (index != -1) {
@@ -163,7 +163,6 @@ class AttendantController extends GetxController {
       creatingAttendantsLoad.value = false;
     } catch (e) {
       creatingAttendantsLoad.value = false;
-      print(e);
     }
   }
 }
