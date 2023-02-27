@@ -14,6 +14,8 @@ const customerReturns = sales + "/" + "customerreturn/";
 const customersOnCredit="${customer}oncredit";
 //supplier
 const supplier = BASE_URL + "supplier/";
+const supplierOnCredit="${supplier}oncredit";
+
 //product
 const product = BASE_URL + "product/";
 const productHistory = BASE_URL + "producthistory/";

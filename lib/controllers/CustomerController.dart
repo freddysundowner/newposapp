@@ -125,7 +125,6 @@ class CustomerController extends GetxController
     }
   }
 
-  getSuppliersOnCredit({String? shopId}) {}
 
   getCustomerById(id) async {
     try {

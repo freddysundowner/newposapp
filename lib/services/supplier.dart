@@ -66,5 +66,10 @@ class Supplier {
     return data;
   }
 
+  getSuppliersOnCredit(String? shopId) async{
+    var response = await DbBase().databaseRequest("${supplierOnCredit}/${shopId}", DbBase().getRequestType);
+    return jsonDecode(response);
+  }
+
 
 }

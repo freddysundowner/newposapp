@@ -159,7 +159,7 @@ class Debtors extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (type == "suppliers") {
-      customersController.getSuppliersOnCredit(
+      supplierController.getSuppliersOnCredit(
           shopId: shopController.currentShop.value?.id);
     } else {
       customersController.getCustomersOnCredit("${shopController.currentShop.value?.id!}");

@@ -117,6 +117,26 @@ class SupplierController extends GetxController {
     }
   }
 
+  getSuppliersOnCredit({String? shopId}) async{
+    try {
+      creatingSupplierLoad.value = true;
+      var response = await Supplier().getSuppliersOnCredit(shopId);
+      if (response != null) {
+        List fetchedData = response["body"];
+        print(fetchedData);
+        List<CustomerModel> customersData =
+        fetchedData.map((e) => CustomerModel.fromJson(e)).toList();
+        suppliersOnCredit.assignAll(customersData);
+      } else {
+        suppliersOnCredit.value = [];
+      }
+      creatingSupplierLoad.value = false;
+    } catch (e) {
+      print(e);
+      creatingSupplierLoad.value = false;
+    }
+  }
+
   getSupplierById(id) async {
     try {
       gettingSupplier.value = true;
