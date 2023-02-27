@@ -393,14 +393,16 @@ class SalesController extends GetxController
   getSalesOnCredit({String? shopId}) async {
     try {
       salesOnCreditLoad.value = true;
-      sales.clear();
       var response = await Sales().getSalesOnCredit(shopId);
       print("response is ${response}");
-      if (response != null) {
+      if (response["status"]==true) {
+        sales.clear();
+        print("hello");
         List fetchedProducts = response["body"];
         List<SalesModel> listProducts =
             fetchedProducts.map((e) => SalesModel.fromJson(e)).toList();
         sales.assignAll(listProducts);
+        print("hello${sales.length}");
       } else {
         sales.value = [];
       }
@@ -442,5 +444,8 @@ class SalesController extends GetxController
     super.onInit();
   }
 
-  void returnSale(historyBody, salesId) {}
+  void returnSale(historyBody, salesId) {
+
+
+  }
 }

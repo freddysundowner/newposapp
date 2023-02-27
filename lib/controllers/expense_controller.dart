@@ -117,6 +117,7 @@ class ExpenseController extends GetxController {
       required startingDate,
       required type}) async {
     try {
+      print("object");
       totalExpenses.value = 0;
       expenses.clear();
       getExpenseByDateLoad.value = true;

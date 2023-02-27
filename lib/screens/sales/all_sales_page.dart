@@ -180,6 +180,7 @@ class SalesOnCredit extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print(salesController.sales.length);
     return Obx(() {
       return salesController.salesOnCreditLoad.value
           ? Center(

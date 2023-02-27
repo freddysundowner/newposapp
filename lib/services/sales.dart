@@ -33,6 +33,7 @@ class Sales {
     var data = jsonDecode(response);
     return data;
   }
+
   getSalesOnCredit( shopId)async {
     var response = await DbBase().databaseRequest(sales + "salesoncredit/${shopId}" ,
         DbBase().getRequestType);

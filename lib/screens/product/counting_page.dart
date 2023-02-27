@@ -58,8 +58,15 @@ class CountingPage extends StatelessWidget {
                     controller:
                         productController.searchProductQuantityController,
                     onChanged: (value) {
-                      productController.searchProduct(
-                          "${shopController.currentShop.value!.id}", "count");
+                      if (value == "") {
+                        productController.getProductsByCount(
+                            "${shopController.currentShop.value?.id}",
+                            productController
+                                .selectedSortOrderCountSearch.value);
+                      } else {
+                        productController.searchProduct(
+                            "${shopController.currentShop.value!.id}", "count");
+                      }
                     },
                     decoration: InputDecoration(
                         contentPadding: EdgeInsets.fromLTRB(10, 2, 10, 2),

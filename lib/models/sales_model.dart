@@ -36,11 +36,15 @@ class SalesModel {
   factory SalesModel.fromJson(Map<String, dynamic> json) => SalesModel(
         id: json["_id"],
         receiptNumber: json["receiptNumber"],
-        shop: json["shop"] == null ? null : ShopModel.fromJson(json["shop"]),
-        attendantId: json["attendantId"] == null
+        shop: json["shop"] == null || json["shop"].toString().length <= 40
+            ? ShopModel()
+            : ShopModel.fromJson(json["shop"]),
+        attendantId: json["attendantId"] == null ||
+                json["attendantId"].toString().length <= 40
             ? AttendantModel()
             : AttendantModel.fromJson(json["attendantId"]),
-        customerId: json["customerId"] == null
+        customerId: json["customerId"] == null ||
+                json["customerId"].toString().length <= 40
             ? null
             : CustomerModel.fromJson(json["customerId"]),
         grandTotal: json["grandTotal"],
@@ -53,8 +57,3 @@ class SalesModel {
         updatedAt: DateTime.parse(json["updatedAt"]),
       );
 }
-
-
-
-
-

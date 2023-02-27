@@ -15,6 +15,7 @@ class Expense {
   getExpenseByDate(
       {required shopId, required startDate, required endDate}) async {
     var response = await DbBase().databaseRequest("$transaction/expense/$shopId/$startDate/$endDate", DbBase().getRequestType);
+    print("response is $response");
     return jsonDecode(response);
   }
 }

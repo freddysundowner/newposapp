@@ -95,4 +95,8 @@ class Products {
     var data = jsonDecode(response);
     return data;
   }
+
+  getProductSaleHistory(productId) {
+
+  }
 }

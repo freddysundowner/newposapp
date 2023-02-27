@@ -37,17 +37,16 @@ class ProductHistoryController extends GetxController
   getHistory({required productId}) async {
     try {
       loadingSalesHistory.value = true;
-      // var response = await Products().getProductSaleHistory(productId);
-      //
-      // if (response != null) {
+      var response = await Products().getProductSaleHistory(productId);
 
-      //   List fetchedHistory = response["body"];
-      //   List<ProductSaleHistory> fetchedProductHistorys =
-      //       fetchedHistory.map((e) => ProductSaleHistory.fromJson(e)).toList();
-      //   salesHistory.assignAll(fetchedProductHistorys);
-      // } else {
-      //   salesHistory.value = [];
-      // }
+      if (response != null) {
+        List fetchedHistory = response["body"];
+        List<ProductSaleHistory> fetchedProductHistorys =
+            fetchedHistory.map((e) => ProductSaleHistory.fromJson(e)).toList();
+        salesHistory.assignAll(fetchedProductHistorys);
+      } else {
+        salesHistory.value = [];
+      }
       loadingSalesHistory.value = false;
     } catch (e) {
       loadingSalesHistory.value = false;

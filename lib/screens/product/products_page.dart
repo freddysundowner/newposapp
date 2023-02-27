@@ -56,11 +56,18 @@ class ProductPage extends StatelessWidget {
                     child: TextFormField(
                       controller: productController.searchProductController,
                       onChanged: (value) {
-                        productController.searchProduct(
-                            createShopController.currentShop.value == null
-                                ? ""
-                                : "${createShopController.currentShop.value!.id}",
-                            "product");
+                        if (value=="") {
+                          productController.getProductsBySort(
+                              shopId: "${createShopController.currentShop.value?.id}",
+                              type: productController.selectedSortOrderSearch.value);
+                        }  else{
+                          productController.searchProduct(
+                              createShopController.currentShop.value == null
+                                  ? ""
+                                  : "${createShopController.currentShop.value!.id}",
+                              "product");
+                        }
+
                       },
                       decoration: InputDecoration(
                           contentPadding: EdgeInsets.fromLTRB(10, 2, 10, 2),

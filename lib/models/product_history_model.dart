@@ -6,8 +6,8 @@ class ProductHistoryModel {
     this.type,
     this.quantity,
     this.shop,
-    this.attendantId,
-    this.stockTransfer,
+    // this.attendantId,
+    // this.stockTransfer,
     this.supplier,
     this.createdAt
 
@@ -18,8 +18,8 @@ class ProductHistoryModel {
   String? type;
   int ?quantity;
   String ?shop;
-  String ?attendantId;
-  String ?stockTransfer;
+  // String ?attendantId;
+  // String ?stockTransfer;
   String ?supplier;
   DateTime ?createdAt;
 
@@ -30,8 +30,8 @@ class ProductHistoryModel {
     type: json["type"],
     quantity: json["quantity"],
     shop: json["shop"],
-    attendantId: json["attendantId"],
-    stockTransfer: json["stockTransfer"],
+    // attendantId: json["attendantId"],
+    // stockTransfer: json["stockTransfer"],
     supplier: json["supplier"],
     createdAt: DateTime.parse(json["createdAt"]),
 
