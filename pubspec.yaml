@@ -25,7 +25,6 @@ dependencies:
   date_time_picker: "^2.1.0"
   pdf: ^3.8.1
   path_provider: ^2.0.11
-#  modal_bottom_sheet: ^2.1.0
   syncfusion_flutter_pdf: ^20.2.39
   shimmer: ^2.0.0
   share_plus: ^4.1.0
@@ -39,6 +38,7 @@ dependencies:
   google_fonts: ^3.0.1
   syncfusion_flutter_charts: ^20.3.48
   f_datetimerangepicker: ^0.2.0
+
 
 
 dev_dependencies:

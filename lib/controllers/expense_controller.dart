@@ -29,7 +29,7 @@ class ExpenseController extends GetxController {
     try {
       if (textEditingControllerCategory.text == "") {
         showSnackBar(
-            message: "please enter expense name", color: Colors.redAccent);
+            message: "please enter expense name", color: Colors.redAccent,context: context);
       }
       Map<String, dynamic> body = {
         "type": "cash-out",
@@ -42,10 +42,10 @@ class ExpenseController extends GetxController {
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
       if (response["status"] == true) {
         textEditingControllerCategory.text = "";
-        showSnackBar(message: "Category created", color: AppColors.mainColor);
+        showSnackBar(message: "Category created", color: AppColors.mainColor,context: context);
         await getCategories(shopId, "cash-out");
       } else {
-        showSnackBar(message: "Category created", color: Colors.red);
+        showSnackBar(message: "Category created", color: Colors.red,context: context);
       }
     } catch (e) {
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
@@ -72,9 +72,9 @@ class ExpenseController extends GetxController {
 
   saveExpense({required shopId, required attendantId, required context}) async {
     if (textEditingControllerName.text == "") {
-      showSnackBar(message: "Enter expense name", color: Colors.red);
+      showSnackBar(message: "Enter expense name", color: Colors.red,context: context);
     } else if (textEditingControllerAmount.text == "") {
-      showSnackBar(message: "Enter expense amount", color: Colors.red);
+      showSnackBar(message: "Enter expense amount", color: Colors.red,context: context);
     } else {
       try {
         LoadingDialog.showLoadingDialog(
@@ -86,7 +86,8 @@ class ExpenseController extends GetxController {
           "amount": int.parse(textEditingControllerAmount.text),
           "shop": shopId,
           "name": textEditingControllerName.text,
-          "attendantId": attendantId
+          "attendantId": attendantId,
+          "date":DateTime.parse(DateTime.now().toString()).millisecondsSinceEpoch,
         };
         var response = await Expense().createExpense(body: body);
         Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
@@ -100,10 +101,10 @@ class ExpenseController extends GetxController {
               type: "notcashflow");
           Get.back();
           showSnackBar(
-              message: response["message"], color: AppColors.mainColor);
+              message: response["message"], color: AppColors.mainColor,context: context);
         } else {
           showSnackBar(
-              message: response["message"], color: AppColors.mainColor);
+              message: response["message"], color: AppColors.mainColor,context: context);
         }
       } catch (e) {
         Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
@@ -122,16 +123,15 @@ class ExpenseController extends GetxController {
       getExpenseByDateLoad.value = true;
       var now = type != "cashflow" ? endingDate : DateTime.now();
       var tomm = now.add(new Duration(days: 1));
-      var today = new DateFormat('yyyy-MM-dd')
-          .parse(new DateFormat('yyyy-MM-dd')
+      var today = new DateFormat().parse(new DateFormat()
               .format(type != "cashflow" ? startingDate : now))
           .toIso8601String();
-      var tomorrow = new DateFormat('yyyy-MM-dd')
-          .parse(new DateFormat('yyyy-MM-dd').format(tomm));
+      var tomorrow = new DateFormat()
+          .parse(new DateFormat().format(tomm));
       var response = await Expense().getExpenseByDate(
           shopId: shopId,
-          startDate: type == "cashflow" ? startingDate : today,
-          endDate: type == "cashflow" ? endingDate : tomorrow);
+          startDate: type == "cashflow" ? DateTime.parse(startingDate).millisecondsSinceEpoch :DateTime.parse(today).millisecondsSinceEpoch ,
+          endDate: type == "cashflow" ? DateTime.parse(endingDate).millisecondsSinceEpoch :DateTime.parse(tomorrow.toString()).millisecondsSinceEpoch );
 
       if (response["status"] == true) {
         List fetchedList = response["body"];

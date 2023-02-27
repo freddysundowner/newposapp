@@ -151,7 +151,7 @@ class ProfilePage extends StatelessWidget {
       child: InkWell(
         onTap: () {
           onPressed();
-          print("hello");
+
         },
         child: Container(
           padding: EdgeInsets.all(15),
@@ -277,14 +277,14 @@ showPasswordResetDialog(BuildContext context, String id) {
                                   "") {
                             showSnackBar(
                                 message: "please fill all the fields",
-                                color: Colors.red);
+                                color: Colors.red,context: context);
                           } else if (authController
                                   .textEditingControllerNewPassword.text !=
                               authController
                                   .textEditingControllerConfirmPassword.text) {
                             showSnackBar(
                                 message: "Password mismatched",
-                                color: Colors.red);
+                                color: Colors.red,context: context);
                           } else {
                             Get.back();
                             authController.updateUserPasswords(

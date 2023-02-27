@@ -42,7 +42,7 @@ class AuthController extends GetxController {
   Rxn<AdminModel> currentUser = Rxn(null);
   RxString usertype = RxString("");
 
-  signUser() async {
+  signUser(context) async {
     if (signupkey.currentState!.validate()) {
       try {
         signuserLoad.value = true;
@@ -55,7 +55,7 @@ class AuthController extends GetxController {
         var response = await Admin().createAdmin(body: body);
         signuserLoad.value = false;
         if (response["status"] == false) {
-          showSnackBar(message: "${response["message"]}", color: Colors.red);
+          showSnackBar(message: "${response["message"]}", color: Colors.red,context: context);
         } else {
           AdminModel adminModel = AdminModel.fromJson(response["body"]);
           SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -71,11 +71,11 @@ class AuthController extends GetxController {
         signuserLoad.value = false;
       }
     } else {
-      showSnackBar(message: "please fill all fields", color: Colors.red);
+      showSnackBar(message: "please fill all fields", color: Colors.red,context: context);
     }
   }
 
-  login() async {
+  login(context) async {
     if (loginKey.currentState!.validate()) {
       try {
         loginuserLoad.value = true;
@@ -105,7 +105,7 @@ class AuthController extends GetxController {
         loginuserLoad.value = false;
       }
     } else {
-      showSnackBar(message: "please fill all fields", color: Colors.red);
+      showSnackBar(message: "please fill all fields", color: Colors.red,context: context);
     }
   }
 
@@ -122,8 +122,7 @@ class AuthController extends GetxController {
 
       getUserByIdLoad.value = false;
       AdminModel userModel = AdminModel.fromJson(user["body"]);
-      shopController.currentShop.value =
-          userModel.shops!.isNotEmpty ? userModel.shops![0] : null;
+      shopController.currentShop.value = userModel.shops!.isNotEmpty ? userModel.shops![0] : null;
       currentUser.value = userModel;
       return userModel;
     } catch (e) {
@@ -143,7 +142,7 @@ class AuthController extends GetxController {
     return user;
   }
 
-  updateAdmin() async {
+  updateAdmin(context) async {
     try {
       updateAdminLoad.value = true;
       Map<String, dynamic> body = {
@@ -151,13 +150,17 @@ class AuthController extends GetxController {
         if (phoneController.text != "") "phonenumber": phoneController.text,
         if (nameController.text != "") "name": nameController.text,
       };
-      var response = await Admin().updateAdmin(body: body, id: currentUser.value?.id);
+      var response =
+          await Admin().updateAdmin(body: body, id: currentUser.value?.id);
+
       if (response["status"] == true) {
+        getUserById();
         clearDataFromTextFields();
         Get.back();
-        showSnackBar(message: response["message"], color: AppColors.mainColor);
+        showSnackBar(message: response["message"], color: AppColors.mainColor,context:
+        context);
       } else {
-        showSnackBar(message: response["message"], color: AppColors.mainColor);
+        showSnackBar(message: response["message"], color: AppColors.mainColor,context: context);
       }
       updateAdminLoad.value = false;
     } catch (e) {
@@ -196,9 +199,9 @@ class AuthController extends GetxController {
       var response = await Admin().deleteAdmin(id);
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
       if (response["status"] == false) {
-        showSnackBar(message: response["message"], color: Colors.red);
+        showSnackBar(message: response["message"], color: Colors.red,context: context);
       } else {
-        showSnackBar(message: response["message"], color: Colors.redAccent);
+        showSnackBar(message: response["message"], color: Colors.redAccent,context: context);
         Get.find<AuthController>().getUserById();
       }
     } catch (e) {
@@ -218,9 +221,9 @@ class AuthController extends GetxController {
       var response = await Admin().updatePassword(id: id, body: body);
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
       if (response["status"] == true) {
-        showSnackBar(message: response["message"], color: AppColors.mainColor);
+        showSnackBar(message: response["message"], color: AppColors.mainColor,context: context);
       } else {
-        showSnackBar(message: response["message"], color: AppColors.mainColor);
+        showSnackBar(message: response["message"], color: AppColors.mainColor,context: context);
       }
     } catch (e) {
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
@@ -242,8 +245,9 @@ class AuthController extends GetxController {
           Get.snackbar("", message,
               backgroundColor: Colors.red, colorText: Colors.white);
         } else {
-          AttendantModel attendantModel = AttendantModel.fromJson(response["body"]);
-          Get.find<AttendantController>().attendant.value= attendantModel;
+          AttendantModel attendantModel =
+              AttendantModel.fromJson(response["body"]);
+          Get.find<AttendantController>().attendant.value = attendantModel;
           SharedPreferences prefs = await SharedPreferences.getInstance();
           prefs.setString("userId", attendantModel.id!);
           prefs.setString("token", response["token"]);
@@ -253,11 +257,9 @@ class AuthController extends GetxController {
           Get.offAll(() => AttendantLanding());
         }
         LoginAttendantLoad.value = false;
-      } else {
-      }
+      } else {}
     } catch (e) {
       LoginAttendantLoad.value = false;
     }
   }
-
 }

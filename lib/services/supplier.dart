@@ -40,7 +40,7 @@ class Supplier {
   deleteStockProduct(String productId) async{
     var response = await DbBase()
         .databaseRequest(product+"deletestockin/${productId}", DbBase().getRequestType);
-    print(response);
+
     var data = jsonDecode(response);
     return data;
   }

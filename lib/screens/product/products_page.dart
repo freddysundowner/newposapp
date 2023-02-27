@@ -106,7 +106,7 @@ class ProductPage extends StatelessWidget {
                                       null
                                   ? ""
                                   : "${createShopController.currentShop.value?.id}",
-                              type: "product");
+                              type: "product",context: context);
                         },
                         icon: Icon(Icons.qr_code))
                   ],

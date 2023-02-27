@@ -73,7 +73,7 @@ Widget incrementWidget({required ProductModel product, required index, required 
                           ),
                           TextButton(
                             onPressed: () {
-                              productController.updateQuantity(product);
+                              productController.updateQuantity(product,context);
                               Get.back();
                             },
                             child: Text(

@@ -131,7 +131,7 @@ class SignUp extends StatelessWidget {
                               ),
                             ),
                             onPressed: () {
-                              authController.signUser();
+                              authController.signUser(context);
                             },
                           );
                   }),

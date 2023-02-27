@@ -5,6 +5,8 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 import '../../controllers/shop_controller.dart';
+import '../../utils/colors.dart';
+import '../../widgets/bigtext.dart';
 
 class CashOutLayout extends StatelessWidget {
   CashOutLayout({Key? key}) : super(key: key);
@@ -411,38 +413,23 @@ class CashOutLayout extends StatelessWidget {
         ),
       ),
       bottomNavigationBar: BottomAppBar(
-          child: Container(
-        height: kToolbarHeight,
-        width: double.infinity,
-        child: Row(
-          children: [
-            Expanded(
-                child: GestureDetector(
-              onTap: () {
-                Get.back();
-              },
+          child:Container(
+              width: double.infinity,
+              padding: EdgeInsets.all(10),
+              height: kToolbarHeight * 1.5,
+              decoration:
+              BoxDecoration(border: Border.all(width: 1, color: Colors.grey)),
               child: Container(
-                  height: kToolbarHeight,
-                  color: Colors.white,
-                  child: Center(
-                      child: Text(
-                    "Close",
-                    style: TextStyle(color: Colors.blue),
-                  ))),
-            )),
-            Expanded(
-                child: InkWell(
-              onTap: () {},
-              child: Container(
-                  height: kToolbarHeight,
-                  color: Colors.yellow,
-                  child: Center(
-                      child:
-                          Text("Save", style: TextStyle(color: Colors.white)))),
-            ))
-          ],
-        ),
-      )),
+                padding: EdgeInsets.all(10),
+                width: double.infinity,
+                decoration: BoxDecoration(
+                    border: Border.all(width: 3, color: AppColors.mainColor),
+                    borderRadius: BorderRadius.circular(40)),
+                child: Center(
+                    child: majorTitle(
+                        title: "Save", color: AppColors.mainColor, size: 18.0)),
+              ))
+      ),
     );
   }
 }

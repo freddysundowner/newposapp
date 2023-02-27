@@ -108,9 +108,8 @@ class SalesController extends GetxController
       required screen}) {
     if (selectedPaymentMethod.value == "Credit") {
       if (customerId == "") {
-        showSnackBar(
-            message: "please select customer to sell to",
-            color: Colors.redAccent);
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("please select customer to sell to")));
       } else {
         showSaleDatePicker(
             context: context,
@@ -122,7 +121,7 @@ class SalesController extends GetxController
     } else if (selectedPaymentMethod.value == "Wallet" && customerId == "") {
       showSnackBar(
           message: "please select customer to sell to",
-          color: Colors.redAccent);
+          color: Colors.redAccent,context: context);
     } else {
       saveSaleData(
           customerId: customerId,
@@ -154,13 +153,14 @@ class SalesController extends GetxController
         "paymentMethod": selectedPaymentMethod.value,
         "totaldiscount": totaldiscount,
         "shop": shopId,
+
         "creditTotal": balance.value,
         "customerId": customerId,
         "duedate": type == "noncredit" ? "" : dueDate.value
       };
+
       var products = selectedList.map((element) => element).toList();
-      var response =
-          await Sales().createSales({"sale": sale, "products": products});
+      var response = await Sales().createSales({"sale": sale, "products": products,"date":DateTime.parse(DateTime.now().toString()).millisecondsSinceEpoch,});
 
       if (response["status"] == true) {
         selectedList.value = [];
@@ -178,13 +178,13 @@ class SalesController extends GetxController
           Get.back();
         }
 
-        showSnackBar(message: response["message"], color: AppColors.mainColor);
+        showSnackBar(message: response["message"], color: AppColors.mainColor,context: context);
       } else if (response["status"] == false &&
           selectedPaymentMethod.value == "Wallet") {
         saveSaleLoad.value = false;
         showDepositAllertDialog(context);
       } else {
-        showSnackBar(message: response["message"], color: Colors.red);
+        showSnackBar(message: response["message"], color: Colors.red,context: context);
       }
 
       saveSaleLoad.value = false;
@@ -377,9 +377,10 @@ class SalesController extends GetxController
     try {
       salesByShopLoad.value = true;
       var response = await Sales().getShopSales(id);
-      if (response["status"] ==true) {
+      if (response["status"] == true) {
         List data = response["body"];
-        List<SalesModel> saleData = data.map((e) => SalesModel.fromJson(e)).toList();
+        List<SalesModel> saleData =
+            data.map((e) => SalesModel.fromJson(e)).toList();
         sales.assignAll(saleData);
       } else {
         sales.value = [];
@@ -388,7 +389,6 @@ class SalesController extends GetxController
     } catch (e) {
       salesByShopLoad.value = false;
     }
-
   }
 
   getSalesOnCredit({String? shopId}) async {
@@ -396,14 +396,13 @@ class SalesController extends GetxController
       salesOnCreditLoad.value = true;
       var response = await Sales().getSalesOnCredit(shopId);
 
-      if (response["status"]==true) {
+      if (response["status"] == true) {
         sales.clear();
 
         List fetchedProducts = response["body"];
         List<SalesModel> listProducts =
             fetchedProducts.map((e) => SalesModel.fromJson(e)).toList();
         sales.assignAll(listProducts);
-
       } else {
         sales.value = [];
       }
@@ -425,18 +424,19 @@ class SalesController extends GetxController
           .toIso8601String();
       var tomorrow = new DateFormat('yyyy-MM-dd')
           .parse(new DateFormat('yyyy-MM-dd').format(tomm));
+
+
       var response = await Transactions().getProfitTransactions(
           shopId,
-          type == "finance" ? start : today,
-          type == "finance" ? end : tomorrow);
+          type == "finance" ?  DateTime.parse(start).millisecondsSinceEpoch :  DateTime.parse(today).millisecondsSinceEpoch,
+          type == "finance" ?  DateTime.parse(end).millisecondsSinceEpoch : DateTime.parse(tomorrow.toString()).millisecondsSinceEpoch);
+      print(response);
       if (response != null) {
         profitModel.value = ProfitModel.fromJson(response);
       } else {
         profitModel.value = ProfitModel();
       }
-    } catch (e) {
-
-    }
+    } catch (e) {}
   }
 
   @override
@@ -445,8 +445,5 @@ class SalesController extends GetxController
     super.onInit();
   }
 
-  void returnSale(historyBody, salesId) {
-
-
-  }
+  void returnSale(historyBody, salesId) {}
 }

@@ -6,6 +6,8 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 import '../../controllers/shop_controller.dart';
+import '../../utils/colors.dart';
+import '../../widgets/bigtext.dart';
 
 class CashInLayout extends StatelessWidget {
   CashInLayout({Key? key}) : super(key: key);
@@ -128,9 +130,11 @@ class CashInLayout extends StatelessWidget {
                                           child: TextFormField(
                                               decoration: InputDecoration(
                                                   hintText:
-                                                  "eg.Loan,Capital,Contribution etc",
+                                                      "eg.Loan,Capital,Contribution etc",
                                                   border: OutlineInputBorder(
-                                                    borderRadius: BorderRadius.circular(10),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            10),
                                                   ))),
                                         ),
                                         actions: [
@@ -140,7 +144,8 @@ class CashInLayout extends StatelessWidget {
                                             },
                                             child: Text(
                                               "Cancel".toUpperCase(),
-                                              style: TextStyle(color: Colors.blue),
+                                              style:
+                                                  TextStyle(color: Colors.blue),
                                             ),
                                           ),
                                           TextButton(
@@ -149,7 +154,8 @@ class CashInLayout extends StatelessWidget {
                                             },
                                             child: Text(
                                               "Save now".toUpperCase(),
-                                              style: TextStyle(color: Colors.blue),
+                                              style:
+                                                  TextStyle(color: Colors.blue),
                                             ),
                                           ),
                                         ],
@@ -233,37 +239,20 @@ class CashInLayout extends StatelessWidget {
       ),
       bottomNavigationBar: BottomAppBar(
         child: Container(
-            height: kToolbarHeight,
             width: double.infinity,
-            child: Row(
-              children: [
-                Expanded(
-                    child: GestureDetector(
-                  onTap: () {
-                    Get.back();
-                  },
-                  child: Container(
-                      height: kToolbarHeight,
-                      color: Colors.white,
-                      child: Center(
-                          child: Text(
-                        "Close",
-                        style: TextStyle(color: Colors.blue),
-                      ))),
-                )),
-                Expanded(
-                    child: InkWell(
-                  onTap: () {
-                    // cashInController.saveCashIn();
-                  },
-                  child: Container(
-                      height: kToolbarHeight,
-                      color: Colors.yellow,
-                      child: Center(
-                          child: Text("Save",
-                              style: TextStyle(color: Colors.white)))),
-                ))
-              ],
+            padding: EdgeInsets.all(10),
+            height: kToolbarHeight * 1.5,
+            decoration:
+                BoxDecoration(border: Border.all(width: 1, color: Colors.grey)),
+            child: Container(
+              padding: EdgeInsets.all(10),
+              width: double.infinity,
+              decoration: BoxDecoration(
+                  border: Border.all(width: 3, color: AppColors.mainColor),
+                  borderRadius: BorderRadius.circular(40)),
+              child: Center(
+                  child: majorTitle(
+                      title: "Save", color: AppColors.mainColor, size: 18.0)),
             )),
       ),
     );

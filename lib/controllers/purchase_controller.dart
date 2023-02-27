@@ -34,7 +34,7 @@ class PurchaseController extends GetxController {
       required context,
       required screen}) async {
     if (balance.value > 0 && selectedSupplier.value == "") {
-      showSnackBar(message: "please select supplier", color: Colors.red);
+      showSnackBar(message: "please select supplier", color: Colors.red,context: context);
     } else {
       try {
         LoadingDialog.showLoadingDialog(
@@ -50,7 +50,7 @@ class PurchaseController extends GetxController {
           "shop": shopId,
         };
         var response = await Purchases().createPurchase(
-            shopId: shopId, body: {"supplier": supplier, "products": products});
+            shopId: shopId, body: {"supplier": supplier, "products": products,"date":DateTime.parse(DateTime.now().toString()).millisecondsSinceEpoch,});
         Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
         if (response["status"] == true) {
           balance.value = 0;
@@ -64,7 +64,7 @@ class PurchaseController extends GetxController {
           }
 
           showSnackBar(
-              message: response["message"], color: AppColors.mainColor);
+              message: response["message"], color: AppColors.mainColor,context: context);
         }
       } catch (e) {
         Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
@@ -164,7 +164,7 @@ class PurchaseController extends GetxController {
     calculateAmount(index);
   }
 
-  Future<void> scanQR({required shopId}) async {
+  Future<void> scanQR({required shopId,required context}) async {
     String barcodeScanRes;
     try {
       barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
@@ -173,7 +173,7 @@ class PurchaseController extends GetxController {
       await productController.searchProduct(shopId, "product");
       if (productController.products.length == 0) {
         showSnackBar(
-            message: "product doesnot exist in this shop", color: Colors.red);
+            message: "product doesnot exist in this shop", color: Colors.red,context: context);
       } else {
         for (int i = 0; i < productController.products.length; i++) {
           changeSelectedList(productController.products[i]);
@@ -181,7 +181,7 @@ class PurchaseController extends GetxController {
       }
     } on PlatformException {
       showSnackBar(
-          message: 'Failed to get platform version.', color: Colors.red);
+          message: 'Failed to get platform version.', color: Colors.red,context: context);
     }
   }
 

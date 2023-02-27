@@ -29,16 +29,16 @@ class CashFlowCategories extends StatelessWidget {
             children: [
               Text("Cashflow Category",
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: 14,
                     fontWeight: FontWeight.bold,
                   )),
               Obx(() {
                 return Text(
                   createShopController.currentShop.value == null
                       ? ""
-                      : createShopController.currentShop.value!.name!,
+                      : "${createShopController.currentShop.value!.name!}".capitalize!,
                   style: TextStyle(
-                    fontSize: 10,
+                    fontSize: 12,
                   ),
                 );
               })
@@ -288,6 +288,7 @@ class CashOutUi extends StatelessWidget {
                             content: Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: TextFormField(
+
                                   decoration: InputDecoration(
                                       hintText: "eg.Personaal use etc",
                                       border: OutlineInputBorder(
@@ -297,6 +298,7 @@ class CashOutUi extends StatelessWidget {
                             actions: [
                               TextButton(
                                 onPressed: () {
+
                                   Navigator.pop(context);
                                 },
                                 child: Text(

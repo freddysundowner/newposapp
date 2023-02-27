@@ -9,11 +9,13 @@ showEditDialog({required user, required context}) {
   SupplierController supplierController = Get.find<SupplierController>();
   showDialog(
       context: context,
+
       builder: (_) {
         return Dialog(
+
           child: Container(
             height: MediaQuery.of(context).size.height * 0.6,
-            padding: EdgeInsets.all(10),
+            padding: EdgeInsets.only(left: 10,right: 10,top: 10,bottom: 3),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

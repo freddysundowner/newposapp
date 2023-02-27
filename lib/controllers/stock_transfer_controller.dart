@@ -60,7 +60,7 @@ class StockTransferController extends GetxController {
 
         Get.to(() => TransferHistory());
       } else {
-        showSnackBar(message: response["message"], color: Colors.red);
+        showSnackBar(message: response["message"], color: Colors.red,context: context);
       }
     } catch (e) {
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
@@ -72,9 +72,7 @@ class StockTransferController extends GetxController {
   gettingTransferHistory({required shopId, required type}) async {
     try {
       gettingTransferHistoryLoad.value == true;
-      var response =
-          await Products().getTransHistory(shopId: shopId, type: type);
-
+      var response = await Products().getTransHistory(shopId: shopId, type: type);
       if (response["status"] == true) {
         List jsonData = response["body"];
         List<StockTransferHistory> transfer =

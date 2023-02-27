@@ -7,7 +7,6 @@ class Wallet {
   createWallet(Map<String, dynamic> body) async {
     var response = await DbBase()
         .databaseRequest(wallet, DbBase().postRequestType, body: body);
-    print("wewe${response}");
     return jsonDecode(response);
   }
 

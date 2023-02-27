@@ -56,7 +56,6 @@ class AllSalesPage extends StatelessWidget {
               labelColor: AppColors.mainColor,
               onTap: (value) {
                 salesController.salesInitialIndex.value = value;
-                print(salesController.salesInitialIndex.value);
                 if (value == 0) {
                   salesController.getSalesByShop(
                       id: shopController.currentShop.value?.id);
@@ -123,7 +122,6 @@ class AllSales extends StatelessWidget {
                   itemBuilder: (context, index) {
                     SalesModel salesModel =
                         salesController.sales.elementAt(index);
-                    print(salesModel.quantity);
                     return soldCard(salesModel: salesModel);
                   });
     });
@@ -180,7 +178,6 @@ class SalesOnCredit extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(salesController.sales.length);
     return Obx(() {
       return salesController.salesOnCreditLoad.value
           ? Center(

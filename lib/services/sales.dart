@@ -6,6 +6,7 @@ import 'client.dart';
 
 class Sales {
   createSales(Map<String, dynamic> salesdata) async {
+    print(salesdata);
     var response = await DbBase()
         .databaseRequest(sales, DbBase().postRequestType, body: salesdata);
     var data = jsonDecode(response);

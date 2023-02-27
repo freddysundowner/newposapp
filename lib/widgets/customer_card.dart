@@ -45,7 +45,7 @@ Widget customerWidget({required CustomerModel customerModel, required type}) {
               alignment: Alignment.centerRight,
               child: InkWell(
                 onTap: () {
-                  print("hello");
+
                   Get.to(() => CustomerInfoPage(
                         id: customerModel.id,
                         user: type,

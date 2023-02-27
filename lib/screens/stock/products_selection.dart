@@ -33,7 +33,6 @@ class ProductSelections extends StatelessWidget {
         stockTransferController.selectedProducts.value=[];
         stockTransferController.selectedProducts.refresh();
         productController.products.refresh();
-        print("object");
         return true;
       },
       child: Scaffold(
@@ -85,7 +84,7 @@ class ProductSelections extends StatelessWidget {
                                 showSnackBar(
                                     message:
                                         "You cannot transfer product that is outof stock",
-                                    color: Colors.red);
+                                    color: Colors.red,context: context);
                               }
                             },
                             child: Padding(

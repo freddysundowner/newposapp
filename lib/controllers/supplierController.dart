@@ -68,9 +68,9 @@ class SupplierController extends GetxController {
         clearTexts();
         await getSuppliersInShop(shopId);
         Get.back();
-        showSnackBar(message: response["message"], color: AppColors.mainColor);
+        showSnackBar(message: response["message"], color: AppColors.mainColor,context: context);
       } else {
-        showSnackBar(message: response["message"], color: Colors.red);
+        showSnackBar(message: response["message"], color: Colors.red,context: context);
       }
 
       creatingSupplierLoad.value = false;
@@ -173,11 +173,11 @@ class SupplierController extends GetxController {
       var response = await Supplier().updateSupplier(body: body, id: id);
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
       if (response["status"] == true) {
-        showSnackBar(message: response["message"], color: AppColors.mainColor);
+        showSnackBar(message: response["message"], color: AppColors.mainColor,context: context);
         clearTexts();
         await getSupplierById(id);
       } else {
-        showSnackBar(message: response["message"], color: AppColors.mainColor);
+        showSnackBar(message: response["message"], color: AppColors.mainColor,context: context);
       }
     } catch (e) {
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
@@ -192,27 +192,27 @@ class SupplierController extends GetxController {
       var response = await Supplier().deleteCustomer(id: id);
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
       if (response["status"] == true) {
-        showSnackBar(message: response["message"], color: AppColors.mainColor);
+        showSnackBar(message: response["message"], color: AppColors.mainColor,context: context);
 
         await getSuppliersInShop(shopId);
       } else {
-        showSnackBar(message: response["message"], color: AppColors.mainColor);
+        showSnackBar(message: response["message"], color: AppColors.mainColor,context: context);
       }
     } catch (e) {
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
     }
   }
 
-  returnOrderToSupplier(uid, quantity, shopId) async {
+  returnOrderToSupplier(uid, quantity, shopId,context) async {
     SalesController salesController = Get.find<SalesController>();
     try {
       returningLoad.value = true;
       if (quantityController.text == "") {
-        showSnackBar(color: Colors.red, message: "Enter quantity to return");
+        showSnackBar(color: Colors.red, message: "Enter quantity to return",context: context);
       } else if (int.parse(quantityController.text) > quantity) {
         showSnackBar(
             message: "Quantity cannot be greater than $quantity",
-            color: Colors.red);
+            color: Colors.red,context: context);
       } else {
         Map<String, dynamic> body = {
           "quantity": int.parse(quantityController.text)
@@ -220,7 +220,7 @@ class SupplierController extends GetxController {
         await Supplier().returnOrderToSupplier(uid, body);
         quantityController.text = "";
         showSnackBar(
-            message: "Product Has been Returned", color: AppColors.mainColor);
+            message: "Product Has been Returned", color: AppColors.mainColor,context: context);
       }
 
       returningLoad.value = false;
@@ -246,13 +246,13 @@ class SupplierController extends GetxController {
     }
   }
 
-  depositForSUpplier(StockInCredit stockInCredit) async {
+  depositForSUpplier(StockInCredit stockInCredit,context) async {
     try {
       if (int.parse(amountController.text) >
           int.parse("${stockInCredit.balance}")) {
         showSnackBar(
             message: "Amaunt cannot be greater than ${stockInCredit.balance}",
-            color: Colors.red);
+            color: Colors.red,context: context);
       } else {
         Map<String, dynamic> body = {
           "amount": int.parse(amountController.text)
@@ -260,12 +260,12 @@ class SupplierController extends GetxController {
         var response = await Supplier().paySupplyCredit(stockInCredit, body);
 
         if (response["status"] == true) {
-          showSnackBar(message: response["message"], color: AppColors.mainColor);
+          showSnackBar(message: response["message"], color: AppColors.mainColor,context: context);
           amountController.text = "";
           getSupplierCredit(stockInCredit.shop, stockInCredit.supplier);
 
         } else {
-          showSnackBar(message: "Payment failed", color: Colors.red);
+          showSnackBar(message: "Payment failed", color: Colors.red,context: context);
         }
       }
     } catch (e) {
@@ -273,14 +273,14 @@ class SupplierController extends GetxController {
     }
   }
 
-  deleteProductFromStock(String productId, String shopId) async {
+  deleteProductFromStock(String productId, String shopId,context) async {
     SalesController salesController = Get.find<SalesController>();
     var response = await Supplier().deleteStockProduct(productId);
     if (response["status"] == true) {
-      showSnackBar(message: response["message"], color: AppColors.mainColor);
+      showSnackBar(message: response["message"], color: AppColors.mainColor,context: context);
 
     } else {
-      showSnackBar(message: response["message"], color: Colors.red);
+      showSnackBar(message: response["message"], color: Colors.red,context: context);
     }
   }
 

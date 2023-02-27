@@ -24,14 +24,14 @@ class ShopController extends GetxController {
   Rxn<ShopModel> currentShop = Rxn(null);
   RxList<ShopModel> AdminShops = RxList([]);
 
-  createShop({required page}) async {
+  createShop({required page,required context}) async {
     if (nameController.text == "" ||
         businessController.text == "" ||
         reqionController.text == "") {
-      showSnackBar(message: "please enter all fields", color: Colors.red);
+      showSnackBar(message: "please enter all fields", color: Colors.red,context: context);
     } else if (terms.value == false) {
       showSnackBar(
-          message: "Accept terms and conditons to continue", color: Colors.red);
+          message: "Accept terms and conditons to continue", color: Colors.red,context: context);
     } else {
       try {
         createShopLoad.value = true;
@@ -48,7 +48,7 @@ class ShopController extends GetxController {
 
         var response = await Shop().createShop(body: body);
         if (response["status"] == false) {
-          showSnackBar(message: response["message"], color: Colors.red);
+          showSnackBar(message: response["message"], color: Colors.red,context: context);
         } else {
           clearTextFields();
           await getShopsByAdminId(adminId: userId);
@@ -58,7 +58,7 @@ class ShopController extends GetxController {
           } else {
             Get.back();
           }
-          showSnackBar(message: response["message"], color: Colors.red);
+          showSnackBar(message: response["message"], color: Colors.red,context: context);
         }
 
         createShopLoad.value = false;
@@ -101,7 +101,7 @@ class ShopController extends GetxController {
     currency.value = shopModel.currency!;
   }
 
-  updateShop({required id, required adminId}) async {
+  updateShop({required id, required adminId,required context}) async {
     try {
       updateShopLoad.value = true;
       Map<String, dynamic> body = {
@@ -114,7 +114,7 @@ class ShopController extends GetxController {
       var response = await Shop().updateShops(id: id, body: body);
       getShopsByAdminId(adminId: adminId);
       Get.back();
-      showSnackBar(message: response["message"], color: AppColors.mainColor);
+      showSnackBar(message: response["message"], color: AppColors.mainColor,context: context);
 
       updateShopLoad.value = false;
     } catch (e) {
@@ -122,13 +122,13 @@ class ShopController extends GetxController {
     }
   }
 
-  deleteShop({required id, required adminId}) async {
+  deleteShop({required id, required adminId,required context}) async {
     try {
       deleteShopLoad.value = true;
       var response = await Shop().deleteShop(id: id);
       getShopsByAdminId(adminId: adminId);
       Get.back();
-      showSnackBar(message: response["message"], color: AppColors.mainColor);
+      showSnackBar(message: response["message"], color: AppColors.mainColor,context: context);
 
       deleteShopLoad.value = false;
     } catch (e) {

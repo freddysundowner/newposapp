@@ -51,7 +51,7 @@ class Home extends StatelessWidget {
             gap: 8,
             onTabChange: (value) {
               homeControler.selectedIndex.value = value;
-              print(homeControler.selectedIndex.value);
+
             },
             padding: EdgeInsets.all(16),
             backgroundColor: Colors.transparent,

@@ -108,7 +108,7 @@ Widget SalesContainer(
                                             showSnackBar(
                                                 message:
                                                     "selling price cannot be below${productModel.minPrice}",
-                                                color: Colors.red);
+                                                color: Colors.red,context: context);
                                           } else if (int.parse(
                                                   "${salesController.textEditingSellingPrice.text}") >
                                               int.parse(
@@ -116,7 +116,7 @@ Widget SalesContainer(
                                             showSnackBar(
                                                 message:
                                                     "selling price cannot be above${productModel.sellingPrice![0]}",
-                                                color: Colors.red);
+                                                color: Colors.red,context: context);
                                           } else {
                                             productModel.selling = int.parse(
                                                 salesController
@@ -190,7 +190,7 @@ Widget SalesContainer(
                                   showSnackBar(
                                       message:
                                           "discount cannot be greater than ${productModel.discount! * productModel.cartquantity!}",
-                                      color: Colors.red);
+                                      color: Colors.red,context: context);
                                 } else {
                                   productModel.allowedDiscount =
                                       int.parse(textEditingController.text);

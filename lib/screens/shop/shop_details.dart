@@ -113,7 +113,7 @@ class ShopDetails extends StatelessWidget {
                           deleteShopDialog(context, () {
                             shopController.deleteShop(
                                 id: shopModel.id,
-                                adminId: authController.currentUser.value?.id);
+                                adminId: authController.currentUser.value?.id,context: context);
                           });
                         },
                         child: Container(
@@ -167,7 +167,7 @@ class ShopDetails extends StatelessWidget {
                     onTap: () {
                       shopController.updateShop(
                           id: shopModel.id,
-                          adminId: authController.currentUser.value?.id);
+                          adminId: authController.currentUser.value?.id,context: context);
                     },
                     child: Container(
                       padding: EdgeInsets.all(10),

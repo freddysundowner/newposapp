@@ -136,7 +136,7 @@ class CreateShop extends StatelessWidget {
                 : InkWell(
                     splashColor: Colors.transparent,
                     onTap: () {
-                      shopController.createShop(page: page);
+                      shopController.createShop(page: page,context: context);
                     },
                     child: Container(
                       padding: EdgeInsets.all(10),

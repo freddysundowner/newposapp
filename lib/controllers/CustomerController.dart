@@ -67,9 +67,9 @@ class CustomerController extends GetxController
         await getCustomersInShop(shopId);
         clearTexts();
         Get.back();
-        showSnackBar(message: response["message"], color: AppColors.mainColor);
+        showSnackBar(message: response["message"], color: AppColors.mainColor,context: context);
       } else {
-        showSnackBar(message: response["message"], color: Colors.red);
+        showSnackBar(message: response["message"], color: Colors.red,context: context);
       }
       creatingCustomerLoad.value = false;
     } catch (e) {
@@ -170,11 +170,11 @@ class CustomerController extends GetxController
       var response = await Customer().updateCustomer(body: body, id: id);
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
       if (response["status"] == true) {
-        showSnackBar(message: response["message"], color: AppColors.mainColor);
+        showSnackBar(message: response["message"], color: AppColors.mainColor,context: context);
         clearTexts();
         await getCustomerById(id);
       } else {
-        showSnackBar(message: response["message"], color: AppColors.mainColor);
+        showSnackBar(message: response["message"], color: AppColors.mainColor,context: context);
       }
     } catch (e) {
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
@@ -191,10 +191,10 @@ class CustomerController extends GetxController
       if (response["status"] == true) {
         clearTexts();
         Get.back();
-        showSnackBar(message: response["message"], color: AppColors.mainColor);
+        showSnackBar(message: response["message"], color: AppColors.mainColor,context: context);
         await getCustomersInShop(shopId);
       } else {
-        showSnackBar(message: response["message"], color: AppColors.mainColor);
+        showSnackBar(message: response["message"], color: AppColors.mainColor,context: context);
       }
     } catch (e) {
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();

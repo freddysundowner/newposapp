@@ -73,6 +73,9 @@ class CustomersPage extends StatelessWidget {
             indicatorColor: AppColors.mainColor,
             labelColor: AppColors.mainColor,
             unselectedLabelColor: Colors.grey,
+            onTap: (value){
+
+            },
             tabs: [
               Tab(text: "All"),
               Tab(text: "Debtors"),
@@ -151,7 +154,9 @@ class AllCustomers extends StatelessWidget {
 class Debtors extends StatelessWidget {
   final type;
 
-  Debtors({Key? key, required this.type}) : super(key: key);
+  Debtors({Key? key, required this.type}) : super(key: key){
+
+  }
   CustomerController customersController = Get.find<CustomerController>();
   SupplierController supplierController = Get.find<SupplierController>();
   ShopController shopController = Get.find<ShopController>();

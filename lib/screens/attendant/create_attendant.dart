@@ -139,7 +139,7 @@ class CreateAttendant extends StatelessWidget {
                 : InkWell(
                     onTap: () {
                       attendantController.saveAttendant(
-                          shopId: shopController.currentShop.value?.id);
+                          shopId: shopController.currentShop.value?.id,context: context);
                     },
                     child: Container(
                       padding: EdgeInsets.all(10),

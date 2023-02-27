@@ -135,7 +135,7 @@ showProductModal(context, SupplyOrderModel supplyOrderModel, type) {
                     Get.back();
                     if (supplyOrderModel.supplier == null) {
                       showSnackBar(
-                          message: "no supplier found", color: Colors.red);
+                          message:  "please select customer to sell to", color: Colors.red,context: context);
                     } else {
                       showQuantityDialog(context, supplyOrderModel);
                     }

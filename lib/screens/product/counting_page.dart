@@ -87,7 +87,7 @@ class CountingPage extends StatelessWidget {
                     onPressed: () async {
                       productController.scanQR(
                           shopId: "${shopController.currentShop.value!.id}",
-                          type: "count");
+                          type: "count", context: context);
                     },
                     icon: Icon(Icons.qr_code))
               ],

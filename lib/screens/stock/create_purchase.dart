@@ -119,7 +119,7 @@ class CreatePurchase extends StatelessWidget {
                               onPressed: () {
                                 purchaseController.scanQR(
                                     shopId:
-                                        shopController.currentShop.value?.id);
+                                        shopController.currentShop.value?.id,context: context);
                               },
                               icon: Icon(Icons.qr_code))
                         ],

@@ -24,15 +24,15 @@ class StockTransfer extends StatelessWidget {
         backgroundColor: Colors.white,
         elevation: 0.3,
         title: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          majorTitle(
-              title: "Stock Transfer", color: Colors.black, size: 16.0),
-          minorTitle(
-              title: "${shopController.currentShop.value?.name}",
-              color: Colors.grey)
-        ],
-      ),
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            majorTitle(
+                title: "Stock Transfer", color: Colors.black, size: 16.0),
+            minorTitle(
+                title: "${shopController.currentShop.value?.name}",
+                color: Colors.grey)
+          ],
+        ),
         leading: IconButton(
           onPressed: () {
             Get.back();
@@ -46,7 +46,7 @@ class StockTransfer extends StatelessWidget {
           Center(
             child: InkWell(
               onTap: () {
-                Get.to(()=>TransferHistory());
+                Get.to(() => TransferHistory());
               },
               child: Container(
                 margin: EdgeInsets.all(5),
@@ -62,7 +62,6 @@ class StockTransfer extends StatelessWidget {
             ),
           ),
         ],
-
       ),
       body: SingleChildScrollView(
         child: Container(
@@ -85,7 +84,13 @@ class StockTransfer extends StatelessWidget {
                     Expanded(
                       child: TextFormField(
                         controller: shopController.searchController,
-                        onChanged: (value) {},
+                        onChanged: (value) {
+                          if (value != "") {
+                            shopController.getShopsByAdminId(
+                                adminId: authController.currentUser.value?.id,
+                                name: value);
+                          }
+                        },
                         decoration: InputDecoration(
                             contentPadding: EdgeInsets.fromLTRB(10, 3, 10, 3),
                             suffixIcon: IconButton(

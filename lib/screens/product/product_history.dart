@@ -51,7 +51,10 @@ class ProductHistory extends StatelessWidget {
               labelColor: AppColors.mainColor,
               unselectedLabelColor: Colors.black,
               onTap: (index) {
-                if (index == 1) {
+                if (index == 0) {
+                  productHistoryController.getProductHistory(
+                      productId: product.id, type: "sold");
+                }if (index == 1) {
                   productHistoryController.getProductHistory(
                       productId: product.id, type: "purchase");
                 }
@@ -158,10 +161,10 @@ class HistoryPages extends StatelessWidget {
                             fontWeight: FontWeight.bold,
                             fontSize: 18),
                       ),
-                      Text(
-                        "${productBody.product!.category ?? ""}",
-                        style: TextStyle(color: Colors.grey, fontSize: 16),
-                      ),
+                      // Text(
+                      //   "${productBody.product!.category ?? ""}",
+                      //   style: TextStyle(color: Colors.grey, fontSize: 16),
+                      // ),
                       Text('Qty ${productBody.quantity}'),
                       Text(
                           '${DateFormat("MMM dd,yyyy, hh:m a").format(productBody.createdAt!)} '),

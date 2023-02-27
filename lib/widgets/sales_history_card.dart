@@ -107,13 +107,13 @@ showbottomSheet(historyBody, context, salesId) {
                     showSnackBar(
                         message:
                             "You cannot return a product that ha no customer",
-                        color: Colors.red);
+                        color: Colors.red,context: context);
                   } else {
                     salesController.returnSale(historyBody, salesId);
                   }
                   Navigator.pop(context);
                 },
-                contentPadding: EdgeInsets.all(0),
+                contentPadding: EdgeInsets.all(10),
                 leading: Icon(
                   Icons.assignment_returned_outlined,
                   color: Colors.black,

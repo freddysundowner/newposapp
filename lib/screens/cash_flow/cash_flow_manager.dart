@@ -87,6 +87,7 @@ class CashFlowManager extends StatelessWidget {
           ],
         ),
         actions: [
+
           InkWell(
             onTap: () {
               // cashFlowController.showDatePicker(context: context);
@@ -99,10 +100,7 @@ class CashFlowManager extends StatelessWidget {
               ],
             ),
           ),
-          IconButton(
-              onPressed: () {
-              },
-              icon: Icon(Icons.download))
+          IconButton(onPressed: () {}, icon: Icon(Icons.download))
         ],
       ),
       body: SingleChildScrollView(
@@ -117,6 +115,7 @@ class CashFlowManager extends StatelessWidget {
                 children: [
                   SizedBox(height: 10),
                   Center(child: Text("Cash In Hand")),
+
                   SizedBox(height: 10),
                   Center(
                     child: Row(
@@ -246,150 +245,75 @@ class CashFlowManager extends StatelessWidget {
                 ),
               ),
             ),
-            Container(
-              padding: EdgeInsets.all(5),
-              child: Table(
-                border: TableBorder.all(width: 0.1, color: Colors.white),
-                children: [
-                  TableRow(children: [
-                    Text("Date",
-                        textAlign: TextAlign.center,
+            DataTable(
+                // Datatable widget that have the property columns and rows.
+                columns: [
+                  // Set the name of the colum
+                  DataColumn(
+                    label: Text('Date'),
+                  ),
+                  DataColumn(
+                    label: Text('Name'),
+                  ),
+                  DataColumn(
+                    label: Text('Total'),
+                  ),
+                ], rows: [
+              // Set the values to the columns
+              DataRow(cells: [
+                DataCell(
+                    Text("${DateFormat("MMM-yyyy").format(DateTime.now())}")),
+                DataCell(
+                    Text("Sales",
                         style: TextStyle(
-                            color: Colors.black, fontWeight: FontWeight.bold)),
-                    Text("Name",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            color: Colors.black, fontWeight: FontWeight.bold)),
-                    Text("Total",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            color: Colors.black, fontWeight: FontWeight.bold)),
-                  ]),
-                  TableRow(children: [
-                    TableCell(
-                        child: Padding(
-                      padding: const EdgeInsets.only(top: 4.0),
-                      child: Text(
-                          "${DateFormat("MMM-yyyy").format(DateTime.now())}",
-                          textAlign: TextAlign.center),
-                    )),
-                    TableCell(
-                        child: InkWell(
-                      onTap: () {
-                        // Get.to(SalesByDays(type: "today"));
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 4.0),
-                        child: Text(
-                          "Sales",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              color: Colors.purple,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    )),
-                    TableCell(
-                        child: Padding(
-                      padding: const EdgeInsets.only(top: 4.0),
-                      child: Text("${300}", textAlign: TextAlign.center),
-                    )),
-                  ]),
-                  TableRow(children: [
-                    TableCell(
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 4.0),
-                        child: Text(
-                            "${DateFormat("MMM-yyyy").format(DateTime.now())}",
-                            textAlign: TextAlign.center),
-                      ),
-                    ),
-                    TableCell(
-                        child: InkWell(
-                      onTap: () {
-                        // Get.to(() => StockPurchase());
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 4.0),
-                        child: Text(
-                          "Stock Purchased",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              color: Colors.purple,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    )),
-                    TableCell(
-                        child: Padding(
-                      padding: const EdgeInsets.only(top: 4.0),
-                      child: Text("${500}", textAlign: TextAlign.center),
-                    )),
-                  ]),
-                  TableRow(children: [
-                    TableCell(
-                      child: Padding(
-                        padding: const EdgeInsets.all(4.0),
-                        child: Text(
-                            "${DateFormat("MMM-yyyy").format(DateTime.now())}",
-                            textAlign: TextAlign.center),
-                      ),
-                    ),
-                    TableCell(
-                        child: InkWell(
-                      onTap: () {
-                        // Get.to(() => ExpenseAnalysis());
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 4.0),
-                        child: Text(
-                          "Expenses",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              color: Colors.purple,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    )),
-                    TableCell(
-                        child: Padding(
-                      padding: const EdgeInsets.only(top: 4.0),
-                      child: Text("${300}", textAlign: TextAlign.center),
-                    )),
-                  ]),
-                  TableRow(children: [
-                    TableCell(
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 4.0),
-                        child: Text(
-                          "${DateFormat("MMM-yyyy").format(DateTime.now())}",
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                    ),
-                    TableCell(
-                        child: InkWell(
-                      onTap: () {},
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 4.0),
-                        child: Text(
-                          "Customer Wallet",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              color: Colors.purple,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    )),
-                    TableCell(
-                        child: Padding(
-                      padding: const EdgeInsets.only(top: 4.0),
-                      child: Text("${2300}", textAlign: TextAlign.center),
-                    )),
-                  ])
-                ],
-              ),
-            ),
+                            color: Colors.purple,
+                            fontWeight: FontWeight.bold)), onTap: () {
+                  print('row 1 pressed');
+                }),
+                DataCell(Text("300")),
+              ]),
+              DataRow(cells: [
+                DataCell(
+                    Text("${DateFormat("MMM-yyyy").format(DateTime.now())}")),
+                DataCell(
+                    Text(
+                      "Stock Purchase",
+                      style: TextStyle(
+                          color: Colors.purple, fontWeight: FontWeight.bold),
+                    ), onTap: () {
+                  print('row 2 pressed');
+                }),
+                DataCell(Text("300")),
+              ]),
+              DataRow(cells: [
+                DataCell(
+                    Text("${DateFormat("MMM-yyyy").format(DateTime.now())}")),
+                DataCell(
+                    Text(
+                      "Expenses",
+                      style: TextStyle(
+                          color: Colors.purple, fontWeight: FontWeight.bold),
+                    ), onTap: () {
+                  print('row 3 pressed');
+                }),
+                DataCell(Text("300")),
+              ]),
+              DataRow(cells: [
+                DataCell(
+                    Text("${DateFormat("MMM-yyyy").format(DateTime.now())}")),
+                DataCell(
+                  Text(
+                    "Customer Wallet",
+                    style: TextStyle(
+                        color: Colors.purple, fontWeight: FontWeight.bold),
+                  ),
+                    onTap: (){
+                      print('row 4 pressed');
+                    }
+                ),
+                DataCell(Text("300")),
+              ]),
+            ]),
           ],
         ),
       ),

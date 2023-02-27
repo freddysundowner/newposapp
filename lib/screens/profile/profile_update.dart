@@ -66,7 +66,7 @@ class ProfileUpdate extends StatelessWidget {
                   : InkWell(
                       splashColor: Colors.transparent,
                       onTap: () {
-                        authController.updateAdmin();
+                        authController.updateAdmin(context);
                       },
                       child: Container(
                         padding: EdgeInsets.all(10),

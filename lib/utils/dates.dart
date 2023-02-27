@@ -59,8 +59,7 @@ converTimeToMonthByDate(date) {
   var lastDay = new DateFormat('yyyy-MM-dd')
       .parse(new DateFormat('yyyy-MM-dd').format(last))
       .toIso8601String();
-  print(firstDay);
-  print(lastDay);
+
 
   return {"startDate": firstDay, "endDate": lastDay};
 }

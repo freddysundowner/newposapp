@@ -35,7 +35,7 @@ class CustomerInfoPage extends StatelessWidget {
     String url = "whatsapp://send?phone=+254${number}&text=$message";
     await canLaunch(url)
         ? launch(url)
-        : showSnackBar(message: "Cannot open whatsapp", color: Colors.red);
+        : showSnackBar(message: "Cannot open whatsapp", color: Colors.red,context: null);
   }
 
   launchMessage({required number, required message}) async {
@@ -238,7 +238,7 @@ class CustomerInfoPage extends StatelessWidget {
                           controller: customerController.tabController,
                           indicatorWeight: 3,
                           onTap: (index) {
-                            print(index);
+
                           },
                           tabs: customerController.tabs),
                     ),
@@ -375,7 +375,6 @@ class Purchase extends StatelessWidget {
                   itemCount: customerController.customerPurchases.length,
                   shrinkWrap: true,
                   itemBuilder: (context, index) {
-                    print(customerController.customerPurchases.length);
                     SaleOrderItemModel saleOrder =
                         customerController.customerPurchases.elementAt(index);
                     return purchaseCard(

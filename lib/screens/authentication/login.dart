@@ -94,7 +94,7 @@ class Login extends StatelessWidget {
                                   ),
                                 ),
                                 onPressed: () {
-                                  authController.login();
+                                  authController.login(context);
                                 },
                               );
                       }),

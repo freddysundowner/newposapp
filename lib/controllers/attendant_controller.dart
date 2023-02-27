@@ -20,11 +20,11 @@ class AttendantController extends GetxController {
   RxList<RolesModel> roles = RxList([]);
   RxList<RolesModel> rolesFromApi = RxList([]);
 
-  saveAttendant({required shopId}) async {
+  saveAttendant({required shopId,required context}) async {
     String name = nameController.text;
     String password = passwordController.text;
     if (name == "" || password == "") {
-      showSnackBar(message: "please fill all the fields", color: Colors.red);
+      showSnackBar(message: "please fill all the fields", color: Colors.red,context: context);
     } else {
       try {
         creatingAttendantsLoad.value = true;
@@ -39,7 +39,7 @@ class AttendantController extends GetxController {
         clearTextFields();
         getAttendantsByShopId(shopId: shopId);
         Get.back();
-        showSnackBar(message: response["message"], color: AppColors.mainColor);
+        showSnackBar(message: response["message"], color: AppColors.mainColor,context: context);
 
         creatingAttendantsLoad.value = false;
       } catch (e) {
@@ -67,7 +67,6 @@ class AttendantController extends GetxController {
     try {
       getAttendantsLoad.value = true;
       var response = await Attendant().getAttendantsByShopId(shopId);
-      print(response);
       if (response != null) {
         List attendantsData = response["body"];
         List<AttendantModel> attendantList =
@@ -113,9 +112,9 @@ class AttendantController extends GetxController {
       var response = await Attendant().updatePassword(id, body);
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
       if (response["status"] == true) {
-        showSnackBar(message: response["message"], color: AppColors.mainColor);
+        showSnackBar(message: response["message"], color: AppColors.mainColor,context: context);
       } else {
-        showSnackBar(message: response["message"], color: AppColors.mainColor);
+        showSnackBar(message: response["message"], color: AppColors.mainColor,context: context);
       }
     } catch (e) {
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
@@ -134,9 +133,9 @@ class AttendantController extends GetxController {
       if (response["status"] == true) {
         Get.back();
         getAttendantsByShopId(shopId: shopId);
-        showSnackBar(message: response["message"], color: AppColors.mainColor);
+        showSnackBar(message: response["message"], color: AppColors.mainColor,context: context);
       } else {
-        showSnackBar(message: response["message"], color: AppColors.mainColor);
+        showSnackBar(message: response["message"], color: AppColors.mainColor,context: context);
       }
     } catch (e) {
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();

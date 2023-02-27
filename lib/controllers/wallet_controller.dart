@@ -27,7 +27,8 @@ class WalletController extends GetxController with GetTickerProviderStateMixin {
 
   void save(uid, context) async {
     if (amountController.text == "") {
-      Get.snackbar("", "Please enter a valid amount ");
+      // Get.snackbar("", "Please enter a valid amount ");
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Please enter a valid amount")));
     } else {
       try {
         LoadingDialog.showLoadingDialog(
@@ -41,7 +42,7 @@ class WalletController extends GetxController with GetTickerProviderStateMixin {
         };
         var response = await Wallet().createWallet(body);
         Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
-        print("Wallet deposit${response}");
+
         if (response["ststus"] == true) {
           await Get.find<CustomerController>().getCustomerById(uid);
           amountController.text = "";
@@ -49,7 +50,7 @@ class WalletController extends GetxController with GetTickerProviderStateMixin {
         }
       } catch (e) {
         Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
-        print(e);
+
       }
     }
   }
@@ -58,7 +59,7 @@ class WalletController extends GetxController with GetTickerProviderStateMixin {
     try {
       gettingWalletLoad.value = true;
       var response = await Wallet().getWallet(uid);
-      print(response);
+
       if (response != null) {
         List fetchedData = response["body"];
         List<DepositModel> data = fetchedData.map((e) => DepositModel.fromJson(e)).toList();
@@ -69,7 +70,6 @@ class WalletController extends GetxController with GetTickerProviderStateMixin {
       gettingWalletLoad.value = false;
     } catch (e) {
       gettingWalletLoad.value = false;
-      print(e);
     }
   }
 
@@ -88,7 +88,6 @@ class WalletController extends GetxController with GetTickerProviderStateMixin {
       gettingUsageLoad.value = false;
     } catch (e) {
       gettingUsageLoad.value = false;
-      print(e);
     }
   }
 
@@ -102,7 +101,6 @@ class WalletController extends GetxController with GetTickerProviderStateMixin {
       updateWalletLoad.value = false;
     } catch (e) {
       updateWalletLoad.value = false;
-      print(e);
     }
   }
 }
