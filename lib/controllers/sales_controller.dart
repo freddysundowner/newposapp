@@ -319,7 +319,7 @@ class SalesController extends GetxController
       required type}) async {
     try {
       todaySalesLoad.value = true;
-      sales.value = RxList([]);
+
       totalSalesByDate.value = 0;
       var now = type != "cashflow" ? endingDate : DateTime.now();
       var tomm = now.add(new Duration(days: 1));
@@ -335,6 +335,7 @@ class SalesController extends GetxController
           "${type != "cashflow" ? tomorrow : endingDate}");
 
       if (response["status"] == true) {
+        sales.value = RxList([]);
         List fetchedProducts = response["body"];
 
         List<SalesModel> listProducts =
