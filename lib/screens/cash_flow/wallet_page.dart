@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutterpos/models/deposit_model.dart';
 import 'package:get/get.dart';
 
 import '../../controllers/CustomerController.dart';
 import '../../controllers/wallet_controller.dart';
 import '../../utils/colors.dart';
+import 'components/deposit_dialog.dart';
 import 'components/wallet_card.dart';
 
 class WalletPage extends StatelessWidget {
@@ -18,6 +20,7 @@ class WalletPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     customersController.getCustomerById(uid);
+    walletController.getWallet(uid);
     return Obx(() => Scaffold(
           appBar: AppBar(
             elevation: 0.0,
@@ -60,11 +63,11 @@ class WalletPage extends StatelessWidget {
                     SizedBox(height: 10),
                     InkWell(
                       onTap: () {
-                        // showDepositDialog(
-                        //     context: context,
-                        //     uid: uid,
-                        //     title: "Add a deposit",
-                        //     walletController: walletController);
+                        showDepositDialog(
+                          context: context,
+                          uid: uid,
+                          title: "Add a deposit",
+                        );
                       },
                       child: Container(
                         padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
@@ -95,7 +98,11 @@ class WalletPage extends StatelessWidget {
                           indicatorColor: Colors.purple,
                           controller: walletController.tabController,
                           indicatorWeight: 3,
-                          onTap: (index) {},
+                          onTap: (index) {
+                            if (index == 0) {
+                              walletController.getWallet(uid);
+                            } else {}
+                          },
                           tabs: [
                             Tab(text: "Deposit"),
                             Tab(text: "Usage"),
@@ -227,6 +234,7 @@ class WalletPage extends StatelessWidget {
 
 class DepositHistory extends StatelessWidget {
   final uid;
+
   DepositHistory({Key? key, required this.uid}) : super(key: key);
   WalletController walletController = Get.find<WalletController>();
 
@@ -242,14 +250,16 @@ class DepositHistory extends StatelessWidget {
                   child: Text("No Entries found"),
                 )
               : ListView.builder(
-                  itemCount: 10,
+                  itemCount: walletController.deposits.length,
                   shrinkWrap: true,
                   itemBuilder: (context, index) {
+                    DepositModel depositModel =
+                        walletController.deposits.elementAt(index);
                     return WalletCard(
-                      context: context,
-                      uid: uid,
-                      type: "deposit",
-                    );
+                        context: context,
+                        uid: uid,
+                        type: "deposit",
+                        depositBody: depositModel);
                   });
     });
   }
@@ -278,11 +288,14 @@ class UsageHistory extends StatelessWidget {
                   itemCount: walletController.usages.length,
                   shrinkWrap: true,
                   itemBuilder: (context, index) {
+                    DepositModel depositModel =
+                        walletController.usages.elementAt(index);
                     return WalletCard(
                         context: context,
                         uid: uid,
                         type: "usage",
-                        customer: customer);
+                        customer: customer,
+                        depositBody: depositModel);
                   });
     });
   }

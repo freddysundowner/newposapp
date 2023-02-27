@@ -32,6 +32,8 @@ const singleSaleItems = sales + "getSale/";
 //transactions
 const transaction = BASE_URL + "transaction";
 const credit = BASE_URL + "/credit/";
+const wallet = BASE_URL + "transaction/";
+const usage = BASE_URL + "transaction/";
 //expense
 const expense = "${transaction}/expense/";
 const allTransactions = "$transaction/alltransactions";
