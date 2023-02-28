@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutterpos/bindings.dart';
 import 'package:flutterpos/controllers/AuthController.dart';
 import 'package:flutterpos/models/admin_model.dart';
+import 'package:flutterpos/screens/attendant/attendant_landing.dart';
 import 'package:flutterpos/screens/home/home.dart';
 import 'package:flutterpos/screens/landing/landing.dart';
 import 'package:flutterpos/screens/shop/create_shop.dart';
@@ -27,7 +28,7 @@ class MyApp extends StatelessWidget {
       ),
       initialBinding: AuthBinding(),
       home: FutureBuilder(
-          future: authController.getUserById(),
+          future: authController.getUserType(),
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
@@ -36,15 +37,18 @@ class MyApp extends StatelessWidget {
               return Landing();
             }
             if (snapshot.hasData) {
-              AdminModel userModel = snapshot.data;
-              if (userModel.shops!.isEmpty) {
-                return CreateShop(
-                  page: "home",
-                );
-              }else{
-                return Home();
+              if (snapshot.data[0] == "admin") {
+                AdminModel userModel = snapshot.data[1];
+                if (userModel.shops!.isEmpty) {
+                  return CreateShop(
+                    page: "home",
+                  );
+                } else {
+                  return Home();
+                }
               }
 
+              return AttendantLanding();
             } else {
               return Landing();
             }

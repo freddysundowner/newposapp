@@ -623,8 +623,7 @@ class CreateProduct extends StatelessWidget {
                       if (page == "create") {
                         productController.saveProducts(
                             "${shopController.currentShop.value!.id}",
-                            authController.currentUser.value == null
-                                ? "${Get.find<AttendantController>().attendant.value!.id}"
+                            authController.currentUser.value == null ? "${Get.find<AttendantController>().attendant.value!.id}"
                                 : "${authController.currentUser.value!.attendantId!}",
                             context);
                       } else {

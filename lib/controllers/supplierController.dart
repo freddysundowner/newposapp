@@ -92,9 +92,9 @@ class SupplierController extends GetxController {
   getSuppliersInShop(shopId) async {
     try {
       getsupplierLoad.value = true;
-      suppliers.clear();
       var response = await Supplier().getSuppliersByShopId(shopId);
       if (response != null) {
+        suppliers.clear();
         List fetchedData = response["body"];
 
         List<CustomerModel> customersData =

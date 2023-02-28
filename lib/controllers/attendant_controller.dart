@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import '../services/attendant.dart';
 import '../utils/colors.dart';
 import '../widgets/snackBars.dart';
+import 'AuthController.dart';
 
 class AttendantController extends GetxController {
   final GlobalKey<State> _keyLoader = new GlobalKey<State>();
@@ -91,12 +92,14 @@ class AttendantController extends GetxController {
     try {
       getAttendantByIdLoad.value = true;
       var response = await Attendant().getAttendantById(id);
-      if (response != null) {
-        attendant.value = AttendantModel.fromJson(response["body"]);
-      } else {
-        attendant.value = AttendantModel();
-      }
       getAttendantByIdLoad.value = false;
+      if (response == null) {
+        attendant.value = AttendantModel();
+        Get.find<AuthController>().logout();
+      }
+      AttendantModel userModel = AttendantModel.fromJson(response["body"]);
+      attendant.value  = userModel;
+      return userModel;
     } catch (e) {
       getAttendantByIdLoad.value = false;
     }

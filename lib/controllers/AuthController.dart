@@ -123,8 +123,6 @@ class AuthController extends GetxController {
 
   getUserById() async {
     try {
-      var data = await getUserType();
-      print("user Type is ${data}");
       getUserByIdLoad.value = true;
       String id = await getUserId();
       var user = await Admin().getUserById(id);
@@ -153,7 +151,15 @@ class AuthController extends GetxController {
   getUserType() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? user = prefs.getString("type");
-    return user;
+    if(user=="admin"){
+      AdminModel adminModel=await getUserById();
+     return ["admin",adminModel];
+    }else{
+      String id=await getUserId();
+      AttendantModel attendantModel=await Get.find<AttendantController>().getAttendantsById(id);
+      return ["attendant",attendantModel];
+    }
+
   }
 
   updateAdmin(context) async {
@@ -269,7 +275,6 @@ class AuthController extends GetxController {
         };
 
         var response = await Attendant().loginAttendant(body: data);
-        print(response["body"]);
         if (response["error"] != null) {
           String message = response["error"];
           Get.snackbar("", message,

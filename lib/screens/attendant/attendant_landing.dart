@@ -36,8 +36,6 @@ class AttendantLanding extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(
-        "roles are ${attendantController.attendant.value!.roles!.map((e) => e.key).toList()}");
     return RefreshIndicator(
       onRefresh: _refreshUser,
       child: Scaffold(

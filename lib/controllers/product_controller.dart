@@ -19,7 +19,7 @@ class ProductController extends GetxController {
   GlobalKey<State> _keyLoader = new GlobalKey<State>();
   RxList<ProductModel> products = RxList([]);
   RxList selectedSupplier = RxList([]);
-  RxList<ProductCountModel> countHistoryList =RxList([]);
+  RxList<ProductCountModel> countHistoryList = RxList([]);
 
   RxList<ProductCategoryModel> productCategory = RxList([]);
   RxString categoryName = RxString("");
@@ -28,8 +28,8 @@ class ProductController extends GetxController {
   RxBool creatingProductLoad = RxBool(false);
   RxBool getProductLoad = RxBool(false);
   RxBool updateProductLoad = RxBool(false);
-  RxBool getProductCountLoad = RxBool(false); 
-  RxBool  loadingCountHistory = RxBool(false);
+  RxBool getProductCountLoad = RxBool(false);
+  RxBool loadingCountHistory = RxBool(false);
   RxInt totalSale = RxInt(0);
   RxInt totalProfit = RxInt(0);
   RxString selectedSortOrder = RxString("All");
@@ -55,9 +55,6 @@ class ProductController extends GetxController {
   TextEditingController searchProductQuantityController =
       TextEditingController();
 
-
-
-
   saveProducts(String shopId, String attendantId, context) async {
     var name = itemNameController.text;
     var qty = qtyController.text;
@@ -73,23 +70,29 @@ class ProductController extends GetxController {
         selling.isEmpty ||
         categoryName.value == "") {
       showSnackBar(
-          message: "Please fill all fields marked by *", color: Colors.red,context: context);
+          message: "Please fill all fields marked by *",
+          color: Colors.red,
+          context: context);
     } else if (int.parse(buying) > int.parse(selling)) {
       showSnackBar(
           message: "Selling price cannot be lower than buying price",
-          color: Colors.red,context: context);
+          color: Colors.red,
+          context: context);
     } else if (minSelling != "" && int.parse(minSelling) > int.parse(selling)) {
       showSnackBar(
           message: "minimum selling price cannot be greater than selling price",
-          color: Colors.red,context: context);
+          color: Colors.red,
+          context: context);
     } else if (minSelling != "" && int.parse(buying) > int.parse(minSelling)) {
       showSnackBar(
           message: "minimum selling price cannot be less than buying price",
-          color: Colors.red,context: context);
+          color: Colors.red,
+          context: context);
     } else if (discount != "" && int.parse(discount) > int.parse(selling)) {
       showSnackBar(
           message: "discount cannot be greater than selling price",
-          color: Colors.red,context: context);
+          color: Colors.red,
+          context: context);
     } else {
       try {
         creatingProductLoad.value = true;
@@ -109,15 +112,19 @@ class ProductController extends GetxController {
           "supplier": supplierName.value == "None" ? "" : supplierId.value,
           "type": "stockin"
         };
+        print("body $body");
         var response = await Products().createProduct(body);
         if (response["status"] == false) {
-          showSnackBar(message: response["status"], color: Colors.red,context: context);
+          showSnackBar(
+              message: response["status"], color: Colors.red, context: context);
         } else {
           clearControllers();
           await getProductsBySort(shopId: shopId, type: "all");
           Get.back();
           showSnackBar(
-              message: response["message"], color: AppColors.mainColor,context: context);
+              message: response["message"],
+              color: AppColors.mainColor,
+              context: context);
         }
         creatingProductLoad.value = false;
       } catch (e) {
@@ -137,9 +144,15 @@ class ProductController extends GetxController {
       if (response["status"]) {
         category.text = "";
         getProductCategory(shopId: shopId);
-        showSnackBar(message: response["message"], color: AppColors.mainColor,context: context);
+        showSnackBar(
+            message: response["message"],
+            color: AppColors.mainColor,
+            context: context);
       } else {
-        showSnackBar(message: response["message"], color: AppColors.mainColor,context: context);
+        showSnackBar(
+            message: response["message"],
+            color: AppColors.mainColor,
+            context: context);
       }
     } catch (e) {
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
@@ -180,7 +193,7 @@ class ProductController extends GetxController {
     try {
       getProductLoad.value = true;
       var response = await Products().getProductsBySort(shopId, type);
-
+      print("response $response");
       products.clear();
       if (response != null) {
         totalSale.value = 0;
@@ -203,6 +216,7 @@ class ProductController extends GetxController {
       getProductLoad.value = false;
     } catch (e) {
       getProductLoad.value = false;
+      print(e);
     }
   }
 
@@ -214,6 +228,7 @@ class ProductController extends GetxController {
           type == "count"
               ? searchProductQuantityController.text.trim()
               : searchProductController.text.trim());
+      print("response $response");
       if (response != null) {
         totalSale.value = 0;
         totalProfit.value = 0;
@@ -237,7 +252,8 @@ class ProductController extends GetxController {
     }
   }
 
-  Future<void> scanQR({required shopId, required type,required context}) async {
+  Future<void> scanQR(
+      {required shopId, required type, required context}) async {
     String barcodeScanRes;
     try {
       barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
@@ -251,7 +267,9 @@ class ProductController extends GetxController {
       searchProduct(shopId, type);
     } on PlatformException {
       showSnackBar(
-          message: 'Failed to get platform version.', color: Colors.red,context: context);
+          message: 'Failed to get platform version.',
+          color: Colors.red,
+          context: context);
     }
   }
 
@@ -260,10 +278,16 @@ class ProductController extends GetxController {
     try {
       var response = await Products().deleteProduct(id: id);
       if (response["status"] == true) {
-        showSnackBar(message: response["message"], color: AppColors.mainColor,context: context);
+        showSnackBar(
+            message: response["message"],
+            color: AppColors.mainColor,
+            context: context);
         await getProductsBySort(shopId: shopId, type: "all");
       } else {
-        showSnackBar(message: response["message"], color: AppColors.mainColor,context: context);
+        showSnackBar(
+            message: response["message"],
+            color: AppColors.mainColor,
+            context: context);
       }
     } catch (e) {}
   }
@@ -276,7 +300,10 @@ class ProductController extends GetxController {
           qtyController.text == "" ||
           sellingPriceController.text == "" ||
           buyingPriceController.text == "") {
-        showSnackBar(message: "Please fill all the fields", color: Colors.red,context: context);
+        showSnackBar(
+            message: "Please fill all the fields",
+            color: Colors.red,
+            context: context);
       } else {
         Map<String, dynamic> body = {
           "name": itemNameController.text,
@@ -307,10 +334,14 @@ class ProductController extends GetxController {
           Get.find<PurchaseController>().selectedList.refresh();
           Get.back();
           showSnackBar(
-              message: response["message"], color: AppColors.mainColor,context: context);
+              message: response["message"],
+              color: AppColors.mainColor,
+              context: context);
         } else {
           showSnackBar(
-              message: response["message"], color: AppColors.mainColor,context: context);
+              message: response["message"],
+              color: AppColors.mainColor,
+              context: context);
         }
         updateProductLoad.value = false;
       }
@@ -369,7 +400,7 @@ class ProductController extends GetxController {
     products.refresh();
   }
 
-  updateQuantity(product,context) async {
+  updateQuantity(product, context) async {
     try {
       Map<String, dynamic> body = {
         "quantity": product.quantity,
@@ -378,9 +409,15 @@ class ProductController extends GetxController {
       };
       var response = await Products().updateProductCount(product.id, body);
       if (response["status"] == true) {
-        showSnackBar(message: response["message"], color: AppColors.mainColor,context: context);
+        showSnackBar(
+            message: response["message"],
+            color: AppColors.mainColor,
+            context: context);
       } else {
-        showSnackBar(message: response["message"], color: AppColors.mainColor,context: context);
+        showSnackBar(
+            message: response["message"],
+            color: AppColors.mainColor,
+            context: context);
       }
     } catch (e) {}
   }
@@ -393,7 +430,7 @@ class ProductController extends GetxController {
       if (response != null) {
         List history = response["body"];
         List<ProductCountModel> countHistory =
-        history.map((e) => ProductCountModel.fromJson(e)).toList();
+            history.map((e) => ProductCountModel.fromJson(e)).toList();
 
         countHistoryList.assignAll(countHistory);
       } else {
@@ -402,7 +439,6 @@ class ProductController extends GetxController {
       loadingCountHistory.value = false;
     } catch (e) {
       loadingCountHistory.value = false;
-
     }
   }
 }

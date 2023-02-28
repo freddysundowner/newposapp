@@ -60,7 +60,7 @@ class ProductModel {
         name: json["name"],
         quantity: json["quantity"],
         category: json["category"] == null|| json["category"].toString().length<=40
-            ? null
+            ? ProductCategoryModel()
             : ProductCategoryModel.fromJson(json["category"]),
         stockLevel: json["stockLevel"],
         sellingPrice: List<String>.from(json["sellingPrice"].map((x) => x)),
