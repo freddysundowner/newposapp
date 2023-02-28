@@ -27,7 +27,12 @@ class CustomerInfoPage extends StatelessWidget {
   final name;
   final phone;
 
-  CustomerInfoPage({Key? key, required this.id, required this.user,required this.name,required this.phone})
+  CustomerInfoPage(
+      {Key? key,
+      required this.id,
+      required this.user,
+      required this.name,
+      required this.phone})
       : super(key: key);
   CustomerController customerController = Get.find<CustomerController>();
   SupplierController supplierController = Get.find<SupplierController>();
@@ -37,7 +42,8 @@ class CustomerInfoPage extends StatelessWidget {
     String url = "whatsapp://send?phone=+254${number}&text=$message";
     await canLaunch(url)
         ? launch(url)
-        : showSnackBar(message: "Cannot open whatsapp", color: Colors.red,context: null);
+        : showSnackBar(
+            message: "Cannot open whatsapp", color: Colors.red, context: null);
   }
 
   launchMessage({required number, required message}) async {
@@ -127,9 +133,12 @@ class CustomerInfoPage extends StatelessWidget {
                     Center(
                       child: Obx(() {
                         return Text(
-                          user == "suppliers"
-                              ? "${supplierController.supplier.value == null ? "" : supplierController.supplier.value?.fullName}"
-                              : "${customerController.customer.value == null ? "" : customerController.customer.value?.fullName}",
+                          supplierController.supplier.value == null ||
+                                  customerController.customer.value == null
+                              ? name
+                              : user == "suppliers"
+                                  ? "${supplierController.supplier.value == null ? "" : supplierController.supplier.value?.fullName}"
+                                  : "${customerController.customer.value == null ? "" : customerController.customer.value?.fullName}",
                           style: TextStyle(
                               color: Colors.white, fontWeight: FontWeight.bold),
                         );
@@ -146,9 +155,12 @@ class CustomerInfoPage extends StatelessWidget {
                         ),
                         Obx(() {
                           return Text(
-                            user == "suppliers"
-                                ? "${supplierController.supplier.value?.phoneNumber}"
-                                : "${customerController.customer.value?.phoneNumber}",
+                            supplierController.supplier.value == null ||
+                                    customerController.customer.value == null
+                                ? phone
+                                : user == "suppliers"
+                                    ? "${supplierController.supplier.value?.phoneNumber}"
+                                    : "${customerController.customer.value?.phoneNumber}",
                             style: TextStyle(color: Colors.white),
                           );
                         }),
@@ -239,9 +251,7 @@ class CustomerInfoPage extends StatelessWidget {
                           indicatorColor: Colors.purple,
                           controller: customerController.tabController,
                           indicatorWeight: 3,
-                          onTap: (index) {
-
-                          },
+                          onTap: (index) {},
                           tabs: customerController.tabs),
                     ),
                     Expanded(
@@ -358,16 +368,16 @@ class Purchase extends StatelessWidget {
   final id;
   final user;
 
-  Purchase({Key? key, required this.id, required this.user}) : super(key: key){
+  Purchase({Key? key, required this.id, required this.user}) : super(key: key) {
     customerController.getCustomerPurchases(id, user);
   }
+
   CustomerController customerController = Get.find<CustomerController>();
   SupplierController supplierController = Get.find<SupplierController>();
   ShopController createShopController = Get.find<ShopController>();
 
   @override
   Widget build(BuildContext context) {
-
     return Obx(() {
       return customerController.customerPurchaseLoad.value
           ? Center(child: CircularProgressIndicator())

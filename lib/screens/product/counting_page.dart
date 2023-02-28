@@ -56,14 +56,10 @@ class CountingPage extends StatelessWidget {
               children: [
                 Expanded(
                   child: TextFormField(
-                    controller:
-                        productController.searchProductQuantityController,
+                    controller: productController.searchProductQuantityController,
                     onChanged: (value) {
                       if (value == "") {
-                        productController.getProductsByCount(
-                            "${shopController.currentShop.value?.id}",
-                            productController
-                                .selectedSortOrderCountSearch.value);
+                        productController.products.clear();
                       } else {
                         productController.searchProduct(
                             "${shopController.currentShop.value!.id}", "count");
@@ -88,7 +84,8 @@ class CountingPage extends StatelessWidget {
                     onPressed: () async {
                       productController.scanQR(
                           shopId: "${shopController.currentShop.value!.id}",
-                          type: "count", context: context);
+                          type: "count",
+                          context: context);
                     },
                     icon: Icon(Icons.qr_code))
               ],
@@ -106,22 +103,23 @@ class CountingPage extends StatelessWidget {
               ],
             ),
           ),
-          if (Get.find<AuthController>().currentUser.value!=null)
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('Count History'),
-                InkWell(
-                  onTap: () {
-                    Get.to(CountHistory());
-                  },
-                  child: minorTitle(title: "View", color: AppColors.mainColor),
-                )
-              ],
+          if (Get.find<AuthController>().currentUser.value != null)
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text('Count History'),
+                  InkWell(
+                    onTap: () {
+                      Get.to(CountHistory());
+                    },
+                    child:
+                        minorTitle(title: "View", color: AppColors.mainColor),
+                  )
+                ],
+              ),
             ),
-          ),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Row(

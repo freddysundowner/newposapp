@@ -12,7 +12,7 @@ class ProductModel {
     this.sellingPrice,
     this.discount,
     this.supplier,
-    // this.shop,
+    this.shop,
     this.attendant,
     this.buyingPrice,
     this.badstock,
@@ -34,7 +34,7 @@ class ProductModel {
   ProductCategoryModel? category;
   int? stockLevel;
   List<String>? sellingPrice;
-  // String? shop;
+  String? shop;
   int? discount;
   AttendantModel? attendant;
   int? buyingPrice;
@@ -50,8 +50,6 @@ class ProductModel {
   int? selling;
   int? allowedDiscount;
 
-
-
   DateTime? createdAt;
   DateTime? updatedAt;
 
@@ -59,21 +57,24 @@ class ProductModel {
         id: json["_id"],
         name: json["name"],
         quantity: json["quantity"],
-        category: json["category"] == null|| json["category"].toString().length<=40
-            ? ProductCategoryModel()
-            : ProductCategoryModel.fromJson(json["category"]),
+        category:
+            json["category"] == null || json["category"].toString().length <= 40
+                ? ProductCategoryModel()
+                : ProductCategoryModel.fromJson(json["category"]),
         stockLevel: json["stockLevel"],
         sellingPrice: List<String>.from(json["sellingPrice"].map((x) => x)),
         discount: json["discount"],
         supplier: json["supplier"],
-        // shop: json["shop"],
-        selling: int.parse(List<String>.from(json["sellingPrice"].map((x) => x))[0]),
+        shop: json["shop"],
+        selling:
+            int.parse(List<String>.from(json["sellingPrice"].map((x) => x))[0]),
         cartquantity: 1,
         deleted: json["deleted"],
         amount: 0,
         minPrice: json["minSellingPrice"],
         allowedDiscount: 0,
-        attendant: json["attendant"] == null|| json["category"].toString().length<=40
+        attendant: json["attendant"] == null ||
+                json["category"].toString().length <= 40
             ? AttendantModel()
             : AttendantModel.fromJson(json["attendant"]),
         buyingPrice: json["buyingPrice"],
@@ -88,18 +89,15 @@ class ProductModel {
         "_id": id,
         "name": name,
         "quantity": quantity,
-        // "category": category,
         "stockLevel": stockLevel,
         "sellingPrice": List<dynamic>.from(sellingPrice!.map((x) => x)),
         "discount": discount,
         "supplier": supplier,
-        // "shop": shop,
         "deleted": deleted,
         "cartquantity": cartquantity,
         "selling": selling,
         "amount": amount,
         "allowedDiscount": allowedDiscount,
-        // "attendant": attendant!.toJson(),
         "buyingPrice": buyingPrice,
         "badstock": badstock,
         "description": description,

@@ -182,7 +182,7 @@ class CreateSale extends StatelessWidget {
                                                   : MediaQuery.of(context)
                                                           .size
                                                           .height *
-                                                      0.6,
+                                                      0.5,
                                               child: Column(
                                                 crossAxisAlignment:
                                                     CrossAxisAlignment.start,

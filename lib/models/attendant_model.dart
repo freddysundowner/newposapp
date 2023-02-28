@@ -1,6 +1,5 @@
 import 'package:flutterpos/models/roles_model.dart';
 import 'package:flutterpos/models/shop_model.dart';
-import 'package:flutterpos/services/shop.dart';
 
 class AttendantModel {
   AttendantModel({
@@ -11,6 +10,7 @@ class AttendantModel {
     this.shop,
     this.roles,
   });
+
   String? id;
   String? fullnames;
   String? phonenumber;
@@ -24,8 +24,11 @@ class AttendantModel {
       fullnames: json["fullnames"],
       attendid: json["attendid"],
       phonenumber: json["phonenumber"],
-      shop: json["shop"] == null ? ShopModel() : ShopModel.fromJson(json["shop"]),
-      roles: List<RolesModel>.from(json["roles"].map((x) => RolesModel.fromJson(x))),
+      shop: json["shop"] == null || json["shop"].toString().length <= 40
+          ? ShopModel()
+          : ShopModel.fromJson(json["shop"]),
+      roles: List<RolesModel>.from(
+          json["roles"].map((x) => RolesModel.fromJson(x))),
     );
   }
 }

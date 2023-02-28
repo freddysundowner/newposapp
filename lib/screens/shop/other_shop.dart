@@ -36,35 +36,37 @@ class ViewOtherShop extends StatelessWidget {
       ),
       body: Stack(
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(height: kToolbarHeight * 1.5),
-              Obx(() {
-                return productController.getProductLoad.value
-                    ? Center(child: CircularProgressIndicator())
-                    : productController.products.length == 0
-                    ? Center(
-                    child: Text(
-                      "No Entries found",
-                      style: TextStyle(color: AppColors.mainColor),
-                    ))
-                    : Container(
-                  // height: MediaQuery.of(context).size.height*0.6,
-                  child: ListView.builder(
-                      physics: NeverScrollableScrollPhysics(),
-                      itemCount: productController.products.length,
-                      shrinkWrap: true,
-                      itemBuilder: ((context, index) {
-                        ProductModel productBody = productController
-                            .products
-                            .elementAt(index);
+          SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(height: kToolbarHeight * 1.5),
+                Obx(() {
+                  return productController.getProductLoad.value
+                      ? Center(child: CircularProgressIndicator())
+                      : productController.products.length == 0
+                      ? Center(
+                      child: Text(
+                        "No Entries found",
+                        style: TextStyle(color: AppColors.mainColor),
+                      ))
+                      : Container(
+                    // height: MediaQuery.of(context).size.height*0.6,
+                    child: ListView.builder(
+                        physics: NeverScrollableScrollPhysics(),
+                        itemCount: productController.products.length,
+                        shrinkWrap: true,
+                        itemBuilder: ((context, index) {
+                          ProductModel productBody = productController
+                              .products
+                              .elementAt(index);
 
-                        return productCont( productBody);
-                      })),
-                );
-              }),
-            ],
+                          return productCont( productBody);
+                        })),
+                  );
+                }),
+              ],
+            ),
           ),
           Positioned(
               top: 0,
@@ -85,7 +87,7 @@ class ViewOtherShop extends StatelessWidget {
                             fontSize: 20, fontWeight: FontWeight.bold),
                       ),
                     ),
-                    GestureDetector(
+                    InkWell(
                       onTap: () {
                         showDialog(
                           context: context,

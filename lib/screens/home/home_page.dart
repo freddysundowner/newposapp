@@ -225,31 +225,34 @@ class HomePage extends StatelessWidget {
             topRight: Radius.circular(15), topLeft: Radius.circular(15)),
       ),
       builder: (context) => SingleChildScrollView(
-        child: ListView.builder(
-            itemCount: shopController.AdminShops.length,
-            shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(),
-            itemBuilder: (context, index) {
-              ShopModel shopBody = shopController.AdminShops.elementAt(index);
-              return InkWell(
-                onTap: () {
-                  Get.back();
-                  shopController.currentShop.value = shopBody;
-                  salesController.getSalesByDates(
-                      shopId: shopController.currentShop.value?.id,
-                      startingDate: DateTime.now(),
-                      endingDate: DateTime.now(),
-                      type: "notcashflow");
-                },
-                child: Container(
-                  padding: EdgeInsets.all(10),
-                  child: majorTitle(
-                      title: "${shopBody.name}",
-                      color: Colors.black,
-                      size: 16.0),
-                ),
-              );
-            }),
+        child: Container(
+          padding: EdgeInsets.only(top: 10),
+          child: ListView.builder(
+              itemCount: shopController.AdminShops.length,
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              itemBuilder: (context, index) {
+                ShopModel shopBody = shopController.AdminShops.elementAt(index);
+                return InkWell(
+                  onTap: () {
+                    Get.back();
+                    shopController.currentShop.value = shopBody;
+                    salesController.getSalesByDates(
+                        shopId: shopController.currentShop.value?.id,
+                        startingDate: DateTime.now(),
+                        endingDate: DateTime.now(),
+                        type: "notcashflow");
+                  },
+                  child: Container(
+                    padding: EdgeInsets.all(10),
+                    child: majorTitle(
+                        title: "${shopBody.name}",
+                        color: Colors.black,
+                        size: 16.0),
+                  ),
+                );
+              }),
+        ),
       ),
     );
   }

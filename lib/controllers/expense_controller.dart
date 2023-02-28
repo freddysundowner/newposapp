@@ -146,6 +146,7 @@ class ExpenseController extends GetxController {
           endDate: type == "cashflow"
               ? DateTime.parse(endingDate).millisecondsSinceEpoch
               : DateTime.parse(tomorrow.toString()).millisecondsSinceEpoch);
+      print(response);
 
       if (response["status"] == true) {
         List fetchedList = response["body"];

@@ -171,6 +171,7 @@ class SupplierController extends GetxController {
       };
 
       var response = await Supplier().updateSupplier(body: body, id: id);
+      print(response);
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
       if (response["status"] == true) {
         showSnackBar(message: response["message"], color: AppColors.mainColor,context: context);

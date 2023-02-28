@@ -215,7 +215,6 @@ class ProductController extends GetxController {
       getProductLoad.value = false;
     } catch (e) {
       getProductLoad.value = false;
-      print(e);
     }
   }
 
