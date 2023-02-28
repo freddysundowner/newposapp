@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutterpos/controllers/AuthController.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
 import 'package:flutterpos/models/product_model.dart';
 import 'package:flutterpos/utils/constants.dart';
@@ -105,6 +106,7 @@ class CountingPage extends StatelessWidget {
               ],
             ),
           ),
+          if (Get.find<AuthController>().currentUser.value!=null)
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Row(

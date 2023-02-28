@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutterpos/screens/product/counting_page.dart';
 import 'package:flutterpos/screens/sales/create_sale.dart';
+import 'package:flutterpos/screens/shop/other_shop.dart';
 import 'package:get/get.dart';
 
 import '../../controllers/AuthController.dart';
@@ -146,9 +147,8 @@ class AttendantLanding extends StatelessWidget {
                                       Get.to(() => CreateSale());
                                     } else if (e.key == "stockin") {
                                       Get.to(CreatePurchase());
-                                    } else if (e.key ==
-                                        "canviewstockbalanceList") {
-                                      // Get.to(() => ViewOtherShop());
+                                    } else if (e.key == "stock_balance") {
+                                      Get.to(() => ViewOtherShop());
 
                                     } else if (e.key == "count_stock") {
                                       Get.to(() => CountingPage());

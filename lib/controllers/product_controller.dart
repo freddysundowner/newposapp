@@ -112,7 +112,6 @@ class ProductController extends GetxController {
           "supplier": supplierName.value == "None" ? "" : supplierId.value,
           "type": "stockin"
         };
-        print("body $body");
         var response = await Products().createProduct(body);
         if (response["status"] == false) {
           showSnackBar(
@@ -187,13 +186,13 @@ class ProductController extends GetxController {
     descriptionController.text = "";
     category.text = "";
     minsellingPriceController.text = "";
+    selectedSupplier.clear();
   }
 
   getProductsBySort({required String shopId, required String type}) async {
     try {
       getProductLoad.value = true;
       var response = await Products().getProductsBySort(shopId, type);
-      print("response $response");
       products.clear();
       if (response != null) {
         totalSale.value = 0;
@@ -228,7 +227,6 @@ class ProductController extends GetxController {
           type == "count"
               ? searchProductQuantityController.text.trim()
               : searchProductController.text.trim());
-      print("response $response");
       if (response != null) {
         totalSale.value = 0;
         totalProfit.value = 0;

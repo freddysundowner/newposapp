@@ -94,7 +94,6 @@ class PurchaseController extends GetxController {
     try {
       getPurchaseOrderItemLoad.value = true;
       var response = await Purchases().getPurchaseOrderItems(id:id);
-      print(response);
       if (response["status"] == true) {
         List fetchedResponse = response["body"];
         List<SupplyOrderModel> supply =

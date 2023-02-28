@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutterpos/controllers/shop_controller.dart';
 import 'package:flutterpos/models/attendant_model.dart';
 import 'package:flutterpos/models/roles_model.dart';
 import 'package:flutterpos/widgets/loading_dialog.dart';
@@ -99,6 +100,7 @@ class AttendantController extends GetxController {
       }
       AttendantModel userModel = AttendantModel.fromJson(response["body"]);
       attendant.value  = userModel;
+      Get.find<ShopController>().currentShop.value=userModel.shop;
       return userModel;
     } catch (e) {
       getAttendantByIdLoad.value = false;
