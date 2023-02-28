@@ -53,7 +53,7 @@ class ViewPurchases extends StatelessWidget {
                     )
                   : ListView.builder(
                       itemCount: purchaseController.purchaseByDate.length,
-                      physics: NeverScrollableScrollPhysics(),
+                      physics: ScrollPhysics(),
                       shrinkWrap: true,
                       itemBuilder: (context, index) {
                         PurchaseOrder purchaseOrder =

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutterpos/controllers/attendant_controller.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
 import 'package:flutterpos/models/product_model.dart';
 import 'package:get/get.dart';
@@ -373,7 +374,7 @@ class CreateProduct extends StatelessWidget {
                                     ),
                                     TextButton(
                                       onPressed: () {
-                                        Navigator.pop(context);
+                                       Navigator.pop(context);
                                         productController.createCategory(
                                             shopId: shopController
                                                 .currentShop.value!.id!,
@@ -622,9 +623,10 @@ class CreateProduct extends StatelessWidget {
                       if (page == "create") {
                         productController.saveProducts(
                             "${shopController.currentShop.value!.id}",
-                            authController.currentUser.value!.attendantId!,
+                            authController.currentUser.value == null
+                                ? "${Get.find<AttendantController>().attendant.value!.id}"
+                                : "${authController.currentUser.value!.attendantId!}",
                             context);
-
                       } else {
                         productController.updateProduct(
                             id: productModel.id,

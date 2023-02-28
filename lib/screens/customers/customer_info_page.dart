@@ -24,8 +24,10 @@ import '../../widgets/snackBars.dart';
 class CustomerInfoPage extends StatelessWidget {
   final id;
   final user;
+  final name;
+  final phone;
 
-  CustomerInfoPage({Key? key, required this.id, required this.user})
+  CustomerInfoPage({Key? key, required this.id, required this.user,required this.name,required this.phone})
       : super(key: key);
   CustomerController customerController = Get.find<CustomerController>();
   SupplierController supplierController = Get.find<SupplierController>();

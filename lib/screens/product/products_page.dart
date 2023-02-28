@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
 import 'package:flutterpos/models/product_model.dart';
+import 'package:flutterpos/services/apiurls.dart';
 import 'package:flutterpos/utils/constants.dart';
 import 'package:get/get.dart';
 
@@ -68,11 +69,8 @@ class ProductPage extends StatelessWidget {
                         controller: productController.searchProductController,
                         onChanged: (value) {
                           if (value == "") {
-                            productController.getProductsBySort(
-                                shopId:
-                                    "${createShopController.currentShop.value?.id}",
-                                type: productController
-                                    .selectedSortOrderSearch.value);
+                            productController.products.clear();
+
                           } else {
                             productController.searchProduct(
                                 createShopController.currentShop.value == null

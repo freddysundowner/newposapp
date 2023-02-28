@@ -10,7 +10,6 @@ class AttendantModel {
     this.shop,
     this.roles,
   });
-
   String? id;
   String? fullnames;
   String? phonenumber;
@@ -25,8 +24,7 @@ class AttendantModel {
       attendid: json["attendid"],
       phonenumber: json["phonenumber"],
       shop: json["shop"] == null ? null : ShopModel.fromJson(json["shop"]),
-      roles: List<RolesModel>.from(
-          json["roles"].map((x) => RolesModel.fromJson(x))),
+      roles: List<RolesModel>.from(json["roles"].map((x) => RolesModel.fromJson(x))),
     );
   }
 }

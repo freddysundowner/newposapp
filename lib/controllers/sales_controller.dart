@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
 import 'package:flutterpos/models/product_model.dart';
+import 'package:flutterpos/models/profit_summary.dart';
 import 'package:flutterpos/models/sales_model.dart';
 import 'package:flutterpos/models/sales_order_item_model.dart';
 import 'package:get/get.dart';
@@ -21,7 +22,7 @@ class SalesController extends GetxController
   TextEditingController textEditingCredit = TextEditingController();
   RxList<ProductModel> selectedList = RxList([]);
   RxList<SalesModel> sales = RxList([]);
-  Rxn<ProfitModel> profitModel = Rxn();
+  Rxn<ProfitSummary> profitModel = Rxn(null);
 
   RxInt grandTotal = RxInt(0);
   RxInt balance = RxInt(0);
@@ -431,10 +432,10 @@ class SalesController extends GetxController
           type == "finance" ?  DateTime.parse(start).millisecondsSinceEpoch :  DateTime.parse(today).millisecondsSinceEpoch,
           type == "finance" ?  DateTime.parse(end).millisecondsSinceEpoch : DateTime.parse(tomorrow.toString()).millisecondsSinceEpoch);
       print(response);
-      if (response != null) {
-        profitModel.value = ProfitModel.fromJson(response);
+      if (response["status"]==true) {
+        profitModel.value = ProfitSummary.fromJson(response);
       } else {
-        profitModel.value = ProfitModel();
+        profitModel.value = ProfitSummary();
       }
     } catch (e) {}
   }

@@ -164,4 +164,9 @@ class AttendantController extends GetxController {
       creatingAttendantsLoad.value = false;
     }
   }
+
+
+  checkRole(String key){
+    return attendant.value!.roles!.indexWhere((element) => element.key==key ) !=-1;
+  }
 }

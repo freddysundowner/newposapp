@@ -55,7 +55,10 @@ class AuthController extends GetxController {
         var response = await Admin().createAdmin(body: body);
         signuserLoad.value = false;
         if (response["status"] == false) {
-          showSnackBar(message: "${response["message"]}", color: Colors.red,context: context);
+          showSnackBar(
+              message: "${response["message"]}",
+              color: Colors.red,
+              context: context);
         } else {
           AdminModel adminModel = AdminModel.fromJson(response["body"]);
           SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -71,7 +74,10 @@ class AuthController extends GetxController {
         signuserLoad.value = false;
       }
     } else {
-      showSnackBar(message: "please fill all fields", color: Colors.red,context: context);
+      showSnackBar(
+          message: "please fill all fields",
+          color: Colors.red,
+          context: context);
     }
   }
 
@@ -85,9 +91,11 @@ class AuthController extends GetxController {
         };
         var response = await Admin().loginAdmin(body: body);
         loginuserLoad.value = false;
-        if (response == null) {
-          Get.snackbar("", "${response["error"]}",
-              backgroundColor: Colors.red, colorText: Colors.white);
+        if (response["error"] != null) {
+          showSnackBar(
+              message: "${response["error"]}",
+              color: Colors.red,
+              context: context);
         } else {
           AdminModel adminModel = AdminModel.fromJson(response["body"]);
           SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -105,16 +113,21 @@ class AuthController extends GetxController {
         loginuserLoad.value = false;
       }
     } else {
-      showSnackBar(message: "please fill all fields", color: Colors.red,context: context);
+      showSnackBar(
+          message: "please fill all fields",
+          color: Colors.red,
+          context: context);
     }
   }
 
+
   getUserById() async {
     try {
+      var data = await getUserType();
+      print("user Type is ${data}");
       getUserByIdLoad.value = true;
       String id = await getUserId();
       var user = await Admin().getUserById(id);
-
       if (user["status"] == false) {
         getUserByIdLoad.value = false;
         logout();
@@ -122,7 +135,8 @@ class AuthController extends GetxController {
 
       getUserByIdLoad.value = false;
       AdminModel userModel = AdminModel.fromJson(user["body"]);
-      shopController.currentShop.value = userModel.shops!.isNotEmpty ? userModel.shops![0] : null;
+      shopController.currentShop.value =
+          userModel.shops!.isNotEmpty ? userModel.shops![0] : null;
       currentUser.value = userModel;
       return userModel;
     } catch (e) {
@@ -157,10 +171,15 @@ class AuthController extends GetxController {
         getUserById();
         clearDataFromTextFields();
         Get.back();
-        showSnackBar(message: response["message"], color: AppColors.mainColor,context:
-        context);
+        showSnackBar(
+            message: response["message"],
+            color: AppColors.mainColor,
+            context: context);
       } else {
-        showSnackBar(message: response["message"], color: AppColors.mainColor,context: context);
+        showSnackBar(
+            message: response["message"],
+            color: AppColors.mainColor,
+            context: context);
       }
       updateAdminLoad.value = false;
     } catch (e) {
@@ -199,9 +218,13 @@ class AuthController extends GetxController {
       var response = await Admin().deleteAdmin(id);
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
       if (response["status"] == false) {
-        showSnackBar(message: response["message"], color: Colors.red,context: context);
+        showSnackBar(
+            message: response["message"], color: Colors.red, context: context);
       } else {
-        showSnackBar(message: response["message"], color: Colors.redAccent,context: context);
+        showSnackBar(
+            message: response["message"],
+            color: Colors.redAccent,
+            context: context);
         Get.find<AuthController>().getUserById();
       }
     } catch (e) {
@@ -221,9 +244,15 @@ class AuthController extends GetxController {
       var response = await Admin().updatePassword(id: id, body: body);
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
       if (response["status"] == true) {
-        showSnackBar(message: response["message"], color: AppColors.mainColor,context: context);
+        showSnackBar(
+            message: response["message"],
+            color: AppColors.mainColor,
+            context: context);
       } else {
-        showSnackBar(message: response["message"], color: AppColors.mainColor,context: context);
+        showSnackBar(
+            message: response["message"],
+            color: AppColors.mainColor,
+            context: context);
       }
     } catch (e) {
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
@@ -240,14 +269,15 @@ class AuthController extends GetxController {
         };
 
         var response = await Attendant().loginAttendant(body: data);
+        print(response["body"]);
         if (response["error"] != null) {
           String message = response["error"];
           Get.snackbar("", message,
               backgroundColor: Colors.red, colorText: Colors.white);
         } else {
-          AttendantModel attendantModel =
-              AttendantModel.fromJson(response["body"]);
+          AttendantModel attendantModel = AttendantModel.fromJson(response["body"]);
           Get.find<AttendantController>().attendant.value = attendantModel;
+          Get.find<ShopController>().currentShop.value = attendantModel.shop;
           SharedPreferences prefs = await SharedPreferences.getInstance();
           prefs.setString("userId", attendantModel.id!);
           prefs.setString("token", response["token"]);

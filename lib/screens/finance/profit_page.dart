@@ -102,13 +102,11 @@ class ProfitPage extends StatelessWidget {
                                 ),
                               ],
                             ),
-                            Obx(() {
-                              return Text(
-                                // cashFlowController.transactions.value==null?0:cashFlowController.transactions.value!.wallet!.length==0?0:cashFlowController.transactions.value?.wallet![0].totalAmount
-                                "${shopController.currentShop.value?.currency} ${salesController.profitModel.value == null ? 0 : salesController.profitModel.value!.totalsales!.length == 0 ? 0 : salesController.profitModel.value?.totalsales![0].totalAmount}",
-                                style: TextStyle(color: Colors.black),
-                              );
-                            })
+                            Text(
+                              // cashFlowController.transactions.value==null?0:cashFlowController.transactions.value!.wallet!.length==0?0:cashFlowController.transactions.value?.wallet![0].totalAmount
+                              "0",
+                              style: TextStyle(color: Colors.black),
+                            )
                           ],
                         ),
                       ),
@@ -137,12 +135,10 @@ class ProfitPage extends StatelessWidget {
                               ),
                             ],
                           ),
-                          Obx(() {
-                            return Text(
-                              "${shopController.currentShop.value?.currency} ${"${salesController.profitModel.value == null ? 0 : salesController.profitModel.value!.profit!.length == 0 ? 0 : salesController.profitModel.value?.profit![0].totalAmount}"}",
-                              style: TextStyle(color: Colors.black),
-                            );
-                          })
+                          Text(
+                            "0",
+                            style: TextStyle(color: Colors.black),
+                          )
                         ],
                       ),
                       SizedBox(height: 15),
@@ -174,12 +170,10 @@ class ProfitPage extends StatelessWidget {
                                 ),
                               ],
                             ),
-                            Obx(() {
-                              return Text(
-                                "${shopController.currentShop.value?.currency} ${salesController.profitModel.value == null ? 0 : salesController.profitModel.value!.badstock!.length == 0 ? 0 : salesController.profitModel.value?.badstock![0].totalAmount}",
-                                style: TextStyle(color: Colors.black),
-                              );
-                            })
+                            Text(
+                              "0",
+                              style: TextStyle(color: Colors.black),
+                            )
                           ],
                         ),
                       ),
@@ -210,12 +204,10 @@ class ProfitPage extends StatelessWidget {
                                 ),
                               ],
                             ),
-                            Obx(() {
-                              return Text(
-                                " ${shopController.currentShop.value?.currency} ${salesController.profitModel.value == null ? 0 : salesController.profitModel.value!.expense!.length == 0 ? 0 : salesController.profitModel.value?.expense![0].totalAmount} ",
-                                style: TextStyle(color: Colors.black),
-                              );
-                            })
+                            Text(
+                              "0",
+                              style: TextStyle(color: Colors.black),
+                            )
                           ],
                         ),
                       ),

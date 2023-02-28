@@ -49,6 +49,8 @@ Widget customerWidget({required CustomerModel customerModel, required type}) {
                   Get.to(() => CustomerInfoPage(
                         id: customerModel.id,
                         user: type,
+                    name: customerModel.fullName,
+                    phone: customerModel.phoneNumber,
                       ));
                 },
                 child: Container(

@@ -23,6 +23,8 @@ class FinancePage extends StatelessWidget {
   Widget build(BuildContext context) {
     var startDate = converTimeToMonth()["startDate"];
     var endDate = converTimeToMonth()["endDate"];
+    print(startDate);
+    print(endDate);
     salesController.getProfitTransaction(
         start: startDate,
         end: endDate,
@@ -119,8 +121,9 @@ class FinancePage extends StatelessWidget {
                     },
                     color: Colors.amber.shade100,
                     icon: Icons.query_stats,
-                    amount:
-                        "${salesController.profitModel.value?.shopProfit == null ? 0 : salesController.profitModel.value?.shopProfit}");
+                    amount: salesController.profitModel.value == null
+                        ? "0"
+                        : "${salesController.profitModel.value!.profit}");
               }),
               Obx(() {
                 return financeCards(
@@ -131,8 +134,9 @@ class FinancePage extends StatelessWidget {
                   },
                   color: Colors.purple.shade100,
                   icon: Icons.show_chart,
-                  amount:
-                      "${salesController.profitModel.value == null ? 0 : salesController.profitModel.value!.expense!.length == 0 ? 0 : salesController.profitModel.value?.expense![0].totalAmount}",
+                  amount: salesController.profitModel.value == null
+                      ? "0"
+                      : "${salesController.profitModel.value!.expenses!}",
                 );
               }),
               Obx(() {
@@ -146,13 +150,14 @@ class FinancePage extends StatelessWidget {
                   },
                   color: Colors.blue.shade100,
                   icon: Icons.sell_rounded,
-                  amount:
-                      "${salesController.profitModel.value == null ? 0 : salesController.profitModel.value!.totalsales!.length == 0 ? 0 : salesController.profitModel.value?.totalsales![0].totalAmount}",
+                  amount: salesController.profitModel.value == null
+                      ? "0"
+                      : "${salesController.profitModel.value!.sales}",
                 );
               }),
               InkWell(
                 onTap: () {
-             Get.to(()=>CashFlowManager());
+                  Get.to(() => CashFlowManager());
                 },
                 child: Container(
                   width: double.infinity,
