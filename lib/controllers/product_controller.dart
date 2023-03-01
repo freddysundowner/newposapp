@@ -325,6 +325,7 @@ class ProductController extends GetxController {
           if (index != -1) {
             Get.find<PurchaseController>().selectedList.removeAt(index);
             Get.find<PurchaseController>().selectedList.add(products[index]);
+            Get.find<PurchaseController>().selectedList.refresh();
             Get.find<PurchaseController>().calculateAmount(index);
           }
           stockinProducts.refresh();

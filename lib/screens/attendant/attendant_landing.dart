@@ -192,26 +192,26 @@ class AttendantLanding extends StatelessWidget {
               ),
             ),
             SizedBox(height: 10),
-            InkWell(
-              onTap: () {
-                // Get.to(CustomCalculator());
-              },
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.calculate,
-                    color: Colors.grey,
-                    size: 14,
-                  ),
-                  SizedBox(width: 2),
-                  Text(
-                    "Calculator",
-                    style: TextStyle(color: Colors.grey, fontSize: 10),
-                  )
-                ],
-              ),
-            ),
+            // InkWell(
+            //   onTap: () {
+            //     // Get.to(CustomCalculator());
+            //   },
+            //   child: Row(
+            //     mainAxisAlignment: MainAxisAlignment.center,
+            //     children: [
+            //       Icon(
+            //         Icons.calculate,
+            //         color: Colors.grey,
+            //         size: 14,
+            //       ),
+            //       SizedBox(width: 2),
+            //       Text(
+            //         "Calculator",
+            //         style: TextStyle(color: Colors.grey, fontSize: 10),
+            //       )
+            //     ],
+            //   ),
+            // ),
             SizedBox(height: 20),
           ],
         ),
