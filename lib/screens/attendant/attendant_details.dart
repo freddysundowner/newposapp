@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
 import 'package:flutterpos/models/roles_model.dart';
+import 'package:flutterpos/utils/helper.dart';
 import 'package:get/get.dart';
 
 import '../../../../utils/colors.dart';
@@ -25,24 +26,8 @@ class AttendantDetails extends StatelessWidget {
   Widget build(BuildContext context) {
     attendantController.getAttendantsById(attendantModel.id);
     attendantController.nameController.text = attendantModel.fullnames!;
-    return Scaffold(
-      appBar: AppBar(
-        elevation: 0.3,
-        titleSpacing: 0.0,
-        backgroundColor: Colors.white,
-        leading: IconButton(
-          onPressed: () {
-            Get.back();
-          },
-          icon: Icon(
-            Icons.arrow_back_ios,
-            color: Colors.black,
-          ),
-        ),
-        title: majorTitle(
-            title: attendantModel.fullnames, color: Colors.black, size: 16.0),
-      ),
-      body: SingleChildScrollView(
+    return Helper(
+      widget: SingleChildScrollView(
         child: Container(
           padding: EdgeInsets.all(10),
           child: Column(
@@ -179,6 +164,22 @@ class AttendantDetails extends StatelessWidget {
             ],
           ),
         ),
+      ),
+      appBar: AppBar(
+        elevation: 0.3,
+        titleSpacing: 0.0,
+        backgroundColor: Colors.white,
+        leading: IconButton(
+          onPressed: () {
+            Get.back();
+          },
+          icon: Icon(
+            Icons.arrow_back_ios,
+            color: Colors.black,
+          ),
+        ),
+        title: majorTitle(
+            title: attendantModel.fullnames, color: Colors.black, size: 16.0),
       ),
       bottomNavigationBar: BottomAppBar(
         // clipBehavior: Clip.antiAlias,

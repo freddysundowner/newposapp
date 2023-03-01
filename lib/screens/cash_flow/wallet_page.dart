@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutterpos/models/deposit_model.dart';
+import 'package:flutterpos/utils/helper.dart';
 import 'package:get/get.dart';
 
 import '../../controllers/CustomerController.dart';
@@ -21,7 +22,7 @@ class WalletPage extends StatelessWidget {
   Widget build(BuildContext context) {
     customersController.getCustomerById(uid);
     walletController.getWallet(uid);
-    return Obx(() => Scaffold(
+    return Obx(() => Helper(
           appBar: AppBar(
             elevation: 0.0,
             leading: IconButton(
@@ -38,7 +39,7 @@ class WalletPage extends StatelessWidget {
                   icon: Icon(Icons.download))
             ],
           ),
-          body: SingleChildScrollView(
+          widget: SingleChildScrollView(
             child: Column(children: [
               Container(
                 color: AppColors.mainColor,

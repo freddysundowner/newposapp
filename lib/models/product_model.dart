@@ -1,4 +1,5 @@
 import 'package:flutterpos/models/product_category_model.dart';
+import 'package:flutterpos/models/shop_model.dart';
 
 import 'attendant_model.dart';
 
@@ -34,7 +35,7 @@ class ProductModel {
   ProductCategoryModel? category;
   int? stockLevel;
   List<String>? sellingPrice;
-  String? shop;
+  ShopModel? shop;
   int? discount;
   AttendantModel? attendant;
   int? buyingPrice;
@@ -65,7 +66,7 @@ class ProductModel {
         sellingPrice: List<String>.from(json["sellingPrice"].map((x) => x)),
         discount: json["discount"],
         supplier: json["supplier"],
-        shop: json["shop"],
+        shop: json["shop"]==null||json["shop"].toString().length<=40?ShopModel():ShopModel.fromJson(json["shop"]),
         selling:
             int.parse(List<String>.from(json["sellingPrice"].map((x) => x))[0]),
         cartquantity: 1,

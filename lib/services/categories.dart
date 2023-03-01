@@ -11,7 +11,7 @@ class Categories {
   }
 
   getExpenseCategories({required id}) async {
-    var response = await DbBase().databaseRequest("$category/shop/"+id, DbBase().getRequestType);
+    var response = await DbBase().databaseRequest(category+"shop/"+id, DbBase().getRequestType);
     return jsonDecode(response);
   }
 }

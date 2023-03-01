@@ -17,18 +17,19 @@ class ProductHistoryController extends GetxController
     try {
       gettingHistoryLoad.value = true;
       var response = await Products().getProductHistory(productId, type);
-
+      print(response);
       // product.clear();
       if (response["status"] == true) {
         List fetchedHistory = response["body"];
         List<ProductHistoryModel> fetchedProductHistory =
-            fetchedHistory.map((e) => ProductHistoryModel.fromJson(e)).toList();
+        fetchedHistory.map((e) => ProductHistoryModel.fromJson(e)).toList();
         product.assignAll(fetchedProductHistory);
       } else {
         product.value = [];
       }
       gettingHistoryLoad.value = false;
     } catch (e) {
+      print(e);
       gettingHistoryLoad.value = false;
     }
   }

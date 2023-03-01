@@ -4,6 +4,7 @@ import 'package:flutterpos/controllers/shop_controller.dart';
 import 'package:flutterpos/models/product_model.dart';
 import 'package:flutterpos/screens/stock/stock_transfer.dart';
 import 'package:flutterpos/screens/stock/view_purchases.dart';
+import 'package:flutterpos/utils/helper.dart';
 import 'package:get/get.dart';
 
 import '../../utils/colors.dart';
@@ -24,175 +25,176 @@ class StockPage extends StatelessWidget {
   Widget build(BuildContext context) {
     productController.getProductsBySort(
         shopId: "${shopController.currentShop.value?.id}", type: "all");
-    return Scaffold(
-      appBar: AppBar(
-        titleSpacing: 0.0,
-        backgroundColor: Colors.white,
-        elevation: 0.3,
-        leading: IconButton(
-          onPressed: () {
-            Get.back();
-          },
-          icon: Icon(
-            Icons.arrow_back_ios,
-            color: Colors.black,
-          ),
-        ),
-        title: Column(
+    return Helper(widget: SingleChildScrollView(
+      child: Container(
+        padding: EdgeInsets.all(8),
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            majorTitle(title: "Stock", color: Colors.black, size: 16.0),
-            minorTitle(
-                title: "${shopController.currentShop.value?.name}",
-                color: Colors.grey)
+            Card(
+              elevation: 5,
+              child: Container(
+                padding: EdgeInsets.all(10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        majorTitle(
+                            title: "Stock Value",
+                            color: Colors.black,
+                            size: 15.0),
+                        Spacer(),
+                        Obx(() {
+                          return normalText(
+                              title:
+                              "${shopController.currentShop.value
+                                  ?.currency}.${productController.totalSale
+                                  .value}",
+                              color: Colors.black,
+                              size: 14.0);
+                        })
+                      ],
+                    ),
+                    SizedBox(height: 10),
+                    Row(
+                      children: [
+                        majorTitle(
+                            title: "Profit Estimate",
+                            color: Colors.black,
+                            size: 15.0),
+                        Spacer(),
+                        Obx(() {
+                          return normalText(
+                              title:
+                              "${shopController.currentShop.value
+                                  ?.currency}.${productController.totalProfit
+                                  .value}",
+                              color: Colors.black,
+                              size: 14.0);
+                        })
+                      ],
+                    ),
+                    SizedBox(height: 10),
+                    Row(
+                      children: [
+                        majorTitle(
+                            title: "Product Variance",
+                            color: Colors.black,
+                            size: 15.0),
+                        Spacer(),
+                        Obx(() {
+                          return minorTitle(
+                              title: "${productController.products.length}",
+                              color: Colors.black);
+                        })
+                      ],
+                    ),
+                    SizedBox(height: 20),
+                    InkWell(
+                      splashColor: Colors.transparent,
+                      onTap: () {
+                        Get.to(() => ProductPage());
+                      },
+                      child: Container(
+                        padding: EdgeInsets.all(10),
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                            border: Border.all(
+                                width: 3, color: AppColors.mainColor),
+                            borderRadius: BorderRadius.circular(40)),
+                        child: Center(
+                            child: majorTitle(
+                                title: "View Products",
+                                color: AppColors.mainColor,
+                                size: 18.0)),
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                  ],
+                ),
+              ),
+            ),
+            SizedBox(height: 10),
+            majorTitle(
+                title: "Stock Actions", color: Colors.black, size: 18.0),
+            stockContainers(
+                title: "Add New",
+                subtitle: "introduce new product",
+                icon: Icons.production_quantity_limits,
+                onPresssed: () {
+                  Get.to(() =>
+                      CreateProduct(
+                        page: "create",
+                        productModel: ProductModel(),
+                      ));
+                },
+                color: Colors.amberAccent),
+            stockContainers(
+                title: "Purchase",
+                subtitle: "add to an existing stock",
+                icon: Icons.add,
+                onPresssed: () {
+                  Get.to(() => CreatePurchase());
+                },
+                color: Colors.blueAccent),
+            stockContainers(
+                title: "Purchase",
+                subtitle: "view purchases",
+                icon: Icons.remove_red_eye_rounded,
+                onPresssed: () {
+                  Get.to(() => ViewPurchases());
+                },
+                color: Colors.white),
+            stockContainers(
+                title: "Count ",
+                subtitle: "tally with physical count",
+                icon: Icons.calculate_outlined,
+                onPresssed: () {
+                  Get.to(() => CountingPage());
+                },
+                color: Colors.amberAccent),
+            stockContainers(
+                title: "Transfer",
+                subtitle: "transfer stock to  another shop",
+                icon: Icons.compare_arrows,
+                onPresssed: () {
+                  Get.to(() => StockTransfer());
+                },
+                color: Colors.green)
           ],
         ),
       ),
-      body: SingleChildScrollView(
-        child: Container(
-          padding: EdgeInsets.all(8),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Card(
-                elevation: 5,
-                child: Container(
-                  padding: EdgeInsets.all(10),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          majorTitle(
-                              title: "Stock Value",
-                              color: Colors.black,
-                              size: 15.0),
-                          Spacer(),
-                          Obx(() {
-                            return normalText(
-                                title:
-                                    "${shopController.currentShop.value?.currency}.${productController.totalSale.value}",
-                                color: Colors.black,
-                                size: 14.0);
-                          })
-                        ],
-                      ),
-                      SizedBox(height: 10),
-                      Row(
-                        children: [
-                          majorTitle(
-                              title: "Profit Estimate",
-                              color: Colors.black,
-                              size: 15.0),
-                          Spacer(),
-                          Obx(() {
-                            return normalText(
-                                title:
-                                    "${shopController.currentShop.value?.currency}.${productController.totalProfit.value}",
-                                color: Colors.black,
-                                size: 14.0);
-                          })
-                        ],
-                      ),
-                      SizedBox(height: 10),
-                      Row(
-                        children: [
-                          majorTitle(
-                              title: "Product Variance",
-                              color: Colors.black,
-                              size: 15.0),
-                          Spacer(),
-                          Obx(() {
-                            return minorTitle(
-                                title: "${productController.products.length}",
-                                color: Colors.black);
-                          })
-                        ],
-                      ),
-                      SizedBox(height: 20),
-                      InkWell(
-                        splashColor: Colors.transparent,
-                        onTap: () {
-                          Get.to(() => ProductPage());
-                        },
-                        child: Container(
-                          padding: EdgeInsets.all(10),
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                              border: Border.all(
-                                  width: 3, color: AppColors.mainColor),
-                              borderRadius: BorderRadius.circular(40)),
-                          child: Center(
-                              child: majorTitle(
-                                  title: "View Products",
-                                  color: AppColors.mainColor,
-                                  size: 18.0)),
-                        ),
-                      ),
-                      SizedBox(height: 20),
-                    ],
-                  ),
-                ),
-              ),
-              SizedBox(height: 10),
-              majorTitle(
-                  title: "Stock Actions", color: Colors.black, size: 18.0),
-              stockContainers(
-                  title: "Add New",
-                  subtitle: "introduce new product",
-                  icon: Icons.production_quantity_limits,
-                  onPresssed: () {
-                    Get.to(() => CreateProduct(
-                          page: "create",
-                          productModel: ProductModel(),
-                        ));
-                  },
-                  color: Colors.amberAccent),
-              stockContainers(
-                  title: "Purchase",
-                  subtitle: "add to an existing stock",
-                  icon: Icons.add,
-                  onPresssed: () {
-                    Get.to(() => CreatePurchase());
-                  },
-                  color: Colors.blueAccent),
-              stockContainers(
-                  title: "Purchase",
-                  subtitle: "view purchases",
-                  icon: Icons.remove_red_eye_rounded,
-                  onPresssed: () {
-                    Get.to(() => ViewPurchases());
-                  },
-                  color: Colors.white),
-              stockContainers(
-                  title: "Count ",
-                  subtitle: "tally with physical count",
-                  icon: Icons.calculate_outlined,
-                  onPresssed: () {
-                    Get.to(() => CountingPage());
-                  },
-                  color: Colors.amberAccent),
-              stockContainers(
-                  title: "Transfer",
-                  subtitle: "transfer stock to  another shop",
-                  icon: Icons.compare_arrows,
-                  onPresssed: () {
-                    Get.to(() => StockTransfer());
-                  },
-                  color: Colors.green)
-            ],
-          ),
+    ), appBar: AppBar(
+      titleSpacing: 0.0,
+      backgroundColor: Colors.white,
+      elevation: 0.3,
+      leading: IconButton(
+        onPressed: () {
+          Get.back();
+        },
+        icon: Icon(
+          Icons.arrow_back_ios,
+          color: Colors.black,
         ),
       ),
-    );
+      title: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          majorTitle(title: "Stock", color: Colors.black, size: 16.0),
+          minorTitle(
+              title: "${shopController.currentShop.value?.name}",
+              color: Colors.grey)
+        ],
+      ),
+    ));
   }
 
-  Widget stockContainers(
-      {required title,
-      required subtitle,
-      required icon,
-      required onPresssed,
-      required Color color}) {
+  Widget stockContainers({required title,
+    required subtitle,
+    required icon,
+    required onPresssed,
+    required Color color}) {
     return InkWell(
       onTap: () {
         onPresssed();

@@ -19,6 +19,7 @@ class ShopsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     shopController.getShopsByAdminId(
         adminId: authController.currentUser.value?.id);
+
     return Scaffold(
         body: SingleChildScrollView(
       child: Column(

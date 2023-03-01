@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutterpos/controllers/cashflow_controller.dart';
+import 'package:flutterpos/utils/helper.dart';
 import 'package:get/get.dart';
 
 import '../../controllers/shop_controller.dart';
@@ -16,7 +17,21 @@ class CashFlowCategories extends StatelessWidget {
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: 2,
-      child: Scaffold(
+      child: Helper(
+        widget: Column(
+          children: [
+            Expanded(
+              flex: 1,
+              child: Container(
+                color: Colors.grey.withOpacity(0.1),
+                child: TabBarView(
+                  controller: cashflowController.tabController,
+                  children: [CashInUi(), CashOutUi()],
+                ),
+              ),
+            )
+          ],
+        ),
         appBar: AppBar(
           elevation: 0.3,
           backgroundColor: Colors.white,
@@ -36,7 +51,8 @@ class CashFlowCategories extends StatelessWidget {
                 return Text(
                   createShopController.currentShop.value == null
                       ? ""
-                      : "${createShopController.currentShop.value!.name!}".capitalize!,
+                      : "${createShopController.currentShop.value!.name!}"
+                          .capitalize!,
                   style: TextStyle(
                     fontSize: 12,
                   ),
@@ -65,20 +81,6 @@ class CashFlowCategories extends StatelessWidget {
                 Get.back();
               },
               icon: Icon(Icons.arrow_back_ios)),
-        ),
-        body: Column(
-          children: [
-            Expanded(
-              flex: 1,
-              child: Container(
-                color: Colors.grey.withOpacity(0.1),
-                child: TabBarView(
-                  controller: cashflowController.tabController,
-                  children: [CashInUi(), CashOutUi()],
-                ),
-              ),
-            )
-          ],
         ),
       ),
     );
@@ -139,108 +141,124 @@ class CashInUi extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(top: 25.0, bottom: 10),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text("KES"),
-                Text(
-                  "${300}",
+      child: ConstrainedBox(
+        constraints:
+            BoxConstraints(maxHeight: MediaQuery.of(context).size.height),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 25.0, bottom: 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text("KES "),
+                  Text(
+                    "${700}",
+                    style: TextStyle(
+                        color: Colors.black, fontWeight: FontWeight.bold),
+                  )
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text("Cash out categories"),
+                  TextButton(
+                    onPressed: () {
+                      showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              title: Text("Add Category"),
+                              content: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: TextFormField(
+                                    decoration: InputDecoration(
+                                        hintText: "eg.Personaal use etc",
+                                        border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                        ))),
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: Text(
+                                    "Cancel".toUpperCase(),
+                                    style: TextStyle(color: Colors.blue),
+                                  ),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: Text(
+                                    "Save now".toUpperCase(),
+                                    style: TextStyle(color: Colors.blue),
+                                  ),
+                                ),
+                              ],
+                            );
+                          });
+                    },
+                    child: Container(
+                        padding: EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                            color: Color.fromARGB(255, 41, 41, 41)
+                                .withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(10)),
+                        child: Text(
+                          "+ Add",
+                          style: TextStyle(color: Colors.green),
+                        )),
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  "${30} Total",
                   style: TextStyle(
-                      color: Colors.black, fontWeight: FontWeight.bold),
-                )
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text("Cash in categories"),
-                TextButton(
-                  onPressed: () {
-                    showDialog(
-                        context: context,
-                        builder: (context) {
-                          return AlertDialog(
-                            title: Text("Add Category"),
-                            content: Padding(
-                              padding: const EdgeInsets.all(5.0),
-                              child: TextFormField(
-                                  decoration: InputDecoration(
-                                      hintText:
-                                          "eg.Loan,Capital,Contribution etc",
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(10),
-                                      ))),
-                            ),
-                            actions: [
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                },
-                                child: Text(
-                                  "Cancel".toUpperCase(),
-                                  style: TextStyle(color: Colors.blue),
-                                ),
-                              ),
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                },
-                                child: Text(
-                                  "Save now".toUpperCase(),
-                                  style: TextStyle(color: Colors.blue),
-                                ),
-                              ),
-                            ],
-                          );
-                        });
-                  },
-                  child: Container(
-                      padding: EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                          color: Colors.grey.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(10)),
-                      child: Text(
-                        "+ Add",
-                        style: TextStyle(color: Colors.green),
-                      )),
+                    color: Colors.grey.shade600,
+                  ),
+                )),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                "TIP: Drag and drop related categories to combine them",
+                style: TextStyle(
+                  color: Colors.grey.shade600,
                 ),
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(
-              "${3} Total",
-              style: TextStyle(
-                color: Colors.grey.shade600,
               ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(
-              "TIP: Drag and drop related categories to combine them",
-              style: TextStyle(
-                color: Colors.grey.shade600,
-              ),
+            Expanded(
+              child: GridView.builder(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      childAspectRatio: 3.0,
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 10,
+                      mainAxisSpacing: 10),
+                  itemBuilder: (context, index) {
+                    return categoryCard(context);
+                  },
+                  itemCount: 7),
             ),
-          ),
-          ListView.builder(
-              itemCount: 20,
-              physics: NeverScrollableScrollPhysics(),
-              shrinkWrap: true,
-              itemBuilder: (context, index) {
-                return categoryCard(context);
-              })
-        ],
+            // ListView.builder(
+            //     itemCount: 20,
+            //     physics: NeverScrollableScrollPhysics(),
+            //     shrinkWrap: true,
+            //     itemBuilder: (context, index) {
+            //       return categoryCard(context);
+            //     })
+          ],
+        ),
       ),
     );
   }
@@ -255,109 +273,124 @@ class CashOutUi extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(top: 25.0, bottom: 10),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text("KES "),
-                Text(
-                  "${700}",
+      child: ConstrainedBox(
+        constraints:
+            BoxConstraints(maxHeight: MediaQuery.of(context).size.height),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 25.0, bottom: 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text("KES "),
+                  Text(
+                    "${700}",
+                    style: TextStyle(
+                        color: Colors.black, fontWeight: FontWeight.bold),
+                  )
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text("Cash out categories"),
+                  TextButton(
+                    onPressed: () {
+                      showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              title: Text("Add Category"),
+                              content: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: TextFormField(
+                                    decoration: InputDecoration(
+                                        hintText: "eg.Personaal use etc",
+                                        border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                        ))),
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: Text(
+                                    "Cancel".toUpperCase(),
+                                    style: TextStyle(color: Colors.blue),
+                                  ),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: Text(
+                                    "Save now".toUpperCase(),
+                                    style: TextStyle(color: Colors.blue),
+                                  ),
+                                ),
+                              ],
+                            );
+                          });
+                    },
+                    child: Container(
+                        padding: EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                            color: Color.fromARGB(255, 41, 41, 41)
+                                .withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(10)),
+                        child: Text(
+                          "+ Add",
+                          style: TextStyle(color: Colors.green),
+                        )),
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  "${30} Total",
                   style: TextStyle(
-                      color: Colors.black, fontWeight: FontWeight.bold),
-                )
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text("Cash out categories"),
-                TextButton(
-                  onPressed: () {
-                    showDialog(
-                        context: context,
-                        builder: (context) {
-                          return AlertDialog(
-                            title: Text("Add Category"),
-                            content: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: TextFormField(
-
-                                  decoration: InputDecoration(
-                                      hintText: "eg.Personaal use etc",
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(10),
-                                      ))),
-                            ),
-                            actions: [
-                              TextButton(
-                                onPressed: () {
-
-                                  Navigator.pop(context);
-                                },
-                                child: Text(
-                                  "Cancel".toUpperCase(),
-                                  style: TextStyle(color: Colors.blue),
-                                ),
-                              ),
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                },
-                                child: Text(
-                                  "Save now".toUpperCase(),
-                                  style: TextStyle(color: Colors.blue),
-                                ),
-                              ),
-                            ],
-                          );
-                        });
-                  },
-                  child: Container(
-                      padding: EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                          color:
-                              Color.fromARGB(255, 41, 41, 41).withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(10)),
-                      child: Text(
-                        "+ Add",
-                        style: TextStyle(color: Colors.green),
-                      )),
-                ),
-              ],
-            ),
-          ),
-          Padding(
+                    color: Colors.grey.shade600,
+                  ),
+                )),
+            Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(
-                "${30} Total",
+                "TIP: Drag and drop related categories to combine them",
                 style: TextStyle(
                   color: Colors.grey.shade600,
                 ),
-              )),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(
-              "TIP: Drag and drop related categories to combine them",
-              style: TextStyle(
-                color: Colors.grey.shade600,
               ),
             ),
-          ),
-          ListView.builder(
-              itemCount: 20,
-              physics: NeverScrollableScrollPhysics(),
-              shrinkWrap: true,
-              itemBuilder: (context, index) {
-                return categoryCard(context);
-              })
-        ],
+            Expanded(
+              child: GridView.builder(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      childAspectRatio: 3.0,
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 10,
+                      mainAxisSpacing: 10),
+                  itemBuilder: (context, index) {
+                    return categoryCard(context);
+                  },
+                  itemCount: 7),
+            ),
+            // ListView.builder(
+            //     itemCount: 20,
+            //     physics: NeverScrollableScrollPhysics(),
+            //     shrinkWrap: true,
+            //     itemBuilder: (context, index) {
+            //       return categoryCard(context);
+            //     })
+          ],
+        ),
       ),
     );
   }

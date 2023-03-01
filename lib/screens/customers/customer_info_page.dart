@@ -5,6 +5,7 @@ import 'package:flutterpos/controllers/shop_controller.dart';
 import 'package:flutterpos/models/sales_model.dart';
 import 'package:flutterpos/models/sales_order_item_model.dart';
 import 'package:flutterpos/screens/cash_flow/wallet_page.dart';
+import 'package:flutterpos/utils/helper.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -62,52 +63,8 @@ class CustomerInfoPage extends StatelessWidget {
     } else {
       customerController.getCustomerById(id);
     }
-
-    return Scaffold(
-        appBar: AppBar(
-          elevation: 0.0,
-          backgroundColor: AppColors.mainColor,
-          leading: IconButton(
-              onPressed: () {
-                Get.back();
-              },
-              icon: Icon(Icons.arrow_back_ios)),
-          actions: [
-            IconButton(
-                onPressed: () {
-                  if (user == "suppliers") {
-                    supplierController.assignTextFields();
-                  } else {
-                    customerController.assignTextFields();
-                  }
-                  showEditDialog(
-                    user: user,
-                    context: context,
-                  );
-                },
-                icon: Icon(Icons.edit)),
-            IconButton(
-                onPressed: () {
-                  deleteDialog(
-                      context: context,
-                      onPressed: () {
-                        if (user == "suppliers") {
-                          supplierController.deleteSuppler(
-                              context: context,
-                              id: customerController.customer.value?.id,
-                              shopId: shopController.currentShop.value?.id);
-                        } else {
-                          customerController.deleteCustomer(
-                              context: context,
-                              id: customerController.customer.value?.id,
-                              shopId: shopController.currentShop.value?.id);
-                        }
-                      });
-                },
-                icon: Icon(Icons.delete)),
-          ],
-        ),
-        body: SingleChildScrollView(
+    return Helper(
+        widget: SingleChildScrollView(
           child: Column(
             children: [
               Container(
@@ -276,6 +233,49 @@ class CustomerInfoPage extends StatelessWidget {
               )
             ],
           ),
+        ),
+        appBar: AppBar(
+          elevation: 0.0,
+          backgroundColor: AppColors.mainColor,
+          leading: IconButton(
+              onPressed: () {
+                Get.back();
+              },
+              icon: Icon(Icons.arrow_back_ios)),
+          actions: [
+            IconButton(
+                onPressed: () {
+                  if (user == "suppliers") {
+                    supplierController.assignTextFields();
+                  } else {
+                    customerController.assignTextFields();
+                  }
+                  showEditDialog(
+                    user: user,
+                    context: context,
+                  );
+                },
+                icon: Icon(Icons.edit)),
+            IconButton(
+                onPressed: () {
+                  deleteDialog(
+                      context: context,
+                      onPressed: () {
+                        if (user == "suppliers") {
+                          supplierController.deleteSuppler(
+                              context: context,
+                              id: customerController.customer.value?.id,
+                              shopId: shopController.currentShop.value?.id);
+                        } else {
+                          customerController.deleteCustomer(
+                              context: context,
+                              id: customerController.customer.value?.id,
+                              shopId: shopController.currentShop.value?.id);
+                        }
+                      });
+                },
+                icon: Icon(Icons.delete)),
+          ],
         ));
   }
 

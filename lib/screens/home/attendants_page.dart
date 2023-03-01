@@ -27,13 +27,12 @@ class AttendantsPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 10),
+            
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                majorTitle(
-                    title: "Select Shop", color: Colors.black, size: 14.0),
+
                 Padding(
                   padding: const EdgeInsets.all(3.0),
                   child: InkWell(
@@ -49,7 +48,8 @@ class AttendantsPage extends StatelessWidget {
                             Border.all(color: AppColors.mainColor, width: 2),
                       ),
                       child: minorTitle(
-                          title: "+ Add attendant", color: AppColors.mainColor),
+                          title: ""
+                              "+ Add attendant", color: AppColors.mainColor),
                     ),
                   ),
                 ),

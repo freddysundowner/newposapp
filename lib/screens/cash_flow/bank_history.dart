@@ -1,10 +1,10 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 import 'package:flutter/material.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
+import 'package:flutterpos/utils/helper.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
-import '../../controllers/bank_controller.dart';
 import '../../utils/colors.dart';
 
 class CashHistory extends StatelessWidget {
@@ -12,7 +12,7 @@ class CashHistory extends StatelessWidget {
   final subtitle;
   final id;
   ShopController createShopController = Get.find<ShopController>();
-  BankController bankController = Get.find<BankController>();
+
 
   CashHistory(
       {Key? key, required this.title, required this.subtitle, required this.id})
@@ -20,48 +20,46 @@ class CashHistory extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        elevation: 0.3,
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
-        titleSpacing: 0.0,
-        iconTheme: IconThemeData(color: Colors.black),
-        titleTextStyle: TextStyle(color: Colors.black),
-        leading: IconButton(
-            onPressed: () {
-              Get.back();
-            },
-            icon: Icon(
-              Icons.arrow_back_ios,
-            )),
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text("${title} Bank".capitalize!,
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                )),
-            Text(
-              subtitle,
+    return Helper(widget: ListView.builder(
+        itemCount: 10,
+        shrinkWrap: true,
+        itemBuilder: (context, index) {
+          return bankTransactionsCard();
+        }),appBar: AppBar(
+      elevation: 0.3,
+      backgroundColor: Colors.white,
+      foregroundColor: Colors.black,
+      titleSpacing: 0.0,
+      iconTheme: IconThemeData(color: Colors.black),
+      titleTextStyle: TextStyle(color: Colors.black),
+      leading: IconButton(
+          onPressed: () {
+            Get.back();
+          },
+          icon: Icon(
+            Icons.arrow_back_ios,
+          )),
+      title: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text("${title} Bank".capitalize!,
               style: TextStyle(
-                fontSize: 10,
-              ),
-            )
-          ],
-        ),
-        actions: [
-          IconButton(onPressed: () async {}, icon: Icon(Icons.download))
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+              )),
+          Text(
+            subtitle,
+            style: TextStyle(
+              fontSize: 10,
+            ),
+          )
         ],
       ),
-      body: ListView.builder(
-          itemCount: 10,
-          shrinkWrap: true,
-          itemBuilder: (context, index) {
-            return bankTransactionsCard();
-          }),
-      bottomNavigationBar: Container(
+      actions: [
+        IconButton(onPressed: () async {}, icon: Icon(Icons.download))
+      ],
+    ) ,bottomNavigationBar:BottomAppBar(
+      child: Container(
         padding: EdgeInsets.all(10),
         height: kToolbarHeight,
         color: Colors.white,
@@ -82,7 +80,8 @@ class CashHistory extends StatelessWidget {
           ],
         ),
       ),
-    );
+    ) ,);
+  
   }
 
   showBottomSheet(BuildContext context) {
