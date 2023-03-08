@@ -84,8 +84,7 @@ class Helper extends StatelessWidget {
                 ),
                 Expanded(
                   child: GridView.builder(
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                               childAspectRatio: 1.5,
                               crossAxisCount: 3,
                               crossAxisSpacing: 10,

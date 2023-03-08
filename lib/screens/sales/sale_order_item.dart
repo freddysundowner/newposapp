@@ -20,6 +20,7 @@ class SaleOrderItem extends StatelessWidget {
           titleSpacing: 0,
           backgroundColor: Colors.white,
           elevation: 0.3,
+          centerTitle: false,
           leading: IconButton(
             onPressed: () {
               Get.back();
@@ -29,27 +30,27 @@ class SaleOrderItem extends StatelessWidget {
               color: Colors.black,
             ),
           ),
-          title: majorTitle(
-              title: "Sale Items", color: Colors.black, size: 16.0),
+          title:
+              majorTitle(title: "Sale Items", color: Colors.black, size: 16.0),
         ),
         body: Obx(() {
           return salesController.salesOrderItemLoad.value
               ? Center(
-            child: CircularProgressIndicator(),
-          )
+                  child: CircularProgressIndicator(),
+                )
               : salesController.salesHistory.length == 0
-              ? Center(
-            child: Text("No Entries Found"),
-          )
-              : ListView.builder(
-              shrinkWrap: true,
-              itemCount: salesController.salesHistory.length,
-              itemBuilder: (context, index) {
-                SaleOrderItemModel saleOrderItemModel = salesController.salesHistory.elementAt(index);
-                return salesHistoryCard(
-                    saleOrderItemModel, context, id, "page");
-              });
-        })
-    );
+                  ? Center(
+                      child: Text("No Entries Found"),
+                    )
+                  : ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: salesController.salesHistory.length,
+                      itemBuilder: (context, index) {
+                        SaleOrderItemModel saleOrderItemModel =
+                            salesController.salesHistory.elementAt(index);
+                        return salesHistoryCard(
+                            saleOrderItemModel, context, id, "page");
+                      });
+        }));
   }
 }

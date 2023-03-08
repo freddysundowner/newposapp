@@ -17,6 +17,8 @@ class StockTransferController extends GetxController {
 
   RxBool gettingTransferHistoryLoad = RxBool(false);
 
+  RxString activeItem = RxString("Transfer In");
+
   void addToList(ProductModel productModel) {
     checkProductExistence(productModel);
     var index =

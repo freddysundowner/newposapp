@@ -82,9 +82,7 @@ class HomePage extends StatelessWidget {
                   )
                 ],
               ),
-              SizedBox(
-                height: 10,
-              ),
+              SizedBox(height: 10),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20.0),
                 child: showTodaySales(context),
@@ -93,9 +91,7 @@ class HomePage extends StatelessWidget {
                 height: 30,
               ),
               majorTitle(title: "Services", color: Colors.black, size: 20.0),
-              SizedBox(
-                height: 20,
-              ),
+              SizedBox(height: 20),
               Container(
                   width: MediaQuery.of(context).size.width * 0.8,
                   height: MediaQuery.of(context).size.height * 0.2,
@@ -195,19 +191,28 @@ class HomePage extends StatelessWidget {
                     ],
                   )),
               SizedBox(height: 20),
-              Obx((){
+              Obx(() {
                 return Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     majorTitle(title: "Sales", color: Colors.black, size: 20.0),
-                    salesController.sales.length==0 ?Container():InkWell(
-                        child: majorTitle(
-                            title: "View All",
-                            color: AppColors.mainColor,
-                            size: 15.0)),
+                    salesController.sales.length == 0
+                        ? Container()
+                        : InkWell(
+                            onTap: () {
+                              salesController.activeItem.value = "All Sales";
+                              salesController.getSalesByShop(
+                                  id: shopController.currentShop.value?.id);
+                              Get.to(() => AllSalesPage());
+                            },
+                            child: majorTitle(
+                                title: "View All",
+                                color: AppColors.mainColor,
+                                size: 15.0)),
                   ],
                 );
               }),
+              SizedBox(height: 10),
               Obx(() {
                 return salesController.todaySalesLoad.value
                     ? Center(
@@ -224,6 +229,7 @@ class HomePage extends StatelessWidget {
                         ? Center(child: noItemsFound(context, false))
                         : Container(
                             height: MediaQuery.of(context).size.height * 0.2,
+                            width: double.infinity,
                             child: salesListView(isSmallScreen: false));
               }),
               SizedBox(
@@ -480,14 +486,14 @@ class HomePage extends StatelessWidget {
           ),
           InkWell(
             onTap: () {
-              if(MediaQuery.of(context).size.width>600){
-                salesController.activeItem.value="Today";
+              if (MediaQuery.of(context).size.width > 600) {
+                salesController.activeItem.value = "Today";
                 salesController.getSalesByDates(
                     shopId: shopController.currentShop.value?.id,
                     startingDate: DateTime.now(),
                     endingDate: DateTime.now(),
                     type: "notcashflow");
-              }else{
+              } else {
                 salesController.salesInitialIndex.value = 2;
                 salesController.getSalesByDates(
                     shopId: shopController.currentShop.value?.id,
@@ -507,7 +513,9 @@ class HomePage extends StatelessWidget {
 
   Widget salesListView({required bool isSmallScreen}) {
     return ListView.builder(
-        physics: NeverScrollableScrollPhysics(),
+        physics: isSmallScreen == true
+            ? NeverScrollableScrollPhysics()
+            : ScrollPhysics(),
         itemCount: salesController.sales.length == 0
             ? 0
             : isSmallScreen
@@ -522,7 +530,7 @@ class HomePage extends StatelessWidget {
         itemBuilder: (context, index) {
           SalesModel salesModel = salesController.sales.elementAt(index);
 
-          return soldCard(salesModel: salesModel);
+          return soldCard(salesModel: salesModel, context: context);
         });
   }
 }

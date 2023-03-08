@@ -214,7 +214,7 @@ class AllSales extends StatelessWidget {
                       itemBuilder: (context, index) {
                         SalesModel salesModel =
                             salesController.sales.elementAt(index);
-                        return soldCard(salesModel: salesModel);
+                        return soldCard(salesModel: salesModel,context: context);
                       },
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                           childAspectRatio: MediaQuery.of(context).size.width *
@@ -230,7 +230,7 @@ class AllSales extends StatelessWidget {
                       itemBuilder: (context, index) {
                         SalesModel salesModel =
                             salesController.sales.elementAt(index);
-                        return soldCard(salesModel: salesModel);
+                        return soldCard(salesModel: salesModel,context: context);
                       });
     });
   }
@@ -268,7 +268,7 @@ class TodaySales extends StatelessWidget {
                       itemBuilder: (context, index) {
                         SalesModel salesModel =
                             salesController.sales.elementAt(index);
-                        return soldCard(salesModel: salesModel);
+                        return soldCard(salesModel: salesModel,context: context);
                       },
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                           childAspectRatio: MediaQuery.of(context).size.width *
@@ -284,7 +284,7 @@ class TodaySales extends StatelessWidget {
                       itemBuilder: (context, index) {
                         SalesModel salesModel =
                             salesController.sales.elementAt(index);
-                        return soldCard(salesModel: salesModel);
+                        return soldCard(salesModel: salesModel,context: context);
                       });
     });
   }
@@ -320,7 +320,7 @@ class SalesOnCredit extends StatelessWidget {
                       itemBuilder: (context, index) {
                         SalesModel salesModel =
                             salesController.sales.elementAt(index);
-                        return soldCard(salesModel: salesModel);
+                        return soldCard(salesModel: salesModel,context: context);
                       },
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                           childAspectRatio: MediaQuery.of(context).size.width *
@@ -336,7 +336,7 @@ class SalesOnCredit extends StatelessWidget {
                       itemBuilder: (context, index) {
                         SalesModel salesModel =
                             salesController.sales.elementAt(index);
-                        return soldCard(salesModel: salesModel);
+                        return soldCard(salesModel: salesModel,context: context);
                       });
     });
   }

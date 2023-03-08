@@ -29,6 +29,7 @@ class CustomerController extends GetxController
   Rxn<CustomerModel> customer = Rxn(null);
   RxBool customerOnCreditLoad = RxBool(false);
   RxString activeItem = RxString("All");
+  RxString customerActiveItem=RxString("Credit");
   late TabController tabController;
   RxInt initialPage = RxInt(0);
 
@@ -51,6 +52,8 @@ class CustomerController extends GetxController
       style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
     )),
   ];
+
+
 
   createCustomer({required shopId, required BuildContext context}) async {
     try {
@@ -97,6 +100,61 @@ class CustomerController extends GetxController
       }
       gettingCustomersLoad.value = false;
     } catch (e) {
+      List cust = [
+        {
+          "_id": "63fc4c278e7d4a3bbf48872b",
+          "fullName": "peter",
+          "phoneNumber": "0987654321",
+          "shopId": {
+            "_id": "63fa089e46721b7480474be5",
+            "name": "apple",
+            "location": "nakuru",
+            "owner": "63f9efe3879e16801054a0b0",
+            "type": "electronics",
+            "currency": "ARS",
+            "createdAt": "2023-02-25T13:09:50.801Z",
+            "updatedAt": "2023-02-27T10:53:46.012Z",
+            "__v": 0
+          },
+          "walletBalance": 0,
+          "credit": 200000,
+          "onCredit": true,
+          "gender": "",
+          "email": "",
+          "address": "",
+          "createdAt": "2023-02-27T06:22:31.905Z",
+          "updatedAt": "2023-02-28T12:48:41.298Z",
+          "__v": 0
+        },
+        {
+          "_id": "63fc6cb88e7d4a3bbf488c8f",
+          "fullName": "petero",
+          "phoneNumber": "07820156609",
+          "shopId": {
+            "_id": "63fa089e46721b7480474be5",
+            "name": "apple",
+            "location": "nakuru",
+            "owner": "63f9efe3879e16801054a0b0",
+            "type": "electronics",
+            "currency": "ARS",
+            "createdAt": "2023-02-25T13:09:50.801Z",
+            "updatedAt": "2023-02-27T10:53:46.012Z",
+            "__v": 0
+          },
+          "walletBalance": 0,
+          "credit": 5600,
+          "onCredit": true,
+          "gender": "",
+          "email": "",
+          "address": "",
+          "createdAt": "2023-02-27T08:41:28.717Z",
+          "updatedAt": "2023-02-28T06:58:36.252Z",
+          "__v": 0
+        }
+      ];
+      List<CustomerModel> customerData =
+          cust.map((e) => CustomerModel.fromJson(e)).toList();
+      customers.assignAll(customerData);
       gettingCustomersLoad.value = false;
     }
   }

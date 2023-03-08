@@ -7,7 +7,6 @@ import '../../controllers/product_controller.dart';
 import '../../models/product_count_model.dart';
 import '../../utils/colors.dart';
 
-
 class CountHistory extends StatelessWidget {
   CountHistory({Key? key}) : super(key: key);
   ProductController productController = Get.find<ProductController>();
@@ -15,10 +14,18 @@ class CountHistory extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    productController.getProductCount(createShopController.currentShop.value?.id);
+    productController
+        .getProductCount(createShopController.currentShop.value?.id);
     return Scaffold(
       appBar: AppBar(
           elevation: 0.0,
+          leading: IconButton(
+              onPressed: () => Get.back(),
+              icon: Icon(
+                Icons.arrow_back_ios,
+                color: Colors.black,
+              )),
+          backgroundColor: Colors.white,
           title: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -27,11 +34,14 @@ class CountHistory extends StatelessWidget {
                 children: [
                   Text(
                     'Count History',
-                    style: TextStyle(fontSize: 18),
+                    style: TextStyle(fontSize: 18, color: Colors.black),
                   ),
                   Obx(() {
-                    return Text( createShopController.currentShop.value==null?"":createShopController.currentShop.value!.name!,
-                        style: TextStyle(fontSize: 15));
+                    return Text(
+                        createShopController.currentShop.value == null
+                            ? ""
+                            : createShopController.currentShop.value!.name!,
+                        style: TextStyle(fontSize: 15, color: Colors.black));
                   })
                 ],
               ),
@@ -98,46 +108,46 @@ class CountHistory extends StatelessWidget {
       body: Obx(() {
         return productController.loadingCountHistory.value
             ? Center(
-          child: CircularProgressIndicator(),
-        )
+                child: CircularProgressIndicator(),
+              )
             : productController.countHistoryList.length == 0
-            ? Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Center(
-                child: Column(
-                  children: [
-                    Icon(Icons.warning_amber),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Text(
-                      'List is empty',
-                      style: TextStyle(
-                          fontSize: 20, fontWeight: FontWeight.bold),
-                    ),
-                    SizedBox(
-                      height: 5,
-                    ),
-                    Text('No stock count done yet'),
-                    SizedBox(
-                      height: 5,
-                    ),
-                    Text('Or check your internet connection')
-                  ],
-                ))
-          ],
-        )
-            : ListView.builder(
-            shrinkWrap: true,
-            itemCount: productController.countHistoryList.length,
-            // physics: NeverScrollableScrollPhysics(),
-            itemBuilder: (context, index) {
-              ProductCountModel productBody =
-              productController.countHistoryList.elementAt(index);
+                ? Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Center(
+                          child: Column(
+                        children: [
+                          Icon(Icons.warning_amber),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Text(
+                            'List is empty',
+                            style: TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold),
+                          ),
+                          SizedBox(
+                            height: 5,
+                          ),
+                          Text('No stock count done yet'),
+                          SizedBox(
+                            height: 5,
+                          ),
+                          Text('Or check your internet connection')
+                        ],
+                      ))
+                    ],
+                  )
+                : ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: productController.countHistoryList.length,
+                    // physics: NeverScrollableScrollPhysics(),
+                    itemBuilder: (context, index) {
+                      ProductCountModel productBody =
+                          productController.countHistoryList.elementAt(index);
 
-              return productHistoryContainer(productBody);
-            });
+                      return productHistoryContainer(productBody);
+                    });
         ;
       }),
     );
@@ -152,56 +162,56 @@ class CountHistory extends StatelessWidget {
           padding: const EdgeInsets.all(8.0),
           child: Container(
               child: Row(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Center(
-                        child: ClipOval(
-                          child: Container(
-                            height: 40,
-                            width: 40,
-                            decoration: BoxDecoration(
-                              color: AppColors.mainColor,
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Icon(Icons.check, color: Colors.white),
-                          ),
+                  Center(
+                    child: ClipOval(
+                      child: Container(
+                        height: 40,
+                        width: 40,
+                        decoration: BoxDecoration(
+                          color: AppColors.mainColor,
+                          borderRadius: BorderRadius.circular(20),
                         ),
+                        child: Icon(Icons.check, color: Colors.white),
                       ),
-                      SizedBox(
-                        width: 10,
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "${productBody.product!.name}".capitalize!,
-                            style: TextStyle(
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 18),
-                          ),
-                          Text(
-                            "${productBody.product!.category}",
-                            style: TextStyle(color: Colors.grey, fontSize: 16),
-                          ),
-                          Text('Qty ${productBody.quantity}'),
-                          Text(
-                              '${DateFormat("MMM dd,yyyy, hh:m a").format(productBody.createdAt!)} '),
-                        ],
-                      )
-                    ],
+                    ),
                   ),
-                  Spacer(),
+                  SizedBox(
+                    width: 10,
+                  ),
                   Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('BP/= ${productBody.product!.buyingPrice}'),
-                      Text('SP/= ${productBody.product!.sellingPrice![0]}')
+                      Text(
+                        "${productBody.product!.name}".capitalize!,
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18),
+                      ),
+                      Text(
+                        "${productBody.product!.category}",
+                        style: TextStyle(color: Colors.grey, fontSize: 16),
+                      ),
+                      Text('Qty ${productBody.quantity}'),
+                      Text(
+                          '${DateFormat("MMM dd,yyyy, hh:m a").format(productBody.createdAt!)} '),
                     ],
                   )
                 ],
-              )),
+              ),
+              Spacer(),
+              Column(
+                children: [
+                  Text('BP/= ${productBody.product!.buyingPrice}'),
+                  Text('SP/= ${productBody.product!.sellingPrice![0]}')
+                ],
+              )
+            ],
+          )),
         ),
       ),
     );
