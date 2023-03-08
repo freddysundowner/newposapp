@@ -10,17 +10,19 @@ import '../../widgets/stocks_card.dart';
 
 class PurchaseOrderItems extends StatelessWidget {
   final id;
-  PurchaseOrderItems({Key? key,required this.id}) : super(key: key);
+
+  PurchaseOrderItems({Key? key, required this.id}) : super(key: key);
   ShopController createShopController = Get.find<ShopController>();
   PurchaseController purchaseController = Get.find<PurchaseController>();
 
   @override
   Widget build(BuildContext context) {
-    purchaseController.getPurchaseOrderItems(id:id);
+    purchaseController.getPurchaseOrderItems(id: id);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0.3,
+        centerTitle: false,
         leading: IconButton(
           onPressed: () {
             Get.back();

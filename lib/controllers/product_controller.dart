@@ -214,6 +214,381 @@ class ProductController extends GetxController {
       }
       getProductLoad.value = false;
     } catch (e) {
+      List prod = [
+        {
+          "_id": "63fdd0f98b658aafbf4e2289",
+          "name": "triple",
+          "quantity": 193,
+          "category": {
+            "_id": "63fdce708b658aafbf4e21ec",
+            "name": "machinery",
+            "shop": "63fa089e46721b7480474be5",
+            "createdAt": "2023-02-28T09:50:40.454Z",
+            "updatedAt": "2023-02-28T09:50:40.454Z",
+            "__v": 0
+          },
+          "stockLevel": 110,
+          "sellingPrice": [
+            "1300"
+          ],
+          "discount": 0,
+          "shop": "63fa089e46721b7480474be5",
+          "attendant": {
+            "_id": "63f9efe3879e16801054a0b0",
+            "fullnames": "peter",
+            "attendid": 46056,
+            "phonenumber": null,
+            "shop": null,
+            "password": "",
+            "roles": [],
+            "createdAt": "2023-02-25T11:24:19.667Z",
+            "updatedAt": "2023-02-25T11:24:19.667Z",
+            "__v": 0
+          },
+          "buyingPrice": 1200,
+          "minSellingPrice": 1300,
+          "badStock": 0,
+          "description": "",
+          "measureUnit": "",
+          "deleted": false,
+          "counted": false,
+          "createdAt": "2023-02-28T10:01:29.081Z",
+          "updatedAt": "2023-03-04T08:44:25.515Z",
+          "__v": 0
+        },
+        {
+          "_id": "63fdd0728b658aafbf4e2255",
+          "name": "trial",
+          "quantity": 20,
+          "category": {
+            "_id": "63fdce708b658aafbf4e21ec",
+            "name": "machinery",
+            "shop": "63fa089e46721b7480474be5",
+            "createdAt": "2023-02-28T09:50:40.454Z",
+            "updatedAt": "2023-02-28T09:50:40.454Z",
+            "__v": 0
+          },
+          "stockLevel": 10,
+          "sellingPrice": [
+            "1340"
+          ],
+          "discount": 0,
+          "shop": "63fa089e46721b7480474be5",
+          "attendant": {
+            "_id": "63f9efe3879e16801054a0b0",
+            "fullnames": "peter",
+            "attendid": 46056,
+            "phonenumber": null,
+            "shop": null,
+            "password": "",
+            "roles": [],
+            "createdAt": "2023-02-25T11:24:19.667Z",
+            "updatedAt": "2023-02-25T11:24:19.667Z",
+            "__v": 0
+          },
+          "buyingPrice": 1200,
+          "minSellingPrice": 1340,
+          "badStock": 0,
+          "description": "",
+          "measureUnit": "",
+          "deleted": false,
+          "counted": false,
+          "createdAt": "2023-02-28T09:59:14.650Z",
+          "updatedAt": "2023-02-28T09:59:14.650Z",
+          "__v": 0
+        },
+        {
+          "_id": "63fdd0008b658aafbf4e222b",
+          "name": "trial",
+          "quantity": 200,
+          "category": {
+            "_id": "63fdce708b658aafbf4e21ec",
+            "name": "machinery",
+            "shop": "63fa089e46721b7480474be5",
+            "createdAt": "2023-02-28T09:50:40.454Z",
+            "updatedAt": "2023-02-28T09:50:40.454Z",
+            "__v": 0
+          },
+          "stockLevel": 0,
+          "sellingPrice": [
+            "1300"
+          ],
+          "discount": 0,
+          "shop": "63fa089e46721b7480474be5",
+          "attendant": {
+            "_id": "63f9efe3879e16801054a0b0",
+            "fullnames": "peter",
+            "attendid": 46056,
+            "phonenumber": null,
+            "shop": null,
+            "password": "",
+            "roles": [],
+            "createdAt": "2023-02-25T11:24:19.667Z",
+            "updatedAt": "2023-02-25T11:24:19.667Z",
+            "__v": 0
+          },
+          "buyingPrice": 1200,
+          "minSellingPrice": 1300,
+          "badStock": 0,
+          "description": "trial",
+          "measureUnit": "",
+          "deleted": false,
+          "counted": false,
+          "createdAt": "2023-02-28T09:57:20.839Z",
+          "updatedAt": "2023-02-28T09:57:20.839Z",
+          "__v": 0
+        },
+        {
+          "_id": "63fdcdab8b658aafbf4e21c9",
+          "name": "cups",
+          "quantity": 30,
+          "category": {
+            "_id": "63fdcd778b658aafbf4e21c3",
+            "name": "utensils",
+            "shop": "63fa089e46721b7480474be5",
+            "createdAt": "2023-02-28T09:46:31.710Z",
+            "updatedAt": "2023-02-28T09:46:31.710Z",
+            "__v": 0
+          },
+          "stockLevel": 0,
+          "sellingPrice": [
+            "2000"
+          ],
+          "discount": 0,
+          "shop": "63fa089e46721b7480474be5",
+          "attendant": {
+            "_id": "63fda3fed13cf778aab94e2f",
+            "fullnames": "kimani",
+            "attendid": 89107,
+            "phonenumber": null,
+            "shop": "63fa089e46721b7480474be5",
+            "password": "",
+            "roles": [
+              {
+                "key": "sales",
+                "value": "sales"
+              },
+              {
+                "key": "stockin",
+                "value": "Stockin "
+              },
+              {
+                "key": "discounts",
+                "value": "Discount"
+              },
+              {
+                "key": "add_products",
+                "value": "Add products"
+              },
+              {
+                "key": "expenses",
+                "value": "Add expenses"
+              },
+              {
+                "key": "customers",
+                "value": "Manage Customers"
+              },
+              {
+                "key": "Suppliers",
+                "value": "Manage suppliers"
+              },
+              {
+                "key": "stock_balance",
+                "value": "Stock balance"
+              },
+              {
+                "key": "count_stock",
+                "value": "Count stock"
+              },
+              {
+                "key": "edit_entries",
+                "value": "Edit entries"
+              }
+            ],
+            "createdAt": "2023-02-28T06:49:34.652Z",
+            "updatedAt": "2023-03-01T12:42:14.026Z",
+            "__v": 0
+          },
+          "buyingPrice": 1600,
+          "minSellingPrice": 2000,
+          "badStock": 0,
+          "description": "Quality and affordable cups",
+          "measureUnit": "",
+          "deleted": false,
+          "counted": false,
+          "createdAt": "2023-02-28T09:47:23.056Z",
+          "updatedAt": "2023-02-28T09:47:23.056Z",
+          "__v": 0
+        },
+        {
+          "_id": "63fdcd1b8b658aafbf4e21b5",
+          "name": "Attendant Trial",
+          "quantity": 200,
+          "category": {
+            "_id": "63fc4daf8e7d4a3bbf488792",
+            "name": "vegetables",
+            "shop": "63fa089e46721b7480474be5",
+            "createdAt": "2023-02-27T06:29:03.131Z",
+            "updatedAt": "2023-02-27T06:29:03.131Z",
+            "__v": 0
+          },
+          "stockLevel": 0,
+          "sellingPrice": [
+            "2000"
+          ],
+          "discount": 0,
+          "shop": "63fa089e46721b7480474be5",
+          "attendant": {
+            "_id": "63fda3fed13cf778aab94e2f",
+            "fullnames": "kimani",
+            "attendid": 89107,
+            "phonenumber": null,
+            "shop": "63fa089e46721b7480474be5",
+            "password": "",
+            "roles": [
+              {
+                "key": "sales",
+                "value": "sales"
+              },
+              {
+                "key": "stockin",
+                "value": "Stockin "
+              },
+              {
+                "key": "discounts",
+                "value": "Discount"
+              },
+              {
+                "key": "add_products",
+                "value": "Add products"
+              },
+              {
+                "key": "expenses",
+                "value": "Add expenses"
+              },
+              {
+                "key": "customers",
+                "value": "Manage Customers"
+              },
+              {
+                "key": "Suppliers",
+                "value": "Manage suppliers"
+              },
+              {
+                "key": "stock_balance",
+                "value": "Stock balance"
+              },
+              {
+                "key": "count_stock",
+                "value": "Count stock"
+              },
+              {
+                "key": "edit_entries",
+                "value": "Edit entries"
+              }
+            ],
+            "createdAt": "2023-02-28T06:49:34.652Z",
+            "updatedAt": "2023-03-01T12:42:14.026Z",
+            "__v": 0
+          },
+          "buyingPrice": 1200,
+          "minSellingPrice": 2000,
+          "badStock": 0,
+          "description": "trial attendant",
+          "measureUnit": "",
+          "deleted": false,
+          "counted": false,
+          "createdAt": "2023-02-28T09:44:59.274Z",
+          "updatedAt": "2023-02-28T09:44:59.274Z",
+          "__v": 0
+        },
+        {
+          "_id": "63fc4dc58e7d4a3bbf488795",
+          "name": "carrots",
+          "quantity": 151,
+          "category": {
+            "_id": "63fc4daf8e7d4a3bbf488792",
+            "name": "vegetables",
+            "shop": "63fa089e46721b7480474be5",
+            "createdAt": "2023-02-27T06:29:03.131Z",
+            "updatedAt": "2023-02-27T06:29:03.131Z",
+            "__v": 0
+          },
+          "stockLevel": 0,
+          "sellingPrice": [
+            "1400"
+          ],
+          "discount": 0,
+          "shop": "63fa089e46721b7480474be5",
+          "attendant": {
+            "_id": "63f9efe3879e16801054a0b0",
+            "fullnames": "peter",
+            "attendid": 46056,
+            "phonenumber": null,
+            "shop": null,
+            "password": "",
+            "roles": [],
+            "createdAt": "2023-02-25T11:24:19.667Z",
+            "updatedAt": "2023-02-25T11:24:19.667Z",
+            "__v": 0
+          },
+          "buyingPrice": 1200,
+          "minSellingPrice": 1400,
+          "badStock": 0,
+          "description": "quality Carrots",
+          "measureUnit": "",
+          "deleted": false,
+          "counted": false,
+          "createdAt": "2023-02-27T06:29:25.891Z",
+          "updatedAt": "2023-02-28T09:28:23.207Z",
+          "__v": 0
+        },
+        {
+          "_id": "63fa091246721b7480474bfd",
+          "name": "ahp",
+          "quantity": 1,
+          "category": {
+            "_id": "63fa08ef46721b7480474bf6",
+            "name": "electronics",
+            "shop": "63fa089e46721b7480474be5",
+            "createdAt": "2023-02-25T13:11:11.066Z",
+            "updatedAt": "2023-02-25T13:11:11.066Z",
+            "__v": 0
+          },
+          "stockLevel": 10,
+          "sellingPrice": [
+            "50000"
+          ],
+          "discount": 0,
+          "shop": "63fa089e46721b7480474be5",
+          "attendant": {
+            "_id": "63f9efe3879e16801054a0b0",
+            "fullnames": "peter",
+            "attendid": 46056,
+            "phonenumber": null,
+            "shop": null,
+            "password": "",
+            "roles": [],
+            "createdAt": "2023-02-25T11:24:19.667Z",
+            "updatedAt": "2023-02-25T11:24:19.667Z",
+            "__v": 0
+          },
+          "buyingPrice": 30000,
+          "minSellingPrice": 50000,
+          "badStock": 0,
+          "description": "trial",
+          "measureUnit": "",
+          "deleted": false,
+          "counted": false,
+          "createdAt": "2023-02-25T13:11:46.769Z",
+          "updatedAt": "2023-02-28T06:58:09.505Z",
+          "__v": 0
+        }
+      ];
+
+      List<ProductModel> listProducts =
+      prod.map((e) => ProductModel.fromJson(e)).toList();
+      products.assignAll(listProducts);
       getProductLoad.value = false;
     }
   }

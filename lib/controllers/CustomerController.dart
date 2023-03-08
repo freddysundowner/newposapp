@@ -28,8 +28,9 @@ class CustomerController extends GetxController
   RxList<SaleOrderItemModel> customerReturns = RxList([]);
   Rxn<CustomerModel> customer = Rxn(null);
   RxBool customerOnCreditLoad = RxBool(false);
-
+  RxString activeItem = RxString("All");
   late TabController tabController;
+  RxInt initialPage = RxInt(0);
 
   final List<Tab> tabs = <Tab>[
     Tab(
@@ -67,9 +68,13 @@ class CustomerController extends GetxController
         await getCustomersInShop(shopId);
         clearTexts();
         Get.back();
-        showSnackBar(message: response["message"], color: AppColors.mainColor,context: context);
+        showSnackBar(
+            message: response["message"],
+            color: AppColors.mainColor,
+            context: context);
       } else {
-        showSnackBar(message: response["message"], color: Colors.red,context: context);
+        showSnackBar(
+            message: response["message"], color: Colors.red, context: context);
       }
       creatingCustomerLoad.value = false;
     } catch (e) {
@@ -87,7 +92,6 @@ class CustomerController extends GetxController
         List<CustomerModel> customerData =
             fetchedCustomers.map((e) => CustomerModel.fromJson(e)).toList();
         customers.assignAll(customerData);
-
       } else {
         customers.value = [];
       }
@@ -106,16 +110,15 @@ class CustomerController extends GetxController
     amountController.text = "";
   }
 
-  getCustomersOnCredit(String shopId) async{
+  getCustomersOnCredit(String shopId) async {
     try {
       customerOnCreditLoad.value = true;
       var response = await Customer().getCustomersByShopIdOnCredit(shopId);
       if (response["status"] == true) {
         List fetchedCustomers = response["body"];
         List<CustomerModel> customerData =
-        fetchedCustomers.map((e) => CustomerModel.fromJson(e)).toList();
+            fetchedCustomers.map((e) => CustomerModel.fromJson(e)).toList();
         customersOnCredit.assignAll(customerData);
-
       } else {
         customersOnCredit.value = [];
       }
@@ -124,7 +127,6 @@ class CustomerController extends GetxController
       customerOnCreditLoad.value = false;
     }
   }
-
 
   getCustomerById(id) async {
     try {
@@ -170,11 +172,17 @@ class CustomerController extends GetxController
       var response = await Customer().updateCustomer(body: body, id: id);
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
       if (response["status"] == true) {
-        showSnackBar(message: response["message"], color: AppColors.mainColor,context: context);
+        showSnackBar(
+            message: response["message"],
+            color: AppColors.mainColor,
+            context: context);
         clearTexts();
         await getCustomerById(id);
       } else {
-        showSnackBar(message: response["message"], color: AppColors.mainColor,context: context);
+        showSnackBar(
+            message: response["message"],
+            color: AppColors.mainColor,
+            context: context);
       }
     } catch (e) {
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
@@ -191,21 +199,27 @@ class CustomerController extends GetxController
       if (response["status"] == true) {
         clearTexts();
         Get.back();
-        showSnackBar(message: response["message"], color: AppColors.mainColor,context: context);
+        showSnackBar(
+            message: response["message"],
+            color: AppColors.mainColor,
+            context: context);
         await getCustomersInShop(shopId);
       } else {
-        showSnackBar(message: response["message"], color: AppColors.mainColor,context: context);
+        showSnackBar(
+            message: response["message"],
+            color: AppColors.mainColor,
+            context: context);
       }
     } catch (e) {
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
     }
   }
 
-  getCustomerPurchases(uid,type) async {
+  getCustomerPurchases(uid, type) async {
     try {
       customerPurchaseLoad.value = true;
-      var response = await Customer().getPurchases(uid,type);
-      if (response != null) {
+      var response = await Customer().getPurchases(uid, type);
+      if (response["status"] == true) {
         customerPurchases.clear();
         List fetchedProducts = response["body"];
         List<SaleOrderItemModel> listProducts =

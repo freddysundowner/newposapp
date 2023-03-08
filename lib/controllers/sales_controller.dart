@@ -45,6 +45,8 @@ class SalesController extends GetxController
       .toIso8601String()
       .obs;
 
+  RxString activeItem = RxString("All Sales");
+
   changeSelectedList(value) {
     var index = selectedList.indexWhere((element) => element.id == value.id);
     if (index == -1) {
@@ -388,6 +390,268 @@ class SalesController extends GetxController
       }
       salesByShopLoad.value = false;
     } catch (e) {
+      List sal=[
+        {
+          "_id": "6400455b8b658aafbf4e3817",
+          "receiptNumber": "REY3IL182RZ",
+          "shop": {
+            "_id": "63fa08bc46721b7480474bee",
+            "name": "kim",
+            "location": "naivasha",
+            "owner": "63f9efe3879e16801054a0b0",
+            "type": "ele",
+            "currency": "BDT",
+            "createdAt": "2023-02-25T13:10:20.721Z",
+            "updatedAt": "2023-02-27T10:53:24.721Z",
+            "__v": 0
+          },
+          "attendantId": null,
+          "customerId": {
+            "_id": "63fdd3d88b658aafbf4e2350",
+            "fullName": "trial",
+            "phoneNumber": "09876543",
+            "shopId": {
+              "_id": "63fa08bc46721b7480474bee",
+              "name": "kim",
+              "location": "naivasha",
+              "owner": "63f9efe3879e16801054a0b0",
+              "type": "ele",
+              "currency": "BDT",
+              "createdAt": "2023-02-25T13:10:20.721Z",
+              "updatedAt": "2023-02-27T10:53:24.721Z",
+              "__v": 0
+            },
+            "walletBalance": 0,
+            "credit": 1930,
+            "onCredit": true,
+            "gender": "",
+            "email": "",
+            "address": "",
+            "createdAt": "2023-02-28T10:13:44.213Z",
+            "updatedAt": "2023-03-02T06:42:35.410Z",
+            "__v": 0
+          },
+          "grandTotal": 130,
+          "creditTotal": 130,
+          "totalDiscount": 0,
+          "date": "1677739354239",
+          "quantity": 1,
+          "paymentMethod": "Credit",
+          "dueDate": "2023-03-02T09:38:00.000",
+          "createdAt": "2023-03-02T06:42:35.403Z",
+          "updatedAt": "2023-03-02T06:42:35.403Z",
+          "__v": 0
+        },
+        {
+          "_id": "63fdff368b658aafbf4e2887",
+          "receiptNumber": "REY5Q7CQE6N",
+          "shop": {
+            "_id": "63fa08bc46721b7480474bee",
+            "name": "kim",
+            "location": "naivasha",
+            "owner": "63f9efe3879e16801054a0b0",
+            "type": "ele",
+            "currency": "BDT",
+            "createdAt": "2023-02-25T13:10:20.721Z",
+            "updatedAt": "2023-02-27T10:53:24.721Z",
+            "__v": 0
+          },
+          "attendantId": null,
+          "customerId": {
+            "_id": "63fdd3d88b658aafbf4e2350",
+            "fullName": "trial",
+            "phoneNumber": "09876543",
+            "shopId": {
+              "_id": "63fa08bc46721b7480474bee",
+              "name": "kim",
+              "location": "naivasha",
+              "owner": "63f9efe3879e16801054a0b0",
+              "type": "ele",
+              "currency": "BDT",
+              "createdAt": "2023-02-25T13:10:20.721Z",
+              "updatedAt": "2023-02-27T10:53:24.721Z",
+              "__v": 0
+            },
+            "walletBalance": 0,
+            "credit": 1930,
+            "onCredit": true,
+            "gender": "",
+            "email": "",
+            "address": "",
+            "createdAt": "2023-02-28T10:13:44.213Z",
+            "updatedAt": "2023-03-02T06:42:35.410Z",
+            "__v": 0
+          },
+          "grandTotal": 780,
+          "creditTotal": 0,
+          "totalDiscount": 0,
+          "date": "1677590323714",
+          "quantity": 1,
+          "paymentMethod": "Cash",
+          "dueDate": "",
+          "createdAt": "2023-02-28T13:18:46.030Z",
+          "updatedAt": "2023-02-28T13:18:46.030Z",
+          "__v": 0
+        },
+        {
+          "_id": "63fdeba08b658aafbf4e2606",
+          "receiptNumber": "REDYXSJWC4X",
+          "shop": {
+            "_id": "63fa08bc46721b7480474bee",
+            "name": "kim",
+            "location": "naivasha",
+            "owner": "63f9efe3879e16801054a0b0",
+            "type": "ele",
+            "currency": "BDT",
+            "createdAt": "2023-02-25T13:10:20.721Z",
+            "updatedAt": "2023-02-27T10:53:24.721Z",
+            "__v": 0
+          },
+          "attendantId": null,
+          "customerId": {
+            "_id": "63fdd3d88b658aafbf4e2350",
+            "fullName": "trial",
+            "phoneNumber": "09876543",
+            "shopId": {
+              "_id": "63fa08bc46721b7480474bee",
+              "name": "kim",
+              "location": "naivasha",
+              "owner": "63f9efe3879e16801054a0b0",
+              "type": "ele",
+              "currency": "BDT",
+              "createdAt": "2023-02-25T13:10:20.721Z",
+              "updatedAt": "2023-02-27T10:53:24.721Z",
+              "__v": 0
+            },
+            "walletBalance": 0,
+            "credit": 1930,
+            "onCredit": true,
+            "gender": "",
+            "email": "",
+            "address": "",
+            "createdAt": "2023-02-28T10:13:44.213Z",
+            "updatedAt": "2023-03-02T06:42:35.410Z",
+            "__v": 0
+          },
+          "grandTotal": 4800,
+          "creditTotal": 1800,
+          "totalDiscount": 0,
+          "date": "1677585310359",
+          "quantity": 1,
+          "paymentMethod": "Credit",
+          "dueDate": "2023-02-28T14:54:00.000",
+          "createdAt": "2023-02-28T11:55:12.535Z",
+          "updatedAt": "2023-02-28T11:55:12.535Z",
+          "__v": 0
+        },
+        {
+          "_id": "63fde5458b658aafbf4e25c2",
+          "receiptNumber": "REDJLC7YGNH",
+          "shop": {
+            "_id": "63fa08bc46721b7480474bee",
+            "name": "kim",
+            "location": "naivasha",
+            "owner": "63f9efe3879e16801054a0b0",
+            "type": "ele",
+            "currency": "BDT",
+            "createdAt": "2023-02-25T13:10:20.721Z",
+            "updatedAt": "2023-02-27T10:53:24.721Z",
+            "__v": 0
+          },
+          "attendantId": null,
+          "customerId": {
+            "_id": "63fdd3d88b658aafbf4e2350",
+            "fullName": "trial",
+            "phoneNumber": "09876543",
+            "shopId": {
+              "_id": "63fa08bc46721b7480474bee",
+              "name": "kim",
+              "location": "naivasha",
+              "owner": "63f9efe3879e16801054a0b0",
+              "type": "ele",
+              "currency": "BDT",
+              "createdAt": "2023-02-25T13:10:20.721Z",
+              "updatedAt": "2023-02-27T10:53:24.721Z",
+              "__v": 0
+            },
+            "walletBalance": 0,
+            "credit": 1930,
+            "onCredit": true,
+            "gender": "",
+            "email": "",
+            "address": "",
+            "createdAt": "2023-02-28T10:13:44.213Z",
+            "updatedAt": "2023-03-02T06:42:35.410Z",
+            "__v": 0
+          },
+          "grandTotal": 6400,
+          "creditTotal": 0,
+          "totalDiscount": 0,
+          "date": "1677583683152",
+          "quantity": 1,
+          "paymentMethod": "Cash",
+          "dueDate": "",
+          "createdAt": "2023-02-28T11:28:05.147Z",
+          "updatedAt": "2023-02-28T11:28:05.147Z",
+          "__v": 0
+        },
+        {
+          "_id": "63fdd3dd8b658aafbf4e2354",
+          "receiptNumber": "REPTZHXZQ7V",
+          "shop": {
+            "_id": "63fa08bc46721b7480474bee",
+            "name": "kim",
+            "location": "naivasha",
+            "owner": "63f9efe3879e16801054a0b0",
+            "type": "ele",
+            "currency": "BDT",
+            "createdAt": "2023-02-25T13:10:20.721Z",
+            "updatedAt": "2023-02-27T10:53:24.721Z",
+            "__v": 0
+          },
+          "attendantId": null,
+          "customerId": {
+            "_id": "63fdd3d88b658aafbf4e2350",
+            "fullName": "trial",
+            "phoneNumber": "09876543",
+            "shopId": {
+              "_id": "63fa08bc46721b7480474bee",
+              "name": "kim",
+              "location": "naivasha",
+              "owner": "63f9efe3879e16801054a0b0",
+              "type": "ele",
+              "currency": "BDT",
+              "createdAt": "2023-02-25T13:10:20.721Z",
+              "updatedAt": "2023-02-27T10:53:24.721Z",
+              "__v": 0
+            },
+            "walletBalance": 0,
+            "credit": 1930,
+            "onCredit": true,
+            "gender": "",
+            "email": "",
+            "address": "",
+            "createdAt": "2023-02-28T10:13:44.213Z",
+            "updatedAt": "2023-03-02T06:42:35.410Z",
+            "__v": 0
+          },
+          "grandTotal": 6000,
+          "creditTotal": 0,
+          "totalDiscount": 0,
+          "date": "1677579227357",
+          "quantity": 1,
+          "paymentMethod": "Cash",
+          "dueDate": "",
+          "createdAt": "2023-02-28T10:13:49.629Z",
+          "updatedAt": "2023-02-28T10:13:49.629Z",
+          "__v": 0
+        }
+      ];
+
+      List data = sal;
+      List<SalesModel> saleData =
+      data.map((e) => SalesModel.fromJson(e)).toList();
+      sales.assignAll(saleData);
       salesByShopLoad.value = false;
     }
   }

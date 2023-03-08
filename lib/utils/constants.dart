@@ -1,3 +1,46 @@
+
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
+import '../controllers/home_controller.dart';
+import '../screens/home/attendants_page.dart';
+import '../screens/home/home_page.dart';
+import '../screens/home/profile_page.dart';
+import '../screens/home/shops_page.dart';
+
+const homePage="Home";
+const shopsPage="Shops";
+const attendantPage="Attendants";
+const profilePage="Profile";
+const authPage="Log Out";
+
+List <Map<String,dynamic>>sidePages=[
+ {"page":homePage,"icon":Icons.home},
+ {"page":shopsPage,"icon":Icons.shop},
+ {"page":attendantPage,"icon":Icons.people},
+ {"page":profilePage,"icon":Icons.person},
+ {"page":authPage,"icon":Icons.logout},
+];
+
+Widget showPage() {
+ switch (Get.find<HomeController>().activeItem.value) {
+  case homePage:
+   return HomePage();
+
+  case shopsPage:
+   return ShopsPage();
+
+  case attendantPage:
+   return AttendantsPage();
+
+  case profilePage:
+   return ProfilePage();
+
+  default:
+   return HomePage();
+ }
+}
+
 class Constants{
  static final RegExp emailValidatorRegExp =
   RegExp(r"^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
@@ -32,8 +75,6 @@ class Constants{
   "notcountedtoday",
   "nevercounted"
  ];
-
-
 
 
 

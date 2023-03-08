@@ -209,54 +209,6 @@ class ProfitPage extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 25),
-                // Card(
-                //   elevation: 3,
-                //   child: Container(
-                //     padding: const EdgeInsets.all(10.0),
-                //     width: double.infinity,
-                //     decoration: BoxDecoration(
-                //         color: Colors.white,
-                //         borderRadius: BorderRadius.circular(5)),
-                //     child: InkWell(
-                //       onTap: () {
-                //         Get.to(ChatPage());
-                //       },
-                //       child: Row(
-                //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                //         crossAxisAlignment: CrossAxisAlignment.start,
-                //         children: [
-                //           Expanded(
-                //             child: Column(
-                //               crossAxisAlignment: CrossAxisAlignment.start,
-                //               children: [
-                //                 Text(
-                //                   "Suggest A Fature",
-                //                   style: TextStyle(
-                //                     color: Colors.black,
-                //                     fontWeight: FontWeight.w600,
-                //                   ),
-                //                 ),
-                //                 SizedBox(height: 3),
-                //                 Text(
-                //                   "To Be Added For You In The Next Update",
-                //                   style: TextStyle(
-                //                     color: Colors.grey,
-                //                     fontWeight: FontWeight.w400,
-                //                   ),
-                //                 ),
-                //               ],
-                //             ),
-                //           ),
-                //           Icon(
-                //             Icons.arrow_forward_ios,
-                //             color: Colors.black,
-                //             size: 30,
-                //           )
-                //         ],
-                //       ),
-                //     ),
-                //   ),
-                // ),
                 Spacer(),
               ],
             ),
@@ -265,6 +217,7 @@ class ProfitPage extends StatelessWidget {
             titleSpacing: 0,
             backgroundColor: Colors.white,
             elevation: 0.3,
+            centerTitle: false,
             leading: IconButton(
               onPressed: () {
                 var startDate = converTimeToMonth()["startDate"];

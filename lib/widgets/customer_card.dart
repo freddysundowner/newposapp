@@ -23,20 +23,22 @@ Widget customerWidget({required CustomerModel customerModel, required type}) {
                   color: Colors.white,
                 ),
                 SizedBox(width: 10),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    majorTitle(
-                        title: "Name: ${customerModel.fullName}",
-                        color: Colors.white,
-                        size: 15.0),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    minorTitle(
-                        title: "Phone: ${customerModel.phoneNumber}",
-                        color: Colors.white)
-                  ],
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      majorTitle(
+                          title: "Name: ${customerModel.fullName}",
+                          color: Colors.white,
+                          size: 15.0),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      minorTitle(
+                          title: "Phone: ${customerModel.phoneNumber}",
+                          color: Colors.white)
+                    ],
+                  ),
                 )
               ],
             ),
@@ -45,12 +47,11 @@ Widget customerWidget({required CustomerModel customerModel, required type}) {
               alignment: Alignment.centerRight,
               child: InkWell(
                 onTap: () {
-
                   Get.to(() => CustomerInfoPage(
                         id: customerModel.id,
                         user: type,
-                    name: customerModel.fullName,
-                    phone: customerModel.phoneNumber,
+                        name: customerModel.fullName,
+                        phone: customerModel.phoneNumber,
                       ));
                 },
                 child: Container(

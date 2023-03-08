@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:flutter/material.dart';
+import 'package:flutterpos/screens/customers/customers_page.dart';
 import 'package:flutterpos/screens/product/counting_page.dart';
 import 'package:flutterpos/screens/sales/create_sale.dart';
 import 'package:flutterpos/screens/shop/other_shop.dart';
@@ -29,6 +30,8 @@ class AttendantLanding extends StatelessWidget {
   List<String> roles = [
     "sales",
     "stockin",
+    "customers",
+    "Suppliers",
     "add_products",
     "expenses",
     "stock_balance",
@@ -147,9 +150,12 @@ class AttendantLanding extends StatelessWidget {
                                       Get.to(() => CreateSale());
                                     } else if (e.key == "stockin") {
                                       Get.to(CreatePurchase());
+                                    } else if (e.key == "customers") {
+                                      Get.to(CustomersPage(type: "customers"));
+                                    } else if (e.key == "Suppliers") {
+                                      Get.to(CustomersPage(type: "supplier"));
                                     } else if (e.key == "stock_balance") {
                                       Get.to(() => ViewOtherShop());
-
                                     } else if (e.key == "count_stock") {
                                       Get.to(() => CountingPage());
                                     }

@@ -68,9 +68,12 @@ class SupplierController extends GetxController {
         clearTexts();
         await getSuppliersInShop(shopId);
         Get.back();
-        showSnackBar(message: response["message"], color: AppColors.mainColor,context: context);
+        showSnackBar(message: response["message"],
+            color: AppColors.mainColor,
+            context: context);
       } else {
-        showSnackBar(message: response["message"], color: Colors.red,context: context);
+        showSnackBar(
+            message: response["message"], color: Colors.red, context: context);
       }
 
       creatingSupplierLoad.value = false;
@@ -98,7 +101,7 @@ class SupplierController extends GetxController {
         List fetchedData = response["body"];
 
         List<CustomerModel> customersData =
-            fetchedData.map((e) => CustomerModel.fromJson(e)).toList();
+        fetchedData.map((e) => CustomerModel.fromJson(e)).toList();
         for (int i = 0; i < customersData.length; i++) {
           productController.selectedSupplier.add({
             "name": "${customersData[i].fullName}",
@@ -112,12 +115,113 @@ class SupplierController extends GetxController {
       }
       getsupplierLoad.value = false;
     } catch (e) {
-
+      List supp = [ {
+        "_id": "63fc6eb98e7d4a3bbf488ccf",
+        "fullName": "trial",
+        "phoneNumber": "1234567890",
+        "shopId": {
+          "_id": "63fa089e46721b7480474be5",
+          "name": "apple",
+          "location": "nakuru",
+          "owner": "63f9efe3879e16801054a0b0",
+          "type": "electronics",
+          "currency": "ARS",
+          "createdAt": "2023-02-25T13:09:50.801Z",
+          "updatedAt": "2023-02-27T10:53:46.012Z",
+          "__v": 0
+        },
+        "walletBalance": 0,
+        "credit": 5400,
+        "onCredit": true,
+        "gender": "",
+        "email": "",
+        "address": "",
+        "createdAt": "2023-02-27T08:50:01.760Z",
+        "updatedAt": "2023-02-28T07:00:04.023Z",
+        "__v": 0
+      }, {
+        "_id": "63fc6eb98e7d4a3bbf488ccf",
+        "fullName": "trial",
+        "phoneNumber": "1234567890",
+        "shopId": {
+          "_id": "63fa089e46721b7480474be5",
+          "name": "apple",
+          "location": "nakuru",
+          "owner": "63f9efe3879e16801054a0b0",
+          "type": "electronics",
+          "currency": "ARS",
+          "createdAt": "2023-02-25T13:09:50.801Z",
+          "updatedAt": "2023-02-27T10:53:46.012Z",
+          "__v": 0
+        },
+        "walletBalance": 0,
+        "credit": 5400,
+        "onCredit": true,
+        "gender": "",
+        "email": "",
+        "address": "",
+        "createdAt": "2023-02-27T08:50:01.760Z",
+        "updatedAt": "2023-02-28T07:00:04.023Z",
+        "__v": 0
+      }, {
+        "_id": "63fc6eb98e7d4a3bbf488ccf",
+        "fullName": "trial",
+        "phoneNumber": "1234567890",
+        "shopId": {
+          "_id": "63fa089e46721b7480474be5",
+          "name": "apple",
+          "location": "nakuru",
+          "owner": "63f9efe3879e16801054a0b0",
+          "type": "electronics",
+          "currency": "ARS",
+          "createdAt": "2023-02-25T13:09:50.801Z",
+          "updatedAt": "2023-02-27T10:53:46.012Z",
+          "__v": 0
+        },
+        "walletBalance": 0,
+        "credit": 5400,
+        "onCredit": true,
+        "gender": "",
+        "email": "",
+        "address": "",
+        "createdAt": "2023-02-27T08:50:01.760Z",
+        "updatedAt": "2023-02-28T07:00:04.023Z",
+        "__v": 0
+      },
+        {
+          "_id": "63fa090246721b7480474bf9",
+          "fullName": "kamau",
+          "phoneNumber": "0782015660",
+          "shopId": {
+            "_id": "63fa089e46721b7480474be5",
+            "name": "apple",
+            "location": "nakuru",
+            "owner": "63f9efe3879e16801054a0b0",
+            "type": "electronics",
+            "currency": "ARS",
+            "createdAt": "2023-02-25T13:09:50.801Z",
+            "updatedAt": "2023-02-27T10:53:46.012Z",
+            "__v": 0
+          },
+          "walletBalance": 0,
+          "credit": 0,
+          "onCredit": false,
+          "gender": "",
+          "email": "",
+          "address": "",
+          "createdAt": "2023-02-25T13:11:30.874Z",
+          "updatedAt": "2023-02-25T13:11:30.874Z",
+          "__v": 0
+        }
+      ];
+      List fetchedData = supp;
+      List<CustomerModel> customersData = fetchedData.map((e) => CustomerModel.fromJson(e)).toList();
+      suppliers.assignAll(customersData);
       getsupplierLoad.value = false;
     }
   }
 
-  getSuppliersOnCredit({String? shopId}) async{
+  getSuppliersOnCredit({String? shopId}) async {
     try {
       creatingSupplierLoad.value = true;
       var response = await Supplier().getSuppliersOnCredit(shopId);
@@ -174,11 +278,15 @@ class SupplierController extends GetxController {
       print(response);
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
       if (response["status"] == true) {
-        showSnackBar(message: response["message"], color: AppColors.mainColor,context: context);
+        showSnackBar(message: response["message"],
+            color: AppColors.mainColor,
+            context: context);
         clearTexts();
         await getSupplierById(id);
       } else {
-        showSnackBar(message: response["message"], color: AppColors.mainColor,context: context);
+        showSnackBar(message: response["message"],
+            color: AppColors.mainColor,
+            context: context);
       }
     } catch (e) {
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
@@ -193,27 +301,33 @@ class SupplierController extends GetxController {
       var response = await Supplier().deleteCustomer(id: id);
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
       if (response["status"] == true) {
-        showSnackBar(message: response["message"], color: AppColors.mainColor,context: context);
+        showSnackBar(message: response["message"],
+            color: AppColors.mainColor,
+            context: context);
 
         await getSuppliersInShop(shopId);
       } else {
-        showSnackBar(message: response["message"], color: AppColors.mainColor,context: context);
+        showSnackBar(message: response["message"],
+            color: AppColors.mainColor,
+            context: context);
       }
     } catch (e) {
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
     }
   }
 
-  returnOrderToSupplier(uid, quantity, shopId,context) async {
+  returnOrderToSupplier(uid, quantity, shopId, context) async {
     SalesController salesController = Get.find<SalesController>();
     try {
       returningLoad.value = true;
       if (quantityController.text == "") {
-        showSnackBar(color: Colors.red, message: "Enter quantity to return",context: context);
+        showSnackBar(color: Colors.red,
+            message: "Enter quantity to return",
+            context: context);
       } else if (int.parse(quantityController.text) > quantity) {
         showSnackBar(
             message: "Quantity cannot be greater than $quantity",
-            color: Colors.red,context: context);
+            color: Colors.red, context: context);
       } else {
         Map<String, dynamic> body = {
           "quantity": int.parse(quantityController.text)
@@ -221,13 +335,14 @@ class SupplierController extends GetxController {
         await Supplier().returnOrderToSupplier(uid, body);
         quantityController.text = "";
         showSnackBar(
-            message: "Product Has been Returned", color: AppColors.mainColor,context: context);
+            message: "Product Has been Returned",
+            color: AppColors.mainColor,
+            context: context);
       }
 
       returningLoad.value = false;
     } catch (e) {
       returningLoad.value = false;
-
     }
   }
 
@@ -237,7 +352,7 @@ class SupplierController extends GetxController {
       if (response != null) {
         List fetchedCredit = response["body"];
         List<StockInCredit> credits =
-            fetchedCredit.map((e) => StockInCredit.fromJson(e)).toList();
+        fetchedCredit.map((e) => StockInCredit.fromJson(e)).toList();
         stockInCredit.assignAll(credits);
       } else {
         stockInCredit.value = [];
@@ -247,13 +362,13 @@ class SupplierController extends GetxController {
     }
   }
 
-  depositForSUpplier(StockInCredit stockInCredit,context) async {
+  depositForSUpplier(StockInCredit stockInCredit, context) async {
     try {
       if (int.parse(amountController.text) >
           int.parse("${stockInCredit.balance}")) {
         showSnackBar(
             message: "Amaunt cannot be greater than ${stockInCredit.balance}",
-            color: Colors.red,context: context);
+            color: Colors.red, context: context);
       } else {
         Map<String, dynamic> body = {
           "amount": int.parse(amountController.text)
@@ -261,12 +376,14 @@ class SupplierController extends GetxController {
         var response = await Supplier().paySupplyCredit(stockInCredit, body);
 
         if (response["status"] == true) {
-          showSnackBar(message: response["message"], color: AppColors.mainColor,context: context);
+          showSnackBar(message: response["message"],
+              color: AppColors.mainColor,
+              context: context);
           amountController.text = "";
           getSupplierCredit(stockInCredit.shop, stockInCredit.supplier);
-
         } else {
-          showSnackBar(message: "Payment failed", color: Colors.red,context: context);
+          showSnackBar(
+              message: "Payment failed", color: Colors.red, context: context);
         }
       }
     } catch (e) {
@@ -274,17 +391,18 @@ class SupplierController extends GetxController {
     }
   }
 
-  deleteProductFromStock(String productId, String shopId,context) async {
+  deleteProductFromStock(String productId, String shopId, context) async {
     SalesController salesController = Get.find<SalesController>();
     var response = await Supplier().deleteStockProduct(productId);
     if (response["status"] == true) {
-      showSnackBar(message: response["message"], color: AppColors.mainColor,context: context);
-
+      showSnackBar(message: response["message"],
+          color: AppColors.mainColor,
+          context: context);
     } else {
-      showSnackBar(message: response["message"], color: Colors.red,context: context);
+      showSnackBar(
+          message: response["message"], color: Colors.red, context: context);
     }
   }
-
 
 
 }

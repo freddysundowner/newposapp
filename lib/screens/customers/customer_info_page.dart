@@ -7,7 +7,6 @@ import 'package:flutterpos/models/sales_order_item_model.dart';
 import 'package:flutterpos/screens/cash_flow/wallet_page.dart';
 import 'package:flutterpos/utils/helper.dart';
 import 'package:get/get.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../controllers/AuthController.dart';
 import '../../controllers/CustomerController.dart';
@@ -38,22 +37,26 @@ class CustomerInfoPage extends StatelessWidget {
   CustomerController customerController = Get.find<CustomerController>();
   SupplierController supplierController = Get.find<SupplierController>();
   ShopController shopController = Get.find<ShopController>();
+  CreditController creditController = Get.find<CreditController>();
+  AttendantController attendantController = Get.find<AttendantController>();
+  ShopController createShopController = Get.find<ShopController>();
+  AuthController authController = Get.find<AuthController>();
 
   launchWhatsApp({required number, required message}) async {
-    String url = "whatsapp://send?phone=+254${number}&text=$message";
-    await canLaunch(url)
-        ? launch(url)
-        : showSnackBar(
-            message: "Cannot open whatsapp", color: Colors.red, context: null);
+    // String url = "whatsapp://send?phone=+254${number}&text=$message";
+    // await canLaunch(url)
+    //     ? launch(url)
+    //     : showSnackBar(
+    //         message: "Cannot open whatsapp", color: Colors.red, context: null);
   }
 
   launchMessage({required number, required message}) async {
-    Uri sms = Uri.parse('sms:$number?body=$message');
-    if (await launchUrl(sms)) {
-      //app opened
-    } else {
-      //app is not opened
-    }
+    // Uri sms = Uri.parse('sms:$number?body=$message');
+    // if (await launchUrl(sms)) {
+    //   //app opened
+    // } else {
+    //   //app is not opened
+    // }
   }
 
   @override
@@ -63,220 +66,263 @@ class CustomerInfoPage extends StatelessWidget {
     } else {
       customerController.getCustomerById(id);
     }
-    return Helper(
-        widget: SingleChildScrollView(
-          child: Column(
-            children: [
-              Container(
-                height: MediaQuery.of(context).size.height * 0.3,
-                color: AppColors.mainColor,
-                child: Column(
-                  children: [
-                    SizedBox(height: 10),
-                    Center(
-                      child: Container(
-                        decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.white,
-                            border: Border.all(color: Colors.white, width: 2)),
-                        child: Icon(
-                          Icons.person,
-                          color: Colors.grey,
-                          size: 50,
+    return WillPopScope(
+      onWillPop: () async {
+        customerController.initialPage.value = 0;
+        return true;
+      },
+      child: Helper(
+          widget: SingleChildScrollView(
+            child: Column(
+              children: [
+                Container(
+                  height: MediaQuery.of(context).size.height * 0.3,
+                  color: AppColors.mainColor,
+                  child: Column(
+                    children: [
+                      SizedBox(height: 10),
+                      Center(
+                        child: Container(
+                          decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.white,
+                              border:
+                                  Border.all(color: Colors.white, width: 2)),
+                          child: Icon(
+                            Icons.person,
+                            color: Colors.grey,
+                            size: 50,
+                          ),
                         ),
                       ),
-                    ),
-                    SizedBox(height: 10),
-                    Center(
-                      child: Obx(() {
-                        return Text(
-                          supplierController.supplier.value == null ||
-                                  customerController.customer.value == null
-                              ? name
-                              : user == "suppliers"
-                                  ? "${supplierController.supplier.value == null ? "" : supplierController.supplier.value?.fullName}"
-                                  : "${customerController.customer.value == null ? "" : customerController.customer.value?.fullName}",
-                          style: TextStyle(
-                              color: Colors.white, fontWeight: FontWeight.bold),
-                        );
-                      }),
-                    ),
-                    SizedBox(height: 5),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.phone,
-                          color: Colors.white,
-                          size: 14,
-                        ),
-                        Obx(() {
+                      SizedBox(height: 10),
+                      Center(
+                        child: Obx(() {
                           return Text(
                             supplierController.supplier.value == null ||
                                     customerController.customer.value == null
-                                ? phone
+                                ? name
                                 : user == "suppliers"
-                                    ? "${supplierController.supplier.value?.phoneNumber}"
-                                    : "${customerController.customer.value?.phoneNumber}",
-                            style: TextStyle(color: Colors.white),
+                                    ? "${supplierController.supplier.value == null ? "" : supplierController.supplier.value?.fullName}"
+                                    : "${customerController.customer.value == null ? "" : customerController.customer.value?.fullName}",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold),
                           );
                         }),
-                      ],
-                    ),
-                    SizedBox(height: 10),
-                    Container(
-                      width: double.infinity,
-                      padding: EdgeInsets.only(left: 20, right: 20, bottom: 10),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      ),
+                      SizedBox(height: 5),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          IconButton(
-                              onPressed: () {
-                                launchMessage(
-                                    number: user == "suppliers"
-                                        ? "${supplierController.supplier.value?.phoneNumber}"
-                                        : "${customerController.customer.value?.phoneNumber}",
-                                    message: user == "suppliers"
-                                        ? "we will be paying your debt very soon"
-                                        : "Aquick reminde that you owe our shop please pay your debt ");
-                              },
-                              icon: Icon(Icons.message),
-                              color: Colors.white),
-                          IconButton(
-                              onPressed: () {
-                                launchWhatsApp(
-                                    number: user == "suppliers"
-                                        ? "${supplierController.supplier.value?.phoneNumber}"
-                                        : "${customerController.customer.value?.phoneNumber}",
-                                    message: user == "suppliers"
-                                        ? "we will be paying your debt very soon"
-                                        : "Aquick reminde that you owe our shop please pay your debt ");
-                              },
-                              icon: Icon(Icons.whatshot),
-                              color: Colors.white),
-                          IconButton(
-                              onPressed: () async {
-                                await launch(
-                                    "tel://${user == "suppliers" ? "${supplierController.supplier.value?.phoneNumber}" : "${customerController.customer.value?.phoneNumber}"}");
-                              },
-                              icon: Icon(Icons.phone),
-                              color: Colors.white),
-                          if (user != "suppliers")
-                            InkWell(
-                              onTap: () {
-                                Get.to(() => WalletPage(
-                                    title: "Peter",
-                                    uid:
-                                        "${customerController.customer.value?.id}"));
-                              },
-                              child: Container(
-                                padding: EdgeInsets.only(
-                                    top: 5, bottom: 5, left: 10, right: 15),
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(50),
-                                    color: Colors.white.withOpacity(0.2)),
-                                child: Row(
-                                  children: [
-                                    Icon(Icons.credit_card,
-                                        color: Colors.white),
-                                    SizedBox(width: 10),
-                                    Text(
-                                      "Wallet",
-                                      style: TextStyle(color: Colors.white),
-                                    )
-                                  ],
-                                ),
-                              ),
-                            ),
+                          Icon(
+                            Icons.phone,
+                            color: Colors.white,
+                            size: 14,
+                          ),
+                          Obx(() {
+                            return Text(
+                              supplierController.supplier.value == null ||
+                                      customerController.customer.value == null
+                                  ? phone
+                                  : user == "suppliers"
+                                      ? "${supplierController.supplier.value?.phoneNumber}"
+                                      : "${customerController.customer.value?.phoneNumber}",
+                              style: TextStyle(color: Colors.white),
+                            );
+                          }),
                         ],
                       ),
-                    ),
-                  ],
-                ),
-              ),
-              Container(
-                height: MediaQuery.of(context).size.height * 0.9,
-                child: Column(
-                  children: [
-                    Container(
-                      color: Colors.white,
-                      width: double.infinity,
-                      height: kToolbarHeight,
-                      child: TabBar(
-                          unselectedLabelColor: Colors.grey,
-                          labelColor: Colors.purple,
-                          indicatorColor: Colors.purple,
-                          controller: customerController.tabController,
-                          indicatorWeight: 3,
-                          onTap: (index) {},
-                          tabs: customerController.tabs),
-                    ),
-                    Expanded(
-                      flex: 1,
-                      child: Container(
-                        color: Colors.grey.withOpacity(0.11),
-                        child: TabBarView(
-                          controller: customerController.tabController,
+                      SizedBox(height: 10),
+                      Container(
+                        width: double.infinity,
+                        padding:
+                            EdgeInsets.only(left: 20, right: 20, bottom: 10),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            CreditInfo(id: id, user: user),
-                            Purchase(id: id, user: user),
-                            Returns(
-                              id: id,
-                              user: user,
-                            )
+                            IconButton(
+                                onPressed: () {
+                                  launchMessage(
+                                      number: user == "suppliers"
+                                          ? "${supplierController.supplier.value?.phoneNumber}"
+                                          : "${customerController.customer.value?.phoneNumber}",
+                                      message: user == "suppliers"
+                                          ? "we will be paying your debt very soon"
+                                          : "Aquick reminde that you owe our shop please pay your debt ");
+                                },
+                                icon: Icon(Icons.message),
+                                color: Colors.white),
+                            IconButton(
+                                onPressed: () {
+                                  launchWhatsApp(
+                                      number: user == "suppliers"
+                                          ? "${supplierController.supplier.value?.phoneNumber}"
+                                          : "${customerController.customer.value?.phoneNumber}",
+                                      message: user == "suppliers"
+                                          ? "we will be paying your debt very soon"
+                                          : "Aquick reminde that you owe our shop please pay your debt ");
+                                },
+                                icon: Icon(Icons.whatshot),
+                                color: Colors.white),
+                            IconButton(
+                                onPressed: () async {
+                                  // await launch(
+                                  //     "tel://${user == "suppliers" ? "${supplierController.supplier.value?.phoneNumber}" : "${customerController.customer.value?.phoneNumber}"}");
+                                },
+                                icon: Icon(Icons.phone),
+                                color: Colors.white),
+                            if (user != "suppliers")
+                              InkWell(
+                                onTap: () {
+                                  Get.to(() => WalletPage(
+                                      title: "Peter",
+                                      uid:
+                                          "${customerController.customer.value?.id}"));
+                                },
+                                child: Container(
+                                  padding: EdgeInsets.only(
+                                      top: 5, bottom: 5, left: 10, right: 15),
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(50),
+                                      color: Colors.white.withOpacity(0.2)),
+                                  child: Row(
+                                    children: [
+                                      Icon(Icons.credit_card,
+                                          color: Colors.white),
+                                      SizedBox(width: 10),
+                                      Text(
+                                        "Wallet",
+                                        style: TextStyle(color: Colors.white),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
                           ],
                         ),
                       ),
-                    )
-                  ],
+                    ],
+                  ),
                 ),
-              )
-            ],
+                Container(
+                  height: MediaQuery.of(context).size.height * 0.9,
+                  child: Column(
+                    children: [
+                      Container(
+                        color: Colors.white,
+                        width: double.infinity,
+                        height: kToolbarHeight,
+                        child: Obx(() => DefaultTabController(
+                              length: 3,
+                              initialIndex:
+                                  customerController.initialPage.value,
+                              child: TabBar(
+                                  unselectedLabelColor: Colors.grey,
+                                  labelColor: Colors.purple,
+                                  indicatorColor: Colors.purple,
+                                  controller: customerController.tabController,
+                                  indicatorWeight: 3,
+                                  onTap: (index) {
+                                    customerController.initialPage.value =
+                                        index;
+                                    if (index == 0) {
+                                      if (user == "suppliers") {
+                                        supplierController.getSupplierCredit(
+                                            "${shopController.currentShop.value!.id!}",
+                                            id);
+                                      } else {
+                                        creditController.getCustomerCredit(
+                                            authController
+                                                        .currentUser.value ==
+                                                    null
+                                                ? attendantController
+                                                    .attendant.value?.id
+                                                : authController
+                                                    .currentUser.value?.id,
+                                            "${createShopController.currentShop.value!.id!}",
+                                            id);
+                                      }
+                                    }
+                                    if (index == 1) {
+                                      customerController.getCustomerPurchases(
+                                          id, user);
+                                    } else {
+                                      if (user == "suppliers") {
+                                      } else {
+                                        customerController
+                                            .getCustomerReturns(id);
+                                      }
+                                    }
+                                  },
+                                  tabs: customerController.tabs),
+                            )),
+                      ),
+                      Expanded(
+                        flex: 1,
+                        child: Container(
+                          color: Colors.grey.withOpacity(0.11),
+                          child: TabBarView(
+                            controller: customerController.tabController,
+                            children: [
+                              CreditInfo(id: id, user: user),
+                              Purchase(id: id, user: user),
+                              Returns(id: id, user: user)
+                            ],
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                )
+              ],
+            ),
           ),
-        ),
-        appBar: AppBar(
-          elevation: 0.0,
-          backgroundColor: AppColors.mainColor,
-          leading: IconButton(
-              onPressed: () {
-                Get.back();
-              },
-              icon: Icon(Icons.arrow_back_ios)),
-          actions: [
-            IconButton(
+          appBar: AppBar(
+            elevation: 0.0,
+            backgroundColor: AppColors.mainColor,
+            leading: IconButton(
                 onPressed: () {
-                  if (user == "suppliers") {
-                    supplierController.assignTextFields();
-                  } else {
-                    customerController.assignTextFields();
-                  }
-                  showEditDialog(
-                    user: user,
-                    context: context,
-                  );
+                  customerController.initialPage.value = 0;
+                  Get.back();
                 },
-                icon: Icon(Icons.edit)),
-            IconButton(
-                onPressed: () {
-                  deleteDialog(
+                icon: Icon(Icons.arrow_back_ios)),
+            actions: [
+              IconButton(
+                  onPressed: () {
+                    if (user == "suppliers") {
+                      supplierController.assignTextFields();
+                    } else {
+                      customerController.assignTextFields();
+                    }
+                    showEditDialog(
+                      user: user,
                       context: context,
-                      onPressed: () {
-                        if (user == "suppliers") {
-                          supplierController.deleteSuppler(
-                              context: context,
-                              id: customerController.customer.value?.id,
-                              shopId: shopController.currentShop.value?.id);
-                        } else {
-                          customerController.deleteCustomer(
-                              context: context,
-                              id: customerController.customer.value?.id,
-                              shopId: shopController.currentShop.value?.id);
-                        }
-                      });
-                },
-                icon: Icon(Icons.delete)),
-          ],
-        ));
+                    );
+                  },
+                  icon: Icon(Icons.edit)),
+              IconButton(
+                  onPressed: () {
+                    deleteDialog(
+                        context: context,
+                        onPressed: () {
+                          if (user == "suppliers") {
+                            supplierController.deleteSuppler(
+                                context: context,
+                                id: customerController.customer.value?.id,
+                                shopId: shopController.currentShop.value?.id);
+                          } else {
+                            customerController.deleteCustomer(
+                                context: context,
+                                id: customerController.customer.value?.id,
+                                shopId: shopController.currentShop.value?.id);
+                          }
+                        });
+                  },
+                  icon: Icon(Icons.delete)),
+            ],
+          )),
+    );
   }
 
   showModalSheet(context) {
@@ -368,9 +414,7 @@ class Purchase extends StatelessWidget {
   final id;
   final user;
 
-  Purchase({Key? key, required this.id, required this.user}) : super(key: key) {
-    customerController.getCustomerPurchases(id, user);
-  }
+  Purchase({Key? key, required this.id, required this.user}) : super(key: key);
 
   CustomerController customerController = Get.find<CustomerController>();
   SupplierController supplierController = Get.find<SupplierController>();
@@ -403,12 +447,7 @@ class Returns extends StatelessWidget {
   final id;
   final user;
 
-  Returns({Key? key, required this.id, required this.user}) : super(key: key) {
-    if (user == "suppliers") {
-    } else {
-      customerController.getCustomerReturns(id);
-    }
-  }
+  Returns({Key? key, required this.id, required this.user}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -437,21 +476,12 @@ class CreditInfo extends StatelessWidget {
   CreditController creditController = Get.find<CreditController>();
   SupplierController supplierController = Get.find<SupplierController>();
   CustomerController customerController = Get.find<CustomerController>();
-
-  CreditInfo({Key? key, required this.id, required this.user})
-      : super(key: key) {
-    if (user == "suppliers") {
-      supplierController.getSupplierCredit(
-          "${createShopController.currentShop.value!.id!}", id);
-    } else {
-      creditController.getCustomerCredit(authController.currentUser.value!.id,
-          "${createShopController.currentShop.value!.id!}", id);
-    }
-  }
-
   AttendantController attendantController = Get.find<AttendantController>();
   ShopController createShopController = Get.find<ShopController>();
   AuthController authController = Get.find<AuthController>();
+
+  CreditInfo({Key? key, required this.id, required this.user})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {

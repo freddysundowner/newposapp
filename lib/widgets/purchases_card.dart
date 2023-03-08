@@ -19,8 +19,8 @@ Widget purchasesCard(
     child: Card(
       elevation: 4,
       child: Container(
+        width: MediaQuery.of(context).size.width <= 600 ? double.infinity : 250,
         padding: EdgeInsets.all(8.0),
-        width: double.infinity,
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -83,39 +83,41 @@ Widget purchasesCard(
               ),
             ],
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(children: [
-                IconButton(
-                    onPressed: () {
-                      salesController.decrementItem(index);
-                    },
-                    icon: Icon(Icons.remove, color: Colors.black, size: 16)),
-                Container(
-                    padding:
-                        EdgeInsets.only(top: 5, bottom: 5, right: 8, left: 8),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(5),
-                      border: Border.all(color: Colors.black, width: 0.1),
-                      color: Colors.grey,
-                    ),
-                    child: majorTitle(
-                        title: "${productModel.cartquantity}",
-                        color: Colors.black,
-                        size: 12.0)),
-                IconButton(
-                    onPressed: () {
-                      salesController.incrementItem(index);
-                    },
-                    icon: Icon(Icons.add, color: Colors.black, size: 16)),
-              ]),
-              normalText(
-                  title:
-                      "Total=  ${shopController.currentShop.value?.currency}.${productModel.amount}",
-                  color: Colors.black,
-                  size: 17.0)
-            ],
+          Expanded(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(children: [
+                  IconButton(
+                      onPressed: () {
+                        salesController.decrementItem(index);
+                      },
+                      icon: Icon(Icons.remove, color: Colors.black, size: 16)),
+                  Container(
+                      padding:
+                          EdgeInsets.only(top: 5, bottom: 5, right: 8, left: 8),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(5),
+                        border: Border.all(color: Colors.black, width: 0.1),
+                        color: Colors.grey,
+                      ),
+                      child: majorTitle(
+                          title: "${productModel.cartquantity}",
+                          color: Colors.black,
+                          size: 12.0)),
+                  IconButton(
+                      onPressed: () {
+                        salesController.incrementItem(index);
+                      },
+                      icon: Icon(Icons.add, color: Colors.black, size: 16)),
+                ]),
+                normalText(
+                    title:
+                        "Total=  ${shopController.currentShop.value?.currency}.${productModel.amount}",
+                    color: Colors.black,
+                    size: 17.0)
+              ],
+            ),
           )
         ]),
       ),

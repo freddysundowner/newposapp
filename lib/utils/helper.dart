@@ -45,16 +45,18 @@ class Helper extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: appBar == null ? null : appBar,
-      floatingActionButton: Get.find<AuthController>().currentUser.value == null
-          ? null
-          : FloatingActionButton(
-              onPressed: () {
-                showShortCutBottomSheet(context: context);
-              },
-              child: Center(
-                child: Icon(Icons.menu, color: Colors.white),
-              ),
-            ),
+      floatingActionButton:
+          Get.find<AuthController>().currentUser.value == null ||
+                  MediaQuery.of(context).size.width > 600
+              ? null
+              : FloatingActionButton(
+                  onPressed: () {
+                    showShortCutBottomSheet(context: context);
+                  },
+                  child: Center(
+                    child: Icon(Icons.menu, color: Colors.white),
+                  ),
+                ),
       body: widget,
       bottomNavigationBar: bottomNavigationBar,
     );

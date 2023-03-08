@@ -9,7 +9,7 @@ import 'package:flutterpos/services/attendant.dart';
 import 'package:flutterpos/utils/colors.dart';
 import 'package:flutterpos/widgets/snackBars.dart';
 import 'package:get/get.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+// import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/admin_model.dart';
 import '../screens/attendant/attendant_landing.dart';
@@ -61,10 +61,10 @@ class AuthController extends GetxController {
               context: context);
         } else {
           AdminModel adminModel = AdminModel.fromJson(response["body"]);
-          SharedPreferences prefs = await SharedPreferences.getInstance();
-          prefs.setString("userId", adminModel.id!);
-          prefs.setString("token", response["token"]);
-          prefs.setString("type", "admin");
+          // SharedPreferences prefs = await SharedPreferences.getInstance();
+          // prefs.setString("userId", adminModel.id!);
+          // prefs.setString("token", response["token"]);
+          // prefs.setString("type", "admin");
           currentUser.value = adminModel;
           clearDataFromTextFields();
           Get.off(() => CreateShop(page: "home"));
@@ -98,10 +98,10 @@ class AuthController extends GetxController {
               context: context);
         } else {
           AdminModel adminModel = AdminModel.fromJson(response["body"]);
-          SharedPreferences prefs = await SharedPreferences.getInstance();
-          prefs.setString("userId", adminModel.id!);
-          prefs.setString("token", response["token"]);
-          prefs.setString("type", "admin");
+          // SharedPreferences prefs = await SharedPreferences.getInstance();
+          // prefs.setString("userId", adminModel.id!);
+          // prefs.setString("token", response["token"]);
+          // prefs.setString("type", "admin");
           currentUser.value = adminModel;
           clearDataFromTextFields();
           shopController.currentShop.value =
@@ -119,7 +119,6 @@ class AuthController extends GetxController {
           context: context);
     }
   }
-
 
   getUserById() async {
     try {
@@ -143,23 +142,73 @@ class AuthController extends GetxController {
   }
 
   getUserId() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? user = prefs.getString("userId");
-    return user;
+    var data={
+      "_id": "63f9efe3879e16801054a0b0",
+      "name": "peterKimu",
+      "email": "peterkironji8@gmail.com",
+      "password": "fhdhhdh",
+      "phonenumber": "0782015660",
+      "shops": [
+        {
+          "_id": "63fa089e46721b7480474be5",
+          "name": "apple",
+          "location": "nakuru",
+          "owner": "63f9efe3879e16801054a0b0",
+          "type": "electronics",
+          "currency": "ARS",
+          "createdAt": "2023-02-25T13:09:50.801Z",
+          "updatedAt": "2023-02-27T10:53:46.012Z",
+          "__v": 0
+        },
+        {
+          "_id": "63fa08bc46721b7480474bee",
+          "name": "kim",
+          "location": "naivasha",
+          "owner": "63f9efe3879e16801054a0b0",
+          "type": "ele",
+          "currency": "BDT",
+          "createdAt": "2023-02-25T13:10:20.721Z",
+          "updatedAt": "2023-02-27T10:53:24.721Z",
+          "__v": 0
+        },
+        {
+          "_id": "63ff51308b658aafbf4e3537",
+          "name": "appleShop",
+          "location": "nakuru",
+          "owner": "63f9efe3879e16801054a0b0",
+          "type": "electronics",
+          "currency": "USD",
+          "createdAt": "2023-03-01T13:20:48.885Z",
+          "updatedAt": "2023-03-01T13:20:48.885Z",
+          "__v": 0
+        }
+      ],
+      "createdAt": "2023-02-25T11:24:19.664Z",
+      "updatedAt": "2023-03-01T13:20:48.887Z",
+      "__v": 0,
+      "attendantid": "63f9efe3879e16801054a0b0"
+    };
+    AdminModel userModel = AdminModel.fromJson(data);
+    shopController.currentShop.value = userModel.shops!.isNotEmpty ? userModel.shops![0] : null;
+    currentUser.value = userModel;
+    // SharedPreferences prefs = await SharedPreferences.getInstance();
+    // String? user = prefs.getString("userId");
+    // return user;
   }
 
   getUserType() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? user = prefs.getString("type");
-    if(user=="admin"){
-      AdminModel adminModel=await getUserById();
-     return ["admin",adminModel];
-    }else{
-      String id=await getUserId();
-      AttendantModel attendantModel=await Get.find<AttendantController>().getAttendantsById(id);
-      return ["attendant",attendantModel];
+    // SharedPreferences prefs = await SharedPreferences.getInstance();
+    // String? user = prefs.getString("type");/
+     String? user = "admin";
+    if (user == "admin") {
+      AdminModel adminModel = await getUserById();
+      return ["admin", adminModel];
+    } else {
+      String id = await getUserId();
+      AttendantModel attendantModel =
+          await Get.find<AttendantController>().getAttendantsById(id);
+      return ["attendant", attendantModel];
     }
-
   }
 
   updateAdmin(context) async {
@@ -194,9 +243,9 @@ class AuthController extends GetxController {
   }
 
   assignDataToTextFields() {
-    nameController.text = currentUser.value!.name!;
-    emailController.text = currentUser.value!.email!;
-    phoneController.text = currentUser.value!.phonenumber!;
+    nameController.text = currentUser.value==null?"":currentUser.value!.name!;
+    emailController.text = currentUser.value==null?"":currentUser.value!.email!;
+    phoneController.text = currentUser.value==null?"":currentUser.value!.phonenumber!;
   }
 
   clearDataFromTextFields() {
@@ -207,8 +256,8 @@ class AuthController extends GetxController {
   }
 
   logout() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.clear();
+    // SharedPreferences prefs = await SharedPreferences.getInstance();
+    // await prefs.clear();
     shopController.currentShop.value = null;
     usertype.value = "";
     clearDataFromTextFields();
@@ -275,18 +324,20 @@ class AuthController extends GetxController {
         };
 
         var response = await Attendant().loginAttendant(body: data);
+        print("response ${response["body"]}");
         if (response["error"] != null) {
           String message = response["error"];
           Get.snackbar("", message,
               backgroundColor: Colors.red, colorText: Colors.white);
         } else {
-          AttendantModel attendantModel = AttendantModel.fromJson(response["body"]);
+          AttendantModel attendantModel =
+              AttendantModel.fromJson(response["body"]);
           Get.find<AttendantController>().attendant.value = attendantModel;
           Get.find<ShopController>().currentShop.value = attendantModel.shop;
-          SharedPreferences prefs = await SharedPreferences.getInstance();
-          prefs.setString("userId", attendantModel.id!);
-          prefs.setString("token", response["token"]);
-          prefs.setString("type", "attendant");
+          // SharedPreferences prefs = await SharedPreferences.getInstance();
+          // prefs.setString("userId", attendantModel.id!);
+          // prefs.setString("token", response["token"]);
+          // prefs.setString("type", "attendant");
           attendantUidController.text = "";
           attendantPasswordController.text = "";
           Get.offAll(() => AttendantLanding());
@@ -296,5 +347,11 @@ class AuthController extends GetxController {
     } catch (e) {
       LoginAttendantLoad.value = false;
     }
+  }
+
+  @override
+  void onInit() {
+    getUserId();
+    super.onInit();
   }
 }

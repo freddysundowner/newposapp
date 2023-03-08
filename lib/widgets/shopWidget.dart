@@ -16,7 +16,12 @@ Widget profileInputWidget({
         controller: controller,
         keyboardType: TextInputType.text,
         decoration: InputDecoration(
-            contentPadding: EdgeInsets.all(20), border: OutlineInputBorder(
+            contentPadding: EdgeInsets.all(20),
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.grey),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10)
         )),
       )

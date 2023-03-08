@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutterpos/bindings.dart';
 import 'package:flutterpos/controllers/AuthController.dart';
+import 'package:flutterpos/controllers/attendant_controller.dart';
+import 'package:flutterpos/controllers/home_controller.dart';
 import 'package:flutterpos/models/admin_model.dart';
 import 'package:flutterpos/screens/attendant/attendant_landing.dart';
 import 'package:flutterpos/screens/home/home.dart';
@@ -10,13 +12,17 @@ import 'package:flutterpos/utils/colors.dart';
 import 'package:get/get.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
   MyApp({super.key});
 
+  AttendantController attendantController =  Get.put<AttendantController>(AttendantController());
   AuthController authController = Get.put<AuthController>(AuthController());
+  HomeController homeController = Get.put<HomeController>(HomeController());
+
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +31,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: AppColors.mainColor,
+        splashColor: Colors.transparent,
       ),
       initialBinding: AuthBinding(),
       home: FutureBuilder(

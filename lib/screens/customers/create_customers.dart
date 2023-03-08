@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutterpos/responsive/responsiveness.dart';
 import 'package:get/get.dart';
 
 import '../../../../utils/colors.dart';
@@ -10,8 +11,8 @@ import '../../widgets/smalltext.dart';
 
 class CreateCustomer extends StatelessWidget {
   final type;
-  CreateCustomer({Key? key, required this.type})
-      : super(key: key);
+
+  CreateCustomer({Key? key, required this.type}) : super(key: key);
 
   CustomerController customersController = Get.find<CustomerController>();
   SupplierController supplierController = Get.find<SupplierController>();
@@ -24,6 +25,7 @@ class CreateCustomer extends StatelessWidget {
       appBar: AppBar(
           elevation: 0.3,
           titleSpacing: 0.0,
+          centerTitle: false,
           backgroundColor: Colors.white,
           automaticallyImplyLeading: false,
           leading: IconButton(
@@ -42,100 +44,112 @@ class CreateCustomer extends StatelessWidget {
                   color: Colors.grey),
             ],
           )),
-      body: SingleChildScrollView(
+      body: ResponsiveWidget(
+          largeScreen: Align(
+              alignment: Alignment.topCenter,
+              child: Container(
+                  width: 400,
+                  height: MediaQuery.of(context).size.height * 0.7,
+                  child: customerInfoCard(context))),
+          smallScreen: SingleChildScrollView(
+            child: customerInfoCard(context),
+          )),
+    );
+  }
+
+  Widget customerInfoCard(context) {
+    return Card(
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 15, horizontal: 25),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Card(
-              child: Container(
-                padding: EdgeInsets.all(15),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text("${type} Name".capitalize!),
-                        SizedBox(height: 10),
-                        TextFormField(
-                          controller: type == "suppliers"
-                              ? supplierController.nameController
-                              : customersController.nameController,
-                          keyboardType: TextInputType.text,
-                          decoration: InputDecoration(
-                              isDense: true,
-                              hintStyle: TextStyle(
-                                  color: Colors.grey,
-                                  fontWeight: FontWeight.bold),
-                              hintText: "eg.John Doe",
-                              border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10)),
-                              filled: true,
-                              fillColor: Colors.white),
-                        )
-                      ],
-                    ),
-                    SizedBox(height: 10),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text("Phone"),
-                        SizedBox(height: 10),
-                        TextFormField(
-                          controller: type == "suppliers"
-                              ? supplierController.phoneController
-                              : customersController.phoneController,
-                          keyboardType: TextInputType.number,
-                          decoration: InputDecoration(
-                              isDense: true,
-                              hintStyle: TextStyle(
-                                  color: Colors.grey,
-                                  fontWeight: FontWeight.bold),
-                              hintText: "eg.07XXXXXXXX",
-                              border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10)),
-                              filled: true,
-                              fillColor: Colors.white),
-                        )
-                      ],
-                    ),
-                    SizedBox(height: 20),
-                    InkWell(
-                      splashColor: Colors.transparent,
-                      onTap: () {
-                        if (type == "suppliers") {
-                          supplierController.createSupplier(
-                              shopId: shopController.currentShop.value?.id,
-                              context: context);
-                        } else {
-                          customersController.createCustomer(
-                              shopId: shopController.currentShop.value?.id,
-                              context: context);
-                        }
-                      },
-                      child: Align(
-                        alignment: Alignment.center,
-                        child: Center(
-                          child: Container(
-                            padding: EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                                border: Border.all(
-                                    width: 3, color: AppColors.mainColor),
-                                borderRadius: BorderRadius.circular(40)),
-                            child: Center(
-                                child: majorTitle(
-                                    title: "Save",
-                                    color: AppColors.mainColor,
-                                    size: 18.0)),
-                          ),
-                        ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text("${type} Name".capitalize!),
+                SizedBox(height: 10),
+                TextFormField(
+                  controller: type == "suppliers"
+                      ? supplierController.nameController
+                      : customersController.nameController,
+                  keyboardType: TextInputType.text,
+                  decoration: InputDecoration(
+                      isDense: true,
+                      hintStyle: TextStyle(
+                          color: Colors.grey, fontWeight: FontWeight.bold),
+                      hintText: "eg.John Doe",
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(color: Colors.grey, width: 1),
                       ),
-                    ),
-                    SizedBox(height: 20),
-                  ],
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(color: Colors.grey, width: 1),
+                      ),
+                      filled: true,
+                      fillColor: Colors.white),
+                )
+              ],
+            ),
+            SizedBox(height: 20),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text("Phone"),
+                SizedBox(height: 10),
+                TextFormField(
+                    controller: type == "suppliers"
+                        ? supplierController.phoneController
+                        : customersController.phoneController,
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                      isDense: true,
+                      hintStyle: TextStyle(
+                          color: Colors.grey, fontWeight: FontWeight.bold),
+                      hintText: "eg.07XXXXXXXX",
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(color: Colors.grey, width: 1),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(color: Colors.grey, width: 1),
+                      ),
+                    ))
+              ],
+            ),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.10),
+            InkWell(
+              splashColor: Colors.transparent,
+              hoverColor: Colors.transparent,
+              onTap: () {
+                if (type == "suppliers") {
+                  supplierController.createSupplier(
+                      shopId: shopController.currentShop.value?.id,
+                      context: context);
+                } else {
+                  customersController.createCustomer(
+                      shopId: shopController.currentShop.value?.id,
+                      context: context);
+                }
+              },
+              child: Center(
+                child: Container(
+                  padding: EdgeInsets.all(10),
+                  width: MediaQuery.of(context).size.width * 0.25,
+                  decoration: BoxDecoration(
+                      border: Border.all(width: 3, color: AppColors.mainColor),
+                      borderRadius: BorderRadius.circular(40)),
+                  child: Center(
+                      child: majorTitle(
+                          title: "Save",
+                          color: AppColors.mainColor,
+                          size: 18.0)),
                 ),
               ),
-            )
+            ),
+            SizedBox(height: 10),
           ],
         ),
       ),

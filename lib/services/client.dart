@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
+// import 'package:shared_preferences/shared_preferences.dart';
 
 class DbBase {
   final postRequestType = "POST";
@@ -13,15 +13,12 @@ class DbBase {
   databaseRequest(String link, String type,
       {Map<String, dynamic>? body, Map<String, String>? headers}) async {
     try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String? token = prefs.getString("token");
+      // SharedPreferences prefs = await SharedPreferences.getInstance();
+      // String? token = prefs.getString("token");
+      String? token = "";
 
       if (headers == null) {
         headers = {
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Credentials": "true",
-          "Access-Control-Allow-Headers": "Origin,Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,locale",
-          "Access-Control-Allow-Methods": "POST, OPTIONS",
           "Content-Type": "application/json",
           "Authorization": "Bearer " + (token ?? ""),
         };

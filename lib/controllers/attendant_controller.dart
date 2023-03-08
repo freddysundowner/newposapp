@@ -22,11 +22,14 @@ class AttendantController extends GetxController {
   RxList<RolesModel> roles = RxList([]);
   RxList<RolesModel> rolesFromApi = RxList([]);
 
-  saveAttendant({required shopId,required context}) async {
+  saveAttendant({required shopId, required context}) async {
     String name = nameController.text;
     String password = passwordController.text;
     if (name == "" || password == "") {
-      showSnackBar(message: "please fill all the fields", color: Colors.red,context: context);
+      showSnackBar(
+          message: "please fill all the fields",
+          color: Colors.red,
+          context: context);
     } else {
       try {
         creatingAttendantsLoad.value = true;
@@ -41,7 +44,10 @@ class AttendantController extends GetxController {
         clearTextFields();
         getAttendantsByShopId(shopId: shopId);
         Get.back();
-        showSnackBar(message: response["message"], color: AppColors.mainColor,context: context);
+        showSnackBar(
+            message: response["message"],
+            color: AppColors.mainColor,
+            context: context);
 
         creatingAttendantsLoad.value = false;
       } catch (e) {
@@ -80,6 +86,139 @@ class AttendantController extends GetxController {
       }
       getAttendantsLoad.value = false;
     } catch (e) {
+      List att = [
+        {
+          "_id": "63fda3fed13cf778aab94e2f",
+          "fullnames": "kimani",
+          "attendid": 89107,
+          "phonenumber": null,
+          "shop": {
+            "_id": "63fa089e46721b7480474be5",
+            "name": "apple",
+            "location": "nakuru",
+            "owner": "63f9efe3879e16801054a0b0",
+            "type": "electronics",
+            "currency": "ARS",
+            "createdAt": "2023-02-25T13:09:50.801Z",
+            "updatedAt": "2023-02-27T10:53:46.012Z",
+            "__v": 0
+          },
+          "password": "kimani89",
+          "roles": [
+            {"key": "sales", "value": "sales"},
+            {"key": "stockin", "value": "Stockin "},
+            {"key": "discounts", "value": "Discount"},
+            {"key": "add_products", "value": "Add products"},
+            {"key": "expenses", "value": "Add expenses"},
+            {"key": "customers", "value": "Manage Customers"},
+            {"key": "Suppliers", "value": "Manage suppliers"},
+            {"key": "stock_balance", "value": "Stock balance"},
+            {"key": "count_stock", "value": "Count stock"},
+            {"key": "edit_entries", "value": "Edit entries"}
+          ],
+          "createdAt": "2023-02-28T06:49:34.652Z",
+          "updatedAt": "2023-03-01T12:42:14.026Z",
+          "__v": 0
+        },
+        {
+          "_id": "63fc8c598e7d4a3bbf4893a6",
+          "fullnames": "kimani",
+          "attendid": 27158,
+          "phonenumber": null,
+          "shop": {
+            "_id": "63fa089e46721b7480474be5",
+            "name": "apple",
+            "location": "nakuru",
+            "owner": "63f9efe3879e16801054a0b0",
+            "type": "electronics",
+            "currency": "ARS",
+            "createdAt": "2023-02-25T13:09:50.801Z",
+            "updatedAt": "2023-02-27T10:53:46.012Z",
+            "__v": 0
+          },
+          "password": "kimani89",
+          "roles": [
+            {"key": "sales", "value": "sales"},
+            {"key": "stockin", "value": "Stockin "},
+            {"key": "discounts", "value": "Discount"},
+            {"key": "add_products", "value": "Add products"}
+          ],
+          "createdAt": "2023-02-27T10:56:25.666Z",
+          "updatedAt": "2023-02-27T10:56:25.666Z",
+          "__v": 0
+        },
+        {
+          "_id": "63fc75a28e7d4a3bbf488e9a",
+          "fullnames": "petero",
+          "attendid": 28894,
+          "phonenumber": null,
+          "shop": {
+            "_id": "63fa089e46721b7480474be5",
+            "name": "apple",
+            "location": "nakuru",
+            "owner": "63f9efe3879e16801054a0b0",
+            "type": "electronics",
+            "currency": "ARS",
+            "createdAt": "2023-02-25T13:09:50.801Z",
+            "updatedAt": "2023-02-27T10:53:46.012Z",
+            "__v": 0
+          },
+          "password": "kimai89",
+          "roles": [],
+          "createdAt": "2023-02-27T09:19:30.083Z",
+          "updatedAt": "2023-02-27T09:19:30.083Z",
+          "__v": 0
+        },
+        {
+          "_id": "63fc75a28e7d4a3bbf488e9a",
+          "fullnames": "petero",
+          "attendid": 28894,
+          "phonenumber": null,
+          "shop": {
+            "_id": "63fa089e46721b7480474be5",
+            "name": "apple",
+            "location": "nakuru",
+            "owner": "63f9efe3879e16801054a0b0",
+            "type": "electronics",
+            "currency": "ARS",
+            "createdAt": "2023-02-25T13:09:50.801Z",
+            "updatedAt": "2023-02-27T10:53:46.012Z",
+            "__v": 0
+          },
+          "password": "kimai89",
+          "roles": [],
+          "createdAt": "2023-02-27T09:19:30.083Z",
+          "updatedAt": "2023-02-27T09:19:30.083Z",
+          "__v": 0
+        },
+        {
+          "_id": "63fc75a28e7d4a3bbf488e9a",
+          "fullnames": "petero",
+          "attendid": 28894,
+          "phonenumber": null,
+          "shop": {
+            "_id": "63fa089e46721b7480474be5",
+            "name": "apple",
+            "location": "nakuru",
+            "owner": "63f9efe3879e16801054a0b0",
+            "type": "electronics",
+            "currency": "ARS",
+            "createdAt": "2023-02-25T13:09:50.801Z",
+            "updatedAt": "2023-02-27T10:53:46.012Z",
+            "__v": 0
+          },
+          "password": "kimai89",
+          "roles": [],
+          "createdAt": "2023-02-27T09:19:30.083Z",
+          "updatedAt": "2023-02-27T09:19:30.083Z",
+          "__v": 0
+        }
+      ];
+      List attendantsData = att;
+      List<AttendantModel> attendantList =
+          attendantsData.map((e) => AttendantModel.fromJson(e)).toList();
+
+      attendants.assignAll(attendantList);
       getAttendantsLoad.value = false;
     }
   }
@@ -99,10 +238,39 @@ class AttendantController extends GetxController {
         Get.find<AuthController>().logout();
       }
       AttendantModel userModel = AttendantModel.fromJson(response["body"]);
-      attendant.value  = userModel;
-      Get.find<ShopController>().currentShop.value=userModel.shop;
+      attendant.value = userModel;
+      Get.find<ShopController>().currentShop.value = userModel.shop;
       return userModel;
     } catch (e) {
+      var data = {
+        "_id": "63fc8c598e7d4a3bbf4893a6",
+        "fullnames": "kimani",
+        "attendid": 27158,
+        "phonenumber": null,
+        "shop": {
+          "_id": "63fa089e46721b7480474be5",
+          "name": "apple",
+          "location": "nakuru",
+          "owner": "63f9efe3879e16801054a0b0",
+          "type": "electronics",
+          "currency": "ARS",
+          "createdAt": "2023-02-25T13:09:50.801Z",
+          "updatedAt": "2023-02-27T10:53:46.012Z",
+          "__v": 0
+        },
+        "password": "abhsbh",
+        "roles": [
+          {"key": "sales", "value": "sales"},
+          {"key": "stockin", "value": "Stockin "},
+          {"key": "discounts", "value": "Discount"},
+          {"key": "add_products", "value": "Add products"}
+        ],
+        "createdAt": "2023-02-27T10:56:25.666Z",
+        "updatedAt": "2023-02-27T10:56:25.666Z",
+        "__v": 0
+      };
+      AttendantModel userModel = AttendantModel.fromJson(data);
+      attendant.value = userModel;
       getAttendantByIdLoad.value = false;
     }
   }
@@ -117,9 +285,15 @@ class AttendantController extends GetxController {
       var response = await Attendant().updatePassword(id, body);
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
       if (response["status"] == true) {
-        showSnackBar(message: response["message"], color: AppColors.mainColor,context: context);
+        showSnackBar(
+            message: response["message"],
+            color: AppColors.mainColor,
+            context: context);
       } else {
-        showSnackBar(message: response["message"], color: AppColors.mainColor,context: context);
+        showSnackBar(
+            message: response["message"],
+            color: AppColors.mainColor,
+            context: context);
       }
     } catch (e) {
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
@@ -138,16 +312,22 @@ class AttendantController extends GetxController {
       if (response["status"] == true) {
         Get.back();
         getAttendantsByShopId(shopId: shopId);
-        showSnackBar(message: response["message"], color: AppColors.mainColor,context: context);
+        showSnackBar(
+            message: response["message"],
+            color: AppColors.mainColor,
+            context: context);
       } else {
-        showSnackBar(message: response["message"], color: AppColors.mainColor,context: context);
+        showSnackBar(
+            message: response["message"],
+            color: AppColors.mainColor,
+            context: context);
       }
     } catch (e) {
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
     }
   }
 
-  updateAttedant({required id,required rolesData}) async {
+  updateAttedant({required id, required rolesData}) async {
     try {
       creatingAttendantsLoad.value = true;
       Map<String, dynamic> body = {
@@ -170,8 +350,9 @@ class AttendantController extends GetxController {
     }
   }
 
-
-  checkRole(String key){
-    return attendant.value!.roles!.indexWhere((element) => element.key==key ) !=-1;
+  checkRole(String key) {
+    return attendant.value!.roles!
+            .indexWhere((element) => element.key == key) !=
+        -1;
   }
 }

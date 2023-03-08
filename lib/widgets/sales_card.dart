@@ -12,7 +12,10 @@ import 'bigtext.dart';
 import 'normal_text.dart';
 
 Widget SalesContainer(
-    {required context, required ProductModel productModel, required index}) {
+    {required context,
+    required ProductModel productModel,
+    required index,
+    required type}) {
   SalesController salesController = Get.find<SalesController>();
   ShopController shopController = Get.find<ShopController>();
   TextEditingController textEditingController = TextEditingController();
@@ -22,7 +25,7 @@ Widget SalesContainer(
       elevation: 4,
       child: Container(
         padding: EdgeInsets.all(8.0),
-        width: double.infinity,
+        width: type=="small"?double.infinity:250,
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -108,7 +111,8 @@ Widget SalesContainer(
                                             showSnackBar(
                                                 message:
                                                     "selling price cannot be below${productModel.minPrice}",
-                                                color: Colors.red,context: context);
+                                                color: Colors.red,
+                                                context: context);
                                           } else if (int.parse(
                                                   "${salesController.textEditingSellingPrice.text}") >
                                               int.parse(
@@ -116,7 +120,8 @@ Widget SalesContainer(
                                             showSnackBar(
                                                 message:
                                                     "selling price cannot be above${productModel.sellingPrice![0]}",
-                                                color: Colors.red,context: context);
+                                                color: Colors.red,
+                                                context: context);
                                           } else {
                                             productModel.selling = int.parse(
                                                 salesController
@@ -152,102 +157,144 @@ Widget SalesContainer(
           //             true ||
           //     Get.find<AuthController>().currentUser.value?.type == "admin")
           Align(
-              alignment: Alignment.topRight,
-              child: InkWell(
-                onTap: () {
-                  showDialog(
-                      context: context,
-                      builder: (context) {
-                        return AlertDialog(
-                          title: Text("Add Discount"),
-                          content: Padding(
-                            padding: const EdgeInsets.all(5.0),
-                            child: TextFormField(
-                                controller: textEditingController,
-                                keyboardType: TextInputType.number,
-                                decoration: InputDecoration(
-                                    hintText: "0",
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                    ))),
+            alignment: Alignment.topRight,
+            child: InkWell(
+              onTap: () {
+                showDialog(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        title: Text("Add Discount"),
+                        content: Padding(
+                          padding: const EdgeInsets.all(5.0),
+                          child: TextFormField(
+                              controller: textEditingController,
+                              keyboardType: TextInputType.number,
+                              decoration: InputDecoration(
+                                  hintText: "0",
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ))),
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            child: Text(
+                              "Cancel".toUpperCase(),
+                              style: TextStyle(color: Colors.blue),
+                            ),
                           ),
-                          actions: [
-                            TextButton(
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                              child: Text(
-                                "Cancel".toUpperCase(),
-                                style: TextStyle(color: Colors.blue),
-                              ),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                              if (int.parse(textEditingController.text) >
+                                  (productModel.discount! *
+                                      productModel.cartquantity!)) {
+                                showSnackBar(
+                                    message:
+                                        "discount cannot be greater than ${productModel.discount! * productModel.cartquantity!}",
+                                    color: Colors.red,
+                                    context: context);
+                              } else {
+                                productModel.allowedDiscount =
+                                    int.parse(textEditingController.text);
+                                textEditingController.text = "";
+                                salesController.calculateAmount(index);
+                              }
+                            },
+                            child: Text(
+                              "Save now".toUpperCase(),
+                              style: TextStyle(color: Colors.blue),
                             ),
-                            TextButton(
-                              onPressed: () {
-                                Navigator.pop(context);
-                                if (int.parse(textEditingController.text) >
-                                    (productModel.discount! *
-                                        productModel.cartquantity!)) {
-                                  showSnackBar(
-                                      message:
-                                          "discount cannot be greater than ${productModel.discount! * productModel.cartquantity!}",
-                                      color: Colors.red,context: context);
-                                } else {
-                                  productModel.allowedDiscount =
-                                      int.parse(textEditingController.text);
-                                  textEditingController.text = "";
-                                  salesController.calculateAmount(index);
-                                }
-                              },
-                              child: Text(
-                                "Save now".toUpperCase(),
-                                style: TextStyle(color: Colors.blue),
-                              ),
-                            ),
-                          ],
-                        );
-                      });
-                },
-                child: Text(
-                  "Discount",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.blue),
-                ),
+                          ),
+                        ],
+                      );
+                    });
+              },
+              child: Text(
+                "Discount",
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.blue),
               ),
             ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(children: [
-                IconButton(
-                    onPressed: () {
-                      salesController.decrementItem(index);
-                    },
-                    icon: Icon(Icons.remove, color: Colors.black, size: 16)),
-                Container(
-                    padding:
-                        EdgeInsets.only(top: 5, bottom: 5, right: 8, left: 8),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(5),
-                      border: Border.all(color: Colors.black, width: 0.1),
-                      color: Colors.grey,
-                    ),
-                    child: majorTitle(
-                        title: "${productModel.cartquantity}",
+          ),
+          type == "small"
+              ? Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(children: [
+                      IconButton(
+                          onPressed: () {
+                            salesController.decrementItem(index);
+                          },
+                          icon: Icon(Icons.remove,
+                              color: Colors.black, size: 16)),
+                      Container(
+                          padding: EdgeInsets.only(
+                              top: 5, bottom: 5, right: 8, left: 8),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(5),
+                            border: Border.all(color: Colors.black, width: 0.1),
+                            color: Colors.grey,
+                          ),
+                          child: majorTitle(
+                              title: "${productModel.cartquantity}",
+                              color: Colors.black,
+                              size: 12.0)),
+                      IconButton(
+                          onPressed: () {
+                            salesController.incrementItem(index);
+                          },
+                          icon: Icon(Icons.add, color: Colors.black, size: 16)),
+                    ]),
+                    normalText(
+                        title:
+                            "Total=  ${shopController.currentShop.value?.currency}.${productModel.amount}",
                         color: Colors.black,
-                        size: 12.0)),
-                IconButton(
-                    onPressed: () {
-                      salesController.incrementItem(index);
-                    },
-                    icon: Icon(Icons.add, color: Colors.black, size: 16)),
-              ]),
-              normalText(
-                  title:
-                      "Total=  ${shopController.currentShop.value?.currency}.${productModel.amount}",
-                  color: Colors.black,
-                  size: 17.0)
-            ],
-          )
+                        size: 17.0)
+                  ],
+                )
+              : Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          IconButton(
+                              onPressed: () {
+                                salesController.decrementItem(index);
+                              },
+                              icon: Icon(Icons.remove,
+                                  color: Colors.black, size: 16)),
+                          Container(
+                              padding: EdgeInsets.only(
+                                  top: 5, bottom: 5, right: 8, left: 8),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(5),
+                                border:
+                                    Border.all(color: Colors.black, width: 0.1),
+                                color: Colors.grey,
+                              ),
+                              child: majorTitle(
+                                  title: "${productModel.cartquantity}",
+                                  color: Colors.black,
+                                  size: 12.0)),
+                          IconButton(
+                              onPressed: () {
+                                salesController.incrementItem(index);
+                              },
+                              icon: Icon(Icons.add,
+                                  color: Colors.black, size: 16)),
+                        ]),
+                    normalText(
+                        title:
+                            "Total=  ${shopController.currentShop.value?.currency}.${productModel.amount}",
+                        color: Colors.black,
+                        size: 17.0)
+                  ],
+                )
         ]),
       ),
     ),
