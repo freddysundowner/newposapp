@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
+import 'package:flutterpos/screens/sales/components/return_stock.dart';
 import 'package:flutterpos/widgets/snackBars.dart';
 import 'package:get/get.dart';
 import 'package:get/get_utils/get_utils.dart';
@@ -15,7 +16,8 @@ Widget salesHistoryCard(
     onTap: () {
       if (page != "credit") {
         if (salesOrderItemModel.returned != true) {
-          showbottomSheet(salesOrderItemModel, context, salesId);
+          // showbottomSheet(salesOrderItemModel, context, salesId);
+          returnStockDialog(context: context, id: salesOrderItemModel.id, saleId: salesId);
         }
       }
     },
@@ -109,7 +111,7 @@ showbottomSheet(historyBody, context, salesId) {
                             "You cannot return a product that ha no customer",
                         color: Colors.red,context: context);
                   } else {
-                    salesController.returnSale(historyBody, salesId);
+                    // salesController.returnSale(historyBody, salesId);
                   }
                   Navigator.pop(context);
                 },

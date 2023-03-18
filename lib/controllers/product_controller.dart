@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
+import 'package:flutterpos/controllers/AuthController.dart';
+import 'package:flutterpos/controllers/attendant_controller.dart';
 import 'package:flutterpos/controllers/home_controller.dart';
 import 'package:flutterpos/controllers/purchase_controller.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
@@ -247,7 +249,6 @@ class ProductController extends GetxController {
     } catch (e) {
       getProductLoad.value = false;
       return null;
-
     }
   }
 
@@ -400,26 +401,20 @@ class ProductController extends GetxController {
     products.refresh();
   }
 
-  updateQuantity(product, context) async {
+  updateQuantity({required ProductModel product, required context}) async {
     try {
       Map<String, dynamic> body = {
         "quantity": product.quantity,
         "shop": Get.find<ShopController>().currentShop.value!.id,
-        "type": quantityType.value
+        "attendantId": Get.find<AuthController>().usertype == "admin"
+            ? Get.find<AuthController>().currentUser.value?.id
+            : Get.find<AttendantController>().attendant.value?.id,
+        "product": product.id,
       };
-      var response = await Products().updateProductCount(product.id, body);
-      if (response["status"] == true) {
-        showSnackBar(
-            message: response["message"],
-            color: AppColors.mainColor,
-            context: context);
-      } else {
-        showSnackBar(
-            message: response["message"],
-            color: AppColors.mainColor,
-            context: context);
-      }
-    } catch (e) {}
+      await Products().updateProductCount(body);
+    } catch (e) {
+      print(e);
+    }
   }
 
   getProductCount(shopId) async {
@@ -427,6 +422,7 @@ class ProductController extends GetxController {
       loadingCountHistory.value = true;
       countHistoryList.clear();
       var response = await Products().getProductCount(shopId);
+      print(response["body"][0]);
       if (response != null) {
         List history = response["body"];
         List<ProductCountModel> countHistory =
@@ -438,6 +434,7 @@ class ProductController extends GetxController {
       }
       loadingCountHistory.value = false;
     } catch (e) {
+      print(e);
       loadingCountHistory.value = false;
     }
   }

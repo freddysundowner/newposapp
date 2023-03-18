@@ -71,7 +71,12 @@ class AuthController extends GetxController {
           currentUser.value = adminModel;
           clearDataFromTextFields();
           usertype.value = "admin";
-          Get.off(() => CreateShop(page: "home"));
+          if (MediaQuery.of(context).size.width > 600) {
+            Get.find<HomeController>().selectedWidget.value =
+                CreateShop(page: "home");
+          } else {
+            Get.off(() => CreateShop(page: "home"));
+          }
         }
         signuserLoad.value = false;
       } catch (e) {
@@ -106,7 +111,6 @@ class AuthController extends GetxController {
           // prefs.setString("userId", adminModel.id!);
           // prefs.setString("token", response["token"]);
           // prefs.setString("type", "admin");
-
 
           currentUser.value = adminModel;
           clearDataFromTextFields();

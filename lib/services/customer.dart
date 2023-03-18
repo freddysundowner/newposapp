@@ -10,9 +10,12 @@ class Customer {
     return jsonDecode(response);
   }
 
-  getCustomersByShopId(String shopId,String type) async {
-    var response = await DbBase()
-        .databaseRequest(type=="all"?customer + "shop/${shopId}":"$customersOnCredit/${shopId}", DbBase().getRequestType);
+  getCustomersByShopId(String shopId, String type) async {
+    var response = await DbBase().databaseRequest(
+        type == "all"
+            ? customer + "shop/${shopId}"
+            : "$customersOnCredit/${shopId}",
+        DbBase().getRequestType);
     return jsonDecode(response);
   }
 
@@ -25,6 +28,7 @@ class Customer {
   updateCustomer({required Map<String, dynamic> body, required id}) async {
     var response = await DbBase()
         .databaseRequest(customer + id, DbBase().patchRequestType);
+    print("response is ${response}");
     return jsonDecode(response);
   }
 
@@ -48,5 +52,4 @@ class Customer {
     var data = jsonDecode(response);
     return data;
   }
-
 }

@@ -27,7 +27,7 @@ class AttendantModel {
       shop: json["shop"] == null || json["shop"].toString().length <= 40
           ? ShopModel()
           : ShopModel.fromJson(json["shop"]),
-      roles: List<RolesModel>.from(
+      roles:json["roles"]==null?[]: List<RolesModel>.from(
           json["roles"].map((x) => RolesModel.fromJson(x))),
     );
   }

@@ -41,4 +41,11 @@ class Sales {
     var data = jsonDecode(response);
     return data;
   }
+
+  retunSale(id)async {
+    var response = await DbBase().databaseRequest(sales + "returnproduct/${id}" ,
+        DbBase().postRequestType);
+    var data = jsonDecode(response);
+    return data;
+  }
 }

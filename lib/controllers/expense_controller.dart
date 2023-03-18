@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutterpos/controllers/home_controller.dart';
+import 'package:flutterpos/screens/finance/expense_page.dart';
 import 'package:flutterpos/widgets/loading_dialog.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -41,6 +43,7 @@ class ExpenseController extends GetxController {
       LoadingDialog.showLoadingDialog(
           context: context, key: _keyLoader, title: "creating category");
       var response = await Categories().createExpenseCategories(body: body);
+      print("response is ${response}");
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
       if (response["status"] == true) {
         textEditingControllerCategory.text = "";
@@ -54,6 +57,7 @@ class ExpenseController extends GetxController {
             message: "Category created", color: Colors.red, context: context);
       }
     } catch (e) {
+      print(e);
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
     }
   }
@@ -95,9 +99,9 @@ class ExpenseController extends GetxController {
           "shop": shopId,
           "name": textEditingControllerName.text,
           "attendantId": attendantId,
-          "date":
-              DateTime.parse(DateTime.now().toString()).millisecondsSinceEpoch,
+          "date": DateFormat("yyyy-dd-MM").format(DateTime.now()),
         };
+        print(body);
         var response = await Expense().createExpense(body: body);
         Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
         if (response["status"] == true) {
@@ -108,11 +112,12 @@ class ExpenseController extends GetxController {
               startingDate: startdate.value,
               endingDate: enddate.value,
               type: "notcashflow");
-          Get.back();
-          showSnackBar(
-              message: response["message"],
-              color: AppColors.mainColor,
-              context: context);
+
+          if (MediaQuery.of(context).size.width > 600) {
+            Get.find<HomeController>().selectedWidget.value = ExpensePage();
+          } else {
+            Get.back();
+          }
         } else {
           showSnackBar(
               message: response["message"],
@@ -121,6 +126,7 @@ class ExpenseController extends GetxController {
         }
       } catch (e) {
         Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
+        print(e);
       }
     }
   }
@@ -134,18 +140,19 @@ class ExpenseController extends GetxController {
       totalExpenses.value = 0;
       expenses.clear();
       getExpenseByDateLoad.value = true;
-      var now = type != "cashflow" ? endingDate : DateTime.now();
-      var tomm = now.add(new Duration(days: 1));
-      var today = new DateFormat().parse(new DateFormat().format(type != "cashflow" ? startingDate : now)).toIso8601String();
-      var tomorrow = new DateFormat().parse(new DateFormat().format(tomm));
+      // var now = type != "cashflow" ? endingDate : DateTime.now();
+      // var tomm = now.add(new Duration(days: 1));
+      // var today = new DateFormat()
+      //     .parse(
+      //         new DateFormat().format(type != "cashflow" ? startingDate : now))
+      //     .toIso8601String();
+      // var tomorrow = new DateFormat().parse(new DateFormat().format(tomm));
       var response = await Expense().getExpenseByDate(
           shopId: shopId,
-          startDate: type == "cashflow"
-              ? DateTime.parse(startingDate).millisecondsSinceEpoch
-              : DateTime.parse(today).millisecondsSinceEpoch,
-          endDate: type == "cashflow"
-              ? DateTime.parse(endingDate).millisecondsSinceEpoch
-              : DateTime.parse(tomorrow.toString()).millisecondsSinceEpoch);
+          startDate: DateFormat("yyyy-MM-dd").format(startingDate),
+          endDate: DateFormat("yyyy-MM-dd").format(endingDate));
+
+      print(response);
 
       if (response["status"] == true) {
         List fetchedList = response["body"];
@@ -160,6 +167,7 @@ class ExpenseController extends GetxController {
       }
       getExpenseByDateLoad.value = false;
     } catch (e) {
+      print(e);
       getExpenseByDateLoad.value = false;
     }
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
 import 'package:flutterpos/responsive/responsiveness.dart';
+import 'package:flutterpos/widgets/no_items_found.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
@@ -17,9 +18,9 @@ class CountHistory extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    productController
-        .getProductCount(createShopController.currentShop.value?.id);
+    productController.getProductCount(createShopController.currentShop.value?.id);
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
           elevation: 0.0,
           leading: IconButton(
@@ -116,46 +117,81 @@ class CountHistory extends StatelessWidget {
             ],
           )),
       body: ResponsiveWidget(
-        largeScreen: Container(),
-        smallScreen: historyWidget(),
+        largeScreen: Obx(() {
+          return productController.loadingCountHistory.value
+              ? Center(
+                  child: CircularProgressIndicator(),
+                )
+              : productController.countHistoryList.length == 0
+                  ? noItemsFound(context, true)
+                  : SingleChildScrollView(
+                      child: Container(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                        width: double.infinity,
+                        child: Theme(
+                          data: Theme.of(context)
+                              .copyWith(dividerColor: Colors.grey),
+                          child: DataTable(
+                            decoration: BoxDecoration(
+                                border: Border.all(
+                              width: 1,
+                              color: Colors.black,
+                            )),
+                            columnSpacing: 30.0,
+                            columns: [
+                              DataColumn(
+                                  label: Text('Name',
+                                      textAlign: TextAlign.center)),
+                              DataColumn(
+                                  label: Text('Quantity',
+                                      textAlign: TextAlign.center)),
+                              DataColumn(
+                                  label: Text('Attendant',
+                                      textAlign: TextAlign.center)),
+                              DataColumn(
+                                  label: Text('Date',
+                                      textAlign: TextAlign.center)),
+                            ],
+                            rows: List.generate(
+                                productController.countHistoryList.length,
+                                (index) {
+                              ProductCountModel productBody = productController
+                                  .countHistoryList
+                                  .elementAt(index);
+                              final y = productBody.product?.name;
+                              final x = productBody.quantity;
+                              final z = productBody.createdAt!;
+                              final a = productBody.attendantId!.fullnames??"";
+
+                              return DataRow(cells: [
+                                DataCell(Container(child: Text(y!))),
+                                DataCell(Container(child: Text(x.toString()))),
+                                DataCell(Container(child: Text(a))),
+                                DataCell(Container(
+                                    child: Text(
+                                        DateFormat("yyyy-MM-dd").format(z)))),
+                              ]);
+                            }),
+                          ),
+                        ),
+                      ),
+                    );
+          ;
+        }),
+        smallScreen: historyWidget(context),
       ),
     );
   }
 
-  Widget historyWidget() {
+  Widget historyWidget(context) {
     return Obx(() {
       return productController.loadingCountHistory.value
           ? Center(
               child: CircularProgressIndicator(),
             )
           : productController.countHistoryList.length == 0
-              ? Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Center(
-                        child: Column(
-                      children: [
-                        Icon(Icons.warning_amber),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Text(
-                          'List is empty',
-                          style: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.bold),
-                        ),
-                        SizedBox(
-                          height: 5,
-                        ),
-                        Text('No stock count done yet'),
-                        SizedBox(
-                          height: 5,
-                        ),
-                        Text('Or check your internet connection')
-                      ],
-                    ))
-                  ],
-                )
+              ? noItemsFound(context, true)
               : ListView.builder(
                   shrinkWrap: true,
                   itemCount: productController.countHistoryList.length,

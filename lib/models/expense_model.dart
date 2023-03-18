@@ -30,7 +30,7 @@ class ExpenseModel {
         shop: json["shop"],
         name: json["name"],
         attendantId: json["attendantId"] == null
-            ? null
+            ? AttendantModel()
             : AttendantModel.fromJson(json["attendantId"]),
         createdAt: DateTime.parse(json["createdAt"]),
         updatedAt: DateTime.parse(json["updatedAt"]),

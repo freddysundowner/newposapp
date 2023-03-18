@@ -7,6 +7,7 @@ import 'package:flutterpos/responsive/responsiveness.dart';
 import 'package:flutterpos/screens/stock/stock_page.dart';
 import 'package:flutterpos/utils/constants.dart';
 import 'package:flutterpos/widgets/increament_widget.dart';
+import 'package:flutterpos/widgets/no_items_found.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
@@ -105,15 +106,17 @@ class CountingPage extends StatelessWidget {
                 SizedBox(height: 15),
                 Obx(() {
                   return productController.getProductCountLoad.value
-                          ? Center(
-                              child: CircularProgressIndicator(),
-                            )
+                      ? Center(
+                          child: CircularProgressIndicator(),
+                        )
+                      : productController.products.length == 0
+                          ? noItemsFound(context, true)
                           : Theme(
                               data: Theme.of(context)
                                   .copyWith(dividerColor: Colors.grey),
                               child: Container(
                                 width: double.infinity,
-                                margin: EdgeInsets.only(right: 10,bottom: 30),
+                                margin: EdgeInsets.only(right: 10, bottom: 30),
                                 child: DataTable(
                                   decoration: BoxDecoration(
                                       border: Border.all(
@@ -229,8 +232,10 @@ class CountingPage extends StatelessWidget {
                                                           Get.find<
                                                                   ProductController>()
                                                               .updateQuantity(
-                                                                  productBody,
-                                                                  context);
+                                                                  product:
+                                                                      productBody,
+                                                                  context:
+                                                                      context);
                                                           Get.back();
                                                         },
                                                         child: Text(
@@ -272,26 +277,7 @@ class CountingPage extends StatelessWidget {
                                   }),
                                 ),
                               ),
-                            )
-
-                      // GridView.builder(
-                      //     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      //         childAspectRatio: MediaQuery.of(context).size.width *
-                      //             1.2 /
-                      //             MediaQuery.of(context).size.height,
-                      //         crossAxisCount: 3,
-                      //         crossAxisSpacing: 10,
-                      //         mainAxisSpacing: 10),
-                      //     shrinkWrap: true,
-                      //     itemCount: productController.products.length,
-                      //     itemBuilder: (context, index) {
-                      //       ProductModel productBody =
-                      //           productController.products.elementAt(index);
-                      //       return incrementWidget(
-                      //           index: index, product: productBody, context: context);
-                      //     })
-                      //
-                      ;
+                            );
                 })
               ],
             ),

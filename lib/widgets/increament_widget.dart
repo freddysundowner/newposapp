@@ -51,7 +51,7 @@ Widget incrementWidget(
                   ],
                 ),
                 MediaQuery.of(context).size.width < 600
-                    ? _incrementQuantityWidget(context, product)
+                    ? _incrementQuantityWidget(context:context, product:product)
                     : Container(),
               ],
             ),
@@ -60,7 +60,7 @@ Widget incrementWidget(
                     alignment: Alignment.bottomRight,
                     child: Container(
                         width: 80,
-                        child: _incrementQuantityWidget(context, product)),
+                        child: _incrementQuantityWidget(context:context, product:product)),
                   )
                 : Container(),
           ],
@@ -70,7 +70,7 @@ Widget incrementWidget(
   );
 }
 
-Widget _incrementQuantityWidget(context, product) {
+Widget _incrementQuantityWidget({required context, required ProductModel product}) {
   return InkWell(
     onTap: () {
       showDialog(
@@ -101,7 +101,7 @@ Widget _incrementQuantityWidget(context, product) {
                 TextButton(
                   onPressed: () {
                     Get.find<ProductController>()
-                        .updateQuantity(product, context);
+                        .updateQuantity(product: product, context: context);
                     Get.back();
                   },
                   child: Text(

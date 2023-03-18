@@ -11,17 +11,17 @@ const searchShop = shop + "search";
 const customer = BASE_URL + "customer/";
 const customerPurchase = sales + "customerpurchase/";
 const customerReturns = sales + "/" + "customerreturn/";
-const customersOnCredit="${customer}oncredit";
+const customersOnCredit = "${customer}oncredit";
 //supplier
 const supplier = BASE_URL + "supplier/";
-const supplierOnCredit="${supplier}oncredit";
+const supplierOnCredit = "${supplier}oncredit";
 
 //product
 const product = BASE_URL + "product/";
 const productHistory = BASE_URL + "producthistory/";
 
 //transfer
-var stocktransfer="${product}"+"stocktransfer";
+var stocktransfer = "${product}" + "stocktransfer";
 //category
 const category = BASE_URL + "category/";
 //attendant
@@ -33,10 +33,13 @@ const sales = BASE_URL + "sale/";
 const singleSaleItems = sales + "getSale/";
 
 //transactions
-const transaction = BASE_URL + "transaction";
+const transaction = "${BASE_URL}transaction";
 const credit = BASE_URL + "/credit/";
 const wallet = BASE_URL + "transaction/";
 const usage = BASE_URL + "transaction/";
 //expense
 const expense = "${transaction}/expense/";
+const expenses = "$BASE_URL" + "expenses";
 const allTransactions = "$transaction/alltransactions";
+//product
+const purchases = BASE_URL + "purchases/";

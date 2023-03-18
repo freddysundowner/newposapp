@@ -1,4 +1,6 @@
 
+import 'attendant_model.dart';
+
 class ProductCountModel {
   ProductCountModel({
     this.id,
@@ -6,6 +8,7 @@ class ProductCountModel {
     this.quantity,
     this.shop,
     this.createdAt,
+    this.attendantId,
     this.updatedAt,
 
   });
@@ -13,6 +16,7 @@ class ProductCountModel {
   String ?id;
   Product? product;
   int ?quantity;
+  AttendantModel ? attendantId;
   String? shop;
   DateTime? createdAt;
   DateTime? updatedAt;
@@ -21,6 +25,7 @@ class ProductCountModel {
   factory ProductCountModel.fromJson(Map<String, dynamic> json) => ProductCountModel(
     id: json["_id"],
     product: Product.fromJson(json["product"]),
+    attendantId: json["attendantId"]==null||json["attendantId"].toString().length<=40?AttendantModel(): AttendantModel.fromJson(json["attendantId"]),
     quantity: json["quantity"],
     shop: json["shop"],
     createdAt: DateTime.parse(json["createdAt"]),

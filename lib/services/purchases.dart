@@ -6,20 +6,21 @@ import 'package:flutterpos/services/client.dart';
 class Purchases {
   createPurchase({required Map<String, dynamic> body, required shopId}) async {
     var response = await DbBase().databaseRequest(
-        product + "updatepurchases/${shopId}", DbBase().patchRequestType,
+        purchases + "updatepurchases/${shopId}", DbBase().patchRequestType,
         body: body);
+    print(response);
     return jsonDecode(response);
   }
 
   getPurchase({required shopId}) async {
     var response = await DbBase().databaseRequest(
-        product + "purchase/${shopId}", DbBase().getRequestType);
+        purchases + "purchase/${shopId}", DbBase().getRequestType);
     return jsonDecode(response);
   }
 
   getPurchaseOrderItems({required id}) async {
     var response = await DbBase()
-        .databaseRequest(product + "purchase/${id}", DbBase().getRequestType);
+        .databaseRequest(purchases + "purchaseditems/${id}", DbBase().getRequestType);
     return jsonDecode(response);
   }
 }

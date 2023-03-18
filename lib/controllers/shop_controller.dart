@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterpos/controllers/home_controller.dart';
 import 'package:flutterpos/models/shop_model.dart';
+import 'package:flutterpos/screens/home/home_page.dart';
 import 'package:flutterpos/screens/home/shops_page.dart';
 import 'package:flutterpos/utils/colors.dart';
 import 'package:flutterpos/utils/constants.dart';
@@ -64,7 +65,11 @@ class ShopController extends GetxController {
           clearTextFields();
           await getShopsByAdminId(adminId: userId);
           if (MediaQuery.of(context).size.width > 600) {
-            Get.find<HomeController>().selectedWidget.value = ShopsPage();
+            if (page == "home") {
+              Get.find<HomeController>().selectedWidget.value = HomePage();
+            } else {
+              Get.find<HomeController>().selectedWidget.value = ShopsPage();
+            }
           } else if (page == "home") {
             await Get.find<AuthController>().getUserById();
             Get.off(() => Home());
@@ -83,7 +88,8 @@ class ShopController extends GetxController {
   getShopsByAdminId({required adminId, String? name}) async {
     try {
       gettingShopsLoad.value = true;
-      var response = await Shop().getShopsByAdminId(adminId: adminId, name: name);
+      var response =
+          await Shop().getShopsByAdminId(adminId: adminId, name: name);
       if (response != null) {
         List shops = response["body"];
         List<ShopModel> shopsData =

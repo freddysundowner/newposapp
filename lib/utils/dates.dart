@@ -25,12 +25,9 @@ converTimeToMonth() {
   var last = DateTime(now.year, now.month + 1, 0);
   var first = DateTime(now.year, now.month + 0, 1);
 
-
   var firstDay = new DateFormat().parse(new DateFormat().format(first)).toIso8601String();
-  var lastDay = new DateFormat()
-      .parse(new DateFormat().format(last))
-      .toIso8601String();
-  return {"startDate": lastDay, "endDate": firstDay};
+  var lastDay = new DateFormat().parse(new DateFormat().format(last)).toIso8601String();
+  return {"startDate": firstDay, "endDate": lastDay};
 }
 
 converTimeToYear(selectedYear) {
@@ -58,7 +55,6 @@ converTimeToMonthByDate(date) {
   var lastDay = new DateFormat('yyyy-MM-dd')
       .parse(new DateFormat('yyyy-MM-dd').format(last))
       .toIso8601String();
-
 
   return {"startDate": firstDay, "endDate": lastDay};
 }

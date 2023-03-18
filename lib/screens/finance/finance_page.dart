@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutterpos/controllers/expense_controller.dart';
 import 'package:flutterpos/controllers/home_controller.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
 import 'package:flutterpos/responsive/responsiveness.dart';
 import 'package:flutterpos/screens/cash_flow/cash_flow_manager.dart';
+import 'package:flutterpos/screens/finance/components/date_picker.dart';
 import 'package:flutterpos/screens/finance/profit_page.dart';
 import 'package:flutterpos/utils/helper.dart';
 import 'package:get/get.dart';
@@ -19,35 +21,26 @@ import '../sales/all_sales_page.dart';
 import 'expense_page.dart';
 
 class FinancePage extends StatelessWidget {
-  FinancePage({Key? key}) : super(key: key);
   SalesController salesController = Get.find<SalesController>();
   ShopController shopController = Get.find<ShopController>();
+  ExpenseController expenseController = Get.find<ExpenseController>();
+
+  FinancePage({Key? key}) : super(key: key) {
+    var startDate = converTimeToMonth()["startDate"];
+    var endDate = converTimeToMonth()["endDate"];
+    salesController.getProfitTransaction(
+        start: DateTime.parse(startDate),
+        end: DateTime.parse(endDate),
+        type: "finance",
+        shopId: shopController.currentShop.value?.id);
+  }
 
   @override
   Widget build(BuildContext context) {
-    var startDate = converTimeToMonth()["startDate"];
-    var endDate = converTimeToMonth()["endDate"];
-
-    salesController.getProfitTransaction(
-        start: startDate,
-        end: endDate,
-        type: "finance",
-        shopId: shopController.currentShop.value?.id);
     return ResponsiveWidget(
       largeScreen: Scaffold(
         backgroundColor: Colors.white,
-        appBar: AppBar(
-          backgroundColor: Colors.white,
-          elevation: 0.0,
-          leading: IconButton(
-              onPressed: () {
-                Get.find<HomeController>().selectedWidget.value = HomePage();
-              },
-              icon: Icon(
-                Icons.arrow_back_ios,
-                color: Colors.black,
-              )),
-        ),
+        appBar: appBar(context),
         body: SingleChildScrollView(
           child: Container(
             width: double.infinity,
@@ -90,8 +83,7 @@ class FinancePage extends StatelessWidget {
                                 },
                                 color: Colors.amber.shade100,
                                 icon: Icons.query_stats,
-                                amount:
-                                    "${salesController.profitModel.value?.profit ?? "0"}"),
+                                amount: "${salesController.profitModel.value?.grossProfit}"),
                           )),
                       Obx(() {
                         return Padding(
@@ -106,7 +98,7 @@ class FinancePage extends StatelessWidget {
                             color: Colors.purple.shade100,
                             icon: Icons.show_chart,
                             amount:
-                                "${salesController.profitModel.value?.expenses ?? "0"}",
+                                "${salesController.profitModel.value?.totalExpense}",
                           ),
                         );
                       }),
@@ -126,8 +118,7 @@ class FinancePage extends StatelessWidget {
                             },
                             color: Colors.blue.shade100,
                             icon: Icons.sell_rounded,
-                            amount:
-                                "${salesController.profitModel.value?.sales ?? 0}",
+                            amount: "${salesController.profitModel.value?.sales}",
                           ),
                         );
                       }),
@@ -155,13 +146,15 @@ class FinancePage extends StatelessWidget {
                                         child: Icon(Icons.margin_outlined)),
                                     decoration: BoxDecoration(
                                         color: Colors.amberAccent,
-                                        borderRadius: BorderRadius.circular(20)),
+                                        borderRadius:
+                                            BorderRadius.circular(20)),
                                   ),
                                   SizedBox(
                                     width: 10,
                                   ),
                                   Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       majorTitle(
                                           title: "Cashflow Manager",
@@ -216,7 +209,7 @@ class FinancePage extends StatelessWidget {
                       color: Colors.amber.shade100,
                       icon: Icons.query_stats,
                       amount:
-                          "${salesController.profitModel.value?.profit ?? 0}");
+                          "${salesController.profitModel.value?.grossProfit}");
                 }),
                 Obx(() {
                   return financeCards(
@@ -228,7 +221,7 @@ class FinancePage extends StatelessWidget {
                     color: Colors.purple.shade100,
                     icon: Icons.show_chart,
                     amount:
-                        "${salesController.profitModel.value?.expenses ?? "0"}",
+                        "${salesController.profitModel.value?.totalExpense}",
                   );
                 }),
                 Obx(() {
@@ -244,7 +237,7 @@ class FinancePage extends StatelessWidget {
                     },
                     color: Colors.blue.shade100,
                     icon: Icons.sell_rounded,
-                    amount: "${salesController.profitModel.value?.sales ?? 0}",
+                    amount: "${salesController.profitModel.value?.sales}",
                   );
                 }),
                 InkWell(
@@ -297,8 +290,64 @@ class FinancePage extends StatelessWidget {
             ),
           ),
         ),
-        appBar: appBar(),
+        appBar: appBar(context),
       ),
+    );
+  }
+
+  AppBar appBar(context) {
+    return AppBar(
+      titleSpacing: 0,
+      backgroundColor: Colors.white,
+      elevation: 0.3,
+      centerTitle: false,
+      leading: IconButton(
+        onPressed: () {
+          if (MediaQuery.of(context).size.width > 600) {
+            Get.find<HomeController>().selectedWidget.value = HomePage();
+          } else {
+            Get.back();
+          }
+        },
+        icon: Icon(
+          Icons.arrow_back_ios,
+          color: Colors.black,
+        ),
+      ),
+      title: majorTitle(title: "Financial", color: Colors.black, size: 16.0),
+      actions: [
+        InkWell(
+            onTap: () {
+              showDatePickers(
+                  context: context,
+                  function: () {
+                    salesController.getProfitTransaction(
+                        start: expenseController.startdate.value,
+                        end: expenseController.enddate.value,
+                        type: "finance",
+                        shopId: shopController.currentShop.value?.id);
+                  });
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      "Choose Date Range",
+                      style: TextStyle(color: Colors.black),
+                    ),
+                  ),
+                  Icon(
+                    Icons.arrow_drop_down,
+                    color: Colors.black,
+                  ),
+                ],
+              ),
+            ))
+      ],
     );
   }
 
@@ -358,25 +407,6 @@ class FinancePage extends StatelessWidget {
       ),
     );
   }
-}
-
-AppBar appBar() {
-  return AppBar(
-    titleSpacing: 0,
-    backgroundColor: Colors.white,
-    elevation: 0.3,
-    centerTitle: false,
-    leading: IconButton(
-      onPressed: () {
-        Get.back();
-      },
-      icon: Icon(
-        Icons.arrow_back_ios,
-        color: Colors.black,
-      ),
-    ),
-    title: majorTitle(title: "Financial", color: Colors.black, size: 16.0),
-  );
 }
 
 financeChat(context) {

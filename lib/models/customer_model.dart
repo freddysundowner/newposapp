@@ -29,7 +29,7 @@ class CustomerModel {
       fullName: json["fullName"],
       phoneNumber: json["phoneNumber"],
       shopId:
-          json["shopId"] == null ? null : ShopModel.fromJson(json["shopId"]),
+          json["shopId"] == null|| json["shopId"].toString().length<=40 ? ShopModel() : ShopModel.fromJson(json["shopId"]),
       gender: json["gender"] ?? "",
       email: json["email"] ?? "",
       address: json["address"] ?? "",

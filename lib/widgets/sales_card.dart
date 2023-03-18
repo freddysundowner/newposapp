@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
 import 'package:flutterpos/models/product_model.dart';
+import 'package:flutterpos/screens/sales/components/edit_price_dialog.dart';
 import 'package:flutterpos/widgets/smalltext.dart';
 import 'package:flutterpos/widgets/snackBars.dart';
 import 'package:get/get.dart';
@@ -74,71 +75,7 @@ Widget SalesContainer(
                           onTap: () {
                             salesController.textEditingSellingPrice.text =
                                 "${productModel.minPrice}";
-                            showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return AlertDialog(
-                                    title: Text("Change Selling Price"),
-                                    content: Padding(
-                                      padding: const EdgeInsets.all(5.0),
-                                      child: TextFormField(
-                                          controller: salesController
-                                              .textEditingSellingPrice,
-                                          keyboardType: TextInputType.number,
-                                          decoration: InputDecoration(
-                                              border: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                          ))),
-                                    ),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () {
-                                          Navigator.pop(context);
-                                        },
-                                        child: Text(
-                                          "Cancel".toUpperCase(),
-                                          style: TextStyle(color: Colors.blue),
-                                        ),
-                                      ),
-                                      TextButton(
-                                        onPressed: () {
-                                          Navigator.pop(context);
-                                          if (int.parse(
-                                                  "${salesController.textEditingSellingPrice.text}") <
-                                              int.parse(
-                                                  "${productModel.minPrice}")) {
-                                            showSnackBar(
-                                                message:
-                                                    "selling price cannot be below${productModel.minPrice}",
-                                                color: Colors.red,
-                                                context: context);
-                                          } else if (int.parse(
-                                                  "${salesController.textEditingSellingPrice.text}") >
-                                              int.parse(
-                                                  "${productModel.sellingPrice![0]}")) {
-                                            showSnackBar(
-                                                message:
-                                                    "selling price cannot be above${productModel.sellingPrice![0]}",
-                                                color: Colors.red,
-                                                context: context);
-                                          } else {
-                                            productModel.selling = int.parse(
-                                                salesController
-                                                    .textEditingSellingPrice
-                                                    .text);
-                                            salesController
-                                                .calculateAmount(index);
-                                          }
-                                        },
-                                        child: Text(
-                                          "Save now".toUpperCase(),
-                                          style: TextStyle(color: Colors.blue),
-                                        ),
-                                      ),
-                                    ],
-                                  );
-                                });
+                            showEditDialogPrice(context: context, productModel: productModel, index: index);
                           },
                           child: Text(
                             "Edit",

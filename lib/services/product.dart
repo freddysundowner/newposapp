@@ -67,9 +67,10 @@ class Products {
     return data;
   }
 
-  updateProductCount(id, Map<String, dynamic> body) async {
+  updateProductCount(Map<String, dynamic> body) async {
+    print(body);
     var response = await DbBase().databaseRequest(
-        product + "increasecount/${id}", DbBase().patchRequestType,
+        product + "increasecount/", DbBase().postRequestType,
         body: body);
 
     var data = jsonDecode(response);
@@ -78,26 +79,24 @@ class Products {
 
   getProductCount(id) async {
     var response = await DbBase().databaseRequest(
-        product + "productcount/${id}", DbBase().getRequestType);
-
+        product + "productcount?shop=${id}", DbBase().getRequestType);
     var data = jsonDecode(response);
     return data;
   }
 
-  transferProducts({required Map<String, dynamic> body}) async{
-    var response = await DbBase().databaseRequest(stocktransfer, DbBase().postRequestType, body: body);
-    var data = jsonDecode(response);
-    return data;
-
-  }
-
-  getTransHistory({required shopId, required type}) async{
-    var response = await DbBase().databaseRequest("${stocktransfer}/$shopId/$type", DbBase().getRequestType);
+  transferProducts({required Map<String, dynamic> body}) async {
+    var response = await DbBase()
+        .databaseRequest(stocktransfer, DbBase().postRequestType, body: body);
     var data = jsonDecode(response);
     return data;
   }
 
-  getProductSaleHistory(productId) {
-
+  getTransHistory({required shopId, required type}) async {
+    var response = await DbBase().databaseRequest(
+        "${stocktransfer}/$shopId/$type", DbBase().getRequestType);
+    var data = jsonDecode(response);
+    return data;
   }
+
+  getProductSaleHistory(productId) {}
 }

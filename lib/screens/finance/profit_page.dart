@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutterpos/controllers/home_controller.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
 import 'package:flutterpos/responsive/responsiveness.dart';
+import 'package:flutterpos/screens/finance/components/date_picker.dart';
 import 'package:flutterpos/screens/finance/expense_page.dart';
 import 'package:flutterpos/screens/finance/finance_page.dart';
 import 'package:flutterpos/utils/helper.dart';
@@ -23,11 +24,11 @@ class ProfitPage extends StatelessWidget {
   Widget build(BuildContext context) {
     var startDate = converTimeToMonth()["startDate"];
     var endDate = converTimeToMonth()["endDate"];
-    salesController.getProfitTransaction(
-        start: startDate,
-        end: endDate,
-        type: "finance",
-        shopId: shopController.currentShop.value?.id);
+    // salesController.getProfitTransaction(
+    //     start: startDate,
+    //     end: endDate,
+    //     type: "finance",
+    //     shopId: shopController.currentShop.value?.id);
 
     return WillPopScope(
         onWillPop: () async {
@@ -86,6 +87,31 @@ class ProfitPage extends StatelessWidget {
         ),
       ),
       title: majorTitle(title: "Profit", color: Colors.black, size: 16.0),
+      actions: [
+        InkWell(
+            onTap: () {
+              showDatePickers(context: context, function: () {});
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      "Choose Date Range",
+                      style: TextStyle(color: Colors.black),
+                    ),
+                  ),
+                  Icon(
+                    Icons.arrow_drop_down,
+                    color: Colors.black,
+                  ),
+                ],
+              ),
+            ))
+      ],
     );
   }
 

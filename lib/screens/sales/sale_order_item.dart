@@ -5,6 +5,7 @@ import 'package:flutterpos/controllers/shop_controller.dart';
 import 'package:flutterpos/responsive/responsiveness.dart';
 import 'package:flutterpos/screens/home/home_page.dart';
 import 'package:flutterpos/screens/sales/all_sales_page.dart';
+import 'package:flutterpos/screens/sales/components/return_stock.dart';
 import 'package:flutterpos/utils/colors.dart';
 import 'package:flutterpos/widgets/no_items_found.dart';
 import 'package:get/get.dart';
@@ -124,44 +125,24 @@ class SaleOrderItem extends StatelessWidget {
                                           .format(w!)))),
                                   DataCell(InkWell(
                                     onTap: () {
-                                      showDialog(
-                                          context: context,
-                                          builder: (_) {
-                                            return AlertDialog(
-                                              title: Text("Return Product"),
-                                              actions: [
-                                                TextButton(
-                                                    onPressed: () {
-                                                      Get.back();
-                                                    },
-                                                    child: Text(
-                                                      "Cancel".toUpperCase(),
-                                                      style: TextStyle(
-                                                          color: AppColors
-                                                              .mainColor),
-                                                    )),
-                                                TextButton(
-                                                    onPressed: () {
-                                                      Get.back();
-                                                      salesController.returnSale(
-                                                          saleOrderItemModel,
-                                                          id);
-                                                    },
-                                                    child: Text(
-                                                      "Okay".toUpperCase(),
-                                                      style: TextStyle(
-                                                          color: AppColors
-                                                              .mainColor),
-                                                    ))
-                                              ],
-                                            );
-                                          });
+                                      if (saleOrderItemModel.returned ==
+                                          false) {
+                                        returnStockDialog(
+                                            context: context,
+                                            id: saleOrderItemModel.id,
+                                            saleId: id);
+                                      }
                                     },
                                     child: Container(
                                         child: Text(
-                                      "Return to stock",
-                                      style:
-                                          TextStyle(color: AppColors.mainColor),
+                                      saleOrderItemModel.returned == true
+                                          ? "Returned"
+                                          : "Return to stock",
+                                      style: TextStyle(
+                                          color: saleOrderItemModel.returned ==
+                                                  true
+                                              ? Colors.red
+                                              : AppColors.mainColor),
                                     )),
                                   )),
                                 ]);

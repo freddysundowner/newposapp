@@ -12,6 +12,7 @@ import 'package:intl/intl.dart';
 
 import '../../models/expense_model.dart';
 import '../../utils/colors.dart';
+import '../../utils/dates.dart';
 import '../../widgets/bigtext.dart';
 import '../../widgets/expense_card.dart';
 import '../../widgets/smalltext.dart';
@@ -19,10 +20,12 @@ import 'create_expense.dart';
 
 class ExpensePage extends StatelessWidget {
   ExpensePage({Key? key}) : super(key: key) {
+    var startDate = converTimeToMonth()["startDate"];
+    var endDate = converTimeToMonth()["endDate"];
     expenseController.getExpenseByDate(
         shopId: "${shopController.currentShop.value?.id}",
-        startingDate: expenseController.startdate.value,
-        endingDate: expenseController.enddate.value,
+        startingDate:  DateTime.parse(startDate),
+        endingDate:  DateTime.parse(endDate),
         type: "notcashflow");
   }
 

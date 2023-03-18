@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutterpos/controllers/home_controller.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
 import 'package:flutterpos/models/product_model.dart';
-import 'package:flutterpos/models/profit_summary.dart';
 import 'package:flutterpos/models/sales_model.dart';
 import 'package:flutterpos/models/sales_order_item_model.dart';
 import 'package:flutterpos/screens/home/home_page.dart';
@@ -11,6 +10,7 @@ import 'package:flutterpos/screens/sales/all_sales_page.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
+import '../models/sales_summary.dart';
 import '../services/sales.dart';
 import '../services/transactions.dart';
 import '../utils/colors.dart';
@@ -22,10 +22,11 @@ class SalesController extends GetxController
   late TabController tabController;
   final GlobalKey<State> _keyLoader = new GlobalKey<State>();
   TextEditingController textEditingSellingPrice = TextEditingController();
+  TextEditingController textEditingReturnProduct = TextEditingController();
   TextEditingController textEditingCredit = TextEditingController();
   RxList<ProductModel> selectedList = RxList([]);
   RxList<SalesModel> sales = RxList([]);
-  Rxn<ProfitSummary> profitModel = Rxn(null);
+  Rxn<SalesSummary> profitModel = Rxn(null);
 
   RxInt grandTotal = RxInt(0);
   RxInt balance = RxInt(0);
@@ -172,10 +173,10 @@ class SalesController extends GetxController
       var response = await Sales().createSales({
         "sale": sale,
         "products": products,
-        "date":
-            DateTime.parse(DateTime.now().toString()).millisecondsSinceEpoch,
+        "date": DateFormat("yyyy-MM-dd").format(DateTime.now()),
       });
-      Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
+      if (MediaQuery.of(context).size.width > 600)
+        Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
       if (response["status"] == true) {
         selectedList.value = [];
         grandTotal.value = 0;
@@ -209,7 +210,9 @@ class SalesController extends GetxController
 
       saveSaleLoad.value = false;
     } catch (e) {
-      Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
+      print(e);
+      if (MediaQuery.of(context).size.width > 600)
+        Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
       saveSaleLoad.value = false;
     }
   }
@@ -408,268 +411,6 @@ class SalesController extends GetxController
       }
       salesByShopLoad.value = false;
     } catch (e) {
-      List sal = [
-        {
-          "_id": "6400455b8b658aafbf4e3817",
-          "receiptNumber": "REY3IL182RZ",
-          "shop": {
-            "_id": "63fa08bc46721b7480474bee",
-            "name": "kim",
-            "location": "naivasha",
-            "owner": "63f9efe3879e16801054a0b0",
-            "type": "ele",
-            "currency": "BDT",
-            "createdAt": "2023-02-25T13:10:20.721Z",
-            "updatedAt": "2023-02-27T10:53:24.721Z",
-            "__v": 0
-          },
-          "attendantId": null,
-          "customerId": {
-            "_id": "63fdd3d88b658aafbf4e2350",
-            "fullName": "trial",
-            "phoneNumber": "09876543",
-            "shopId": {
-              "_id": "63fa08bc46721b7480474bee",
-              "name": "kim",
-              "location": "naivasha",
-              "owner": "63f9efe3879e16801054a0b0",
-              "type": "ele",
-              "currency": "BDT",
-              "createdAt": "2023-02-25T13:10:20.721Z",
-              "updatedAt": "2023-02-27T10:53:24.721Z",
-              "__v": 0
-            },
-            "walletBalance": 0,
-            "credit": 1930,
-            "onCredit": true,
-            "gender": "",
-            "email": "",
-            "address": "",
-            "createdAt": "2023-02-28T10:13:44.213Z",
-            "updatedAt": "2023-03-02T06:42:35.410Z",
-            "__v": 0
-          },
-          "grandTotal": 130,
-          "creditTotal": 130,
-          "totalDiscount": 0,
-          "date": "1677739354239",
-          "quantity": 1,
-          "paymentMethod": "Credit",
-          "dueDate": "2023-03-02T09:38:00.000",
-          "createdAt": "2023-03-02T06:42:35.403Z",
-          "updatedAt": "2023-03-02T06:42:35.403Z",
-          "__v": 0
-        },
-        {
-          "_id": "63fdff368b658aafbf4e2887",
-          "receiptNumber": "REY5Q7CQE6N",
-          "shop": {
-            "_id": "63fa08bc46721b7480474bee",
-            "name": "kim",
-            "location": "naivasha",
-            "owner": "63f9efe3879e16801054a0b0",
-            "type": "ele",
-            "currency": "BDT",
-            "createdAt": "2023-02-25T13:10:20.721Z",
-            "updatedAt": "2023-02-27T10:53:24.721Z",
-            "__v": 0
-          },
-          "attendantId": null,
-          "customerId": {
-            "_id": "63fdd3d88b658aafbf4e2350",
-            "fullName": "trial",
-            "phoneNumber": "09876543",
-            "shopId": {
-              "_id": "63fa08bc46721b7480474bee",
-              "name": "kim",
-              "location": "naivasha",
-              "owner": "63f9efe3879e16801054a0b0",
-              "type": "ele",
-              "currency": "BDT",
-              "createdAt": "2023-02-25T13:10:20.721Z",
-              "updatedAt": "2023-02-27T10:53:24.721Z",
-              "__v": 0
-            },
-            "walletBalance": 0,
-            "credit": 1930,
-            "onCredit": true,
-            "gender": "",
-            "email": "",
-            "address": "",
-            "createdAt": "2023-02-28T10:13:44.213Z",
-            "updatedAt": "2023-03-02T06:42:35.410Z",
-            "__v": 0
-          },
-          "grandTotal": 780,
-          "creditTotal": 0,
-          "totalDiscount": 0,
-          "date": "1677590323714",
-          "quantity": 1,
-          "paymentMethod": "Cash",
-          "dueDate": "",
-          "createdAt": "2023-02-28T13:18:46.030Z",
-          "updatedAt": "2023-02-28T13:18:46.030Z",
-          "__v": 0
-        },
-        {
-          "_id": "63fdeba08b658aafbf4e2606",
-          "receiptNumber": "REDYXSJWC4X",
-          "shop": {
-            "_id": "63fa08bc46721b7480474bee",
-            "name": "kim",
-            "location": "naivasha",
-            "owner": "63f9efe3879e16801054a0b0",
-            "type": "ele",
-            "currency": "BDT",
-            "createdAt": "2023-02-25T13:10:20.721Z",
-            "updatedAt": "2023-02-27T10:53:24.721Z",
-            "__v": 0
-          },
-          "attendantId": null,
-          "customerId": {
-            "_id": "63fdd3d88b658aafbf4e2350",
-            "fullName": "trial",
-            "phoneNumber": "09876543",
-            "shopId": {
-              "_id": "63fa08bc46721b7480474bee",
-              "name": "kim",
-              "location": "naivasha",
-              "owner": "63f9efe3879e16801054a0b0",
-              "type": "ele",
-              "currency": "BDT",
-              "createdAt": "2023-02-25T13:10:20.721Z",
-              "updatedAt": "2023-02-27T10:53:24.721Z",
-              "__v": 0
-            },
-            "walletBalance": 0,
-            "credit": 1930,
-            "onCredit": true,
-            "gender": "",
-            "email": "",
-            "address": "",
-            "createdAt": "2023-02-28T10:13:44.213Z",
-            "updatedAt": "2023-03-02T06:42:35.410Z",
-            "__v": 0
-          },
-          "grandTotal": 4800,
-          "creditTotal": 1800,
-          "totalDiscount": 0,
-          "date": "1677585310359",
-          "quantity": 1,
-          "paymentMethod": "Credit",
-          "dueDate": "2023-02-28T14:54:00.000",
-          "createdAt": "2023-02-28T11:55:12.535Z",
-          "updatedAt": "2023-02-28T11:55:12.535Z",
-          "__v": 0
-        },
-        {
-          "_id": "63fde5458b658aafbf4e25c2",
-          "receiptNumber": "REDJLC7YGNH",
-          "shop": {
-            "_id": "63fa08bc46721b7480474bee",
-            "name": "kim",
-            "location": "naivasha",
-            "owner": "63f9efe3879e16801054a0b0",
-            "type": "ele",
-            "currency": "BDT",
-            "createdAt": "2023-02-25T13:10:20.721Z",
-            "updatedAt": "2023-02-27T10:53:24.721Z",
-            "__v": 0
-          },
-          "attendantId": null,
-          "customerId": {
-            "_id": "63fdd3d88b658aafbf4e2350",
-            "fullName": "trial",
-            "phoneNumber": "09876543",
-            "shopId": {
-              "_id": "63fa08bc46721b7480474bee",
-              "name": "kim",
-              "location": "naivasha",
-              "owner": "63f9efe3879e16801054a0b0",
-              "type": "ele",
-              "currency": "BDT",
-              "createdAt": "2023-02-25T13:10:20.721Z",
-              "updatedAt": "2023-02-27T10:53:24.721Z",
-              "__v": 0
-            },
-            "walletBalance": 0,
-            "credit": 1930,
-            "onCredit": true,
-            "gender": "",
-            "email": "",
-            "address": "",
-            "createdAt": "2023-02-28T10:13:44.213Z",
-            "updatedAt": "2023-03-02T06:42:35.410Z",
-            "__v": 0
-          },
-          "grandTotal": 6400,
-          "creditTotal": 0,
-          "totalDiscount": 0,
-          "date": "1677583683152",
-          "quantity": 1,
-          "paymentMethod": "Cash",
-          "dueDate": "",
-          "createdAt": "2023-02-28T11:28:05.147Z",
-          "updatedAt": "2023-02-28T11:28:05.147Z",
-          "__v": 0
-        },
-        {
-          "_id": "63fdd3dd8b658aafbf4e2354",
-          "receiptNumber": "REPTZHXZQ7V",
-          "shop": {
-            "_id": "63fa08bc46721b7480474bee",
-            "name": "kim",
-            "location": "naivasha",
-            "owner": "63f9efe3879e16801054a0b0",
-            "type": "ele",
-            "currency": "BDT",
-            "createdAt": "2023-02-25T13:10:20.721Z",
-            "updatedAt": "2023-02-27T10:53:24.721Z",
-            "__v": 0
-          },
-          "attendantId": null,
-          "customerId": {
-            "_id": "63fdd3d88b658aafbf4e2350",
-            "fullName": "trial",
-            "phoneNumber": "09876543",
-            "shopId": {
-              "_id": "63fa08bc46721b7480474bee",
-              "name": "kim",
-              "location": "naivasha",
-              "owner": "63f9efe3879e16801054a0b0",
-              "type": "ele",
-              "currency": "BDT",
-              "createdAt": "2023-02-25T13:10:20.721Z",
-              "updatedAt": "2023-02-27T10:53:24.721Z",
-              "__v": 0
-            },
-            "walletBalance": 0,
-            "credit": 1930,
-            "onCredit": true,
-            "gender": "",
-            "email": "",
-            "address": "",
-            "createdAt": "2023-02-28T10:13:44.213Z",
-            "updatedAt": "2023-03-02T06:42:35.410Z",
-            "__v": 0
-          },
-          "grandTotal": 6000,
-          "creditTotal": 0,
-          "totalDiscount": 0,
-          "date": "1677579227357",
-          "quantity": 1,
-          "paymentMethod": "Cash",
-          "dueDate": "",
-          "createdAt": "2023-02-28T10:13:49.629Z",
-          "updatedAt": "2023-02-28T10:13:49.629Z",
-          "__v": 0
-        }
-      ];
-
-      List data = sal;
-      List<SalesModel> saleData =
-          data.map((e) => SalesModel.fromJson(e)).toList();
-      sales.assignAll(saleData);
       salesByShopLoad.value = false;
     }
   }
@@ -699,30 +440,15 @@ class SalesController extends GetxController
   getProfitTransaction(
       {required start, required end, required type, required shopId}) async {
     try {
-      var now = type == "finance" ? DateTime.now() : start;
-      var tomm = now.add(new Duration(days: 1));
-      var today = new DateFormat('yyyy-MM-dd')
-          .parse(new DateFormat('yyyy-MM-dd')
-              .format(type == "finance" ? DateTime.now() : end))
-          .toIso8601String();
-      var tomorrow = new DateFormat('yyyy-MM-dd')
-          .parse(new DateFormat('yyyy-MM-dd').format(tomm));
-
       var response = await Transactions().getProfitTransactions(
           shopId,
-          type == "finance"
-              ? DateTime.parse(start).millisecondsSinceEpoch
-              : DateTime.parse(today).millisecondsSinceEpoch,
-          type == "finance"
-              ? DateTime.parse(end).millisecondsSinceEpoch
-              : DateTime.parse(tomorrow.toString()).millisecondsSinceEpoch);
-
-      if (response["status"] == true) {
-        profitModel.value = ProfitSummary.fromJson(response);
-      } else {
-        profitModel.value = ProfitSummary();
-      }
-    } catch (e) {}
+          DateFormat("yyyy-MM-dd").format(start),
+          DateFormat("yyyy-MM-dd").format(end));
+      print(response);
+      profitModel.value = SalesSummary.fromJson(response);
+    } catch (e) {
+      print(e);
+    }
   }
 
   @override
@@ -731,7 +457,24 @@ class SalesController extends GetxController
     super.onInit();
   }
 
-  void returnSale(historyBody, salesId) {}
+  void returnSale(id,salesId,context)async{
+    try {
+      salesOrderItemLoad.value = true;
+
+      var response = await Sales().retunSale(id);
+      print(response);
+      if (response["status"] != false) {
+      getSalesBySaleId(salesId);
+      }else{
+        showSnackBar(message: response["message"], color: Colors.red, context: context);
+      }
+      salesOrderItemLoad.value = false;
+    } catch (e) {
+      salesOrderItemLoad.value = false;
+    }
+
+
+  }
 
   totalSales() {
     var subTotal = 0;

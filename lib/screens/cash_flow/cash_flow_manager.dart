@@ -334,7 +334,7 @@ class CashFlowManager extends StatelessWidget {
               style:
                   TextStyle(color: Colors.purple, fontWeight: FontWeight.bold),
             ), onTap: () {
-          print('row 2 pressed');
+
         }),
         DataCell(Text("300")),
       ]),
@@ -346,7 +346,7 @@ class CashFlowManager extends StatelessWidget {
               style:
                   TextStyle(color: Colors.purple, fontWeight: FontWeight.bold),
             ), onTap: () {
-          print('row 3 pressed');
+
         }),
         DataCell(Text("300")),
       ]),
@@ -358,7 +358,7 @@ class CashFlowManager extends StatelessWidget {
               style:
                   TextStyle(color: Colors.purple, fontWeight: FontWeight.bold),
             ), onTap: () {
-          print('row 4 pressed');
+
         }),
         DataCell(Text("300")),
       ]),

@@ -20,6 +20,7 @@ import '../../widgets/sales_card.dart';
 import '../../widgets/smalltext.dart';
 import '../customers/create_customers.dart';
 import '../product/product_selection.dart';
+import 'components/edit_price_dialog.dart';
 
 class CreateSale extends StatelessWidget {
   final String? page;
@@ -224,13 +225,16 @@ class CreateSale extends StatelessWidget {
                                       DataCell(Container(child: Text(z))),
                                       DataCell(
                                           Container(child: Text(w.toString()))),
-                                      DataCell(Container(
-                                          child: InkWell(
-                                              onTap: () {
-                                                salesController
-                                                    .removeFromList(index);
-                                              },
-                                              child: Icon(Icons.clear))))
+                                      DataCell(
+                                        Container(
+                                          child: Align(
+                                              alignment: Alignment.topRight,
+                                              child: showPopUpdialog(
+                                                  context: context,
+                                                  index: index,
+                                                  productModel: productModel)),
+                                        ),
+                                      )
                                     ]);
                                   }),
                                 ),
@@ -722,5 +726,44 @@ class CreateSale extends StatelessWidget {
             }),
           );
         });
+  }
+
+  Widget showPopUpdialog(
+      {required context, required index, required ProductModel productModel}) {
+    return PopupMenuButton(
+      itemBuilder: (ctx) => [
+        PopupMenuItem(
+          child: ListTile(
+            leading: Icon(Icons.edit),
+            onTap: () {
+              Get.back();
+              showEditDialogPrice(
+                  context: context, productModel: productModel, index: index);
+            },
+            title: Text("Edit Selling price"),
+          ),
+        ),
+        PopupMenuItem(
+          child: ListTile(
+            leading: Icon(Icons.discount),
+            onTap: () {
+              Get.back();
+            },
+            title: Text("Give Discount"),
+          ),
+        ),
+        PopupMenuItem(
+          child: ListTile(
+            leading: Icon(Icons.clear),
+            onTap: () {
+              Get.back();
+              salesController.removeFromList(index);
+            },
+            title: Text("Delete"),
+          ),
+        ),
+      ],
+      icon: Icon(Icons.more_vert),
+    );
   }
 }
