@@ -1,7 +1,13 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterpos/controllers/home_controller.dart';
+import 'package:flutterpos/controllers/shop_controller.dart';
 import 'package:flutterpos/models/deposit_model.dart';
+import 'package:flutterpos/responsive/responsiveness.dart';
+import 'package:flutterpos/screens/customers/customer_info_page.dart';
 import 'package:flutterpos/utils/helper.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 import '../../controllers/CustomerController.dart';
 import '../../controllers/wallet_controller.dart';
@@ -12,8 +18,10 @@ import 'components/wallet_card.dart';
 class WalletPage extends StatelessWidget {
   final title;
   final uid;
+  final phone;
 
-  WalletPage({Key? key, required this.title, required this.uid})
+  WalletPage(
+      {Key? key, required this.title, required this.uid, required this.phone})
       : super(key: key);
   WalletController walletController = Get.find<WalletController>();
   CustomerController customersController = Get.find<CustomerController>();
@@ -22,115 +30,167 @@ class WalletPage extends StatelessWidget {
   Widget build(BuildContext context) {
     customersController.getCustomerById(uid);
     walletController.getWallet(uid);
-    return Obx(() => Helper(
-          appBar: AppBar(
-            elevation: 0.0,
-            leading: IconButton(
-                onPressed: () {
-                  Get.back();
-                },
-                icon: Icon(Icons.arrow_back_ios)),
-            title: Text(title),
-            actions: [
-              IconButton(
-                  onPressed: () {
-                    showModalSheet(context, title, uid);
-                  },
-                  icon: Icon(Icons.download))
-            ],
-          ),
-          widget: SingleChildScrollView(
-            child: Column(children: [
-              Container(
-                color: AppColors.mainColor,
-                height: MediaQuery.of(context).size.height * 0.3,
-                width: double.infinity,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "Wallet Ballance",
-                      style: TextStyle(
-                          color: Colors.white, fontWeight: FontWeight.bold),
-                    ),
-                    SizedBox(height: 5),
-                    Text(
-                      "KES ${customersController.customer.value?.walletBalance}"
-                          .toUpperCase(),
-                      style: TextStyle(
-                          color: Colors.white, fontWeight: FontWeight.bold),
-                    ),
-                    SizedBox(height: 10),
-                    InkWell(
-                      onTap: () {
-                        showDepositDialog(
-                          context: context,
-                          uid: uid,
-                          title: "Add a deposit",
-                        );
-                      },
-                      child: Container(
-                        padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(15),
-                            color: Colors.white),
-                        child: Text(
-                          "Make Deposit",
-                          style: TextStyle(
-                              color: Colors.black, fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    )
-                  ],
-                ),
+    return ResponsiveWidget(
+        largeScreen: Scaffold(
+          appBar: _appBar(context, "large"),
+          body: Container(
+            child: SingleChildScrollView(
+              physics: NeverScrollableScrollPhysics(),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  walletBalanceContainer(context, "large"),
+                  tabsPage(context)
+                ],
               ),
-              Container(
-                height: MediaQuery.of(context).size.height * 0.9,
-                child: Column(
-                  children: [
-                    Container(
-                      color: Colors.white,
-                      width: double.infinity,
-                      height: kToolbarHeight,
-                      child: TabBar(
-                          unselectedLabelColor: Colors.grey,
-                          labelColor: Colors.purple,
-                          indicatorColor: Colors.purple,
-                          controller: walletController.tabController,
-                          indicatorWeight: 3,
-                          onTap: (index) {
-                            if (index == 0) {
-                              walletController.getWallet(uid);
-                            } else {}
-                          },
-                          tabs: [
-                            Tab(text: "Deposit"),
-                            Tab(text: "Usage"),
-                          ]),
-                    ),
-                    Expanded(
-                      flex: 1,
-                      child: Container(
-                        color: Colors.grey.withOpacity(0.1),
-                        child: TabBarView(
-                          controller: walletController.tabController,
-                          children: [
-                            DepositHistory(uid: uid),
-                            UsageHistory(
-                              uid: uid,
-                              customer: title,
-                            )
-                          ],
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-              )
-            ]),
+            ),
           ),
-        ));
+        ),
+        smallScreen: Obx(() => Helper(
+              appBar: _appBar(context, "small"),
+              widget: SingleChildScrollView(
+                child: Column(children: [
+                  walletBalanceContainer(context, "small"),
+                  tabsPage(context)
+                ]),
+              ),
+            )));
+  }
+
+  Widget tabsPage(context) {
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.9,
+      child: Column(
+        children: [
+          Container(
+            color: Colors.white,
+            width: double.infinity,
+            height: kToolbarHeight,
+            child: TabBar(
+                unselectedLabelColor: Colors.grey,
+                labelColor: Colors.purple,
+                indicatorColor: Colors.purple,
+                controller: walletController.tabController,
+                indicatorWeight: 3,
+                onTap: (index) {
+                  if (index == 0) {
+                    walletController.getWallet(uid);
+                    walletController.getWalletUsage(uid,"deposit");
+                  } else {
+                    walletController.getWalletUsage(uid,"usage");
+                  }
+                },
+                tabs: [
+                  Tab(text: "Deposit"),
+                  Tab(text: "Usage"),
+                ]),
+          ),
+          Expanded(
+            flex: 1,
+            child: Container(
+              color: Colors.grey.withOpacity(0.1),
+              child: TabBarView(
+                controller: walletController.tabController,
+                children: [
+                  DepositHistory(uid: uid),
+                  UsageHistory(
+                    uid: uid,
+                    customer: title,
+                  )
+                ],
+              ),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget walletBalanceContainer(context, type) {
+    return Container(
+      color: type == "large" ? Colors.white : AppColors.mainColor,
+      height: type == "large"
+          ? MediaQuery.of(context).size.height * 0.2
+          : MediaQuery.of(context).size.height * 0.3,
+      width: double.infinity,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: type == "largr"
+            ? MainAxisAlignment.start
+            : MainAxisAlignment.center,
+        children: [
+          Text(
+            "Wallet Ballance",
+            style: TextStyle(
+                color: type == "small" ? Colors.white : Colors.black,
+                fontWeight: FontWeight.bold),
+          ),
+          SizedBox(height: 5),
+          Text(
+            "KES ${customersController.customer.value?.walletBalance ?? 0}"
+                .toUpperCase(),
+            style: TextStyle(
+                color: type == "small" ? Colors.white : Colors.black,
+                fontWeight: FontWeight.bold),
+          ),
+          SizedBox(height: 10),
+          InkWell(
+            onTap: () {
+              showDepositDialog(
+                context: context,
+                uid: uid,
+                title: "Add a deposit",
+              );
+            },
+            child: Container(
+              padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(15),
+                  color: type == "large" ? AppColors.mainColor : Colors.white),
+              child: Text(
+                "Make Deposit",
+                style: TextStyle(
+                    color: type == "large" ? Colors.white : Colors.black,
+                    fontWeight: FontWeight.bold),
+              ),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  AppBar _appBar(context, type) {
+    return AppBar(
+      elevation: 0.2,
+      backgroundColor: type == "small" ? AppColors.mainColor : Colors.white,
+      leading: IconButton(
+          onPressed: () {
+            if (type == "large") {
+              Get.find<HomeController>().selectedWidget.value =
+                  CustomerInfoPage(
+                      id: uid, user: "customer", name: title, phone: phone);
+            } else {
+              Get.back();
+            }
+          },
+          icon: Icon(
+            Icons.arrow_back_ios,
+            color: type == "small" ? Colors.white : Colors.black,
+          )),
+      title: Text(
+        "${title}".capitalize!,
+        style: TextStyle(color: type == "small" ? Colors.white : Colors.black),
+      ),
+      centerTitle: false,
+      actions: [
+        IconButton(
+            onPressed: () {
+              showModalSheet(context, title, uid);
+            },
+            icon: Icon(Icons.download))
+      ],
+    );
   }
 
   showModalSheet(context, title, uid) {
@@ -235,9 +295,9 @@ class WalletPage extends StatelessWidget {
 
 class DepositHistory extends StatelessWidget {
   final uid;
-
   DepositHistory({Key? key, required this.uid}) : super(key: key);
   WalletController walletController = Get.find<WalletController>();
+  ShopController shopController = Get.find<ShopController>();
 
   @override
   Widget build(BuildContext context) {
@@ -250,7 +310,56 @@ class DepositHistory extends StatelessWidget {
               ? Center(
                   child: Text("No Entries found"),
                 )
-              : ListView.builder(
+              :MediaQuery.of(context).size.width > 600
+          ? SingleChildScrollView(
+        child: Container(
+          width: double.infinity,
+          padding:
+          EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+          child: Theme(
+            data: Theme.of(context)
+                .copyWith(dividerColor: Colors.grey),
+            child: DataTable(
+              decoration: BoxDecoration(
+                  border: Border.all(
+                    width: 1,
+                    color: Colors.black,
+                  )),
+              columnSpacing: 30.0,
+              columns: [
+                DataColumn(
+                    label: Text('Receipt Number',
+                        textAlign: TextAlign.center)),
+                DataColumn(
+                    label: Text(
+                        'Amount(${shopController.currentShop.value?.currency})',
+                        textAlign: TextAlign.center)),
+                DataColumn(
+                    label: Text('Date',
+                        textAlign: TextAlign.center)),
+              ],
+              rows: List.generate(walletController.usages.length,
+                      (index) {
+                    DepositModel depositModel =
+                    walletController.usages.elementAt(index);
+                    final y = depositModel.recieptNumber;
+                    final x = depositModel.amount.toString();
+                    final w = depositModel.createdAt!;
+
+                    return DataRow(cells: [
+                      DataCell(Container(width: 75, child: Text(y!))),
+                      DataCell(Container(width: 75, child: Text(x))),
+                      DataCell(Container(
+                          child: Text(
+                              DateFormat("yyyy-dd-MMM hh:mm a")
+                                  .format(w)))),
+                    ]);
+                  }),
+            ),
+          ),
+        ),
+      )
+          : ListView.builder(
                   itemCount: walletController.deposits.length,
                   shrinkWrap: true,
                   itemBuilder: (context, index) {
@@ -273,6 +382,7 @@ class UsageHistory extends StatelessWidget {
   UsageHistory({Key? key, required this.uid, required this.customer})
       : super(key: key);
   WalletController walletController = Get.find<WalletController>();
+  ShopController shopController = Get.find<ShopController>();
 
   @override
   Widget build(BuildContext context) {
@@ -285,19 +395,68 @@ class UsageHistory extends StatelessWidget {
               ? Center(
                   child: Text("No Entries found"),
                 )
-              : ListView.builder(
-                  itemCount: walletController.usages.length,
-                  shrinkWrap: true,
-                  itemBuilder: (context, index) {
-                    DepositModel depositModel =
-                        walletController.usages.elementAt(index);
-                    return WalletCard(
-                        context: context,
-                        uid: uid,
-                        type: "usage",
-                        customer: customer,
-                        depositBody: depositModel);
-                  });
+              : MediaQuery.of(context).size.width > 600
+                  ? SingleChildScrollView(
+                      child: Container(
+                        width: double.infinity,
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+                        child: Theme(
+                          data: Theme.of(context)
+                              .copyWith(dividerColor: Colors.grey),
+                          child: DataTable(
+                            decoration: BoxDecoration(
+                                border: Border.all(
+                              width: 1,
+                              color: Colors.black,
+                            )),
+                            columnSpacing: 30.0,
+                            columns: [
+                              DataColumn(
+                                  label: Text('Receipt Number',
+                                      textAlign: TextAlign.center)),
+                              DataColumn(
+                                  label: Text(
+                                      'Amount(${shopController.currentShop.value?.currency})',
+                                      textAlign: TextAlign.center)),
+                              DataColumn(
+                                  label: Text('Date',
+                                      textAlign: TextAlign.center)),
+                            ],
+                            rows: List.generate(walletController.usages.length,
+                                (index) {
+                              DepositModel depositModel =
+                                  walletController.usages.elementAt(index);
+                              final y = depositModel.recieptNumber;
+                              final x = depositModel.amount.toString();
+                              final w = depositModel.createdAt!;
+
+                              return DataRow(cells: [
+                                DataCell(Container(width: 75, child: Text(y!))),
+                                DataCell(Container(width: 75, child: Text(x))),
+                                DataCell(Container(
+                                    child: Text(
+                                        DateFormat("yyyy-dd-MMM hh:mm a")
+                                            .format(w)))),
+                              ]);
+                            }),
+                          ),
+                        ),
+                      ),
+                    )
+                  : ListView.builder(
+                      itemCount: walletController.usages.length,
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) {
+                        DepositModel depositModel =
+                            walletController.usages.elementAt(index);
+                        return WalletCard(
+                            context: context,
+                            uid: uid,
+                            type: "usage",
+                            customer: customer,
+                            depositBody: depositModel);
+                      });
     });
   }
 }

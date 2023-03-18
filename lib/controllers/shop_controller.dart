@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterpos/controllers/home_controller.dart';
 import 'package:flutterpos/models/shop_model.dart';
+import 'package:flutterpos/screens/home/shops_page.dart';
 import 'package:flutterpos/utils/colors.dart';
 import 'package:flutterpos/utils/constants.dart';
 import 'package:flutterpos/widgets/snackBars.dart';
@@ -11,6 +13,7 @@ import '../services/shop.dart';
 import 'AuthController.dart';
 
 class ShopController extends GetxController {
+  final GlobalKey<State> _keyLoader = new GlobalKey<State>();
   TextEditingController nameController = TextEditingController();
   TextEditingController businessController = TextEditingController();
   TextEditingController reqionController = TextEditingController();
@@ -60,16 +63,14 @@ class ShopController extends GetxController {
         } else {
           clearTextFields();
           await getShopsByAdminId(adminId: userId);
-          if (page == "home") {
+          if (MediaQuery.of(context).size.width > 600) {
+            Get.find<HomeController>().selectedWidget.value = ShopsPage();
+          } else if (page == "home") {
             await Get.find<AuthController>().getUserById();
             Get.off(() => Home());
           } else {
             Get.back();
           }
-          showSnackBar(
-              message: response["message"],
-              color: Colors.red,
-              context: context);
         }
 
         createShopLoad.value = false;
@@ -81,11 +82,8 @@ class ShopController extends GetxController {
 
   getShopsByAdminId({required adminId, String? name}) async {
     try {
-
       gettingShopsLoad.value = true;
-      var response =
-          await Shop().getShopsByAdminId(adminId: adminId, name: name);
-
+      var response = await Shop().getShopsByAdminId(adminId: adminId, name: name);
       if (response != null) {
         List shops = response["body"];
         List<ShopModel> shopsData =
@@ -97,15 +95,6 @@ class ShopController extends GetxController {
 
       gettingShopsLoad.value = false;
     } catch (e) {
-      ShopModel shopModel = ShopModel(
-          id: "123456789023456",
-          name: "peter",
-          location: "nakuru",
-          owner: "123456789023456",
-          type: "retail",
-          currency: "usd");
-      AdminShops.add(shopModel);
-      AdminShops.refresh();
       gettingShopsLoad.value = false;
     }
   }
@@ -135,12 +124,17 @@ class ShopController extends GetxController {
             currency.value == "" ? Constants.currenciesData[0] : currency.value,
       };
       var response = await Shop().updateShops(id: id, body: body);
-      getShopsByAdminId(adminId: adminId);
-      Get.back();
-      showSnackBar(
-          message: response["message"],
-          color: AppColors.mainColor,
-          context: context);
+      if (response["status"] == true) {
+        if (MediaQuery.of(context).size.width > 600) {
+          Get.find<HomeController>().selectedWidget.value = ShopsPage();
+        } else {
+          Get.back();
+        }
+        getShopsByAdminId(adminId: adminId);
+      } else {
+        showSnackBar(
+            message: response["message"], color: Colors.red, context: context);
+      }
 
       updateShopLoad.value = false;
     } catch (e) {
@@ -152,13 +146,19 @@ class ShopController extends GetxController {
     try {
       deleteShopLoad.value = true;
       var response = await Shop().deleteShop(id: id);
-      getShopsByAdminId(adminId: adminId);
-      Get.back();
-      showSnackBar(
-          message: response["message"],
-          color: AppColors.mainColor,
-          context: context);
-
+      if (response["status"] == true) {
+        if (MediaQuery.of(context).size.width > 600) {
+          Get.find<HomeController>().selectedWidget.value = ShopsPage();
+        } else {
+          Get.back();
+        }
+        getShopsByAdminId(adminId: adminId);
+      } else {
+        showSnackBar(
+            message: response["message"],
+            color: AppColors.mainColor,
+            context: context);
+      }
       deleteShopLoad.value = false;
     } catch (e) {
       deleteShopLoad.value = false;

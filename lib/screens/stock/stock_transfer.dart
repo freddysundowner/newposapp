@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutterpos/controllers/home_controller.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
 import 'package:flutterpos/models/shop_model.dart';
 import 'package:flutterpos/responsive/responsiveness.dart';
+import 'package:flutterpos/screens/stock/products_selection.dart';
+import 'package:flutterpos/screens/stock/stock_page.dart';
 import 'package:flutterpos/screens/stock/transfer_history.dart';
 import 'package:flutterpos/widgets/shop_card.dart';
 import 'package:get/get.dart';
@@ -23,6 +26,7 @@ class StockTransfer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
         centerTitle: false,
@@ -39,7 +43,11 @@ class StockTransfer extends StatelessWidget {
         ),
         leading: IconButton(
           onPressed: () {
-            Get.back();
+            if (MediaQuery.of(context).size.width > 600) {
+              Get.find<HomeController>().selectedWidget.value = StockPage();
+            } else {
+              Get.back();
+            }
           },
           icon: Icon(
             Icons.arrow_back_ios,
@@ -50,7 +58,12 @@ class StockTransfer extends StatelessWidget {
           Center(
             child: InkWell(
               onTap: () {
-                Get.to(() => TransferHistory());
+                if (MediaQuery.of(context).size.width > 600) {
+                  Get.find<HomeController>().selectedWidget.value =
+                      TransferHistory();
+                } else {
+                  Get.to(() => TransferHistory());
+                }
               },
               child: Container(
                 margin: EdgeInsets.all(5),
@@ -70,57 +83,118 @@ class StockTransfer extends StatelessWidget {
       body: ResponsiveWidget(
           largeScreen: Container(
             padding: EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: majorTitle(
-                      title: "Select Shop to transfer to",
-                      color: Colors.black,
-                      size: 16.0),
-                ),
-                SizedBox(height: 10),
-                Obx(() {
-                  return shopController.gettingShopsLoad.value
-                      ? Align(
-                          alignment: Alignment.center,
-                          child: CircularProgressIndicator())
-                      : shopController.AdminShops.length == 0
-                          ? Center(
-                              child: majorTitle(
-                                  title: "You do not have shop yet",
-                                  color: Colors.black,
-                                  size: 16.0),
-                            )
-                          : Expanded(
-                              child: GridView.builder(
-                                  gridDelegate:
-                                      SliverGridDelegateWithFixedCrossAxisCount(
-                                          childAspectRatio:
-                                              MediaQuery.of(context)
-                                                      .size
-                                                      .width *
-                                                  1.4 /
-                                                  MediaQuery.of(context)
-                                                      .size
-                                                      .height,
-                                          crossAxisCount: 3,
-                                          crossAxisSpacing: 10,
-                                          mainAxisSpacing: 10),
-                                  shrinkWrap: true,
-                                  itemCount: shopController.AdminShops.length,
-                                  itemBuilder: (context, index) {
-                                    ShopModel shopModel =
-                                        shopController.AdminShops.elementAt(
-                                            index);
-                                    return shopCard(
-                                        shopModel: shopModel,
-                                        page: "stockTransfer");
-                                  }),
-                            );
-                })
-              ],
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: majorTitle(
+                        title: "Select Shop to transfer to",
+                        color: Colors.black,
+                        size: 16.0),
+                  ),
+                  SizedBox(height: 10),
+                  Obx(() {
+                    return shopController.gettingShopsLoad.value
+                        ? Align(
+                            alignment: Alignment.center,
+                            child: CircularProgressIndicator())
+                        : shopController.AdminShops.length == 0
+                            ? Center(
+                                child: majorTitle(
+                                    title: "You do not have shop yet",
+                                    color: Colors.black,
+                                    size: 16.0),
+                              )
+                            : Container(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 15, vertical: 10),
+                                width: double.infinity,
+                                child: Theme(
+                                  data: Theme.of(context)
+                                      .copyWith(dividerColor: Colors.grey),
+                                  child: DataTable(
+                                    decoration: BoxDecoration(
+                                        border: Border.all(
+                                      width: 1,
+                                      color: Colors.black,
+                                    )),
+                                    columnSpacing: 30.0,
+                                    columns: [
+                                      DataColumn(
+                                          label: Text('Name',
+                                              textAlign: TextAlign.center)),
+                                      DataColumn(
+                                          label: Text('Location',
+                                              textAlign: TextAlign.center)),
+                                      DataColumn(
+                                          label: Text('Type',
+                                              textAlign: TextAlign.center)),
+                                      DataColumn(
+                                          label: Text('',
+                                              textAlign: TextAlign.center)),
+                                    ],
+                                    rows: List.generate(
+                                        shopController.AdminShops.length,
+                                        (index) {
+                                      ShopModel shopModel =
+                                          shopController.AdminShops.elementAt(
+                                              index);
+                                      final y = shopModel.name;
+                                      final x = shopModel.location;
+                                      final z = shopModel.type;
+
+                                      return DataRow(cells: [
+                                        DataCell(Container(
+                                            width: 75, child: Text(y!))),
+                                        DataCell(Container(
+                                            width: 75,
+                                            child: Text(x.toString()))),
+                                        DataCell(Container(
+                                            width: 75,
+                                            child: Text(z.toString()))),
+                                        DataCell(
+                                          InkWell(
+                                            onTap: () {
+                                              Get.find<HomeController>()
+                                                      .selectedWidget
+                                                      .value =
+                                                  ProductSelections(
+                                                      shopModel: shopModel);
+                                            },
+                                            child: Align(
+                                              child: Center(
+                                                child: Container(
+                                                  padding: EdgeInsets.all(5),
+                                                  margin: EdgeInsets.all(5),
+                                                  decoration: BoxDecoration(
+                                                      color:
+                                                          AppColors.mainColor,
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              3)),
+                                                  width: 75,
+                                                  child: Text(
+                                                    "Select",
+                                                    style: TextStyle(
+                                                        color: Colors.white),
+                                                    textAlign: TextAlign.center,
+                                                  ),
+                                                ),
+                                              ),
+                                              alignment: Alignment.topRight,
+                                            ),
+                                          ),
+                                        ),
+                                      ]);
+                                    }),
+                                  ),
+                                ),
+                              );
+                  })
+                ],
+              ),
             ),
           ),
           smallScreen: SingleChildScrollView(
@@ -190,7 +264,8 @@ class StockTransfer extends StatelessWidget {
                                           index);
                                   return shopCard(
                                       shopModel: shopModel,
-                                      page: "stockTransfer");
+                                      page: "stockTransfer",
+                                      context: context);
                                 });
                   })
                 ],

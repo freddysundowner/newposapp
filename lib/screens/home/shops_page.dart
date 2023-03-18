@@ -11,6 +11,7 @@ import 'package:get/get.dart';
 import '../../utils/colors.dart';
 import '../../widgets/shop_card.dart';
 import '../../widgets/smalltext.dart';
+import '../shop/shop_details.dart';
 
 class ShopsPage extends StatelessWidget {
   ShopsPage({Key? key}) : super(key: key) {
@@ -52,33 +53,86 @@ class ShopsPage extends StatelessWidget {
                       ? loadingWidget(context)
                       : shopController.AdminShops.length == 0
                           ? noItemsFound(context, true)
-                          : Padding(
-                              padding:
-                                  const EdgeInsets.only(left: 20.0, right: 20),
-                              child: GridView.builder(
-                                  gridDelegate:
-                                      SliverGridDelegateWithFixedCrossAxisCount(
-                                          childAspectRatio:
-                                              MediaQuery.of(context)
-                                                      .size
-                                                      .width *
-                                                  1.3 /
-                                                  MediaQuery.of(context)
-                                                      .size
-                                                      .height,
-                                          crossAxisCount: 3,
-                                          crossAxisSpacing: 10,
-                                          mainAxisSpacing: 10),
-                                  shrinkWrap: true,
-                                  itemCount: shopController.AdminShops.length,
-                                  itemBuilder: (context, index) {
+                          : Container(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 15, vertical: 10),
+                              width: double.infinity,
+                              child: Theme(
+                                data: Theme.of(context)
+                                    .copyWith(dividerColor: Colors.grey),
+                                child: DataTable(
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                    width: 1,
+                                    color: Colors.black,
+                                  )),
+                                  columnSpacing: 30.0,
+                                  columns: [
+                                    DataColumn(
+                                        label: Text('Name',
+                                            textAlign: TextAlign.center)),
+                                    DataColumn(
+                                        label: Text('Location',
+                                            textAlign: TextAlign.center)),
+                                    DataColumn(
+                                        label: Text('Type',
+                                            textAlign: TextAlign.center)),
+                                    DataColumn(
+                                        label: Text('',
+                                            textAlign: TextAlign.center)),
+                                  ],
+                                  rows: List.generate(
+                                      shopController.AdminShops.length,
+                                      (index) {
                                     ShopModel shopModel =
                                         shopController.AdminShops.elementAt(
                                             index);
-                                    return shopCard(
-                                        shopModel: shopModel, page: "shop");
+                                    final y = shopModel.name;
+                                    final x = shopModel.location;
+                                    final z = shopModel.type;
+
+                                    return DataRow(cells: [
+                                      DataCell(Container(child: Text(y!))),
+                                      DataCell(
+                                          Container(child: Text(x.toString()))),
+                                      DataCell(
+                                          Container(child: Text(z.toString()))),
+                                      DataCell(
+                                        InkWell(
+                                          onTap: () {
+                                            Get.find<HomeController>()
+                                                    .selectedWidget
+                                                    .value =
+                                                ShopDetails(
+                                                    shopModel: shopModel);
+                                          },
+                                          child: Align(
+                                            child: Center(
+                                              child: Container(
+                                                padding: EdgeInsets.all(5),
+                                                margin: EdgeInsets.all(5),
+                                                decoration: BoxDecoration(
+                                                    color: AppColors.mainColor,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            3)),
+                                                child: Text(
+                                                  "Edit",
+                                                  style: TextStyle(
+                                                      color: Colors.white),
+                                                  textAlign: TextAlign.center,
+                                                ),
+                                              ),
+                                            ),
+                                            alignment: Alignment.topRight,
+                                          ),
+                                        ),
+                                      ),
+                                    ]);
                                   }),
-                            )
+                                ),
+                              ),
+                            ),
                 ],
               ),
             )),
@@ -117,7 +171,10 @@ class ShopsPage extends StatelessWidget {
                           itemBuilder: (context, index) {
                             ShopModel shopModel =
                                 shopController.AdminShops.elementAt(index);
-                            return shopCard(shopModel: shopModel, page: "shop");
+                            return shopCard(
+                                shopModel: shopModel,
+                                page: "shop",
+                                context: context);
                           });
             })
           ],
@@ -130,9 +187,13 @@ class ShopsPage extends StatelessWidget {
     HomeController homeController = Get.find<HomeController>();
     return InkWell(
       onTap: () {
-        Get.to(CreateShop(
-          page: "shop",
-        ));
+        if (MediaQuery.of(context).size.width > 600) {
+          homeController.selectedWidget.value = CreateShop(page: "shop");
+        } else {
+          Get.to(CreateShop(
+            page: "shop",
+          ));
+        }
       },
       child: Container(
         padding: ResponsiveWidget.isSmallScreen(context)
@@ -164,20 +225,28 @@ class ShopsPage extends StatelessWidget {
             adminId: authController.currentUser.value?.id, name: value);
       },
       decoration: InputDecoration(
-          contentPadding: EdgeInsets.fromLTRB(10, 5, 10, 5),
-          suffixIcon: IconButton(
-            onPressed: () {
-              if (shopController.searchController.text == "") {
-              } else {
-                shopController.getShopsByAdminId(
-                    adminId: authController.currentUser.value?.id,
-                    name: shopController.searchController.text);
-              }
-            },
-            icon: Icon(Icons.search),
-          ),
-          hintText: "Search Shop",
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10))),
+        contentPadding: EdgeInsets.fromLTRB(10, 5, 10, 5),
+        suffixIcon: IconButton(
+          onPressed: () {
+            if (shopController.searchController.text == "") {
+            } else {
+              shopController.getShopsByAdminId(
+                  adminId: authController.currentUser.value?.id,
+                  name: shopController.searchController.text);
+            }
+          },
+          icon: Icon(Icons.search),
+        ),
+        hintText: "Search Shop",
+        border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(
+              10,
+            ),
+            borderSide: BorderSide(color: Colors.grey, width: 1)),
+        focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(color: Colors.grey, width: 1)),
+      ),
     );
   }
 

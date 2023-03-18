@@ -1,16 +1,19 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:flutter/material.dart';
+import 'package:flutterpos/controllers/home_controller.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
 import 'package:flutterpos/models/sales_model.dart';
 import 'package:flutterpos/models/sales_order_item_model.dart';
-import 'package:flutterpos/responsive/large_screen.dart';
 import 'package:flutterpos/responsive/responsiveness.dart';
 import 'package:flutterpos/screens/cash_flow/wallet_page.dart';
+import 'package:flutterpos/screens/customers/customers_page.dart';
 import 'package:flutterpos/utils/helper.dart';
 import 'package:flutterpos/widgets/bigtext.dart';
+import 'package:flutterpos/widgets/no_items_found.dart';
 import 'package:flutterpos/widgets/smalltext.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 import '../../controllers/AuthController.dart';
 import '../../controllers/CustomerController.dart';
@@ -21,7 +24,7 @@ import '../../models/stock_in_credit.dart';
 import '../../utils/colors.dart';
 import '../../widgets/delete_dialog.dart';
 import '../../widgets/edit_dialog.dart';
-import '../../widgets/pdf/credit_history_card.dart';
+import '../../widgets/credit_history_card.dart';
 import '../../widgets/purchase_card.dart';
 
 class CustomerInfoPage extends StatelessWidget {
@@ -69,75 +72,6 @@ class CustomerInfoPage extends StatelessWidget {
     } else {
       customerController.getCustomerById(id);
     }
-    List customesidePages = [
-      {"page": "Credit"},
-      {"page": "Purchases"},
-      {"page": "Returns"},
-    ];
-
-    Widget showPage() {
-      switch (customerController.customerActiveItem.value) {
-        case "Credit":
-          return CreditInfo(id: id, user: user);
-        case "Purchases":
-          return Purchase(id: id, user: user);
-        case "Returns":
-          return Returns(id: id, user: user);
-
-        default:
-          return CreditInfo(id: id, user: user);
-      }
-    }
-
-    Widget sideMenuItems({required title, required context}) {
-      return Obx(() => InkWell(
-            onTap: () {
-              customerController.customerActiveItem.value = title;
-              if (title == "Credit") {
-                if (user == "suppliers") {
-                  supplierController.getSupplierCredit(
-                      "${shopController.currentShop.value!.id!}", id);
-                } else {
-                  creditController.getCustomerCredit(
-                      authController.currentUser.value == null
-                          ? attendantController.attendant.value?.id
-                          : authController.currentUser.value?.id,
-                      "${createShopController.currentShop.value!.id!}",
-                      id);
-                }
-              } else if (title == "Purchases") {
-                customerController.getCustomerPurchases(id, user);
-              } else if (title == "Returns") {
-                if (user == "suppliers") {
-                } else {
-                  customerController.getCustomerReturns(id);
-                }
-              }
-            },
-            onHover: (value) {},
-            child: Container(
-              padding: EdgeInsets.only(top: 20, left: 15),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(top: 10.0),
-                    child: Text(
-                      "${title}",
-                      style: TextStyle(
-                          color: customerController.customerActiveItem.value ==
-                                  title
-                              ? AppColors.mainColor
-                              : Colors.grey,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold),
-                    ),
-                  )
-                ],
-              ),
-            ),
-          ));
-    }
 
     return WillPopScope(
       onWillPop: () async {
@@ -146,6 +80,7 @@ class CustomerInfoPage extends StatelessWidget {
       },
       child: ResponsiveWidget(
         largeScreen: Scaffold(
+          backgroundColor: Colors.white,
           appBar: AppBar(
             elevation: 0.0,
             backgroundColor: Colors.white,
@@ -162,9 +97,12 @@ class CustomerInfoPage extends StatelessWidget {
                 if (user != "suppliers")
                   InkWell(
                     onTap: () {
-                      Get.to(() => WalletPage(
-                          title: "Peter",
-                          uid: "${customerController.customer.value?.id}"));
+                      Get.find<HomeController>().selectedWidget.value =
+                          WalletPage(
+                        title: name,
+                        uid: "${customerController.customer.value?.id}",
+                        phone: phone,
+                      );
                     },
                     child: Container(
                       padding: EdgeInsets.only(
@@ -188,25 +126,57 @@ class CustomerInfoPage extends StatelessWidget {
             ),
             leading: IconButton(
                 onPressed: () {
-                  Get.back();
+                  Get.find<HomeController>().selectedWidget.value =
+                      CustomersPage(
+                    type: user,
+                  );
                 },
                 icon: Icon(
                   Icons.arrow_back_ios,
                   color: Colors.black,
                 )),
             actions: [
-              // IconButton(onPressed: () {}, icon: Icon(Icons.edit)),
-              // IconButton(onPressed: () {}, icon: Icon(Icons.delete)),
+              IconButton(
+                  onPressed: () {
+                    if (user == "suppliers") {
+                      supplierController.assignTextFields();
+                    } else {
+                      customerController.assignTextFields();
+                    }
+                    showEditDialog(
+                      user: user,
+                      context: context,
+                    );
+                  },
+                  icon: Icon(
+                    Icons.edit,
+                    color: Colors.black,
+                  )),
+              IconButton(
+                  onPressed: () {
+                    deleteDialog(
+                        context: context,
+                        onPressed: () {
+                          if (user == "suppliers") {
+                            supplierController.deleteSuppler(
+                                context: context,
+                                id: customerController.customer.value?.id,
+                                shopId: shopController.currentShop.value?.id);
+                          } else {
+                            customerController.deleteCustomer(
+                                context: context,
+                                id: customerController.customer.value?.id,
+                                shopId: shopController.currentShop.value?.id);
+                          }
+                        });
+                  },
+                  icon: Icon(
+                    Icons.delete,
+                    color: Colors.red,
+                  )),
             ],
           ),
-          body: LargeScreen(
-            sideBar: ListView(
-              children: customesidePages
-                  .map((e) => sideMenuItems(title: e["page"], context: context))
-                  .toList(),
-            ),
-            body: showPage(),
-          ),
+          body: customerInfoBody(context),
         ),
         smallScreen: Helper(
             widget: SingleChildScrollView(
@@ -313,10 +283,17 @@ class CustomerInfoPage extends StatelessWidget {
                               if (user != "suppliers")
                                 InkWell(
                                   onTap: () {
-                                    Get.to(() => WalletPage(
-                                        title: "Peter",
-                                        uid:
-                                            "${customerController.customer.value?.id}"));
+                                    Get.to(
+                                      () => WalletPage(
+                                          title: customerController
+                                                  .customer.value?.fullName ??
+                                              "trial",
+                                          uid:
+                                              "${customerController.customer.value?.id ?? "123"}",
+                                          phone: customerController.customer
+                                                  .value?.phoneNumber ??
+                                              "0700000000"),
+                                    );
                                   },
                                   child: Container(
                                     padding: EdgeInsets.only(
@@ -343,77 +320,7 @@ class CustomerInfoPage extends StatelessWidget {
                       ],
                     ),
                   ),
-                  Container(
-                    height: MediaQuery.of(context).size.height * 0.9,
-                    child: Column(
-                      children: [
-                        Container(
-                          color: Colors.white,
-                          width: double.infinity,
-                          height: kToolbarHeight,
-                          child: Obx(() => DefaultTabController(
-                                length: 3,
-                                initialIndex:
-                                    customerController.initialPage.value,
-                                child: TabBar(
-                                    unselectedLabelColor: Colors.grey,
-                                    labelColor: Colors.purple,
-                                    indicatorColor: Colors.purple,
-                                    controller:
-                                        customerController.tabController,
-                                    indicatorWeight: 3,
-                                    onTap: (index) {
-                                      customerController.initialPage.value =
-                                          index;
-                                      if (index == 0) {
-                                        if (user == "suppliers") {
-                                          supplierController.getSupplierCredit(
-                                              "${shopController.currentShop.value!.id!}",
-                                              id);
-                                        } else {
-                                          creditController.getCustomerCredit(
-                                              authController
-                                                          .currentUser.value ==
-                                                      null
-                                                  ? attendantController
-                                                      .attendant.value?.id
-                                                  : authController
-                                                      .currentUser.value?.id,
-                                              "${createShopController.currentShop.value!.id!}",
-                                              id);
-                                        }
-                                      }
-                                      if (index == 1) {
-                                        customerController.getCustomerPurchases(
-                                            id, user);
-                                      } else {
-                                        if (user == "suppliers") {
-                                        } else {
-                                          customerController
-                                              .getCustomerReturns(id);
-                                        }
-                                      }
-                                    },
-                                    tabs: customerController.tabs),
-                              )),
-                        ),
-                        Expanded(
-                          flex: 1,
-                          child: Container(
-                            color: Colors.grey.withOpacity(0.11),
-                            child: TabBarView(
-                              controller: customerController.tabController,
-                              children: [
-                                CreditInfo(id: id, user: user),
-                                Purchase(id: id, user: user),
-                                Returns(id: id, user: user)
-                              ],
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
-                  )
+                  customerInfoBody(context)
                 ],
               ),
             ),
@@ -461,6 +368,73 @@ class CustomerInfoPage extends StatelessWidget {
                     icon: Icon(Icons.delete)),
               ],
             )),
+      ),
+    );
+  }
+
+  Widget customerInfoBody(context) {
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.9,
+      child: Column(
+        children: [
+          Container(
+            color: Colors.white,
+            width: double.infinity,
+            height: kToolbarHeight,
+            child: Obx(() => DefaultTabController(
+                  length: 3,
+                  initialIndex: customerController.initialPage.value,
+                  child: TabBar(
+                      unselectedLabelColor: Colors.grey,
+                      labelColor: Colors.purple,
+                      physics: NeverScrollableScrollPhysics(),
+                      indicatorColor: Colors.purple,
+                      controller: customerController.tabController,
+                      indicatorWeight: 3,
+                      onTap: (index) {
+                        customerController.initialPage.value = index;
+                        if (index == 0) {
+                          if (user == "suppliers") {
+                            supplierController.getSupplierCredit(
+                                "${shopController.currentShop.value!.id!}", id);
+                          } else {
+                            creditController.getCustomerCredit(
+                                authController.currentUser.value == null
+                                    ? attendantController.attendant.value?.id
+                                    : authController.currentUser.value?.id,
+                                "${createShopController.currentShop.value!.id!}",
+                                id);
+                          }
+                        }
+                        if (index == 1) {
+                          customerController.getCustomerPurchases(id, user);
+                        } else {
+                          if (user == "suppliers") {
+                          } else {
+                            customerController.getCustomerReturns(id);
+                          }
+                        }
+                      },
+                      tabs: customerController.tabs),
+                )),
+          ),
+          Expanded(
+            flex: 1,
+            child: Container(
+              color: MediaQuery.of(context).size.width > 600
+                  ? Colors.white
+                  : Colors.grey.withOpacity(0.11),
+              child: TabBarView(
+                controller: customerController.tabController,
+                children: [
+                  CreditInfo(id: id, user: user),
+                  Purchase(id: id, user: user),
+                  Returns(id: id, user: user)
+                ],
+              ),
+            ),
+          )
+        ],
       ),
     );
   }
@@ -566,16 +540,71 @@ class Purchase extends StatelessWidget {
       return customerController.customerPurchaseLoad.value
           ? Center(child: CircularProgressIndicator())
           : customerController.customerPurchases.length == 0
-              ? Center(child: Text("No Entries Found"))
-              : ListView.builder(
-                  itemCount: customerController.customerPurchases.length,
-                  shrinkWrap: true,
-                  itemBuilder: (context, index) {
-                    SaleOrderItemModel saleOrder =
-                        customerController.customerPurchases.elementAt(index);
-                    return purchaseCard(
-                        context: context, saleOrderItemModel: saleOrder);
-                  });
+              ? noItemsFound(context, true)
+              : MediaQuery.of(context).size.width > 600
+                  ? SingleChildScrollView(
+                      child: Container(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                        width: double.infinity,
+                        child: Theme(
+                          data: Theme.of(context)
+                              .copyWith(dividerColor: Colors.grey),
+                          child: DataTable(
+                            decoration: BoxDecoration(
+                                border: Border.all(
+                              width: 1,
+                              color: Colors.black,
+                            )),
+                            columnSpacing: 30.0,
+                            columns: [
+                              DataColumn(
+                                  label: Text('Name',
+                                      textAlign: TextAlign.center)),
+                              DataColumn(
+                                  label:
+                                      Text('Qty', textAlign: TextAlign.center)),
+                              DataColumn(
+                                  label: Text('Total',
+                                      textAlign: TextAlign.center)),
+                              DataColumn(
+                                  label: Text('Date',
+                                      textAlign: TextAlign.center)),
+                            ],
+                            rows: List.generate(
+                                customerController.customerPurchases.length,
+                                (index) {
+                              SaleOrderItemModel saleOrder = customerController
+                                  .customerPurchases
+                                  .elementAt(index);
+                              final y = saleOrder.product!.name;
+                              final x = saleOrder.itemCount;
+                              final z = saleOrder.total;
+                              final a = saleOrder.createdAt!;
+
+                              return DataRow(cells: [
+                                DataCell(Container(child: Text(y!))),
+                                DataCell(Container(child: Text(x.toString()))),
+                                DataCell(Container(child: Text(z.toString()))),
+                                DataCell(Container(
+                                    child: Text(
+                                        DateFormat("dd-MM-yyyy").format(a)))),
+                              ]);
+                            }),
+                          ),
+                        ),
+                      ),
+                    )
+                  : ListView.builder(
+                      itemCount: customerController.customerPurchases.length,
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) {
+                        SaleOrderItemModel saleOrder = customerController
+                            .customerPurchases
+                            .elementAt(index);
+                        return purchaseCard(
+                            context: context, saleOrderItemModel: saleOrder);
+                      });
     });
   }
 }
@@ -595,17 +624,71 @@ class Returns extends StatelessWidget {
       return customerController.customerReturnsLoad.value
           ? Center(child: CircularProgressIndicator())
           : customerController.customerReturns.length == 0
-              ? Center(child: Text("No Returns Found"))
-              : ListView.builder(
-                  itemCount: customerController.customerReturns.length,
-                  shrinkWrap: true,
-                  itemBuilder: (context, index) {
-                    SaleOrderItemModel saleOrderItemModel =
-                        customerController.customerReturns.elementAt(index);
-                    return purchaseCard(
-                        context: context,
-                        saleOrderItemModel: saleOrderItemModel);
-                  });
+              ? noItemsFound(context, true)
+              : MediaQuery.of(context).size.width > 600
+                  ? SingleChildScrollView(
+                      child: Container(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                        width: double.infinity,
+                        child: Theme(
+                          data: Theme.of(context)
+                              .copyWith(dividerColor: Colors.grey),
+                          child: DataTable(
+                            decoration: BoxDecoration(
+                                border: Border.all(
+                              width: 1,
+                              color: Colors.black,
+                            )),
+                            columnSpacing: 30.0,
+                            columns: [
+                              DataColumn(
+                                  label: Text('Name',
+                                      textAlign: TextAlign.center)),
+                              DataColumn(
+                                  label:
+                                      Text('Qty', textAlign: TextAlign.center)),
+                              DataColumn(
+                                  label: Text('Total',
+                                      textAlign: TextAlign.center)),
+                              DataColumn(
+                                  label: Text('Date',
+                                      textAlign: TextAlign.center)),
+                            ],
+                            rows: List.generate(
+                                customerController.customerReturns.length,
+                                (index) {
+                              SaleOrderItemModel saleOrder = customerController
+                                  .customerReturns
+                                  .elementAt(index);
+                              final y = saleOrder.product!.name;
+                              final x = saleOrder.itemCount;
+                              final z = saleOrder.total;
+                              final a = saleOrder.createdAt!;
+
+                              return DataRow(cells: [
+                                DataCell(Container(child: Text(y!))),
+                                DataCell(Container(child: Text(x.toString()))),
+                                DataCell(Container(child: Text(z.toString()))),
+                                DataCell(Container(
+                                    child: Text(
+                                        DateFormat("dd-MM-yyyy").format(a)))),
+                              ]);
+                            }),
+                          ),
+                        ),
+                      ),
+                    )
+                  : ListView.builder(
+                      itemCount: customerController.customerReturns.length,
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) {
+                        SaleOrderItemModel saleOrderItemModel =
+                            customerController.customerReturns.elementAt(index);
+                        return purchaseCard(
+                            context: context,
+                            saleOrderItemModel: saleOrderItemModel);
+                      });
     });
   }
 }

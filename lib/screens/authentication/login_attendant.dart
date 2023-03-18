@@ -94,7 +94,7 @@ class AttendantLogin extends StatelessWidget {
   }
 
   Widget loginAttendant(context) {
-    return  Form(
+    return Form(
         key: authController.loginAttendantKey,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 25),
@@ -110,7 +110,7 @@ class AttendantLogin extends StatelessWidget {
                     return null;
                   },
                   keyboardType: TextInputType.number,
-                  decoration:ResponsiveWidget.isSmallScreen(context)
+                  decoration: ResponsiveWidget.isSmallScreen(context)
                       ? ThemeHelper()
                           .textInputDecoration('UserId', 'Enter your UserID')
                       : ThemeHelper().textInputDecorationDesktop(
@@ -138,29 +138,31 @@ class AttendantLogin extends StatelessWidget {
                 decoration: ThemeHelper().inputBoxDecorationShaddow(),
               ),
               SizedBox(height: 25.0),
-              authController.LoginAttendantLoad.value
-                  ? Center(
-                      child: CircularProgressIndicator(),
-                    )
-                  : Container(
-                      decoration: ThemeHelper().buttonBoxDecoration(context),
-                      child: ElevatedButton(
-                        style: ThemeHelper().buttonStyle(),
-                        child: Padding(
-                          padding: EdgeInsets.fromLTRB(40, 10, 40, 10),
-                          child: Text(
-                            'Sign In'.toUpperCase(),
-                            style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white),
+              Obx(() {
+                return authController.LoginAttendantLoad.value
+                    ? Center(
+                        child: CircularProgressIndicator(),
+                      )
+                    : Container(
+                        decoration: ThemeHelper().buttonBoxDecoration(context),
+                        child: ElevatedButton(
+                          style: ThemeHelper().buttonStyle(),
+                          child: Padding(
+                            padding: EdgeInsets.fromLTRB(40, 10, 40, 10),
+                            child: Text(
+                              'Sign In'.toUpperCase(),
+                              style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white),
+                            ),
                           ),
+                          onPressed: () {
+                            authController.loginAttendant(context);
+                          },
                         ),
-                        onPressed: () {
-                          authController.loginAttendant(context);
-                        },
-                      ),
-                    ),
+                      );
+              }),
             ],
           ),
         ));

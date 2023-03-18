@@ -4,9 +4,11 @@ import 'package:flutterpos/responsive/responsiveness.dart';
 import 'package:get/get.dart';
 
 import '../../controllers/AuthController.dart';
+import '../../controllers/home_controller.dart';
 import '../../utils/colors.dart';
 import '../../widgets/bigtext.dart';
 import '../../widgets/delete_dialog.dart';
+import '../../widgets/logout.dart';
 import '../../widgets/smalltext.dart';
 import '../../widgets/snackBars.dart';
 import '../profile/profile_update.dart';
@@ -20,107 +22,117 @@ class ProfilePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: ResponsiveWidget(
-        largeScreen: Container(
-          width: double.infinity,
-          color: Colors.grey.withOpacity(0.2),
-          padding: EdgeInsets.symmetric(vertical: 30, horizontal: 50),
-          child: Container(
-            padding: EdgeInsets.all(20),
-            decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(8),
-                boxShadow: [
-                  BoxShadow(
-                      color: Colors.black26,
-                      offset: Offset(0, 1),
-                      blurRadius: 1.0)
-                ]),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(
-                  height: 20,
-                ),
-                majorTitle(
-                    title: "User Details", color: Colors.black, size: 18.0),
-                SizedBox(
-                  height: 20,
-                ),
-                Row(
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        majorTitle(
-                            title: "Username:", color: Colors.grey, size: 18.0),
-                        SizedBox(height: 20),
-                        majorTitle(
-                            title: "Email:", color: Colors.grey, size: 18.0),
-                        SizedBox(height: 20),
-                        majorTitle(
-                            title: "Phone:", color: Colors.grey, size: 18.0),
-                      ],
-                    ),
-                    SizedBox(width: 40),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        minorTitle(
-                            title: "Peter Kimani",
-                            color: Colors.black,
-                            size: 18),
-                        SizedBox(height: 20),
-                        minorTitle(
-                            title: "peterkimani@gmail.com",
-                            color: Colors.black,
-                            size: 18),
-                        SizedBox(height: 20),
-                        minorTitle(
-                            title: "0732085640", color: Colors.black, size: 18)
-                      ],
-                    )
-                  ],
-                ),
-                SizedBox(height: 20),
-                Divider(
-                  thickness: 1,
-                  color: Colors.grey.withOpacity(0.2),
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                majorTitle(title: "Settings", color: Colors.black, size: 18.0),
-                SizedBox(height: 20),
-                accountCardDesktop(
-                    title: "Edit Profile",
-                    onPressed: () {
-                      Get.to(() => ProfileUpdate());
-                    }),
-                SizedBox(height: 10),
-                accountCardDesktop(
-                    title: "Password Setting",
-                    onPressed: () {
-                      showPasswordResetDialog(
-                          context, "${authController.currentUser.value?.id}");
-                    }),
-                SizedBox(height: 10),
-                accountCardDesktop(title: "Subscriptions", onPressed: () {}),
-                SizedBox(height: 10),
-                accountCardDesktop(
-                    title: "Delete Account",
-                    onPressed: () {
-                      deleteDialog(
-                          context: context,
-                          onPressed: () {
-                            authController.deleteAdmin(
-                                context: context,
-                                id: authController.currentUser.value?.id);
-                          });
-                    }),
-              ],
+        largeScreen: Obx(() {
+          return Container(
+            width: double.infinity,
+            color: Colors.grey.withOpacity(0.2),
+            padding: EdgeInsets.symmetric(vertical: 30, horizontal: 50),
+            child: Container(
+              padding: EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                  boxShadow: [
+                    BoxShadow(
+                        color: Colors.black26,
+                        offset: Offset(0, 1),
+                        blurRadius: 1.0)
+                  ]),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    height: 20,
+                  ),
+                  majorTitle(
+                      title: "User Details", color: Colors.black, size: 18.0),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Row(
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          majorTitle(
+                              title: "Username:",
+                              color: Colors.grey,
+                              size: 18.0),
+                          SizedBox(height: 20),
+                          majorTitle(
+                              title: "Email:", color: Colors.grey, size: 18.0),
+                          SizedBox(height: 20),
+                          majorTitle(
+                              title: "Phone:", color: Colors.grey, size: 18.0),
+                        ],
+                      ),
+                      SizedBox(width: 40),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          minorTitle(
+                              title: authController.currentUser.value!.name,
+                              color: Colors.black,
+                              size: 18),
+                          SizedBox(height: 20),
+                          minorTitle(
+                              title: authController.currentUser.value!.email,
+                              color: Colors.black,
+                              size: 18),
+                          SizedBox(height: 20),
+                          minorTitle(
+                              title:
+                                  authController.currentUser.value!.phonenumber,
+                              color: Colors.black,
+                              size: 18)
+                        ],
+                      )
+                    ],
+                  ),
+                  SizedBox(height: 20),
+                  Divider(
+                    thickness: 1,
+                    color: Colors.grey.withOpacity(0.2),
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  majorTitle(
+                      title: "Settings", color: Colors.black, size: 18.0),
+                  SizedBox(height: 20),
+                  accountCardDesktop(
+                      title: "Edit Profile",
+                      onPressed: () {
+                        Get.find<HomeController>().selectedWidget.value =
+                            ProfileUpdate();
+                        // Get.to(() => ProfileUpdate());
+                      }),
+                  SizedBox(height: 10),
+                  accountCardDesktop(
+                      title: "Password Setting",
+                      onPressed: () {
+                        showPasswordResetDialog(
+                            context, "${authController.currentUser.value?.id}");
+                      }),
+                  SizedBox(height: 10),
+                  accountCardDesktop(title: "Subscriptions", onPressed: () {}),
+                  SizedBox(height: 10),
+                  accountCardDesktop(
+                      title: "Delete Account",
+                      onPressed: () {
+                        deleteDialog(
+                            context: context,
+                            onPressed: () {
+                              authController.deleteAdmin(
+                                  context: context,
+                                  id: authController.currentUser.value?.id);
+                            });
+                      }),
+                ],
+              ),
             ),
-          ),
-        ),
+          );
+        }),
         smallScreen: SafeArea(
           child: SingleChildScrollView(
               child: Container(
@@ -211,7 +223,7 @@ class ProfilePage extends StatelessWidget {
                     title: "Logout",
                     icon: Icons.logout,
                     onPressed: () {
-                      deleteAccountDialog(context);
+                      logoutAccountDialog(context);
                     },
                   ),
                 ),
@@ -408,32 +420,4 @@ showPasswordResetDialog(BuildContext context, String id) {
       });
 }
 
-deleteAccountDialog(context) {
-  return showDialog(
-      context: context,
-      builder: (_) {
-        return AlertDialog(
-          title: Text("Logout"),
-          content: majorTitle(
-              title: "You will be logout from you account",
-              color: Colors.grey,
-              size: 14.0),
-          actions: [
-            TextButton(
-                onPressed: () {
-                  Get.back();
-                },
-                child: majorTitle(
-                    title: "Cancel", color: AppColors.mainColor, size: 16.0)),
-            TextButton(
-                onPressed: () {
-                  Get.back();
-                  Get.find<AuthController>().logout();
-                },
-                child: majorTitle(
-                    title: "Logout", color: AppColors.mainColor, size: 16.0))
-          ],
-        );
-      });
-  ;
-}
+

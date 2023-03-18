@@ -10,9 +10,9 @@ class Customer {
     return jsonDecode(response);
   }
 
-  getCustomersByShopId(String shopId) async {
+  getCustomersByShopId(String shopId,String type) async {
     var response = await DbBase()
-        .databaseRequest(customer + "shop/${shopId}", DbBase().getRequestType);
+        .databaseRequest(type=="all"?customer + "shop/${shopId}":"$customersOnCredit/${shopId}", DbBase().getRequestType);
     return jsonDecode(response);
   }
 
@@ -49,9 +49,4 @@ class Customer {
     return data;
   }
 
-  getCustomersByShopIdOnCredit(String shopId) async {
-    var response = await DbBase().databaseRequest(
-        "$customersOnCredit/${shopId}", DbBase().getRequestType);
-    return jsonDecode(response);
-  }
 }

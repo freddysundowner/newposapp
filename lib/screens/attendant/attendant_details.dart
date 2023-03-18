@@ -8,12 +8,14 @@ import 'package:get/get.dart';
 import '../../../../utils/colors.dart';
 import '../../controllers/AuthController.dart';
 import '../../controllers/attendant_controller.dart';
+import '../../controllers/home_controller.dart';
 import '../../models/attendant_model.dart';
 import '../../widgets/attendant_user_inputs.dart';
 import '../../widgets/bigtext.dart';
 import '../../widgets/delete_dialog.dart';
 import '../../widgets/smalltext.dart';
 import '../../widgets/switchingButton.dart';
+import '../home/attendants_page.dart';
 
 class AttendantDetails extends StatelessWidget {
   AttendantModel attendantModel;
@@ -31,34 +33,30 @@ class AttendantDetails extends StatelessWidget {
   Widget build(BuildContext context) {
     return ResponsiveWidget(
         largeScreen: Scaffold(
-            appBar: _appBar(),
-            body: Container(
-              padding:
-                  EdgeInsets.only(left: 30, top: 10, bottom: 10, right: 300),
-              decoration: BoxDecoration(
+            appBar: _appBar(context),
+            body: SingleChildScrollView(
+              child: Container(
+                padding:
+                    EdgeInsets.only(left: 30, top: 10, bottom: 10, right: 300),
+                decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(8),
-                  boxShadow: [
-                    BoxShadow(
-                        color: Colors.black26,
-                        offset: Offset(0, 1),
-                        blurRadius: 1.0)
-                  ]),
-              child: Column(
-                children: [
-                  userDetails(context),
-                  majorTitle(
-                      title: "Roles & Permissions",
-                      color: Colors.black,
-                      size: 14.0),
-                  SizedBox(height: 10),
-                  rolesWidget(),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  deleteAttendant(context)
-                ],
-                crossAxisAlignment: CrossAxisAlignment.start,
+                ),
+                child: Column(
+                  children: [
+                    userDetails(context),
+                    majorTitle(
+                        title: "Roles & Permissions",
+                        color: Colors.black,
+                        size: 14.0),
+                    SizedBox(height: 10),
+                    rolesWidget(),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    deleteAttendant(context)
+                  ],
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                ),
               ),
             )),
         smallScreen: Helper(
@@ -94,7 +92,7 @@ class AttendantDetails extends StatelessWidget {
               ),
             ),
           ),
-          appBar: _appBar(),
+          appBar: _appBar(context),
           bottomNavigationBar: BottomAppBar(
             // clipBehavior: Clip.antiAlias,
             // elevation: 0.5,
@@ -109,49 +107,93 @@ class AttendantDetails extends StatelessWidget {
                       ? Center(
                           child: CircularProgressIndicator(),
                         )
-                      : InkWell(
-                          splashColor: Colors.transparent,
-                          onTap: () {
-                            attendantController.updateAttedant(
-                                id: attendantModel.id,
-                                rolesData: attendantModel.roles);
-                          },
-                          child: Container(
-                            padding: EdgeInsets.all(10),
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                                border: Border.all(
-                                    width: 3, color: AppColors.mainColor),
-                                borderRadius: BorderRadius.circular(40)),
-                            child: Center(
-                                child: majorTitle(
-                                    title: "Update Changes",
-                                    color: AppColors.mainColor,
-                                    size: 18.0)),
-                          ),
-                        ),
+                      : updateAttendantButton(),
                 )),
           ),
         ));
   }
 
-  AppBar _appBar() {
+  AppBar _appBar(context) {
     return AppBar(
-      elevation: 0.3,
+      elevation: 0.0,
       titleSpacing: 0.0,
       centerTitle: false,
       backgroundColor: Colors.white,
       leading: IconButton(
         onPressed: () {
-          Get.back();
+          if (MediaQuery.of(context).size.width > 600) {
+            Get.find<HomeController>().selectedWidget.value = AttendantsPage();
+          } else {
+            Get.back();
+          }
         },
         icon: Icon(
           Icons.arrow_back_ios,
           color: Colors.black,
         ),
       ),
-      title: majorTitle(
-          title: attendantModel.fullnames, color: Colors.black, size: 16.0),
+      title: Padding(
+        padding: const EdgeInsets.only(right: 30.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            majorTitle(
+                title: attendantModel.fullnames,
+                color: Colors.black,
+                size: 16.0),
+            if (MediaQuery.of(context).size.width > 600)
+              Obx(() {
+                return attendantController.creatingAttendantsLoad.value
+                    ? Center(
+                        child: CircularProgressIndicator(),
+                      )
+                    : InkWell(
+                        onTap: () {
+                          attendantController.updateAttedant(
+                              id: attendantModel.id,
+                              rolesData: attendantModel.roles,
+                              context: context);
+                        },
+                        child: Container(
+                          padding: EdgeInsets.fromLTRB(10, 5, 10, 5),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                                color: AppColors.mainColor, width: 2),
+                          ),
+                          child: majorTitle(
+                              title: "Update Changes",
+                              color: AppColors.mainColor,
+                              size: 14.0),
+                        ),
+                      );
+              })
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget updateAttendantButton() {
+    return InkWell(
+      splashColor: Colors.transparent,
+      onTap: () {
+        attendantController.updateAttedant(
+            id: attendantModel.id, rolesData: attendantModel.roles);
+      },
+      child: Container(
+        padding: EdgeInsets.all(10),
+        width: double.infinity,
+        decoration: BoxDecoration(
+            border: Border.all(width: 3, color: AppColors.mainColor),
+            borderRadius: BorderRadius.circular(40)),
+        child: Center(
+            child: majorTitle(
+                title: "Update Changes",
+                color: AppColors.mainColor,
+                size: 18.0)),
+      ),
     );
   }
 

@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutterpos/controllers/cashflow_controller.dart';
 import 'package:flutterpos/models/bank_model.dart';
+import 'package:flutterpos/responsive/responsiveness.dart';
+import 'package:flutterpos/screens/cash_flow/cash_flow_manager.dart';
 import 'package:flutterpos/utils/helper.dart';
+import 'package:flutterpos/widgets/no_items_found.dart';
 import 'package:get/get.dart';
 
+import '../../controllers/home_controller.dart';
 import '../../controllers/shop_controller.dart';
 import '../../utils/colors.dart';
 import '../../widgets/delete_dialog.dart';
@@ -20,131 +24,203 @@ class CashAtBank extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Helper(
-      widget: Obx(() {
-        return cashflowController.loadingCashAtBank.value
-            ? ListView.builder(
-                shrinkWrap: true,
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Container(
-                      padding: EdgeInsets.all(15),
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadiusDirectional.circular(8),
-                        color: Colors.white,
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            width: double.infinity,
-                            height: 4,
-                            color: Colors.grey.withOpacity(0.3),
-                          ),
-                          SizedBox(height: 4),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                children: [
-                                  Container(),
-                                  SizedBox(width: 2),
-                                  Container(
-                                      width: 50,
-                                      height: 4,
-                                      color: Colors.grey.withOpacity(0.3)),
-                                ],
-                              ),
-                              Icon(Icons.credit_card, color: Colors.grey)
-                            ],
-                          ),
-                          SizedBox(height: 4),
-                          Container(
-                              width: 100,
-                              height: 4,
-                              color: Colors.grey.withOpacity(0.3)),
-                          SizedBox(height: 10),
-                          Divider(
-                            thickness: 0.5,
-                            color: Colors.grey,
-                          ),
-                          SizedBox(height: 10),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Container(
-                                  width: 100,
-                                  height: 4,
-                                  color: Colors.grey.withOpacity(0.3)),
-                              Container(
-                                  width: 20,
-                                  height: 4,
-                                  color: Colors.grey.withOpacity(0.3)),
-                            ],
-                          )
-                        ],
-                      ),
-                    ),
-                  );
-                },
-                itemCount: 5,
-              )
-            : ListView.builder(
-                itemCount: cashflowController.cashAtBanks.length,
-                shrinkWrap: true,
-                scrollDirection: Axis.vertical,
-                itemBuilder: (context, index) {
-                  BankModel bankModel =
-                      cashflowController.cashAtBanks.elementAt(index);
-                  return bankCard(context, bankModel: bankModel);
-                });
-      }),
-      appBar: AppBar(
-        elevation: 0.3,
+    return ResponsiveWidget(
+      largeScreen: Scaffold(
         backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
-        titleSpacing: 0.0,
-        iconTheme: IconThemeData(color: Colors.black),
-        titleTextStyle: TextStyle(color: Colors.black),
-        leading: IconButton(
-          onPressed: () {
-            Get.back();
-          },
-          icon: Icon(
-            Icons.arrow_back_ios,
+        appBar: _appBar(context),
+        body: Obx(() {
+          return cashflowController.loadingCashAtBank.value
+              ? Center(
+                  child: CircularProgressIndicator(),
+                )
+              : cashflowController.cashAtBanks.length == 0
+                  ? noItemsFound(context, true)
+                  : SingleChildScrollView(
+                      child: Container(
+                        width: double.infinity,
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+                        child: Theme(
+                          data: Theme.of(context)
+                              .copyWith(dividerColor: Colors.grey),
+                          child: DataTable(
+                            decoration: BoxDecoration(
+                                border: Border.all(
+                              width: 1,
+                              color: Colors.black,
+                            )),
+                            columnSpacing: 30.0,
+                            columns: [
+                              DataColumn(
+                                  label: Text('Name',
+                                      textAlign: TextAlign.center)),
+                              DataColumn(
+                                  label: Text(
+                                      'Amount(${createShopController.currentShop.value?.currency})',
+                                      textAlign: TextAlign.center)),
+                              DataColumn(
+                                  label: Text('', textAlign: TextAlign.center)),
+                            ],
+                            rows: List.generate(
+                                cashflowController.cashAtBanks.length, (index) {
+                              BankModel bankModel = cashflowController
+                                  .cashAtBanks
+                                  .elementAt(index);
+                              final y = bankModel.name;
+                              final x = bankModel.amount.toString();
+                              return DataRow(cells: [
+                                DataCell(Container(child: Text(y!))),
+                                DataCell(Container(child: Text(x))),
+                                DataCell(
+                                  Align(
+                                    child: Container(
+                                        padding: EdgeInsets.only(top: 10),
+                                        child: showPopUpdialog(context)),
+                                    alignment: Alignment.topRight,
+                                  ),
+                                ),
+                              ]);
+                            }),
+                          ),
+                        ),
+                      ),
+                    );
+        }),
+      ),
+      smallScreen: Helper(
+        widget: Obx(() {
+          return cashflowController.loadingCashAtBank.value
+              ? ListView.builder(
+                  shrinkWrap: true,
+                  itemBuilder: (context, index) {
+                    return loadingShimmer();
+                  },
+                  itemCount: 5,
+                )
+              : ListView.builder(
+                  itemCount: cashflowController.cashAtBanks.length,
+                  shrinkWrap: true,
+                  scrollDirection: Axis.vertical,
+                  itemBuilder: (context, index) {
+                    BankModel bankModel =
+                        cashflowController.cashAtBanks.elementAt(index);
+                    return bankCard(context, bankModel: bankModel);
+                  });
+        }),
+        appBar: _appBar(context),
+        bottomNavigationBar: BottomAppBar(
+          child: Container(
+            padding: EdgeInsets.all(10),
+            height: kToolbarHeight,
+            color: Colors.white,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Totals",
+                  style: TextStyle(color: Colors.black),
+                ),
+                Container(
+                  padding: EdgeInsets.all(5),
+                  decoration: BoxDecoration(
+                      color: Colors.grey.withOpacity(0.8),
+                      borderRadius: BorderRadius.circular(20)),
+                  child: Text("KES ${0}"),
+                )
+              ],
+            ),
           ),
         ),
-        title: Text("Cash At Bank",
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            )),
       ),
-      bottomNavigationBar: BottomAppBar(
-        child: Container(
-          padding: EdgeInsets.all(10),
-          height: kToolbarHeight,
+    );
+  }
+
+  Widget loadingShimmer() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Container(
+        padding: EdgeInsets.all(15),
+        width: double.infinity,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadiusDirectional.circular(8),
           color: Colors.white,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                "Totals",
-                style: TextStyle(color: Colors.black),
-              ),
-              Container(
-                padding: EdgeInsets.all(5),
-                decoration: BoxDecoration(
-                    color: Colors.grey.withOpacity(0.8),
-                    borderRadius: BorderRadius.circular(20)),
-                child: Text("KES ${0}"),
-              )
-            ],
-          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: double.infinity,
+              height: 4,
+              color: Colors.grey.withOpacity(0.3),
+            ),
+            SizedBox(height: 4),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Container(),
+                    SizedBox(width: 2),
+                    Container(
+                        width: 50,
+                        height: 4,
+                        color: Colors.grey.withOpacity(0.3)),
+                  ],
+                ),
+                Icon(Icons.credit_card, color: Colors.grey)
+              ],
+            ),
+            SizedBox(height: 4),
+            Container(
+                width: 100, height: 4, color: Colors.grey.withOpacity(0.3)),
+            SizedBox(height: 10),
+            Divider(
+              thickness: 0.5,
+              color: Colors.grey,
+            ),
+            SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                    width: 100, height: 4, color: Colors.grey.withOpacity(0.3)),
+                Container(
+                    width: 20, height: 4, color: Colors.grey.withOpacity(0.3)),
+              ],
+            )
+          ],
         ),
       ),
+    );
+  }
+
+  AppBar _appBar(context) {
+    return AppBar(
+      elevation: 0.3,
+      backgroundColor: Colors.white,
+      foregroundColor: Colors.black,
+      titleSpacing: 0.0,
+      centerTitle: false,
+      iconTheme: IconThemeData(color: Colors.black),
+      titleTextStyle: TextStyle(color: Colors.black),
+      leading: IconButton(
+        onPressed: () {
+          if (MediaQuery.of(context).size.width > 600) {
+            Get.find<HomeController>().selectedWidget.value = CashFlowManager();
+          } else {
+            Get.back();
+          }
+          ;
+        },
+        icon: Icon(
+          Icons.arrow_back_ios,
+        ),
+      ),
+      title: Text("Cash At Bank",
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          )),
     );
   }
 
@@ -200,7 +276,11 @@ class CashAtBank extends StatelessWidget {
                 InkWell(
                   onTap: () {
                     Get.to(() => CashHistory(
-                        title: "Faulu", subtitle: "All records", id: "1230"));
+                          title: "Faulu",
+                          subtitle: "All records",
+                          id: "1230",
+                          page: "bank",
+                        ));
                   },
                   child: Text(
                     "View History",
@@ -329,5 +409,109 @@ class CashAtBank extends StatelessWidget {
             ),
           );
         });
+  }
+
+  Widget showPopUpdialog(context) {
+    return PopupMenuButton(
+      itemBuilder: (ctx) => [
+        PopupMenuItem(
+          child: ListTile(
+            leading: Icon(Icons.list),
+            onTap: () {
+              Get.back();
+              Get.find<HomeController>().selectedWidget.value = CashHistory(
+                title: "Faulu",
+                subtitle: "All records",
+                id: "1230",
+                page: "cashflowcategory",
+              );
+            },
+            title: Text("View List"),
+          ),
+        ),
+        PopupMenuItem(
+          child: ListTile(
+            leading: Icon(Icons.edit),
+            onTap: () {
+              Get.back();
+              showDialog(
+                  context: context,
+                  builder: (_) {
+                    return Dialog(
+                      child: Container(
+                        padding: EdgeInsets.only(
+                            left: 15, right: 15, top: 10, bottom: 3),
+                        height: MediaQuery.of(context).size.height * 0.2,
+                        width: MediaQuery.of(context).size.width * 0.2,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text("Edit Bank"),
+                            Spacer(),
+                            TextFormField(
+                              decoration: InputDecoration(
+                                  contentPadding: EdgeInsets.all(10),
+                                  fillColor: Colors.white,
+                                  filled: true,
+                                  focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                      borderSide: BorderSide(
+                                          color: Colors.grey, width: 0.5)),
+                                  enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                      borderSide: BorderSide(
+                                          color: Colors.grey, width: 0.5))),
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                TextButton(
+                                    onPressed: () {
+                                      Get.back();
+                                    },
+                                    child: Text(
+                                      "Cancel".toUpperCase(),
+                                      style:
+                                          TextStyle(color: AppColors.mainColor),
+                                    )),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                TextButton(
+                                    onPressed: () {
+                                      Get.back();
+                                    },
+                                    child: Text(
+                                      "Save".toUpperCase(),
+                                      style:
+                                          TextStyle(color: AppColors.mainColor),
+                                    )),
+                              ],
+                            )
+                          ],
+                        ),
+                      ),
+                    );
+                  });
+            },
+            title: Text("Edit"),
+          ),
+        ),
+        PopupMenuItem(
+          child: ListTile(
+            leading: Icon(Icons.delete),
+            onTap: () {
+              Get.back();
+              deleteDialog(context: context, onPressed: () {});
+            },
+            title: Text("Delete"),
+          ),
+        ),
+      ],
+      icon: Icon(Icons.more_vert),
+    );
   }
 }

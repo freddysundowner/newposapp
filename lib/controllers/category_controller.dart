@@ -18,7 +18,6 @@ class CategoryController extends GetxController {
     try {
       loadingCategories.value == true;
       var response = await Categories().getExpenseCategories(id: shopId);
-      print(response);
       categories.clear();
       if (response["status"] == true) {
         List fetchedData = response["body"];

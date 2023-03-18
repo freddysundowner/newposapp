@@ -1,16 +1,17 @@
 import 'dart:io';
 
-import 'package:barcode_widget/barcode_widget.dart';
-import 'package:intl/intl.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 
-BarcodePdf({
-  required final shop,
-  required productname,
-}) async {
+CashFlowPdf(
+    {required final shop,
+    required type,
+    required currency,
+    required cashInHand,
+    required cashIn,
+    required cashOut}) async {
   final pdf = pw.Document();
   pdf.addPage(
     pw.Page(
@@ -22,36 +23,35 @@ BarcodePdf({
               children: [
                 pw.Center(
                   child: pw.Text(
-                    "${shop.name}",
+                    "${shop}",
                     style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
                   ),
                 ),
                 pw.SizedBox(height: 10),
                 pw.Center(
                   child: pw.Text(
-                    "${productname} Barcode",
+                    "Cashflow Records",
                     style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
                   ),
                 ),
                 pw.SizedBox(height: 20),
-                pw.Center(
-                  child: pw.Text(
-                    "As On-${DateFormat("yyyy-MM-dd hh:mm a").format(DateTime.now())}",
-                    style: pw.TextStyle(),
-                  ),
-                ),
                 pw.SizedBox(height: 15.0),
-                pw.Center(child: pw.Container(
-                  color: PdfColors.white,
-                  padding:pw.EdgeInsets.all(16),
-                  child: pw.BarcodeWidget(
-                      data: productname,
-                      barcode: Barcode.code128(),
-                      width: 200,
-                      height: 200,
-                      drawText: false),
-                ))
-                ,
+                pw.Row(children: [
+                  pw.Row(children: [
+                    pw.Text("Cash in Hand ",
+                        style: pw.TextStyle(color: PdfColor.fromHex("#FFFRRR")))
+                  ])
+                ]),
+                pw.SizedBox(height: 15.0),
+                // pw.Table.fromTextArray(
+                //     border: pw.TableBorder.all(width: 1), //table border
+                //     headers: [
+                //       "Cash At Hand",
+                //       "Amount",
+                //       "Payment Meethod",
+                //       "Date"
+                //     ],
+                //     data: []),
                 pw.SizedBox(height: 10),
               ],
             ),

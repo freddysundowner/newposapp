@@ -1,16 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutterpos/controllers/home_controller.dart';
 import 'package:flutterpos/controllers/product_controller.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
 import 'package:flutterpos/controllers/stock_transfer_controller.dart';
 import 'package:flutterpos/models/product_model.dart';
+import 'package:flutterpos/models/shop_model.dart';
 import 'package:flutterpos/responsive/responsiveness.dart';
+import 'package:flutterpos/screens/stock/products_selection.dart';
 import 'package:flutterpos/utils/colors.dart';
 import 'package:get/get.dart';
 
 class StockSubmit extends StatelessWidget {
   final to;
+  ShopModel shopModel;
 
-  StockSubmit({Key? key, required this.to}) : super(key: key);
+  StockSubmit({Key? key, required this.to, required this.shopModel})
+      : super(key: key);
   StockTransferController stockTransferController =
       Get.find<StockTransferController>();
   ProductController productController = Get.find<ProductController>();
@@ -30,7 +35,12 @@ class StockSubmit extends StatelessWidget {
         ),
         leading: IconButton(
             onPressed: () {
-              Get.back();
+              if (MediaQuery.of(context).size.width > 600) {
+                Get.find<HomeController>().selectedWidget.value =
+                    ProductSelections(shopModel: shopModel);
+              } else {
+                Get.back();
+              }
             },
             icon: Icon(
               Icons.arrow_back_ios,
@@ -73,24 +83,102 @@ class StockSubmit extends StatelessWidget {
         ],
       ),
       body: ResponsiveWidget(
-          largeScreen: Obx(
-            () => GridView.builder(
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  childAspectRatio: MediaQuery.of(context).size.width *
-                      1.4 /
-                      MediaQuery.of(context).size.height,
-                  crossAxisCount: 3,
-                  crossAxisSpacing: 10,
-                  mainAxisSpacing: 10),
-              shrinkWrap: true,
-              itemBuilder: (context, index) {
-                ProductModel productModel =
-                    stockTransferController.selectedProducts.elementAt(index);
-                return selectedProducts(productModel);
-              },
-              itemCount: stockTransferController.selectedProducts.length,
-            ),
-          ),
+          largeScreen: Obx(() => SingleChildScrollView(
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                  width: double.infinity,
+                  child: Theme(
+                    data: Theme.of(context).copyWith(dividerColor: Colors.grey),
+                    child: DataTable(
+                      decoration: BoxDecoration(
+                          border: Border.all(
+                        width: 1,
+                        color: Colors.black,
+                      )),
+                      columnSpacing: 30.0,
+                      columns: [
+                        DataColumn(
+                            label: Text('Name', textAlign: TextAlign.center)),
+                        DataColumn(
+                            label: Text('System Count',
+                                textAlign: TextAlign.center)),
+                        DataColumn(
+                            label:
+                                Text('Quantity', textAlign: TextAlign.center)),
+                        DataColumn(
+                            label: Text('', textAlign: TextAlign.center)),
+                      ],
+                      rows: List.generate(
+                          stockTransferController.selectedProducts.length,
+                          (index) {
+                        ProductModel productModel = stockTransferController
+                            .selectedProducts
+                            .elementAt(index);
+                        final y = productModel.name;
+                        final x = productModel.quantity;
+                        final z = productModel.cartquantity;
+
+                        return DataRow(cells: [
+                          DataCell(Container(width: 75, child: Text(y!))),
+                          DataCell(
+                              Container(width: 75, child: Text(x.toString()))),
+                          DataCell(Container(
+                              width: 75,
+                              child: Row(
+                                children: [
+                                  InkWell(
+                                      onTap: () {
+                                        if (productModel.cartquantity! > 1) {
+                                          productModel.cartquantity =
+                                              productModel.cartquantity! - 1;
+                                          stockTransferController
+                                              .selectedProducts
+                                              .refresh();
+                                        }
+                                      },
+                                      child: Icon(Icons.remove_circle_outline)),
+                                  Spacer(),
+                                  Text(
+                                    "${productModel.cartquantity}",
+                                    style: TextStyle(
+                                        color: Colors.grey, fontSize: 15),
+                                  ),
+                                  Spacer(),
+                                  InkWell(
+                                      onTap: () {
+                                        if (productModel.cartquantity! <
+                                            productModel.quantity!) {
+                                          productModel.cartquantity =
+                                              productModel.cartquantity! + 1;
+                                          stockTransferController
+                                              .selectedProducts
+                                              .refresh();
+                                        }
+                                      },
+                                      child: Icon(Icons.add_circle_outline)),
+                                ],
+                              ))),
+                          DataCell(Container(
+                              width: 75,
+                              child: Align(
+                                alignment: Alignment.topRight,
+                                child: InkWell(
+                                    onTap: () {
+                                      stockTransferController.selectedProducts
+                                          .removeWhere((element) =>
+                                              element.id == productModel.id);
+                                      stockTransferController.selectedProducts
+                                          .refresh();
+                                      productController.products.refresh();
+                                    },
+                                    child: Icon(Icons.clear)),
+                              ))),
+                        ]);
+                      }),
+                    ),
+                  ),
+                ),
+              )),
           smallScreen: Obx(
             () => ListView.builder(
               shrinkWrap: true,

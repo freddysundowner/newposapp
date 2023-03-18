@@ -13,7 +13,7 @@ Widget soldCard({required SalesModel salesModel, required context}) {
   ShopController shopController = Get.find<ShopController>();
   return InkWell(
     onTap: () {
-      Get.to(() => SaleOrderItem(id: salesModel.id));
+      Get.to(() => SaleOrderItem(id: salesModel.id,page: null,));
     },
     child: Container(
       margin: EdgeInsets.all(5),

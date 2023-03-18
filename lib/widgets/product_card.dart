@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutterpos/controllers/AuthController.dart';
 import 'package:flutterpos/controllers/product_controller.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
 import 'package:flutterpos/models/product_model.dart';
@@ -12,7 +13,8 @@ import '../utils/colors.dart';
 import 'bigtext.dart';
 import 'delete_dialog.dart';
 
-Widget productCard({required context, required ProductModel product, required shopId}) {
+Widget productCard(
+    {required context, required ProductModel product, required shopId}) {
   ShopController shopController = Get.find<ShopController>();
   return InkWell(
     onTap: () {
@@ -85,12 +87,13 @@ Widget productCard({required context, required ProductModel product, required sh
 
 showProductModal(context, ProductModel product, shopId) {
   ProductController productController = Get.find<ProductController>();
+  AuthController authController = Get.find<AuthController>();
 
   return showModalBottomSheet<void>(
       context: context,
       builder: (BuildContext context) {
         return Container(
-          height: 300,
+          height: MediaQuery.of(context).size.height * 0.3,
           child: Column(
             children: [
               Padding(
@@ -100,32 +103,37 @@ showProductModal(context, ProductModel product, shopId) {
                   children: [Container(child: Text('Manage ${product.name}'))],
                 ),
               ),
-              ListTile(
-                  leading: Icon(Icons.list),
-                  onTap: () {
-                    Get.back();
-                    Get.to(() => ProductHistory(product: product));
-                  },
-                  title: Text('Product History')),
+              if (authController.usertype == "admin")
+                ListTile(
+                    leading: Icon(Icons.list),
+                    onTap: () {
+                      Get.back();
+                      Get.to(() => ProductHistory(product: product));
+                    },
+                    title: Text('Product History')),
               ListTile(
                   leading: Icon(Icons.edit),
                   onTap: () {
                     Get.back();
-                    Get.to(()=>CreateProduct(page: "edit",productModel: product,));
+                    Get.to(() => CreateProduct(
+                          page: "edit",
+                          productModel: product,
+                        ));
                   },
                   title: Text('Edit')),
-              ListTile(
-                  leading: Icon(Icons.code),
-                  onTap: () {
-                    Get.back();
-                    BarcodePdf(
-                        productname: product.name,
-                        shop: Get.find<ShopController>()
-                            .currentShop
-                            .value!
-                            .name!);
-                  },
-                  title: Text('Generate Barcode')),
+              if (authController.usertype == "admin")
+                ListTile(
+                    leading: Icon(Icons.code),
+                    onTap: () {
+                      Get.back();
+                      BarcodePdf(
+                          productname: product.name,
+                          shop: Get.find<ShopController>()
+                              .currentShop
+                              .value!
+                              .name!);
+                    },
+                    title: Text('Generate Barcode')),
               ListTile(
                   leading: Icon(Icons.delete),
                   onTap: () {

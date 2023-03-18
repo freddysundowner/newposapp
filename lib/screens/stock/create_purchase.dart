@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutterpos/controllers/home_controller.dart';
 import 'package:flutterpos/controllers/product_controller.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
 import 'package:flutterpos/models/product_model.dart';
-import 'package:flutterpos/responsive/large_screen.dart';
 import 'package:flutterpos/responsive/responsiveness.dart';
 import 'package:flutterpos/screens/customers/create_customers.dart';
+import 'package:flutterpos/screens/stock/stock_page.dart';
+import 'package:flutterpos/screens/stock/view_purchases.dart';
 import 'package:flutterpos/widgets/no_items_found.dart';
+import 'package:flutterpos/widgets/search_widget.dart';
 import 'package:get/get.dart';
 
 import '../../../../utils/colors.dart';
@@ -16,7 +19,6 @@ import '../../widgets/bigtext.dart';
 import '../../widgets/purchases_card.dart';
 import '../../widgets/smalltext.dart';
 import '../product/product_selection.dart';
-import '../sales/components/product_select.dart';
 
 class CreatePurchase extends StatelessWidget {
   CreatePurchase({Key? key}) : super(key: key);
@@ -26,10 +28,13 @@ class CreatePurchase extends StatelessWidget {
   AuthController authController = Get.find<AuthController>();
   ProductController productController = Get.find<ProductController>();
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  final FocusNode _focusNode = FocusNode();
+  final GlobalKey _autocompleteKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
-    supplierController.getSuppliersInShop(shopController.currentShop.value?.id);
+    supplierController.getSuppliersInShop(
+        shopController.currentShop.value?.id, "all");
     return WillPopScope(
       onWillPop: () async {
         purchaseController.selectedList.clear();
@@ -37,99 +42,192 @@ class CreatePurchase extends StatelessWidget {
       },
       child: ResponsiveWidget(
           largeScreen: Scaffold(
-            endDrawer: Drawer(
-              child: Center(
-                child: Obx(
-                  () {
-                    return productController.getProductLoad.value
-                        ? Center(
-                            child: CircularProgressIndicator(),
-                          )
-                        : productController.products.length == 0
-                            ? Center(
-                                child: minorTitle(
-                                    title:
-                                        "This shop doesn't have products yet",
-                                    color: Colors.black),
-                              )
-                            : ListView.builder(
-                                itemCount: productController.products.length,
-                                shrinkWrap: true,
-                                itemBuilder: (BuildContext context, int index) {
-                                  ProductModel productModel = productController
-                                      .products
-                                      .elementAt(index);
-                                  return shopcard(
-                                      product: productModel, type: "purchase");
-                                });
+            backgroundColor: Colors.white,
+            appBar: AppBar(
+              backgroundColor: Colors.white,
+              elevation: 0.3,
+              centerTitle: false,
+              leading: IconButton(
+                  onPressed: () {
+                    if (MediaQuery.of(context).size.width > 600) {
+                      if (authController.usertype.value == "attendant") {
+                        Get.find<HomeController>().selectedWidget.value =
+                            ViewPurchases();
+                      } else {
+                        Get.find<HomeController>().selectedWidget.value =
+                            StockPage();
+                      }
+                    } else {
+                      Get.back();
+                    }
+                    purchaseController.selectedList.clear();
                   },
-                ),
+                  icon: Icon(
+                    Icons.arrow_back_ios,
+                    color: Colors.black,
+                  )),
+              title: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                child: majorTitle(
+                    title: "Add Purchase", color: Colors.black, size: 20.0),
               ),
             ),
-            key: _scaffoldKey,
-            body: LargeScreen(
-                body: Column(
+            body: Column(
               children: [
                 Container(
-                  padding: EdgeInsets.symmetric(vertical: 20, horizontal: 15),
-                  width: double.infinity,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      majorTitle(
-                          title: "Make New Sale",
-                          color: Colors.black,
-                          size: 18.0),
-                      InkWell(
-                        onTap: () {
-                          _scaffoldKey.currentState!.openEndDrawer();
-                        },
-                        child: Row(
-                          children: [
-                            majorTitle(
-                                title: "Choose Product",
-                                color: Colors.black,
-                                size: 13.0),
-                            Icon(
-                              Icons.arrow_drop_down,
-                              color: Colors.black,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
+                  child: searchWidget(
+                      autoCompletKey: _autocompleteKey,
+                      focusNode: _focusNode,
+                      shopId: shopController.currentShop.value?.id,
+                      page: "purchase"),
+                  padding: EdgeInsets.only(left: 30, right: 80),
                 ),
                 Obx(() {
                   return purchaseController.selectedList.length == 0
-                      ? noItemsFound(context, true)
-                      : Container(
-                          height: 200,
-                          child: ListView.builder(
-                              scrollDirection: Axis.horizontal,
-                              itemCount: purchaseController.selectedList.length,
-                              itemBuilder: (context, index) {
-                                ProductModel productModel = purchaseController
-                                    .selectedList
-                                    .elementAt(index);
-                                return purchasesCard(
-                                    context: context,
-                                    productModel: productModel,
-                                    index: index);
-                              }),
+                      ? Container()
+                      : Padding(
+                          padding: const EdgeInsets.only(right: 30.0, top: 10),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Text(
+                                  "Totals:${purchaseController.calculateSalesAmount()}"),
+                              SizedBox(
+                                width: 10,
+                              ),
+                              InkWell(
+                                splashColor: Colors.transparent,
+                                onTap: () {
+                                  saveFunction(context);
+                                },
+                                child: majorTitle(
+                                    title: "Create Purchase",
+                                    color: AppColors.mainColor,
+                                    size: 14.0),
+                              )
+                            ],
+                          ),
                         );
                 }),
-                SizedBox(
-                  height: 20,
-                ),
+                SizedBox(height: 20),
                 Obx(() {
-                  return purchaseController.selectedList.length > 0
-                      ? Container(width: 200, child: saveButton(context))
-                      : Container();
+                  return productController.getProductLoad.value
+                      ? Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                                height:
+                                    MediaQuery.of(context).size.height * 0.4),
+                            Center(child: CircularProgressIndicator()),
+                          ],
+                        )
+                      : purchaseController.selectedList.length == 0
+                          ? noItemsFound(context, true)
+                          : Container(
+                              width: double.infinity,
+                              padding: EdgeInsets.symmetric(horizontal: 30),
+                              child: Theme(
+                                data: Theme.of(context)
+                                    .copyWith(dividerColor: Colors.grey),
+                                child: DataTable(
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                    width: 1,
+                                    color: Colors.black,
+                                  )),
+                                  columnSpacing: 50.0,
+                                  columns: [
+                                    DataColumn(
+                                        label: Text('Product',
+                                            textAlign: TextAlign.center)),
+                                    DataColumn(
+                                        label: Text('Qty',
+                                            textAlign: TextAlign.center)),
+                                    DataColumn(
+                                        label: Text('Price',
+                                            textAlign: TextAlign.center)),
+                                    DataColumn(
+                                        label: Text('Purchase Total',
+                                            textAlign: TextAlign.center)),
+                                    DataColumn(
+                                        label: Text('',
+                                            textAlign: TextAlign.center)),
+                                  ],
+                                  rows: List.generate(
+                                      purchaseController.selectedList.length,
+                                      (index) {
+                                    ProductModel productModel =
+                                        purchaseController.selectedList
+                                            .elementAt(index);
+                                    final y = productModel.name!;
+                                    final x =
+                                        productModel.cartquantity.toString();
+                                    final z = productModel.buyingPrice;
+                                    final w = int.parse(
+                                            productModel.sellingPrice![0]) *
+                                        productModel.cartquantity!;
+
+                                    return DataRow(cells: [
+                                      DataCell(
+                                          Container(width: 75, child: Text(y))),
+                                      DataCell(Container(
+                                        child: Row(children: [
+                                          IconButton(
+                                              onPressed: () {
+                                                purchaseController
+                                                    .decrementItem(index);
+                                              },
+                                              icon: Icon(Icons.remove,
+                                                  color: Colors.black,
+                                                  size: 16)),
+                                          Container(
+                                              padding: EdgeInsets.only(
+                                                  top: 5,
+                                                  bottom: 5,
+                                                  right: 8,
+                                                  left: 8),
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(5),
+                                                border: Border.all(
+                                                    color: Colors.black,
+                                                    width: 0.1),
+                                                color: Colors.grey,
+                                              ),
+                                              child: majorTitle(
+                                                  title:
+                                                      "${productModel.cartquantity}",
+                                                  color: Colors.black,
+                                                  size: 12.0)),
+                                          IconButton(
+                                              onPressed: () {
+                                                purchaseController
+                                                    .incrementItem(index);
+                                              },
+                                              icon: Icon(Icons.add,
+                                                  color: Colors.black,
+                                                  size: 16)),
+                                        ]),
+                                      )),
+                                      DataCell(
+                                          Container(child: Text(z.toString()))),
+                                      DataCell(
+                                          Container(child: Text(w.toString()))),
+                                      DataCell(Container(
+                                          child: InkWell(
+                                              onTap: () {
+                                                purchaseController
+                                                    .removeFromList(index);
+                                              },
+                                              child: Icon(Icons.clear))))
+                                    ]);
+                                  }),
+                                ),
+                              ),
+                            );
                 }),
               ],
-            )),
+            ),
           ),
           smallScreen: Scaffold(
             backgroundColor: Colors.white,
@@ -268,268 +366,7 @@ class CreatePurchase extends StatelessWidget {
     return InkWell(
       splashColor: Colors.transparent,
       onTap: () {
-        if (purchaseController.selectedList.length == 0) {
-          ScaffoldMessenger.of(context).showSnackBar(
-              new SnackBar(content: Text("Please select products to sell")));
-        } else {
-          showDialog(
-              context: context,
-              builder: (_) {
-                return Container(
-                  width: double.infinity,
-                  child: AlertDialog(
-                    title: Center(child: Text("Confirm Stock In")),
-                    content: Container(
-                      height: MediaQuery.of(context).size.height * 0.3,
-                      child: SingleChildScrollView(
-                        child: ConstrainedBox(
-                          constraints: BoxConstraints(
-                              maxHeight:
-                                  MediaQuery.of(context).size.height * 0.3),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      majorTitle(
-                                          title: "Items",
-                                          color: Colors.black,
-                                          size: 16.0),
-                                      SizedBox(height: 10),
-                                      minorTitle(
-                                          title:
-                                              "${purchaseController.selectedList.length}",
-                                          color: Colors.grey)
-                                    ],
-                                  ),
-                                  SizedBox(width: 10),
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      majorTitle(
-                                          title: "Total",
-                                          color: Colors.black,
-                                          size: 16.0),
-                                      SizedBox(height: 10),
-                                      minorTitle(
-                                          title:
-                                              "${purchaseController.grandTotal.value}",
-                                          color: Colors.grey)
-                                    ],
-                                  )
-                                ],
-                              ),
-                              SizedBox(height: 5),
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Expanded(
-                                    flex: 3,
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        minorTitle(
-                                            title: "Amount ",
-                                            color: Colors.black),
-                                        TextFormField(
-                                          controller: purchaseController
-                                              .textEditingControllerAmount,
-                                          onChanged: (value) {
-                                            if (int.parse(value) >
-                                                purchaseController
-                                                    .grandTotal.value) {
-                                              purchaseController
-                                                      .textEditingControllerAmount
-                                                      .text =
-                                                  purchaseController
-                                                      .grandTotal.value
-                                                      .toString();
-                                              purchaseController.balance.value =
-                                                  0;
-                                            } else if (purchaseController
-                                                    .textEditingControllerAmount
-                                                    .text ==
-                                                "") {
-                                              purchaseController.balance.value =
-                                                  purchaseController
-                                                      .grandTotal.value;
-                                            } else {
-                                              purchaseController.balance.value =
-                                                  purchaseController
-                                                          .grandTotal.value -
-                                                      int.parse(value);
-                                            }
-                                          },
-                                          decoration: InputDecoration(
-                                              isDense: true,
-                                              contentPadding:
-                                                  EdgeInsets.fromLTRB(
-                                                      10, 10, 10, 0),
-                                              border: OutlineInputBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          20))),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Spacer(),
-                                  Expanded(
-                                    flex: 2,
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        majorTitle(
-                                            title: "Balance",
-                                            color: Colors.black,
-                                            size: 13.0),
-                                        Obx(() {
-                                          return minorTitle(
-                                              title: purchaseController
-                                                  .balance.value,
-                                              color: Colors.grey);
-                                        })
-                                      ],
-                                    ),
-                                  )
-                                ],
-                              ),
-                              SizedBox(
-                                height: 10,
-                              ),
-                              majorTitle(
-                                  title: "Select Supplier",
-                                  color: Colors.black,
-                                  size: 14.0),
-                              SizedBox(height: 10),
-                              Flexible(
-                                child: InkWell(
-                                  onTap: () {
-                                    if (supplierController.suppliers.length ==
-                                        0) {
-                                      showDialog(
-                                          context: context,
-                                          builder: (BuildContext context) {
-                                            return AlertDialog(
-                                              title: Text(
-                                                  "This Shop Doesn't have suppliers"),
-                                              content: Text(
-                                                  "Would you like to add Supplier?"),
-                                              actions: [
-                                                TextButton(
-                                                  child: Text("Cancel"),
-                                                  onPressed: () {
-                                                    Get.back();
-                                                  },
-                                                ),
-                                                TextButton(
-                                                  child: Text("OK"),
-                                                  onPressed: () {
-                                                    Get.back();
-                                                    Get.to(() => CreateCustomer(
-                                                        type: "suppliers"));
-                                                  },
-                                                )
-                                              ],
-                                            );
-                                          });
-                                    } else {
-                                      showDialog(
-                                          context: context,
-                                          builder: (context) {
-                                            return SimpleDialog(
-                                              children: List.generate(
-                                                  supplierController
-                                                      .suppliers.length,
-                                                  (index) => SimpleDialogOption(
-                                                        onPressed: () {
-                                                          purchaseController
-                                                                  .selectedSupplier
-                                                                  .value =
-                                                              supplierController
-                                                                  .suppliers
-                                                                  .elementAt(
-                                                                      index)
-                                                                  .fullName!;
-                                                          purchaseController
-                                                                  .selectedSupplierId
-                                                                  .value =
-                                                              supplierController
-                                                                  .suppliers
-                                                                  .elementAt(
-                                                                      index)
-                                                                  .id!;
-                                                          Navigator.pop(
-                                                              context);
-                                                        },
-                                                        child: Text(
-                                                            "${supplierController.suppliers.elementAt(index).fullName}"),
-                                                      )),
-                                            );
-                                          });
-                                    }
-                                  },
-                                  child: Container(
-                                    padding: EdgeInsets.all(10),
-                                    decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(20),
-                                        border: Border.all(
-                                            color: Colors.black, width: 2)),
-                                    child: Row(
-                                      children: [
-                                        Obx(() {
-                                          return majorTitle(
-                                              title: purchaseController
-                                                  .selectedSupplier.value,
-                                              color: Colors.black,
-                                              size: 12.0);
-                                        }),
-                                        Spacer(),
-                                        Icon(Icons.arrow_drop_down)
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    actions: [
-                      TextButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          child: majorTitle(
-                              title: "Cancel",
-                              color: Colors.black,
-                              size: 16.0)),
-                      TextButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                            purchaseController.createPurchase(
-                                shopId: shopController.currentShop.value!.id,
-                                attendantid:
-                                    authController.currentUser.value!.id,
-                                screen: "admin",
-                                context: context);
-                          },
-                          child: majorTitle(
-                              title: "Okay", color: Colors.black, size: 16.0))
-                    ],
-                  ),
-                );
-              });
-        }
+        saveFunction(context);
       },
       child: Container(
         padding: EdgeInsets.all(10),
@@ -544,5 +381,255 @@ class CreatePurchase extends StatelessWidget {
                 size: 18.0)),
       ),
     );
+  }
+
+  saveFunction(context) {
+    if (purchaseController.selectedList.length == 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          new SnackBar(content: Text("Please select products to sell")));
+    } else {
+      showDialog(
+          context: context,
+          builder: (_) {
+            return Container(
+              width: double.infinity,
+              child: AlertDialog(
+                title: Center(child: Text("Confirm Stock In")),
+                content: Container(
+                  height: MediaQuery.of(context).size.height * 0.3,
+                  child: SingleChildScrollView(
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                          maxHeight: MediaQuery.of(context).size.height * 0.3),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  majorTitle(
+                                      title: "Items",
+                                      color: Colors.black,
+                                      size: 16.0),
+                                  SizedBox(height: 10),
+                                  minorTitle(
+                                      title:
+                                          "${purchaseController.selectedList.length}",
+                                      color: Colors.grey)
+                                ],
+                              ),
+                              SizedBox(width: 10),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  majorTitle(
+                                      title: "Total",
+                                      color: Colors.black,
+                                      size: 16.0),
+                                  SizedBox(height: 10),
+                                  minorTitle(
+                                      title:
+                                          "${purchaseController.grandTotal.value}",
+                                      color: Colors.grey)
+                                ],
+                              )
+                            ],
+                          ),
+                          SizedBox(height: 5),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                flex: 3,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    minorTitle(
+                                        title: "Amount ", color: Colors.black),
+                                    TextFormField(
+                                      controller: purchaseController
+                                          .textEditingControllerAmount,
+                                      onChanged: (value) {
+                                        if (int.parse(value) >
+                                            purchaseController
+                                                .grandTotal.value) {
+                                          purchaseController
+                                                  .textEditingControllerAmount
+                                                  .text =
+                                              purchaseController
+                                                  .grandTotal.value
+                                                  .toString();
+                                          purchaseController.balance.value = 0;
+                                        } else if (purchaseController
+                                                .textEditingControllerAmount
+                                                .text ==
+                                            "") {
+                                          purchaseController.balance.value =
+                                              purchaseController
+                                                  .grandTotal.value;
+                                        } else {
+                                          purchaseController.balance.value =
+                                              purchaseController
+                                                      .grandTotal.value -
+                                                  int.parse(value);
+                                        }
+                                      },
+                                      decoration: InputDecoration(
+                                          isDense: true,
+                                          contentPadding: EdgeInsets.fromLTRB(
+                                              10, 10, 10, 0),
+                                          border: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(20))),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Spacer(),
+                              Expanded(
+                                flex: 2,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    majorTitle(
+                                        title: "Balance",
+                                        color: Colors.black,
+                                        size: 13.0),
+                                    Obx(() {
+                                      return minorTitle(
+                                          title:
+                                              purchaseController.balance.value,
+                                          color: Colors.grey);
+                                    })
+                                  ],
+                                ),
+                              )
+                            ],
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          majorTitle(
+                              title: "Select Supplier",
+                              color: Colors.black,
+                              size: 14.0),
+                          SizedBox(height: 10),
+                          Flexible(
+                            child: InkWell(
+                              onTap: () {
+                                if (supplierController.suppliers.length == 0) {
+                                  showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          title: Text(
+                                              "This Shop Doesn't have suppliers"),
+                                          content: Text(
+                                              "Would you like to add Supplier?"),
+                                          actions: [
+                                            TextButton(
+                                              child: Text("Cancel"),
+                                              onPressed: () {
+                                                Get.back();
+                                              },
+                                            ),
+                                            TextButton(
+                                              child: Text("OK"),
+                                              onPressed: () {
+                                                Get.back();
+                                                Get.to(() => CreateCustomer(
+                                                    page: "createPurchase",
+                                                    type: "suppliers"));
+                                              },
+                                            )
+                                          ],
+                                        );
+                                      });
+                                } else {
+                                  showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return SimpleDialog(
+                                          children: List.generate(
+                                              supplierController
+                                                  .suppliers.length,
+                                              (index) => SimpleDialogOption(
+                                                    onPressed: () {
+                                                      purchaseController
+                                                              .selectedSupplier
+                                                              .value =
+                                                          supplierController
+                                                              .suppliers
+                                                              .elementAt(index)
+                                                              .fullName!;
+                                                      purchaseController
+                                                              .selectedSupplierId
+                                                              .value =
+                                                          supplierController
+                                                              .suppliers
+                                                              .elementAt(index)
+                                                              .id!;
+                                                      Navigator.pop(context);
+                                                    },
+                                                    child: Text(
+                                                        "${supplierController.suppliers.elementAt(index).fullName}"),
+                                                  )),
+                                        );
+                                      });
+                                }
+                              },
+                              child: Container(
+                                padding: EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(20),
+                                    border: Border.all(
+                                        color: Colors.black, width: 2)),
+                                child: Row(
+                                  children: [
+                                    Obx(() {
+                                      return majorTitle(
+                                          title: purchaseController
+                                              .selectedSupplier.value,
+                                          color: Colors.black,
+                                          size: 12.0);
+                                    }),
+                                    Spacer(),
+                                    Icon(Icons.arrow_drop_down)
+                                  ],
+                                ),
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                actions: [
+                  TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: majorTitle(
+                          title: "Cancel", color: Colors.black, size: 16.0)),
+                  TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        purchaseController.createPurchase(
+                            shopId: shopController.currentShop.value!.id,
+                            attendantid: authController.currentUser.value!.id,
+                            screen: "admin",
+                            context: context);
+                      },
+                      child: majorTitle(
+                          title: "Okay", color: Colors.black, size: 16.0))
+                ],
+              ),
+            );
+          });
+    }
   }
 }

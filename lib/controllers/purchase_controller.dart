@@ -2,15 +2,16 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
+import 'package:flutterpos/controllers/home_controller.dart';
 import 'package:flutterpos/controllers/product_controller.dart';
 import 'package:flutterpos/models/product_model.dart';
 import 'package:flutterpos/models/purchase_order.dart';
 import 'package:flutterpos/models/supply_order_model.dart';
+import 'package:flutterpos/screens/stock/view_purchases.dart';
 import 'package:flutterpos/services/purchases.dart';
 import 'package:flutterpos/widgets/loading_dialog.dart';
 import 'package:get/get.dart';
 
-import '../utils/colors.dart';
 import '../widgets/snackBars.dart';
 
 class PurchaseController extends GetxController {
@@ -67,13 +68,12 @@ class PurchaseController extends GetxController {
           selectedSupplierId.value = "";
           textEditingControllerAmount.text = "0";
           if (screen == "admin") {
-            Get.back();
+            if (MediaQuery.of(context).size.width > 600) {
+              Get.find<HomeController>().selectedWidget.value = ViewPurchases();
+            } else {
+              Get.back();
+            }
           }
-
-          showSnackBar(
-              message: response["message"],
-              color: AppColors.mainColor,
-              context: context);
         }
       } catch (e) {
         Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
@@ -300,5 +300,21 @@ class PurchaseController extends GetxController {
           color: Colors.red,
           context: context);
     }
+  }
+
+  calculateSalesAmount() {
+    var subTotal = 0;
+    selectedList.forEach((element) {
+      subTotal = subTotal + (element.buyingPrice! * element.cartquantity!);
+    });
+    return subTotal;
+  }
+
+  calculatePurchasemount() {
+    var subTotal = 0;
+    purchaseByDate.forEach((element) {
+      subTotal = subTotal + element.total!;
+    });
+    return subTotal;
   }
 }

@@ -16,9 +16,14 @@ Widget shopWidget({
         controller: controller,
         keyboardType: TextInputType.text,
         decoration: InputDecoration(
-            contentPadding: EdgeInsets.all(20), border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10)
-        )),
+          contentPadding: EdgeInsets.all(20),
+          border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(color: Colors.grey, width: 1)),
+          focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(color: Colors.grey, width: 1)),
+        ),
       )
     ],
   );

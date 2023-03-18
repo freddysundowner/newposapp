@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutterpos/controllers/home_controller.dart';
 import 'package:flutterpos/widgets/smalltext.dart';
 import 'package:get/get.dart';
 
@@ -7,7 +8,7 @@ import '../screens/customers/customer_info_page.dart';
 import '../utils/colors.dart';
 import 'bigtext.dart';
 
-Widget customerWidget({required CustomerModel customerModel, required type}) {
+Widget customerWidget({required CustomerModel customerModel, required type,required context}) {
   return Card(
       color: AppColors.mainColor,
       child: Container(
@@ -47,12 +48,22 @@ Widget customerWidget({required CustomerModel customerModel, required type}) {
               alignment: Alignment.centerRight,
               child: InkWell(
                 onTap: () {
-                  Get.to(() => CustomerInfoPage(
-                        id: customerModel.id,
-                        user: type,
-                        name: customerModel.fullName,
-                        phone: customerModel.phoneNumber,
-                      ));
+                  if (MediaQuery.of(context).size.width > 600) {
+                    Get.find<HomeController>().selectedWidget.value =
+                        CustomerInfoPage(
+                      id: customerModel.id,
+                      user: type,
+                      name: customerModel.fullName,
+                      phone: customerModel.phoneNumber,
+                    );
+                  } else {
+                    Get.to(() => CustomerInfoPage(
+                          id: customerModel.id,
+                          user: type,
+                          name: customerModel.fullName,
+                          phone: customerModel.phoneNumber,
+                        ));
+                  }
                 },
                 child: Container(
                   padding: EdgeInsets.all(5),

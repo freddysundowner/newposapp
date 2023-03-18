@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutterpos/controllers/home_controller.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
 import 'package:flutterpos/models/product_model.dart';
+import 'package:flutterpos/screens/product/products_page.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
@@ -25,10 +27,16 @@ class ProductHistory extends StatelessWidget {
         appBar: AppBar(
           elevation: 0.0,
           titleSpacing: 0.0,
+          centerTitle: false,
           backgroundColor: Colors.white,
           leading: IconButton(
               onPressed: () {
-                Get.back();
+                if (MediaQuery.of(context).size.width > 600) {
+                  Get.find<HomeController>().selectedWidget.value =
+                      ProductPage();
+                } else {
+                  Get.back();
+                }
               },
               icon: Icon(Icons.arrow_back_ios, color: Colors.black)),
           title: Column(
@@ -54,7 +62,8 @@ class ProductHistory extends StatelessWidget {
                 if (index == 0) {
                   productHistoryController.getProductHistory(
                       productId: product.id, type: "sold");
-                }if (index == 1) {
+                }
+                if (index == 1) {
                   productHistoryController.getProductHistory(
                       productId: product.id, type: "purchase");
                 }
@@ -73,7 +82,9 @@ class ProductHistory extends StatelessWidget {
           ),
           Expanded(
             child: Container(
-              color: Colors.grey.withOpacity(0.3),
+              color: MediaQuery.of(context).size.width > 600
+                  ? Colors.white
+                  : Colors.grey.withOpacity(0.3),
               child: TabBarView(
                   controller: productHistoryController.tabController,
                   children: [
@@ -124,16 +135,88 @@ class HistoryPages extends StatelessWidget {
               ? Center(
                   child: Text("There are no iems to display"),
                 )
-              : ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: productHistoryController.product.length,
-                  // physics: NeverScrollableScrollPhysics(),
-                  itemBuilder: (context, index) {
-                    ProductHistoryModel productBody =
-                        productHistoryController.product.elementAt(index);
+              : MediaQuery.of(context).size.width > 600
+                  ? SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(height: 10),
+                          Theme(
+                            data: Theme.of(context)
+                                .copyWith(dividerColor: Colors.grey),
+                            child: Container(
+                              width: double.infinity,
+                              margin: EdgeInsets.only(
+                                  right: 15, left: 15, bottom: 20),
+                              child: DataTable(
+                                decoration: BoxDecoration(
+                                    border: Border.all(
+                                  width: 1,
+                                  color: Colors.black,
+                                )),
+                                columnSpacing: 30.0,
+                                columns: [
+                                  DataColumn(
+                                      label: Text('Product',
+                                          textAlign: TextAlign.center)),
+                                  DataColumn(
+                                      label: Text('Quantity',
+                                          textAlign: TextAlign.center)),
+                                  DataColumn(
+                                      label: Text('Buying Price',
+                                          textAlign: TextAlign.center)),
+                                  DataColumn(
+                                      label: Text('Selling Price',
+                                          textAlign: TextAlign.center)),
+                                  DataColumn(
+                                      label: Text('Date',
+                                          textAlign: TextAlign.center)),
+                                ],
+                                rows: List.generate(
+                                    productHistoryController.product.length,
+                                    (index) {
+                                  ProductHistoryModel productBody =
+                                      productHistoryController.product
+                                          .elementAt(index);
+                                  final y = productBody.product!.name;
+                                  final x = productBody.quantity;
+                                  final w = productBody.product!.buyingPrice;
+                                  final z =
+                                      productBody.product!.sellingPrice![0];
+                                  final a = productBody.createdAt;
 
-                    return productHistoryContainer(productBody);
-                  });
+                                  return DataRow(cells: [
+                                    DataCell(
+                                        Container(width: 75, child: Text(y!))),
+                                    DataCell(Container(
+                                        width: 75, child: Text(x.toString()))),
+                                    DataCell(Container(
+                                        width: 75, child: Text(w.toString()))),
+                                    DataCell(Container(
+                                        width: 75, child: Text(z.toString()))),
+                                    DataCell(Container(
+                                        width: 75,
+                                        child: Text(DateFormat("dd-MM-yyyy")
+                                            .format(a!)))),
+                                  ]);
+                                }),
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 30)
+                        ],
+                      ),
+                    )
+                  : ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: productHistoryController.product.length,
+                      // physics: NeverScrollableScrollPhysics(),
+                      itemBuilder: (context, index) {
+                        ProductHistoryModel productBody =
+                            productHistoryController.product.elementAt(index);
+
+                        return productHistoryContainer(productBody);
+                      });
     });
   }
 
@@ -214,15 +297,86 @@ class SalesPages extends StatelessWidget {
               ? Center(
                   child: Text("There are no iems to display"),
                 )
-              : ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: productHistoryController.salesHistory.length,
-                  itemBuilder: (context, index) {
-                    ProductSaleHistory productBody =
-                        productHistoryController.salesHistory.elementAt(index);
+              : MediaQuery.of(context).size.width > 600
+                  ? Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(height: 10),
+                        Theme(
+                          data: Theme.of(context)
+                              .copyWith(dividerColor: Colors.grey),
+                          child: Container(
+                            width: double.infinity,
+                            margin: EdgeInsets.only(
+                                right: 15, left: 15, bottom: 20),
+                            child: DataTable(
+                              decoration: BoxDecoration(
+                                  border: Border.all(
+                                width: 1,
+                                color: Colors.black,
+                              )),
+                              columnSpacing: 30.0,
+                              columns: [
+                                DataColumn(
+                                    label: Text('Product',
+                                        textAlign: TextAlign.center)),
+                                DataColumn(
+                                    label: Text('Quantity',
+                                        textAlign: TextAlign.center)),
+                                DataColumn(
+                                    label: Text('Buying Price',
+                                        textAlign: TextAlign.center)),
+                                DataColumn(
+                                    label: Text('Selling Price',
+                                        textAlign: TextAlign.center)),
+                                DataColumn(
+                                    label: Text('Date',
+                                        textAlign: TextAlign.center)),
+                              ],
+                              rows: List.generate(
+                                  productHistoryController.salesHistory.length,
+                                  (index) {
+                                ProductSaleHistory productBody =
+                                    productHistoryController.salesHistory
+                                        .elementAt(index);
+                                final y = productBody.product!.name;
+                                final x = productBody.quantity;
+                                final w = productBody.product!.buyingPrice;
+                                final z = productBody.product!.sellingPrice![0];
+                                final a = productBody.createdAt;
 
-                    return productHistoryContainer(productBody);
-                  });
+                                return DataRow(cells: [
+                                  DataCell(
+                                      Container(width: 75, child: Text(y!))),
+                                  DataCell(Container(
+                                      width: 75, child: Text(x.toString()))),
+                                  DataCell(Container(
+                                      width: 75, child: Text(w.toString()))),
+                                  DataCell(Container(
+                                      width: 75, child: Text(z.toString()))),
+                                  DataCell(Container(
+                                      width: 75,
+                                      child: Text(
+                                          DateFormat("yyyy-dd-MM hh:mm a")
+                                              .format(a!)))),
+                                ]);
+                              }),
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 30)
+                      ],
+                    )
+                  : ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: productHistoryController.salesHistory.length,
+                      itemBuilder: (context, index) {
+                        ProductSaleHistory productBody =
+                            productHistoryController.salesHistory
+                                .elementAt(index);
+
+                        return productHistoryContainer(productBody);
+                      });
     });
   }
 

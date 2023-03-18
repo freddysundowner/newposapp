@@ -3,6 +3,7 @@ import 'package:flutterpos/controllers/attendant_controller.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
 import 'package:flutterpos/models/product_model.dart';
 import 'package:flutterpos/responsive/responsiveness.dart';
+import 'package:flutterpos/screens/product/products_page.dart';
 import 'package:get/get.dart';
 
 import '../../../controllers/AuthController.dart';
@@ -10,8 +11,10 @@ import '../../../controllers/product_controller.dart';
 import '../../../utils/colors.dart';
 import '../../../widgets/bigtext.dart';
 import '../../../widgets/smalltext.dart';
+import '../../controllers/home_controller.dart';
 import '../../controllers/supplierController.dart';
 import '../customers/create_customers.dart';
+import '../stock/stock_page.dart';
 
 class CreateProduct extends StatelessWidget {
   final page;
@@ -34,8 +37,8 @@ class CreateProduct extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (page == "create") {
-      supplierController
-          .getSuppliersInShop(shopController.currentShop.value!.id!);
+      supplierController.getSuppliersInShop(
+          shopController.currentShop.value!.id!, "all");
       productController.getProductCategory(
           shopId: shopController.currentShop.value?.id);
     } else {
@@ -50,13 +53,25 @@ class CreateProduct extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.white,
-          elevation: 0.3,
+          elevation: 0.1,
           titleSpacing: 0.0,
           centerTitle: false,
           leading: IconButton(
             onPressed: () {
-              productController.selectedSupplier.clear();
-              Get.back();
+              if (MediaQuery.of(context).size.width > 600) {
+                if (page == "edit") {
+                  Get.find<HomeController>().selectedWidget.value =
+                      ProductPage();
+                } else if (authController.usertype == "attendant") {
+                  Get.find<HomeController>().selectedWidget.value =
+                      ProductPage();
+                } else {
+                  Get.find<HomeController>().selectedWidget.value = StockPage();
+                }
+              } else {
+                productController.selectedSupplier.clear();
+                Get.back();
+              }
             },
             icon: Icon(
               Icons.arrow_back_ios,
@@ -79,31 +94,21 @@ class CreateProduct extends StatelessWidget {
         body: ResponsiveWidget(
           largeScreen: Align(
             alignment: Alignment.center,
-            child: Container(
-              decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(8),
-                  boxShadow: [
-                    BoxShadow(
-                        color: Colors.black26,
-                        offset: Offset(0, 1),
-                        blurRadius: 1.0)
-                  ]),
-              margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              padding: EdgeInsets.symmetric(horizontal: 50,vertical: 20),
-              child: SingleChildScrollView(
-                clipBehavior: Clip.none,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    productDetailsCard(context),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    Center(child: saveButton(context))
-                  ],
-                ),
-              ),
+            child: SingleChildScrollView(
+              child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  padding: EdgeInsets.only(left: 50, right: 150, top: 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      productDetailsCard(context),
+                      SizedBox(height: 20),
+                      Center(child: saveButton(context))
+                    ],
+                  )),
             ),
           ),
           smallScreen: SingleChildScrollView(
@@ -469,7 +474,7 @@ class CreateProduct extends StatelessWidget {
                                 ),
                               ),
                               TextButton(
-                                onPressed: () {
+                                onPressed: () async {
                                   Navigator.pop(context);
                                   productController.createCategory(
                                       shopId:
@@ -641,9 +646,18 @@ class CreateProduct extends StatelessWidget {
                   padding: const EdgeInsets.only(top: 10.0),
                   child: TextButton(
                     onPressed: () {
-                      Get.to(() => CreateCustomer(
-                            type: "suppliers",
-                          ));
+                      if (MediaQuery.of(context).size.width > 600) {
+                        Get.find<HomeController>().selectedWidget.value =
+                            CreateCustomer(
+                          page: "createProduct",
+                          type: "suppliers",
+                        );
+                      } else {
+                        Get.to(() => CreateCustomer(
+                              page: "createProduct",
+                              type: "suppliers",
+                            ));
+                      }
                     },
                     child: Container(
                         padding: EdgeInsets.all(8),

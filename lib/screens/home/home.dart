@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutterpos/controllers/attendant_controller.dart';
-import 'package:flutterpos/responsive/large_screen.dart';
 import 'package:flutterpos/responsive/responsiveness.dart';
 import 'package:flutterpos/utils/helper.dart';
 import 'package:flutterpos/widgets/bigtext.dart';
@@ -10,11 +9,10 @@ import 'package:google_nav_bar/google_nav_bar.dart';
 
 import '../../controllers/home_controller.dart';
 import '../../utils/colors.dart';
-import '../../utils/constants.dart';
 
 class Home extends StatelessWidget {
   Home({Key? key}) : super(key: key);
-  HomeController homeControler = Get.find<HomeController>();
+  HomeController homeControler = Get.put(HomeController());
   AttendantController attendantController = Get.find<AttendantController>();
 
   @override
@@ -22,13 +20,19 @@ class Home extends StatelessWidget {
     attendantController.getAttendantRoles();
 
     return ResponsiveWidget(
-        largeScreen: Scaffold(
+        largeScreen: Obx(()=>Scaffold(
+          backgroundColor: Colors.white,
           appBar: top_appbar(),
-          body: LargeScreen(
-
-            body:Obx(()=> showPage()),
+          body: Row(
+            children: [
+              Expanded(
+                flex: 1,
+                child: SideMenu(),
+              ),
+              Expanded(flex: 4, child: homeControler.selectedWidget.value!)
+            ],
           ),
-        ),
+        )),
         smallScreen: Helper(
           widget: Obx(() {
             return homeControler.pages[homeControler.selectedIndex.value];

@@ -2,9 +2,14 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutterpos/controllers/cashflow_controller.dart';
+import 'package:flutterpos/responsive/responsiveness.dart';
+import 'package:flutterpos/screens/cash_flow/cash_flow_manager.dart';
+import 'package:flutterpos/screens/cash_flow/components/cashflow_category_dialog.dart';
 import 'package:flutterpos/utils/helper.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
+import '../../controllers/home_controller.dart';
 import '../../controllers/shop_controller.dart';
 import 'components/category_card.dart';
 
@@ -15,6 +20,13 @@ class CashFlowCategories extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return ResponsiveWidget(
+      largeScreen: _tabLayout(context),
+      smallScreen: _tabLayout(context),
+    );
+  }
+
+  Widget _tabLayout(context) {
     return DefaultTabController(
       length: 2,
       child: Helper(
@@ -23,7 +35,9 @@ class CashFlowCategories extends StatelessWidget {
             Expanded(
               flex: 1,
               child: Container(
-                color: Colors.grey.withOpacity(0.1),
+                color: MediaQuery.of(context).size.width > 600
+                    ? Colors.white
+                    : Colors.grey.withOpacity(0.1),
                 child: TabBarView(
                   controller: cashflowController.tabController,
                   children: [CashInUi(), CashOutUi()],
@@ -37,6 +51,7 @@ class CashFlowCategories extends StatelessWidget {
           backgroundColor: Colors.white,
           foregroundColor: Colors.black,
           titleSpacing: 0.0,
+          centerTitle: false,
           iconTheme: IconThemeData(color: Colors.black),
           titleTextStyle: TextStyle(color: Colors.black),
           title: Column(
@@ -78,7 +93,12 @@ class CashFlowCategories extends StatelessWidget {
           ),
           leading: IconButton(
               onPressed: () {
-                Get.back();
+                if (MediaQuery.of(context).size.width > 600) {
+                  Get.find<HomeController>().selectedWidget.value =
+                      CashFlowManager();
+                } else {
+                  Get.back();
+                }
               },
               icon: Icon(Icons.arrow_back_ios)),
         ),
@@ -238,25 +258,69 @@ class CashInUi extends StatelessWidget {
                 ),
               ),
             ),
-            Expanded(
-              child: GridView.builder(
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      childAspectRatio: 3.0,
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 10,
-                      mainAxisSpacing: 10),
-                  itemBuilder: (context, index) {
-                    return categoryCard(context);
-                  },
-                  itemCount: 7),
-            ),
-            // ListView.builder(
-            //     itemCount: 20,
-            //     physics: NeverScrollableScrollPhysics(),
-            //     shrinkWrap: true,
-            //     itemBuilder: (context, index) {
-            //       return categoryCard(context);
-            //     })
+            MediaQuery.of(context).size.width > 600
+                ? Container(
+                    width: double.infinity,
+                    padding: EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+                    child: Theme(
+                      data:
+                          Theme.of(context).copyWith(dividerColor: Colors.grey),
+                      child: DataTable(
+                        decoration: BoxDecoration(
+                            border: Border.all(
+                          width: 1,
+                          color: Colors.black,
+                        )),
+                        columnSpacing: 30.0,
+                        columns: [
+                          DataColumn(
+                              label: Text('Name', textAlign: TextAlign.center)),
+                          DataColumn(
+                              label: Text(
+                                  'Amount(${createShopController.currentShop.value?.currency})',
+                                  textAlign: TextAlign.center)),
+                          DataColumn(
+                              label: Text('Date', textAlign: TextAlign.center)),
+                          DataColumn(
+                              label: Text('', textAlign: TextAlign.center)),
+                        ],
+                        rows: List.generate(5, (index) {
+                          final y = "Rent";
+                          final x = "200";
+                          return DataRow(cells: [
+                            DataCell(Container(width: 75, child: Text(y))),
+                            DataCell(Container(width: 75, child: Text(x))),
+                            DataCell(Container(
+                                width: 75,
+                                child: Text(DateFormat("MM-dd-yyyy")
+                                    .format(DateTime.now())))),
+                            DataCell(Align(
+                              child: Container(
+                                  padding: EdgeInsets.only(top: 10),
+                                  width: 75,
+                                  child: cashFlowCategoryDialog(context)),
+                              alignment: Alignment.topRight,
+                            )),
+                          ]);
+                        }),
+                      ),
+                    ),
+                  )
+                : Expanded(
+                    child: GridView.builder(
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                            childAspectRatio:
+                                MediaQuery.of(context).size.width *
+                                    3 /
+                                    MediaQuery.of(context).size.height,
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 10,
+                            mainAxisSpacing: 10),
+                        itemBuilder: (context, index) {
+                          return categoryCard(context);
+                        },
+                        itemCount: 7),
+                  ),
           ],
         ),
       ),
@@ -370,25 +434,69 @@ class CashOutUi extends StatelessWidget {
                 ),
               ),
             ),
-            Expanded(
-              child: GridView.builder(
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      childAspectRatio: 3.0,
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 10,
-                      mainAxisSpacing: 10),
-                  itemBuilder: (context, index) {
-                    return categoryCard(context);
-                  },
-                  itemCount: 7),
-            ),
-            // ListView.builder(
-            //     itemCount: 20,
-            //     physics: NeverScrollableScrollPhysics(),
-            //     shrinkWrap: true,
-            //     itemBuilder: (context, index) {
-            //       return categoryCard(context);
-            //     })
+            MediaQuery.of(context).size.width > 600
+                ? Container(
+                    width: double.infinity,
+                    padding: EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+                    child: Theme(
+                      data:
+                          Theme.of(context).copyWith(dividerColor: Colors.grey),
+                      child: DataTable(
+                        decoration: BoxDecoration(
+                            border: Border.all(
+                          width: 1,
+                          color: Colors.black,
+                        )),
+                        columnSpacing: 30.0,
+                        columns: [
+                          DataColumn(
+                              label: Text('Name', textAlign: TextAlign.center)),
+                          DataColumn(
+                              label: Text(
+                                  'Amount(${shopController.currentShop.value?.currency})',
+                                  textAlign: TextAlign.center)),
+                          DataColumn(
+                              label: Text('Date', textAlign: TextAlign.center)),
+                          DataColumn(
+                              label: Text('', textAlign: TextAlign.center)),
+                        ],
+                        rows: List.generate(5, (index) {
+                          final y = "Rent";
+                          final x = "200";
+                          return DataRow(cells: [
+                            DataCell(Container(width: 75, child: Text(y))),
+                            DataCell(Container(width: 75, child: Text(x))),
+                            DataCell(Container(
+                                width: 75,
+                                child: Text(DateFormat("MM-dd-yyyy")
+                                    .format(DateTime.now())))),
+                            DataCell(Align(
+                              child: Container(
+                                  padding: EdgeInsets.only(top: 10),
+                                  width: 75,
+                                  child: cashFlowCategoryDialog(context)),
+                              alignment: Alignment.topRight,
+                            )),
+                          ]);
+                        }),
+                      ),
+                    ),
+                  )
+                : Expanded(
+                    child: GridView.builder(
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                            childAspectRatio:
+                                MediaQuery.of(context).size.width *
+                                    3 /
+                                    MediaQuery.of(context).size.height,
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 10,
+                            mainAxisSpacing: 10),
+                        itemBuilder: (context, index) {
+                          return categoryCard(context);
+                        },
+                        itemCount: 7),
+                  ),
           ],
         ),
       ),

@@ -12,8 +12,8 @@ class Supplier {
     return jsonDecode(response);
   }
 
-  getSuppliersByShopId(shopId)async {
-    var response = await DbBase().databaseRequest(supplier+"shop/${shopId}", DbBase().getRequestType);
+  getSuppliersByShopId(shopId,type)async {
+    var response = await DbBase().databaseRequest( type=="all"?supplier+"shop/${shopId}" :"${supplierOnCredit}/${shopId}", DbBase().getRequestType);
     return jsonDecode(response);
 
   }
@@ -66,10 +66,6 @@ class Supplier {
     return data;
   }
 
-  getSuppliersOnCredit(String? shopId) async{
-    var response = await DbBase().databaseRequest("${supplierOnCredit}/${shopId}", DbBase().getRequestType);
-    return jsonDecode(response);
-  }
 
 
 }

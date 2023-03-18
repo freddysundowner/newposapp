@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
+import 'package:flutterpos/responsive/responsiveness.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
+import '../../controllers/home_controller.dart';
 import '../../controllers/product_controller.dart';
 import '../../models/product_count_model.dart';
 import '../../utils/colors.dart';
+import 'counting_page.dart';
 
 class CountHistory extends StatelessWidget {
   CountHistory({Key? key}) : super(key: key);
@@ -20,7 +23,14 @@ class CountHistory extends StatelessWidget {
       appBar: AppBar(
           elevation: 0.0,
           leading: IconButton(
-              onPressed: () => Get.back(),
+              onPressed: () {
+                if (MediaQuery.of(context).size.width > 600) {
+                  Get.find<HomeController>().selectedWidget.value =
+                      CountingPage();
+                } else {
+                  Get.back();
+                }
+              },
               icon: Icon(
                 Icons.arrow_back_ios,
                 color: Colors.black,
@@ -105,52 +115,59 @@ class CountHistory extends StatelessWidget {
               //     icon: Icon(Icons.arrow_drop_down))
             ],
           )),
-      body: Obx(() {
-        return productController.loadingCountHistory.value
-            ? Center(
-                child: CircularProgressIndicator(),
-              )
-            : productController.countHistoryList.length == 0
-                ? Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Center(
-                          child: Column(
-                        children: [
-                          Icon(Icons.warning_amber),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          Text(
-                            'List is empty',
-                            style: TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.bold),
-                          ),
-                          SizedBox(
-                            height: 5,
-                          ),
-                          Text('No stock count done yet'),
-                          SizedBox(
-                            height: 5,
-                          ),
-                          Text('Or check your internet connection')
-                        ],
-                      ))
-                    ],
-                  )
-                : ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: productController.countHistoryList.length,
-                    // physics: NeverScrollableScrollPhysics(),
-                    itemBuilder: (context, index) {
-                      ProductCountModel productBody =
-                          productController.countHistoryList.elementAt(index);
-
-                      return productHistoryContainer(productBody);
-                    });
-        ;
-      }),
+      body: ResponsiveWidget(
+        largeScreen: Container(),
+        smallScreen: historyWidget(),
+      ),
     );
+  }
+
+  Widget historyWidget() {
+    return Obx(() {
+      return productController.loadingCountHistory.value
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : productController.countHistoryList.length == 0
+              ? Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Center(
+                        child: Column(
+                      children: [
+                        Icon(Icons.warning_amber),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Text(
+                          'List is empty',
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold),
+                        ),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        Text('No stock count done yet'),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        Text('Or check your internet connection')
+                      ],
+                    ))
+                  ],
+                )
+              : ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: productController.countHistoryList.length,
+                  // physics: NeverScrollableScrollPhysics(),
+                  itemBuilder: (context, index) {
+                    ProductCountModel productBody =
+                        productController.countHistoryList.elementAt(index);
+
+                    return productHistoryContainer(productBody);
+                  });
+      ;
+    });
   }
 
   Widget productHistoryContainer(ProductCountModel productBody) {

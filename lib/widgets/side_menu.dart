@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutterpos/controllers/AuthController.dart';
 import 'package:flutterpos/controllers/home_controller.dart';
+import 'package:flutterpos/screens/home/attendants_page.dart';
+import 'package:flutterpos/screens/home/shops_page.dart';
 import 'package:flutterpos/utils/colors.dart';
+import 'package:flutterpos/widgets/logout.dart';
 import 'package:get/get.dart';
 
+import '../screens/home/home_page.dart';
+import '../screens/home/profile_page.dart';
 import '../utils/constants.dart';
 import 'delete_dialog.dart';
 
@@ -18,37 +23,27 @@ class SideMenu extends StatelessWidget {
       child: ListView(
         children: sidePages
             .map((e) => sideMenuItems(
-                onTap: () {
-                  // deleteAccountDialog(context);
-                  print(e["page"]);
-                },
-                icon: e["icon"],
-                title: e["page"],
-                context: context))
+                icon: e["icon"], title: e["page"], context: context))
             .toList(),
       ),
     );
   }
 
   Widget sideMenuItems(
-      {required onTap,
-      required IconData icon,
-      required title,
-      required context}) {
+      {required IconData icon, required title, required context}) {
     return Obx(() => InkWell(
           onTap: () {
-            print(title);
-            if (title == "Log Out") {
-              deleteDialog(
-                  context: context,
-                  onPressed: () {
-                    Get.find<AuthController>().deleteAdmin(
-                        context: context,
-                        id: Get.find<AuthController>().currentUser.value?.id);
-                  });
-            } else {
-              homeController.activeItem.value = title;
-              onTap();
+            homeController.activeItem.value = title;
+            if (title == "Home") {
+              homeController.selectedWidget.value = HomePage();
+            } else if (title == "Shops") {
+              homeController.selectedWidget.value = ShopsPage();
+            } else if (title == "Attendants") {
+              homeController.selectedWidget.value = AttendantsPage();
+            } else if (title == "Profile") {
+              homeController.selectedWidget.value = ProfilePage();
+            } else if (title == "Log Out") {
+             logoutAccountDialog(context);
             }
           },
           onHover: (value) {

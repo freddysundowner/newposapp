@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutterpos/controllers/AuthController.dart';
 import 'package:flutterpos/controllers/expense_controller.dart';
+import 'package:flutterpos/controllers/home_controller.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
 import 'package:flutterpos/responsive/responsiveness.dart';
+import 'package:flutterpos/screens/finance/expense_page.dart';
 import 'package:get/get.dart';
 
 import '../../utils/colors.dart';
@@ -26,7 +28,11 @@ class CreateExpense extends StatelessWidget {
         elevation: 0.3,
         leading: IconButton(
           onPressed: () {
-            Get.back();
+            if (MediaQuery.of(context).size.width > 600) {
+              Get.find<HomeController>().selectedWidget.value = ExpensePage();
+            } else {
+              Get.back();
+            }
           },
           icon: Icon(
             Icons.arrow_back_ios,
@@ -37,12 +43,16 @@ class CreateExpense extends StatelessWidget {
             majorTitle(title: " Add Expenses", color: Colors.black, size: 16.0),
       ),
       body: ResponsiveWidget(
-          largeScreen: Align(
-            alignment: Alignment.topCenter,
-            child: Container(
-                width: MediaQuery.of(context).size.width * 0.5,
-                height: MediaQuery.of(context).size.height * 0.7,
-                child: expenseCreateCard(context)),
+          largeScreen: Scaffold(
+            backgroundColor: Colors.white,
+            body: Align(
+              alignment: Alignment.topLeft,
+              child: Container(
+                  color: Colors.white,
+                  width: MediaQuery.of(context).size.width * 0.5,
+                  height: MediaQuery.of(context).size.height * 0.7,
+                  child: expenseCreateCard(context)),
+            ),
           ),
           smallScreen: SingleChildScrollView(
             child: Column(children: [
@@ -58,7 +68,7 @@ class CreateExpense extends StatelessWidget {
 
   Widget expenseCreateCard(context) {
     return Card(
-      elevation: 2,
+      elevation: MediaQuery.of(context).size.width > 600 ? 0 : 2,
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 80.0, vertical: 20),
         decoration: BoxDecoration(

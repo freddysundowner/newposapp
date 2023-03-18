@@ -3,8 +3,8 @@ import 'package:flutterpos/models/sales_model.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
-import '../../controllers/CustomerController.dart';
-import '../../controllers/sales_controller.dart';
+import '../controllers/CustomerController.dart';
+import '../controllers/sales_controller.dart';
 
 
 Widget CreditHistoryCard(context, SalesModel salesBody) {

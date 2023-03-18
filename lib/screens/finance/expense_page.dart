@@ -1,13 +1,16 @@
 import 'package:f_datetimerangepicker/f_datetimerangepicker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterpos/controllers/AuthController.dart';
 import 'package:flutterpos/controllers/expense_controller.dart';
+import 'package:flutterpos/controllers/home_controller.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
 import 'package:flutterpos/responsive/responsiveness.dart';
+import 'package:flutterpos/screens/finance/finance_page.dart';
+import 'package:flutterpos/widgets/no_items_found.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 import '../../models/expense_model.dart';
-import '../../responsive/large_screen.dart';
 import '../../utils/colors.dart';
 import '../../widgets/bigtext.dart';
 import '../../widgets/expense_card.dart';
@@ -25,29 +28,19 @@ class ExpensePage extends StatelessWidget {
 
   ExpenseController expenseController = Get.find<ExpenseController>();
   ShopController shopController = Get.find<ShopController>();
+  AuthController authController = Get.find<AuthController>();
 
   @override
   Widget build(BuildContext context) {
     return ResponsiveWidget(
         largeScreen: Scaffold(
-          body: LargeScreen(
+            backgroundColor: Colors.white,
+            appBar: _appBar(context),
             body: Container(
-              padding: EdgeInsets.all(10),
+              padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
               child: Column(
                 children: [
-                  Container(
-                    width: double.infinity,
-                    padding: EdgeInsets.all(10),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        majorTitle(
-                            title: "Expenses", color: Colors.black, size: 16.0),
-                        dateChoser(context),
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: 20),
+                  SizedBox(height: 5),
                   Center(
                     child: Container(
                       width: MediaQuery.of(context).size.width * 0.4,
@@ -74,32 +67,72 @@ class ExpensePage extends StatelessWidget {
                             color: Colors.black,
                             size: 15.0);
                       }),
-                      addExpenseContainer()
+                      addExpenseContainer("large")
                     ],
-                  )
+                  ),
+                  Obx(() {
+                    return expenseController.getExpenseByDateLoad.value
+                        ? Center(
+                            child: CircularProgressIndicator(),
+                          )
+                        : expenseController.expenses.length == 0
+                            ? noItemsFound(context, true)
+                            : Container(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 15, vertical: 10),
+                                width: double.infinity,
+                                child: Theme(
+                                  data: Theme.of(context)
+                                      .copyWith(dividerColor: Colors.grey),
+                                  child: DataTable(
+                                    decoration: BoxDecoration(
+                                        border: Border.all(
+                                      width: 1,
+                                      color: Colors.black,
+                                    )),
+                                    columnSpacing: 30.0,
+                                    columns: [
+                                      DataColumn(
+                                          label: Text('Name',
+                                              textAlign: TextAlign.center)),
+                                      DataColumn(
+                                          label: Text('Category',
+                                              textAlign: TextAlign.center)),
+                                      DataColumn(
+                                          label: Text(
+                                              'Amount(${shopController.currentShop.value?.currency})',
+                                              textAlign: TextAlign.center)),
+                                    ],
+                                    rows: List.generate(
+                                        expenseController.expenses.length,
+                                        (index) {
+                                      ExpenseModel expenseModel =
+                                          expenseController.expenses
+                                              .elementAt(index);
+                                      final y = expenseModel.name;
+                                      final x = expenseModel.category;
+
+                                      return DataRow(cells: [
+                                        DataCell(Container(
+                                            width: 75, child: Text(y!))),
+                                        DataCell(Container(
+                                            width: 75,
+                                            child: Text(x.toString()))),
+                                        DataCell(Container(
+                                            width: 75,
+                                            child: Text(
+                                                "${expenseModel.amount}"))),
+                                      ]);
+                                    }),
+                                  ),
+                                ),
+                              );
+                  }),
                 ],
               ),
-            ),
-          ),
-        ),
+            )),
         smallScreen: Scaffold(
-          appBar: AppBar(
-            titleSpacing: 0,
-            backgroundColor: Colors.white,
-            elevation: 0.3,
-            leading: IconButton(
-              onPressed: () {
-                Get.back();
-              },
-              icon: Icon(
-                Icons.arrow_back_ios,
-                color: Colors.black,
-              ),
-            ),
-            title:
-                majorTitle(title: "Expenses", color: Colors.black, size: 16.0),
-            actions: [dateChoser(context)],
-          ),
+          appBar: _appBar(context),
           body: SingleChildScrollView(
             child: Container(
               padding: EdgeInsets.all(10),
@@ -118,7 +151,7 @@ class ExpensePage extends StatelessWidget {
                   SizedBox(height: 25),
                   Align(
                     alignment: Alignment.centerRight,
-                    child: addExpenseContainer(),
+                    child: addExpenseContainer("small"),
                   ),
                   SizedBox(height: 10),
                   Obx(() {
@@ -254,10 +287,14 @@ class ExpensePage extends StatelessWidget {
         ));
   }
 
-  Widget addExpenseContainer() {
+  Widget addExpenseContainer(type) {
     return InkWell(
       onTap: () {
-        Get.to(() => CreateExpense());
+        if (type == "large") {
+          Get.find<HomeController>().selectedWidget.value = CreateExpense();
+        } else {
+          Get.to(() => CreateExpense());
+        }
       },
       child: Container(
         padding: EdgeInsets.all(10),
@@ -268,6 +305,34 @@ class ExpensePage extends StatelessWidget {
         child: majorTitle(
             title: "Add Expenses", color: AppColors.mainColor, size: 12.0),
       ),
+    );
+  }
+
+  AppBar _appBar(context) {
+    return AppBar(
+      titleSpacing: 0,
+      backgroundColor: Colors.white,
+      elevation: 0.3,
+      centerTitle: false,
+      leading: Get.find<AuthController>().usertype == "attendant" &&
+              MediaQuery.of(context).size.width > 600
+          ? null
+          : IconButton(
+              onPressed: () {
+                if (MediaQuery.of(context).size.width > 600) {
+                  Get.find<HomeController>().selectedWidget.value =
+                      FinancePage();
+                } else {
+                  Get.back();
+                }
+              },
+              icon: Icon(
+                Icons.arrow_back_ios,
+                color: Colors.black,
+              ),
+            ),
+      title: majorTitle(title: "Expenses", color: Colors.black, size: 16.0),
+      actions: [dateChoser(context)],
     );
   }
 }

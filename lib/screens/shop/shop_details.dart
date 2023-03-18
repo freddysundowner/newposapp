@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutterpos/controllers/AuthController.dart';
+import 'package:flutterpos/controllers/home_controller.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
 import 'package:flutterpos/models/shop_model.dart';
-import 'package:flutterpos/responsive/large_screen.dart';
 import 'package:flutterpos/responsive/responsiveness.dart';
+import 'package:flutterpos/screens/home/shops_page.dart';
 import 'package:flutterpos/utils/constants.dart';
 import 'package:flutterpos/widgets/shop_delete_dialog.dart';
 import 'package:get/get.dart';
@@ -23,30 +24,61 @@ class ShopDetails extends StatelessWidget {
   Widget build(BuildContext context) {
     shopController.initializeControllers(shopModel: shopModel);
     return ResponsiveWidget(
-        largeScreen: Scaffold(
-          body: LargeScreen(
-            body: Container(
-              padding: EdgeInsets.all(20),
-              margin: EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(8),
-                  boxShadow: [
-                    BoxShadow(
-                        color: Colors.black26,
-                        offset: Offset(0, 1),
-                        blurRadius: 1.0)
-                  ]),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  shopDetails(context),
-                  SizedBox(
-                    height: 20,
+        largeScreen: Container(
+          padding: EdgeInsets.all(20),
+          margin: EdgeInsets.all(20),
+          decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(8),
+              boxShadow: [
+                BoxShadow(
+                    color: Colors.black26,
+                    offset: Offset(0, 1),
+                    blurRadius: 1.0)
+              ]),
+          child: SingleChildScrollView(
+            physics: NeverScrollableScrollPhysics(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  child: Row(
+                    children: [
+                      InkWell(
+                        onTap: () {
+                          Get.find<HomeController>().selectedWidget.value =
+                              ShopsPage();
+                        },
+                        child: Icon(
+                          Icons.arrow_back_ios,
+                          color: Colors.black,
+                        ),
+                      ),
+                      SizedBox(
+                        width: 10
+                      ),
+                      majorTitle(
+                          title: "${shopModel.name}",
+                          color: Colors.black,
+                          size: 16.0),
+                      Spacer(),
+                      updateShopWidget(context),
+                      SizedBox(width: 5)
+                    ],
                   ),
-                  Center(child: updateShopWidget(context))
-                ],
-              ),
+                ),
+                SizedBox(height: 3),
+                SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      shopDetails(context),
+                      SizedBox(height: 5),
+
+                    ],
+                  ),
+                )
+              ],
             ),
           ),
         ),
@@ -107,7 +139,7 @@ class ShopDetails extends StatelessWidget {
                 padding: EdgeInsets.all(10),
                 width: MediaQuery.of(context).size.width < 700
                     ? double.infinity
-                    : 300,
+                    : 150,
                 decoration: BoxDecoration(
                     border: Border.all(width: 3, color: AppColors.mainColor),
                     borderRadius: BorderRadius.circular(40)),

@@ -22,24 +22,6 @@ List <Map<String,dynamic>>sidePages=[
  {"page":authPage,"icon":Icons.logout},
 ];
 
-Widget showPage() {
- switch (Get.find<HomeController>().activeItem.value) {
-  case homePage:
-   return HomePage();
-
-  case shopsPage:
-   return ShopsPage();
-
-  case attendantPage:
-   return AttendantsPage();
-
-  case profilePage:
-   return ProfilePage();
-
-  default:
-   return HomePage();
- }
-}
 
 class Constants{
  static final RegExp emailValidatorRegExp =

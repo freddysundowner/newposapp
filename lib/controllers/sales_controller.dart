@@ -1,17 +1,20 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterpos/controllers/home_controller.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
 import 'package:flutterpos/models/product_model.dart';
 import 'package:flutterpos/models/profit_summary.dart';
 import 'package:flutterpos/models/sales_model.dart';
 import 'package:flutterpos/models/sales_order_item_model.dart';
+import 'package:flutterpos/screens/home/home_page.dart';
+import 'package:flutterpos/screens/sales/all_sales_page.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
-import '../models/profit_model.dart';
 import '../services/sales.dart';
 import '../services/transactions.dart';
 import '../utils/colors.dart';
+import '../widgets/loading_dialog.dart';
 import '../widgets/snackBars.dart';
 
 class SalesController extends GetxController
@@ -124,7 +127,8 @@ class SalesController extends GetxController
     } else if (selectedPaymentMethod.value == "Wallet" && customerId == "") {
       showSnackBar(
           message: "please select customer to sell to",
-          color: Colors.redAccent,context: context);
+          color: Colors.redAccent,
+          context: context);
     } else {
       saveSaleData(
           customerId: customerId,
@@ -144,6 +148,10 @@ class SalesController extends GetxController
       required context,
       required screen}) async {
     try {
+      if (MediaQuery.of(context).size.width > 600) {
+        LoadingDialog.showLoadingDialog(
+            context: context, title: "Creating Sale", key: _keyLoader);
+      }
       saveSaleLoad.value = true;
       var totaldiscount = 0;
       selectedList.forEach((element) {
@@ -156,15 +164,18 @@ class SalesController extends GetxController
         "paymentMethod": selectedPaymentMethod.value,
         "totaldiscount": totaldiscount,
         "shop": shopId,
-
         "creditTotal": balance.value,
         "customerId": customerId,
         "duedate": type == "noncredit" ? "" : dueDate.value
       };
-
       var products = selectedList.map((element) => element).toList();
-      var response = await Sales().createSales({"sale": sale, "products": products,"date":DateTime.parse(DateTime.now().toString()).millisecondsSinceEpoch,});
-
+      var response = await Sales().createSales({
+        "sale": sale,
+        "products": products,
+        "date":
+            DateTime.parse(DateTime.now().toString()).millisecondsSinceEpoch,
+      });
+      Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
       if (response["status"] == true) {
         selectedList.value = [];
         grandTotal.value = 0;
@@ -176,22 +187,29 @@ class SalesController extends GetxController
             startingDate: DateTime.now(),
             endingDate: DateTime.now(),
             type: "notcashflow");
-
+        if (MediaQuery.of(context).size.width > 600) {
+          if (screen == "allSales") {
+            Get.find<HomeController>().selectedWidget.value =
+                AllSalesPage(page: "AttendantLanding");
+          } else {
+            Get.find<HomeController>().selectedWidget.value = HomePage();
+          }
+        }
         if (screen == "admin") {
           Get.back();
         }
-
-        showSnackBar(message: response["message"], color: AppColors.mainColor,context: context);
       } else if (response["status"] == false &&
           selectedPaymentMethod.value == "Wallet") {
         saveSaleLoad.value = false;
         showDepositAllertDialog(context);
       } else {
-        showSnackBar(message: response["message"], color: Colors.red,context: context);
+        showSnackBar(
+            message: response["message"], color: Colors.red, context: context);
       }
 
       saveSaleLoad.value = false;
     } catch (e) {
+      Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
       saveSaleLoad.value = false;
     }
   }
@@ -390,7 +408,7 @@ class SalesController extends GetxController
       }
       salesByShopLoad.value = false;
     } catch (e) {
-      List sal=[
+      List sal = [
         {
           "_id": "6400455b8b658aafbf4e3817",
           "receiptNumber": "REY3IL182RZ",
@@ -650,7 +668,7 @@ class SalesController extends GetxController
 
       List data = sal;
       List<SalesModel> saleData =
-      data.map((e) => SalesModel.fromJson(e)).toList();
+          data.map((e) => SalesModel.fromJson(e)).toList();
       sales.assignAll(saleData);
       salesByShopLoad.value = false;
     }
@@ -690,13 +708,16 @@ class SalesController extends GetxController
       var tomorrow = new DateFormat('yyyy-MM-dd')
           .parse(new DateFormat('yyyy-MM-dd').format(tomm));
 
-
       var response = await Transactions().getProfitTransactions(
           shopId,
-          type == "finance" ?  DateTime.parse(start).millisecondsSinceEpoch :  DateTime.parse(today).millisecondsSinceEpoch,
-          type == "finance" ?  DateTime.parse(end).millisecondsSinceEpoch : DateTime.parse(tomorrow.toString()).millisecondsSinceEpoch);
-      print(response);
-      if (response["status"]==true) {
+          type == "finance"
+              ? DateTime.parse(start).millisecondsSinceEpoch
+              : DateTime.parse(today).millisecondsSinceEpoch,
+          type == "finance"
+              ? DateTime.parse(end).millisecondsSinceEpoch
+              : DateTime.parse(tomorrow.toString()).millisecondsSinceEpoch);
+
+      if (response["status"] == true) {
         profitModel.value = ProfitSummary.fromJson(response);
       } else {
         profitModel.value = ProfitSummary();
@@ -711,4 +732,21 @@ class SalesController extends GetxController
   }
 
   void returnSale(historyBody, salesId) {}
+
+  totalSales() {
+    var subTotal = 0;
+    sales.forEach((element) {
+      subTotal = subTotal + element.grandTotal!;
+    });
+    return subTotal;
+  }
+
+  calculateSalesAmount() {
+    var subTotal = 0;
+    selectedList.forEach((element) {
+      subTotal = subTotal +
+          (int.parse(element.sellingPrice![0]) * element.cartquantity!);
+    });
+    return subTotal;
+  }
 }

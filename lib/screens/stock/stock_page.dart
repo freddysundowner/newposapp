@@ -2,17 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutterpos/controllers/product_controller.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
 import 'package:flutterpos/models/product_model.dart';
-import 'package:flutterpos/responsive/large_screen.dart';
 import 'package:flutterpos/responsive/responsiveness.dart';
 import 'package:flutterpos/screens/stock/stock_transfer.dart';
 import 'package:flutterpos/screens/stock/view_purchases.dart';
 import 'package:flutterpos/utils/helper.dart';
 import 'package:get/get.dart';
 
+import '../../controllers/home_controller.dart';
 import '../../utils/colors.dart';
 import '../../widgets/bigtext.dart';
 import '../../widgets/normal_text.dart';
 import '../../widgets/smalltext.dart';
+import '../home/home_page.dart';
 import '../product/counting_page.dart';
 import '../product/create_product.dart';
 import '../product/products_page.dart';
@@ -28,84 +29,99 @@ class StockPage extends StatelessWidget {
     productController.getProductsBySort(
         shopId: "${shopController.currentShop.value?.id}", type: "all");
     return ResponsiveWidget(
-        largeScreen: Container(
-          padding: EdgeInsets.all(20),
-          child: Scaffold(
-            body: LargeScreen(
-              body: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Container(
-                    child: stockValueCard(type: "large"),
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  majorTitle(
-                      title: "Stock Actions", color: Colors.black, size: 18.0),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Container(
-                    height: MediaQuery.of(context).size.height * 0.2,
-
-                    child: ListView(
-                      scrollDirection: Axis.horizontal,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(left: 10.0),
-                          child: stockContainerDesktop(
-                              title: "Add New",
-                              subtitle: "Introduce new product",
-                              icon: Icons.production_quantity_limits,
-                              onPresssed: () {
-                                Get.to(() => CreateProduct(
-                                      page: "create",
-                                      productModel: ProductModel(),
-                                    ));
-                              },
-                              color: Colors.amberAccent),
+        largeScreen: Scaffold(
+          backgroundColor: Colors.white,
+          appBar: AppBar(
+            backgroundColor: Colors.white,
+            elevation: 0.0,
+            leading: IconButton(
+                onPressed: () {
+                  Get.find<HomeController>().selectedWidget.value = HomePage();
+                },
+                icon: Icon(
+                  Icons.arrow_back_ios,
+                  color: Colors.black,
+                )),
+          ),
+          body: Container(
+            padding: EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(
+                  height: 20,
+                ),
+                Container(
+                  child: stockValueCard(type: "large"),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                majorTitle(
+                    title: "Stock Actions", color: Colors.black, size: 18.0),
+                SizedBox(
+                  height: 20,
+                ),
+                Container(
+                  height: MediaQuery.of(context).size.height * 0.2,
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(left: 10.0),
+                        child: stockContainerDesktop(
+                          title: "Add New",
+                          subtitle: "Introduce new product",
+                          icon: Icons.production_quantity_limits,
+                          onPresssed: () {
+                            Get.find<HomeController>().selectedWidget.value =
+                                CreateProduct(
+                              page: "create",
+                              productModel: ProductModel(),
+                            );
+                          },
+                          color: Colors.amberAccent,
                         ),
-                        stockContainerDesktop(
-                            title: "Purchase",
-                            subtitle: "Add to an existing stock",
-                            icon: Icons.add,
-                            onPresssed: () {
-                              Get.to(() => CreatePurchase());
-                            },
-                            color: Colors.blueAccent),
-                        stockContainerDesktop(
-                            title: "Purchase",
-                            subtitle: "View purchased items",
-                            icon: Icons.remove_red_eye_rounded,
-                            onPresssed: () {
-                              Get.to(() => ViewPurchases());
-                            },
-                            color: Colors.white),
-                        stockContainerDesktop(
-                            title: "Count ",
-                            subtitle: "Tally with physical count",
-                            icon: Icons.calculate_outlined,
-                            onPresssed: () {
-                              Get.to(() => CountingPage());
-                            },
-                            color: Colors.amberAccent),
-                        stockContainerDesktop(
-                            title: "Transfer",
-                            subtitle: "Transfer stock to  another shop",
-                            icon: Icons.compare_arrows,
-                            onPresssed: () {
-                              Get.to(() => StockTransfer());
-                            },
-                            color: Colors.green)
-                      ],
-                    ),
-                  )
-                ],
-              ),
+                      ),
+                      stockContainerDesktop(
+                          title: "Purchase",
+                          subtitle: "Add to an existing stock",
+                          icon: Icons.add,
+                          onPresssed: () {
+                            Get.find<HomeController>().selectedWidget.value =
+                                CreatePurchase();
+                          },
+                          color: Colors.blueAccent),
+                      stockContainerDesktop(
+                          title: "Purchase",
+                          subtitle: "View purchased items",
+                          icon: Icons.remove_red_eye_rounded,
+                          onPresssed: () {
+                            Get.find<HomeController>().selectedWidget.value =
+                                ViewPurchases();
+                          },
+                          color: Colors.white),
+                      stockContainerDesktop(
+                          title: "Count ",
+                          subtitle: "Tally with physical count",
+                          icon: Icons.calculate_outlined,
+                          onPresssed: () {
+                            Get.find<HomeController>().selectedWidget.value =
+                                CountingPage();
+                          },
+                          color: Colors.amberAccent),
+                      stockContainerDesktop(
+                          title: "Transfer",
+                          subtitle: "Transfer stock to  another shop",
+                          icon: Icons.compare_arrows,
+                          onPresssed: () {
+                            Get.find<HomeController>().selectedWidget.value = StockTransfer();
+                          },
+                          color: Colors.green)
+                    ],
+                  ),
+                )
+              ],
             ),
           ),
         ),
@@ -335,12 +351,17 @@ class StockPage extends StatelessWidget {
             InkWell(
               splashColor: Colors.transparent,
               onTap: () {
-                Get.to(() => ProductPage());
+                if (type == "small") {
+                  Get.to(() => ProductPage());
+                } else {
+                  Get.find<HomeController>().selectedWidget.value =
+                      ProductPage();
+                }
               },
               child: Center(
                 child: Container(
                   padding: EdgeInsets.all(10),
-                  width:type=="small"? double.infinity:200,
+                  width: type == "small" ? double.infinity : 200,
                   decoration: BoxDecoration(
                       border: Border.all(width: 3, color: AppColors.mainColor),
                       borderRadius: BorderRadius.circular(40)),

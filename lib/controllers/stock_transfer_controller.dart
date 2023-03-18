@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutterpos/controllers/home_controller.dart';
 import 'package:flutterpos/controllers/product_controller.dart';
 import 'package:flutterpos/screens/stock/transfer_history.dart';
 import 'package:flutterpos/services/product.dart';
@@ -13,7 +14,6 @@ class StockTransferController extends GetxController {
   GlobalKey<State> _keyLoader = new GlobalKey<State>();
   RxList<ProductModel> selectedProducts = RxList([]);
   RxList<StockTransferHistory> transferHistory = RxList([]);
-
 
   RxBool gettingTransferHistoryLoad = RxBool(false);
 
@@ -55,38 +55,40 @@ class StockTransferController extends GetxController {
       var response = await Products().transferProducts(body: body);
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
       if (response["status"] == true) {
-        Get.back();
-        Get.back();
+        if (MediaQuery.of(context).size.width > 600) {
+          Get.find<HomeController>().selectedWidget.value = TransferHistory();
+        } else {
+          Get.back();
+          Get.back();
+          Get.to(() => TransferHistory());
+        }
         selectedProducts.clear();
         gettingTransferHistory(shopId: from, type: "in");
-
-        Get.to(() => TransferHistory());
       } else {
-        showSnackBar(message: response["message"], color: Colors.red,context: context);
+        showSnackBar(
+            message: response["message"], color: Colors.red, context: context);
       }
     } catch (e) {
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
-
-
     }
   }
 
   gettingTransferHistory({required shopId, required type}) async {
     try {
-      gettingTransferHistoryLoad.value == true;
+      gettingTransferHistoryLoad.value = true;
       var response = await Products().getTransHistory(shopId: shopId, type: type);
+
       if (response["status"] == true) {
         List jsonData = response["body"];
-        List<StockTransferHistory> transfer =
-            jsonData.map((e) => StockTransferHistory.fromJson(e)).toList();
+        List<StockTransferHistory> transfer = jsonData.map((e) => StockTransferHistory.fromJson(e)).toList();
         transferHistory.assignAll(transfer);
       } else {
         transferHistory.value = [];
       }
-      gettingTransferHistoryLoad.value == false;
+      gettingTransferHistoryLoad.value = false;
     } catch (e) {
-      gettingTransferHistoryLoad.value == false;
-
+      print(e);
+      gettingTransferHistoryLoad.value = false;
     }
   }
 }

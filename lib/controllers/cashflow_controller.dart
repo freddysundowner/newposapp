@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutterpos/controllers/category_controller.dart';
 import 'package:flutterpos/models/bank_model.dart';
+import 'package:flutterpos/utils/colors.dart';
 import 'package:get/get.dart';
 
 import '../services/transactions.dart';
@@ -13,6 +15,7 @@ class CashflowController extends GetxController
   RxList categories = RxList([]);
   RxBool loadingCashAtBank = RxBool(false);
   RxBool gettingBankName = RxBool(false);
+  var currentDate = DateTime.now().obs;
   late TabController tabController;
   TextEditingController textEditingControllerBankName = TextEditingController();
   TextEditingController textEditingControllerName = TextEditingController();
@@ -23,7 +26,7 @@ class CashflowController extends GetxController
     try {
       loadingCashAtBank.value = true;
       var response = await Transactions().getCashAtBank(shopId);
-      print(response);
+
       if (response["status"] == true) {
         List jsonData = response["body"];
         List<BankModel> fetchedData =
@@ -54,7 +57,7 @@ class CashflowController extends GetxController
         "category": Get.find<CategoryController>().selectedCategory.value!.id,
         "shop": shopId,
       };
-      print(body);
+
       LoadingDialog.showLoadingDialog(
           context: context, key: _keyLoader, title: "adding bank");
       var response = await Transactions().createBank(body: body);
@@ -73,12 +76,12 @@ class CashflowController extends GetxController
     try {
       Map<String, dynamic> body = {
         "shop": shopId,
-        "bankName":  type=="cashout"?"":textEditingControllerName.text,
+        "bankName": type == "cashout" ? "" : textEditingControllerName.text,
         "amount": textEditingControllerAmount.text,
         "type": type,
         "cashFlow": Get.find<CategoryController>().selectedCategory.value!.id,
       };
-      print(body);
+
       LoadingDialog.showLoadingDialog(
           context: context, key: _keyLoader, title: "Confirming");
       var response = await Transactions().createTransaction(body: body);
@@ -98,7 +101,7 @@ class CashflowController extends GetxController
       gettingBankName.value = true;
 
       var response = await Transactions().getBankNames(shopId);
-      print(response);
+
       // if (response != null) {
       //   // List fetchedData = response["body"];
       //   // List<BankModelBody> fetchedBankNames = fetchedData.map((e) => BankModelBody.fromJson(e)).toList();
@@ -119,9 +122,26 @@ class CashflowController extends GetxController
     }
   }
 
-  clearInputs(){
+  clearInputs() {
     textEditingControllerName.clear();
     textEditingControllerAmount.clear();
     Get.find<CategoryController>().selectedCategory.value = null;
+  }
+
+  getCashFlowTransactions() {}
+
+  void showDatePicker({required context}) {
+    DatePicker.showDatePicker(context,
+        showTitleActions: true,
+        minTime: DateTime(1990, 5, 5, 20, 50),
+        maxTime: DateTime.now(),
+        theme: DatePickerTheme(
+            itemStyle: TextStyle(color: AppColors.mainColor),
+            cancelStyle: TextStyle(color: AppColors.lightDeepPurple),
+            doneStyle: TextStyle(color: AppColors.mainColor)),
+        onConfirm: (date) {
+      currentDate.value = date;
+      getCashFlowTransactions();
+    }, locale: LocaleType.en);
   }
 }

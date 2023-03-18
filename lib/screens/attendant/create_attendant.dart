@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutterpos/controllers/attendant_controller.dart';
+import 'package:flutterpos/controllers/home_controller.dart';
 import 'package:flutterpos/models/roles_model.dart';
-import 'package:flutterpos/responsive/large_screen.dart';
 import 'package:flutterpos/responsive/responsiveness.dart';
+import 'package:flutterpos/screens/home/attendants_page.dart';
 import 'package:get/get.dart';
 import 'package:switcher_button/switcher_button.dart';
 
@@ -23,32 +24,52 @@ class CreateAttendant extends StatelessWidget {
   Widget build(BuildContext context) {
     return ResponsiveWidget(
       largeScreen: Scaffold(
-        body: LargeScreen(
-            body: Container(
-          padding: EdgeInsets.only(
-            right: 200,
+        backgroundColor: Colors.white,
+        appBar: AppBar(
+          elevation: 0.3,
+          centerTitle: false,
+          backgroundColor: Colors.white,
+          titleSpacing: 0.0,
+          leading: IconButton(
+            color: Colors.black,
+            onPressed: () {
+              Get.find<HomeController>().selectedWidget.value =
+                  AttendantsPage();
+            },
+            icon: Icon(Icons.arrow_back_ios),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              dataWidget(),
-              SizedBox(height: 20),
-              Obx(() {
-                return attendantController.creatingAttendantsLoad.value
-                    ? Center(
-                        child: CircularProgressIndicator(),
-                      )
-                    : Center(
-                      child: Container(
-                          child: submitButton(context),
-                          width: 200,
-                        ),
-                    );
-              })
-            ],
+          title: majorTitle(
+              title: "Create Attendant", color: Colors.black, size: 18.0),
+        ),
+        body: SingleChildScrollView(
+          child: Container(
+            width: double.infinity,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(1.0),
+              color: Colors.white,
+            ),
+            padding: EdgeInsets.only(left: 30, top: 10, bottom: 20, right: 300),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                dataWidget(),
+                SizedBox(height: 20),
+                Obx(() {
+                  return attendantController.creatingAttendantsLoad.value
+                      ? Center(
+                          child: CircularProgressIndicator(),
+                        )
+                      : Center(
+                          child: Container(
+                            child: submitButton(context),
+                            width: 200,
+                          ),
+                        );
+                })
+              ],
+            ),
           ),
-          width: MediaQuery.of(context).size.width * 0.2,
-        )),
+        ),
       ),
       smallScreen: Scaffold(
         appBar: AppBar(
@@ -87,7 +108,7 @@ class CreateAttendant extends StatelessWidget {
 
   Widget dataWidget() {
     return Container(
-      padding: EdgeInsets.all(20),
+      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

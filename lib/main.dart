@@ -10,6 +10,7 @@ import 'package:flutterpos/screens/landing/landing.dart';
 import 'package:flutterpos/screens/shop/create_shop.dart';
 import 'package:flutterpos/utils/colors.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,9 +20,11 @@ void main() {
 class MyApp extends StatelessWidget {
   MyApp({super.key});
 
-  AttendantController attendantController =  Get.put<AttendantController>(AttendantController());
+  AttendantController attendantController =
+      Get.put<AttendantController>(AttendantController());
   AuthController authController = Get.put<AuthController>(AuthController());
   HomeController homeController = Get.put<HomeController>(HomeController());
+
 
 
   @override
@@ -30,9 +33,11 @@ class MyApp extends StatelessWidget {
       title: 'Pos',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primarySwatch: AppColors.mainColor,
-        splashColor: Colors.transparent,
-      ),
+          primarySwatch: AppColors.mainColor,
+          splashColor: Colors.transparent,
+          hoverColor: Colors.transparent,
+          highlightColor: Colors.transparent,
+          splashFactory: NoSplash.splashFactory),
       initialBinding: AuthBinding(),
       home: FutureBuilder(
           future: authController.getUserType(),

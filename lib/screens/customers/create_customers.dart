@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutterpos/controllers/home_controller.dart';
+import 'package:flutterpos/models/product_model.dart';
 import 'package:flutterpos/responsive/responsiveness.dart';
+import 'package:flutterpos/screens/customers/customers_page.dart';
+import 'package:flutterpos/screens/product/create_product.dart';
+import 'package:flutterpos/screens/sales/create_sale.dart';
+import 'package:flutterpos/screens/stock/create_purchase.dart';
 import 'package:get/get.dart';
 
 import '../../../../utils/colors.dart';
@@ -11,8 +17,10 @@ import '../../widgets/smalltext.dart';
 
 class CreateCustomer extends StatelessWidget {
   final type;
+  final page;
 
-  CreateCustomer({Key? key, required this.type}) : super(key: key);
+  CreateCustomer({Key? key, required this.type, required this.page})
+      : super(key: key);
 
   CustomerController customersController = Get.find<CustomerController>();
   SupplierController supplierController = Get.find<SupplierController>();
@@ -30,7 +38,29 @@ class CreateCustomer extends StatelessWidget {
           automaticallyImplyLeading: false,
           leading: IconButton(
             onPressed: () {
-              Get.back();
+              if (MediaQuery.of(context).size.width > 600) {
+                if (page == "customersPage") {
+                  Get.find<HomeController>().selectedWidget.value =
+                      CustomersPage(type: type);
+                }
+                if (page == "createSale") {
+                  Get.find<HomeController>().selectedWidget.value =
+                      CreateSale();
+                }
+                if (page == "createProduct") {
+                  Get.find<HomeController>().selectedWidget.value =
+                      CreateProduct(
+                    page: "create",
+                    productModel: ProductModel(),
+                  );
+                }
+                if (page == "createPurchase") {
+                  Get.find<HomeController>().selectedWidget.value =
+                      CreatePurchase();
+                }
+              } else {
+                Get.back();
+              }
             },
             icon: Icon(Icons.arrow_back_ios, color: Colors.black),
           ),
@@ -46,9 +76,9 @@ class CreateCustomer extends StatelessWidget {
           )),
       body: ResponsiveWidget(
           largeScreen: Align(
-              alignment: Alignment.topCenter,
+              alignment: Alignment.center,
               child: Container(
-                  width: 400,
+                  width: MediaQuery.of(context).size.width * 0.4,
                   height: MediaQuery.of(context).size.height * 0.7,
                   child: customerInfoCard(context))),
           smallScreen: SingleChildScrollView(
@@ -60,13 +90,14 @@ class CreateCustomer extends StatelessWidget {
   Widget customerInfoCard(context) {
     return Card(
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 15, horizontal: 25),
+        padding: EdgeInsets.symmetric(vertical: 15, horizontal: 35),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                SizedBox(height: 20),
                 Text("${type} Name".capitalize!),
                 SizedBox(height: 10),
                 TextFormField(
@@ -127,11 +158,11 @@ class CreateCustomer extends StatelessWidget {
                 if (type == "suppliers") {
                   supplierController.createSupplier(
                       shopId: shopController.currentShop.value?.id,
-                      context: context);
+                      context: context,page:page);
                 } else {
                   customersController.createCustomer(
                       shopId: shopController.currentShop.value?.id,
-                      context: context);
+                      context: context,page:page);
                 }
               },
               child: Center(

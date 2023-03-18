@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutterpos/controllers/home_controller.dart';
 import 'package:flutterpos/responsive/responsiveness.dart';
+import 'package:flutterpos/screens/home/profile_page.dart';
 import 'package:get/get.dart';
 
 import '../../controllers/AuthController.dart';
@@ -16,14 +18,22 @@ class ProfileUpdate extends StatelessWidget {
     authController.assignDataToTextFields();
     return ResponsiveWidget(
         largeScreen: Scaffold(
+          backgroundColor: Colors.white,
           appBar: AppBar(
             titleSpacing: 0,
             backgroundColor: Colors.white,
             centerTitle: false,
             elevation: 0.3,
+            title: majorTitle(
+                title: "Edit Profile", color: Colors.black, size: 16.0),
             leading: IconButton(
               onPressed: () {
-                Get.back();
+                if (MediaQuery.of(context).size.width > 600) {
+                  Get.find<HomeController>().selectedWidget.value =
+                      ProfilePage();
+                } else {
+                  Get.back();
+                }
               },
               icon: Icon(
                 Icons.arrow_back_ios,
@@ -53,9 +63,6 @@ class ProfileUpdate extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SizedBox(height: 10),
-                    majorTitle(
-                        title: "Edit Profile", color: Colors.black, size: 16.0),
-                    SizedBox(height: 20),
                     profileInputWidget(
                         controller: authController.nameController,
                         name: "Name"),

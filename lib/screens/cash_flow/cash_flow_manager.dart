@@ -3,10 +3,12 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:flutterpos/responsive/large_screen.dart';
+import 'package:flutterpos/controllers/home_controller.dart';
 import 'package:flutterpos/responsive/responsiveness.dart';
+import 'package:flutterpos/screens/finance/finance_page.dart';
 import 'package:flutterpos/utils/colors.dart';
 import 'package:flutterpos/utils/helper.dart';
+import 'package:flutterpos/widgets/pdf/cashflow_pdf.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
@@ -56,49 +58,24 @@ class CashFlowManager extends StatelessWidget {
   Widget build(BuildContext context) {
     return ResponsiveWidget(
         largeScreen: Scaffold(
-          body: LargeScreen(
-              body: Column(
+          backgroundColor: Colors.white,
+          appBar: appBar(context),
+          body: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                padding: EdgeInsets.all(10),
-                width: double.infinity,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text("Cash flow",
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                        )),
-                    Obx(() {
-                      return Text(
-                        createShopController.currentShop.value == null
-                            ? ""
-                            : "${createShopController.currentShop.value!.name!}"
-                                .capitalize!,
-                        style: TextStyle(
-                          fontSize: 10,
-                        ),
-                      );
-                    })
-                  ],
-                ),
-              ),
-              SizedBox(height: 20),
               Center(child: cashInHandWidget(context, "large")),
               SizedBox(height: 20),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 15),
-                child: cashFlowCategory(),
+                child: cashFlowCategory(context),
               ),
               SizedBox(height: 20),
               Container(
-                  margin:  EdgeInsets.symmetric(horizontal: 25),
+                  margin: EdgeInsets.symmetric(horizontal: 25),
                   width: double.infinity,
                   child: dataTable()),
             ],
-          )),
+          ),
         ),
         smallScreen: Helper(
             widget: RefreshIndicator(
@@ -108,64 +85,13 @@ class CashFlowManager extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     cashInHandWidget(context, "small"),
-                    cashFlowCategory(),
+                    cashFlowCategory(context),
                     dataTable(),
                   ],
                 ),
               ),
             ),
-            appBar: AppBar(
-              elevation: 0.3,
-              backgroundColor: Colors.white,
-              foregroundColor: Colors.black,
-              titleSpacing: 0.0,
-              iconTheme: IconThemeData(color: Colors.black),
-              titleTextStyle: TextStyle(color: Colors.black),
-              leading: IconButton(
-                onPressed: () {
-                  Get.back();
-                },
-                icon: Icon(
-                  Icons.arrow_back_ios,
-                ),
-              ),
-              title: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text("Cash flow",
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                      )),
-                  Obx(() {
-                    return Text(
-                      createShopController.currentShop.value == null
-                          ? ""
-                          : "${createShopController.currentShop.value!.name!}"
-                              .capitalize!,
-                      style: TextStyle(
-                        fontSize: 10,
-                      ),
-                    );
-                  })
-                ],
-              ),
-              actions: [
-                InkWell(
-                  onTap: () {
-                    // cashFlowController.showDatePicker(context: context);
-                  },
-                  child: Row(
-                    children: [
-                      Text("${DateFormat("MMM-yyyy").format(DateTime.now())}"),
-                      SizedBox(width: 3),
-                      Icon(Icons.arrow_drop_down)
-                    ],
-                  ),
-                ),
-                IconButton(onPressed: () {}, icon: Icon(Icons.download))
-              ],
-            ),
+            appBar: appBar(context),
             bottomNavigationBar: BottomAppBar(
               child: Container(
                 height: kToolbarHeight,
@@ -239,7 +165,12 @@ class CashFlowManager extends StatelessWidget {
                     padding: const EdgeInsets.only(left: 30.0, right: 30),
                     child: InkWell(
                       onTap: () {
-                        Get.to(CashAtBank());
+                        if (type == "small") {
+                          Get.to(() => CashAtBank());
+                        } else {
+                          Get.find<HomeController>().selectedWidget.value =
+                              CashAtBank();
+                        }
                       },
                       splashColor: Theme.of(context).splashColor,
                       child: Container(
@@ -280,7 +211,12 @@ class CashFlowManager extends StatelessWidget {
             children: [
               TextButton(
                 onPressed: () {
-                  Get.to(() => CashInLayout());
+                  if (MediaQuery.of(context).size.width > 600) {
+                    Get.find<HomeController>().selectedWidget.value =
+                        CashInLayout();
+                  } else {
+                    Get.to(() => CashInLayout());
+                  }
                 },
                 child: Container(
                   padding:
@@ -296,7 +232,12 @@ class CashFlowManager extends StatelessWidget {
               ),
               TextButton(
                 onPressed: () {
-                  Get.to(() => CashOutLayout());
+                  if (MediaQuery.of(context).size.width > 600) {
+                    Get.find<HomeController>().selectedWidget.value =
+                        CashOutLayout();
+                  } else {
+                    Get.to(() => CashOutLayout());
+                  }
                 },
                 child: Container(
                   padding:
@@ -318,10 +259,15 @@ class CashFlowManager extends StatelessWidget {
     );
   }
 
-  Widget cashFlowCategory() {
+  Widget cashFlowCategory(context) {
     return InkWell(
       onTap: () {
-        Get.to(CashFlowCategories());
+        if (MediaQuery.of(context).size.width > 600) {
+          Get.find<HomeController>().selectedWidget.value =
+              CashFlowCategories();
+        } else {
+          Get.to(CashFlowCategories());
+        }
       },
       child: Container(
         margin: EdgeInsets.all(10),
@@ -376,10 +322,8 @@ class CashFlowManager extends StatelessWidget {
         DataCell(
             Text("Sales",
                 style: TextStyle(
-                    color: Colors.purple,
-                    fontWeight: FontWeight.bold)), onTap: () {
-          print('row 1 pressed');
-        }),
+                    color: Colors.purple, fontWeight: FontWeight.bold)),
+            onTap: () {}),
         DataCell(Text("300")),
       ]),
       DataRow(cells: [
@@ -419,5 +363,75 @@ class CashFlowManager extends StatelessWidget {
         DataCell(Text("300")),
       ]),
     ]);
+  }
+
+  AppBar appBar(context) {
+    return AppBar(
+      elevation: 0.3,
+      backgroundColor: Colors.white,
+      foregroundColor: Colors.black,
+      titleSpacing: 0.0,
+      iconTheme: IconThemeData(color: Colors.black),
+      titleTextStyle: TextStyle(color: Colors.black),
+      leading: IconButton(
+        onPressed: () {
+          if (MediaQuery.of(context).size.width > 600) {
+            Get.find<HomeController>().selectedWidget.value = FinancePage();
+          } else {
+            Get.back();
+          }
+        },
+        icon: Icon(
+          Icons.arrow_back_ios,
+        ),
+      ),
+      title: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text("Cash flow",
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+              )),
+          Obx(() {
+            return Text(
+              createShopController.currentShop.value == null
+                  ? ""
+                  : "${createShopController.currentShop.value!.name!}"
+                      .capitalize!,
+              style: TextStyle(
+                fontSize: 10,
+              ),
+            );
+          })
+        ],
+      ),
+      actions: [
+        Obx(() => InkWell(
+              onTap: () {
+                cashFlowController.showDatePicker(context: context);
+              },
+              child: Row(
+                children: [
+                  Text(
+                      "${DateFormat("dd-MM-yyyy").format(cashFlowController.currentDate.value)}"),
+                  SizedBox(width: 3),
+                  Icon(Icons.arrow_drop_down)
+                ],
+              ),
+            )),
+        IconButton(
+            onPressed: () {
+              CashFlowPdf(
+                  shop: createShopController.currentShop.value!.name,
+                  type: "type",
+                  currency: createShopController.currentShop.value!.currency,
+                  cashInHand: "200",
+                  cashIn: "300",
+                  cashOut: "120");
+            },
+            icon: Icon(Icons.download))
+      ],
+    );
   }
 }

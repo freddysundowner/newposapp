@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutterpos/controllers/AuthController.dart';
+import 'package:flutterpos/controllers/home_controller.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
 import 'package:flutterpos/models/product_model.dart';
 import 'package:flutterpos/responsive/responsiveness.dart';
+import 'package:flutterpos/screens/stock/stock_page.dart';
 import 'package:flutterpos/utils/constants.dart';
 import 'package:flutterpos/widgets/increament_widget.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 import '../../controllers/product_controller.dart';
 import '../../utils/colors.dart';
@@ -27,20 +30,28 @@ class CountingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
         centerTitle: false,
         elevation: 0.3,
         titleSpacing: 0.0,
-        leading: IconButton(
-          onPressed: () {
-            Get.back();
-          },
-          icon: Icon(
-            Icons.arrow_back_ios,
-            color: Colors.black,
-          ),
-        ),
+        leading: Get.find<AuthController>().usertype.value == "attendant"
+            ? Container()
+            : IconButton(
+                onPressed: () {
+                  if (MediaQuery.of(context).size.width > 600) {
+                    Get.find<HomeController>().selectedWidget.value =
+                        StockPage();
+                  } else {
+                    Get.back();
+                  }
+                },
+                icon: Icon(
+                  Icons.arrow_back_ios,
+                  color: Colors.black,
+                ),
+              ),
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -54,12 +65,14 @@ class CountingPage extends StatelessWidget {
                     color: Colors.grey)
               ],
             ),
-            MediaQuery.of(context).size.width > 600
+            MediaQuery.of(context).size.width > 600 &&
+                    Get.find<AuthController>().usertype.value == "admin"
                 ? Padding(
                     padding: const EdgeInsets.only(right: 10.0),
                     child: InkWell(
                       onTap: () {
-                        Get.to(CountHistory());
+                        Get.find<HomeController>().selectedWidget.value =
+                            CountHistory();
                       },
                       child: majorTitle(
                           title: "Count History",
@@ -73,48 +86,215 @@ class CountingPage extends StatelessWidget {
       ),
       body: ResponsiveWidget(
         largeScreen: Container(
-          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(height: 15),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: Row(
-                  children: [
-                    Expanded(child: searchTextField()),
-                    SizedBox(width: 50),
-                    sortWidget(context)
-                  ],
+          padding: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(height: 5),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Row(
+                    children: [
+                      Expanded(child: searchTextField()),
+                      SizedBox(width: 50),
+                      sortWidget(context)
+                    ],
+                  ),
                 ),
-              ),
-              SizedBox(height: 15),
-              Obx(() {
-                return productController.getProductCountLoad.value
-                    ? Center(
-                        child: CircularProgressIndicator(),
-                      )
-                    : GridView.builder(
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                            childAspectRatio:
-                                MediaQuery.of(context).size.width *
-                                    1.4 /
-                                    MediaQuery.of(context).size.height,
-                            crossAxisCount: 3,
-                            crossAxisSpacing: 10,
-                            mainAxisSpacing: 10),
-                        shrinkWrap: true,
-                        itemCount: productController.products.length,
-                        itemBuilder: (context, index) {
-                          ProductModel productBody =
-                              productController.products.elementAt(index);
-                          return incrementWidget(
-                              index: index,
-                              product: productBody,
-                              context: context);
-                        });
-              })
-            ],
+                SizedBox(height: 15),
+                Obx(() {
+                  return productController.getProductCountLoad.value
+                          ? Center(
+                              child: CircularProgressIndicator(),
+                            )
+                          : Theme(
+                              data: Theme.of(context)
+                                  .copyWith(dividerColor: Colors.grey),
+                              child: Container(
+                                width: double.infinity,
+                                margin: EdgeInsets.only(right: 10,bottom: 30),
+                                child: DataTable(
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                    width: 1,
+                                    color: Colors.black,
+                                  )),
+                                  columnSpacing: 30.0,
+                                  columns: [
+                                    DataColumn(
+                                        label: Text('Product',
+                                            textAlign: TextAlign.center)),
+                                    DataColumn(
+                                        label: Text('Count',
+                                            textAlign: TextAlign.center)),
+                                    DataColumn(
+                                        label: Text('Date',
+                                            textAlign: TextAlign.center)),
+                                    DataColumn(
+                                        label: Text('',
+                                            textAlign: TextAlign.center)),
+                                  ],
+                                  rows: List.generate(
+                                      productController.products.length,
+                                      (index) {
+                                    ProductModel productBody = productController
+                                        .products
+                                        .elementAt(index);
+                                    final y = productBody.name;
+                                    final x = productBody.quantity.toString();
+                                    final w = productBody.createdAt;
+
+                                    return DataRow(cells: [
+                                      DataCell(Container(
+                                          width: 75, child: Text(y!))),
+                                      DataCell(Container(
+                                        child: Row(children: [
+                                          IconButton(
+                                              onPressed: () {
+                                                productController
+                                                    .decreamentInitial(index);
+                                              },
+                                              icon: Icon(Icons.remove,
+                                                  color: Colors.black,
+                                                  size: 16)),
+                                          Container(
+                                              padding: EdgeInsets.only(
+                                                  top: 5,
+                                                  bottom: 5,
+                                                  right: 8,
+                                                  left: 8),
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(5),
+                                                border: Border.all(
+                                                    color: Colors.black,
+                                                    width: 0.1),
+                                                color: Colors.grey,
+                                              ),
+                                              child: majorTitle(
+                                                  title:
+                                                      "${productBody.quantity}",
+                                                  color: Colors.black,
+                                                  size: 12.0)),
+                                          IconButton(
+                                              onPressed: () {
+                                                productController
+                                                    .increamentInitial(index);
+                                              },
+                                              icon: Icon(Icons.add,
+                                                  color: Colors.black,
+                                                  size: 16)),
+                                        ]),
+                                      )),
+                                      DataCell(Container(
+                                          child: Text(
+                                              DateFormat("yyyy-dd-MMM hh:mm a")
+                                                  .format(w!)))),
+                                      DataCell(Align(
+                                        alignment: Alignment.topRight,
+                                        child: InkWell(
+                                          onTap: () {
+                                            showDialog(
+                                                context: context,
+                                                builder: (_) {
+                                                  return AlertDialog(
+                                                    title: Text(
+                                                      "Confirm Product Count",
+                                                      style: TextStyle(
+                                                        color: Colors.black,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                    // content: Text("Do you want to delete this item?"),
+                                                    actions: [
+                                                      TextButton(
+                                                        onPressed: () {
+                                                          Get.back();
+                                                        },
+                                                        child: Text(
+                                                          "Cancel"
+                                                              .toUpperCase(),
+                                                          style: TextStyle(
+                                                            color: AppColors
+                                                                .mainColor,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      TextButton(
+                                                        onPressed: () {
+                                                          Get.find<
+                                                                  ProductController>()
+                                                              .updateQuantity(
+                                                                  productBody,
+                                                                  context);
+                                                          Get.back();
+                                                        },
+                                                        child: Text(
+                                                          "Okay".toUpperCase(),
+                                                          style: TextStyle(
+                                                            color: AppColors
+                                                                .mainColor,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  );
+                                                });
+                                          },
+                                          child: Container(
+                                            margin: EdgeInsets.only(
+                                                top: 10, right: 3),
+                                            width: 80,
+                                            decoration: BoxDecoration(
+                                                color: Colors.blue[300],
+                                                borderRadius:
+                                                    BorderRadius.circular(20)),
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.all(4.0),
+                                              child: Row(
+                                                children: [
+                                                  Icon(Icons.check),
+                                                  Text('OK')
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      )),
+                                    ]);
+                                  }),
+                                ),
+                              ),
+                            )
+
+                      // GridView.builder(
+                      //     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      //         childAspectRatio: MediaQuery.of(context).size.width *
+                      //             1.2 /
+                      //             MediaQuery.of(context).size.height,
+                      //         crossAxisCount: 3,
+                      //         crossAxisSpacing: 10,
+                      //         mainAxisSpacing: 10),
+                      //     shrinkWrap: true,
+                      //     itemCount: productController.products.length,
+                      //     itemBuilder: (context, index) {
+                      //       ProductModel productBody =
+                      //           productController.products.elementAt(index);
+                      //       return incrementWidget(
+                      //           index: index, product: productBody, context: context);
+                      //     })
+                      //
+                      ;
+                })
+              ],
+            ),
           ),
         ),
         smallScreen: SingleChildScrollView(

@@ -10,26 +10,25 @@ class StockTransferHistory {
     this.type,
     this.createdAt,
     this.updatedAt,
-
   });
 
   String? id;
-  ShopModel ?from;
+  ShopModel? from;
   ShopModel? to;
   List<ProductModel>? product;
-  String ?type;
+  String? type;
   DateTime? createdAt;
-  DateTime ?updatedAt;
+  DateTime? updatedAt;
 
-  factory StockTransferHistory.fromJson(Map<String, dynamic> json) => StockTransferHistory(
-    id: json["_id"],
-    from: ShopModel.fromJson(json["from"]),
-    to: ShopModel.fromJson(json["to"]),
-    product: List<ProductModel>.from(json["product"].map((x) => ProductModel.fromJson(x))),
-    type: json["type"],
-    createdAt: DateTime.parse(json["createdAt"]),
-    updatedAt: DateTime.parse(json["updatedAt"]),
-
-  );
+  factory StockTransferHistory.fromJson(Map<String, dynamic> json) =>
+      StockTransferHistory(
+        id: json["_id"],
+        from: ShopModel.fromJson(json["from"]),
+        to: ShopModel.fromJson(json["to"]),
+        product: List<ProductModel>.from(
+            json["product"].map((x) => ProductModel.fromJson(x))),
+        type: json["type"],
+        createdAt: DateTime.parse(json["createdAt"]),
+        updatedAt: DateTime.parse(json["updatedAt"]),
+      );
 }
-

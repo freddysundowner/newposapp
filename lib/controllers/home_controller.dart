@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutterpos/screens/home/profile_page.dart';
 import 'package:flutterpos/utils/constants.dart';
 import 'package:get/get.dart';
@@ -11,12 +12,13 @@ class HomeController extends GetxController{
   RxString activeItem=RxString(homePage);
 
 
+  Rxn<Widget> selectedWidget = Rxn(HomePage());
+
 
   RxInt selectedIndex = RxInt(0);
-  List pages = [
-    HomePage(),
-    ShopsPage(),
-    AttendantsPage(),
-    ProfilePage()
+   List  pages= [HomePage(),
+  ShopsPage(),
+  AttendantsPage(),
+  ProfilePage()
   ];
 }

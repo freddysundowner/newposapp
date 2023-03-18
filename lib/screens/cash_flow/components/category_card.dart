@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutterpos/controllers/home_controller.dart';
 import 'package:flutterpos/utils/colors.dart';
 import 'package:flutterpos/widgets/delete_dialog.dart';
 import 'package:get/get.dart';
@@ -66,8 +67,17 @@ actionsBottomSheet({required context}) {
                 leading: Icon(Icons.list),
                 onTap: () {
                   Get.back();
-                  Get.to(() => CashHistory(
-                      title: "Faulu", subtitle: "All records", id: "1230"));
+                  if (MediaQuery.of(context).size.width > 600) {
+                    Get.find<HomeController>().selectedWidget.value =
+                        CashHistory(
+                            title: "Faulu",
+                            subtitle: "All records",
+                            page: "cashflowcategory",
+                            id: "1230");
+                  } else {
+                    Get.to(() => CashHistory(
+                        title: "Faulu", subtitle: "All records", id: "1230",page: "bank",));
+                  }
                 },
                 title: Text("View List"),
               ),
@@ -90,7 +100,7 @@ actionsBottomSheet({required context}) {
                                 Spacer(),
                                 TextFormField(
                                   decoration: InputDecoration(
-                                    contentPadding: EdgeInsets.all(10),
+                                      contentPadding: EdgeInsets.all(10),
                                       fillColor: Colors.white,
                                       filled: true,
                                       focusedBorder: OutlineInputBorder(

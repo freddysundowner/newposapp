@@ -4,9 +4,15 @@ import 'package:flutterpos/models/sales_order_item_model.dart';
 import 'package:flutterpos/services/customer.dart';
 import 'package:get/get.dart';
 
+import '../models/product_model.dart';
+import '../screens/customers/customers_page.dart';
+import '../screens/product/create_product.dart';
+import '../screens/sales/create_sale.dart';
+import '../screens/stock/create_purchase.dart';
 import '../utils/colors.dart';
 import '../widgets/loading_dialog.dart';
 import '../widgets/snackBars.dart';
+import 'home_controller.dart';
 
 class CustomerController extends GetxController
     with SingleGetTickerProviderMixin {
@@ -23,11 +29,10 @@ class CustomerController extends GetxController
   RxBool gettingCustomer = RxBool(false);
   RxBool customerPurchaseLoad = RxBool(false);
   RxList<CustomerModel> customers = RxList([]);
-  RxList<CustomerModel> customersOnCredit = RxList([]);
   RxList<SaleOrderItemModel> customerPurchases = RxList([]);
   RxList<SaleOrderItemModel> customerReturns = RxList([]);
   Rxn<CustomerModel> customer = Rxn(null);
-  RxBool customerOnCreditLoad = RxBool(false);
+
   RxString activeItem = RxString("All");
   RxString customerActiveItem=RxString("Credit");
   late TabController tabController;
@@ -55,7 +60,7 @@ class CustomerController extends GetxController
 
 
 
-  createCustomer({required shopId, required BuildContext context}) async {
+  createCustomer({required shopId, required BuildContext context, required page}) async {
     try {
       creatingCustomerLoad.value = true;
       LoadingDialog.showLoadingDialog(
@@ -68,13 +73,33 @@ class CustomerController extends GetxController
       var response = await Customer().createCustomer(body);
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
       if (response["status"] == true) {
-        await getCustomersInShop(shopId);
         clearTexts();
+        if (MediaQuery.of(context).size.width > 600) {
+          if (page == "customersPage") {
+            Get.find<HomeController>().selectedWidget.value =
+                CustomersPage(type: "customers");
+          }
+          if (page == "createSale") {
+            Get.find<HomeController>().selectedWidget.value =
+                CreateSale();
+          }
+          if (page == "createProduct") {
+            Get.find<HomeController>().selectedWidget.value =
+                CreateProduct(
+                  page: "create",
+                  productModel: ProductModel(),
+                );
+          }
+          if (page == "createPurchase") {
+            Get.find<HomeController>().selectedWidget.value =
+                CreatePurchase();
+          }
+        } else {
+          Get.back();
+        }
+        await getCustomersInShop(shopId,"all");
         Get.back();
-        showSnackBar(
-            message: response["message"],
-            color: AppColors.mainColor,
-            context: context);
+
       } else {
         showSnackBar(
             message: response["message"], color: Colors.red, context: context);
@@ -86,10 +111,11 @@ class CustomerController extends GetxController
     }
   }
 
-  getCustomersInShop(shopId) async {
+  getCustomersInShop(shopId,type) async {
     try {
+      customers.clear();
       gettingCustomersLoad.value = true;
-      var response = await Customer().getCustomersByShopId(shopId);
+      var response = await Customer().getCustomersByShopId(shopId,type);
       if (response["status"] == true) {
         List fetchedCustomers = response["body"];
         List<CustomerModel> customerData =
@@ -167,25 +193,6 @@ class CustomerController extends GetxController
     addressController.text = "";
     amountController.text = "";
   }
-
-  getCustomersOnCredit(String shopId) async {
-    try {
-      customerOnCreditLoad.value = true;
-      var response = await Customer().getCustomersByShopIdOnCredit(shopId);
-      if (response["status"] == true) {
-        List fetchedCustomers = response["body"];
-        List<CustomerModel> customerData =
-            fetchedCustomers.map((e) => CustomerModel.fromJson(e)).toList();
-        customersOnCredit.assignAll(customerData);
-      } else {
-        customersOnCredit.value = [];
-      }
-      customerOnCreditLoad.value = false;
-    } catch (e) {
-      customerOnCreditLoad.value = false;
-    }
-  }
-
   getCustomerById(id) async {
     try {
       gettingCustomer.value = true;
@@ -255,13 +262,13 @@ class CustomerController extends GetxController
       var response = await Customer().deleteCustomer(id: id);
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
       if (response["status"] == true) {
+        if (MediaQuery.of(context).size.width>600) {
+          Get.find<HomeController>().selectedWidget.value=CustomersPage(type: "customers");
+        }  else{
+          Get.back();
+        }
         clearTexts();
-        Get.back();
-        showSnackBar(
-            message: response["message"],
-            color: AppColors.mainColor,
-            context: context);
-        await getCustomersInShop(shopId);
+        await getCustomersInShop(shopId,"all");
       } else {
         showSnackBar(
             message: response["message"],

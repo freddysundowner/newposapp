@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutterpos/controllers/home_controller.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
-import 'package:flutterpos/responsive/large_screen.dart';
 import 'package:flutterpos/responsive/responsiveness.dart';
 import 'package:flutterpos/screens/cash_flow/cash_flow_manager.dart';
 import 'package:flutterpos/screens/finance/profit_page.dart';
@@ -13,8 +13,8 @@ import '../../utils/colors.dart';
 import '../../utils/dates.dart';
 import '../../widgets/bigtext.dart';
 import '../../widgets/normal_text.dart';
-import '../../widgets/side_menu.dart';
 import '../../widgets/smalltext.dart';
+import '../home/home_page.dart';
 import '../sales/all_sales_page.dart';
 import 'expense_page.dart';
 
@@ -34,8 +34,22 @@ class FinancePage extends StatelessWidget {
         type: "finance",
         shopId: shopController.currentShop.value?.id);
     return ResponsiveWidget(
-      largeScreen:Scaffold(
-          body: LargeScreen(body: Container(
+      largeScreen: Scaffold(
+        backgroundColor: Colors.white,
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0.0,
+          leading: IconButton(
+              onPressed: () {
+                Get.find<HomeController>().selectedWidget.value = HomePage();
+              },
+              icon: Icon(
+                Icons.arrow_back_ios,
+                color: Colors.black,
+              )),
+        ),
+        body: SingleChildScrollView(
+          child: Container(
             width: double.infinity,
             padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
             child: Column(
@@ -65,18 +79,20 @@ class FinancePage extends StatelessWidget {
                     shrinkWrap: true,
                     children: [
                       Obx(() => Padding(
-                        padding: const EdgeInsets.only(right: 18.0),
-                        child: financeCards(
-                            title: "Profits",
-                            subtitle: "Gross & Net profits",
-                            onPresssed: () {
-                              Get.to(() => ProfitPage());
-                            },
-                            color: Colors.amber.shade100,
-                            icon: Icons.query_stats,
-                            amount:
-                            "${salesController.profitModel.value?.profit ?? "0"}"),
-                      )),
+                            padding: const EdgeInsets.only(right: 18.0),
+                            child: financeCards(
+                                title: "Profits",
+                                subtitle: "Gross & Net profits",
+                                onPresssed: () {
+                                  Get.find<HomeController>()
+                                      .selectedWidget
+                                      .value = ProfitPage();
+                                },
+                                color: Colors.amber.shade100,
+                                icon: Icons.query_stats,
+                                amount:
+                                    "${salesController.profitModel.value?.profit ?? "0"}"),
+                          )),
                       Obx(() {
                         return Padding(
                           padding: const EdgeInsets.only(right: 18.0),
@@ -84,12 +100,13 @@ class FinancePage extends StatelessWidget {
                             title: "Expenses",
                             subtitle: "Expenditure",
                             onPresssed: () {
-                              Get.to(() => ExpensePage());
+                              Get.find<HomeController>().selectedWidget.value =
+                                  ExpensePage();
                             },
                             color: Colors.purple.shade100,
                             icon: Icons.show_chart,
                             amount:
-                            "${salesController.profitModel.value?.expenses ?? "0"}",
+                                "${salesController.profitModel.value?.expenses ?? "0"}",
                           ),
                         );
                       }),
@@ -100,20 +117,24 @@ class FinancePage extends StatelessWidget {
                             title: "Sales",
                             subtitle: "sales",
                             onPresssed: () {
-                              Get.to(() => AllSalesPage());
+                              Get.find<HomeController>().selectedWidget.value =
+                                  AllSalesPage(
+                                page: "financePage",
+                              );
                               salesController.getSalesByShop(
                                   id: shopController.currentShop.value?.id);
                             },
                             color: Colors.blue.shade100,
                             icon: Icons.sell_rounded,
                             amount:
-                            "${salesController.profitModel.value?.sales ?? 0}",
+                                "${salesController.profitModel.value?.sales ?? 0}",
                           ),
                         );
                       }),
                       InkWell(
                         onTap: () {
-                          Get.to(() => CashFlowManager());
+                          Get.find<HomeController>().selectedWidget.value =
+                              CashFlowManager();
                         },
                         child: Container(
                           margin: EdgeInsets.only(top: 10, right: 18),
@@ -134,15 +155,13 @@ class FinancePage extends StatelessWidget {
                                         child: Icon(Icons.margin_outlined)),
                                     decoration: BoxDecoration(
                                         color: Colors.amberAccent,
-                                        borderRadius:
-                                        BorderRadius.circular(20)),
+                                        borderRadius: BorderRadius.circular(20)),
                                   ),
                                   SizedBox(
                                     width: 10,
                                   ),
                                   Column(
-                                    crossAxisAlignment:
-                                    CrossAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       majorTitle(
                                           title: "Cashflow Manager",
@@ -165,9 +184,9 @@ class FinancePage extends StatelessWidget {
                 )
               ],
             ),
-          ),),
+          ),
         ),
-
+      ),
       smallScreen: Helper(
         widget: SingleChildScrollView(
           child: Container(
@@ -217,7 +236,9 @@ class FinancePage extends StatelessWidget {
                     title: "Sales",
                     subtitle: "sales",
                     onPresssed: () {
-                      Get.to(() => AllSalesPage());
+                      Get.to(() => AllSalesPage(
+                            page: "financePage",
+                          ));
                       salesController.getSalesByShop(
                           id: shopController.currentShop.value?.id);
                     },

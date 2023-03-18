@@ -9,13 +9,14 @@ showEditDialog({required user, required context}) {
   SupplierController supplierController = Get.find<SupplierController>();
   showDialog(
       context: context,
-
       builder: (_) {
         return Dialog(
-
           child: Container(
             height: MediaQuery.of(context).size.height * 0.6,
-            padding: EdgeInsets.only(left: 10,right: 10,top: 10,bottom: 3),
+            width: MediaQuery.of(context).size.width > 600
+                ? MediaQuery.of(context).size.width * 0.35
+                : MediaQuery.of(context).size.width * 0.6,
+            padding: EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 3),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -35,7 +36,7 @@ showEditDialog({required user, required context}) {
                           borderRadius: BorderRadius.circular(5))),
                 ),
                 SizedBox(
-                  height: 4,
+                  height: 7,
                 ),
                 TextFormField(
                   controller: user == "suppliers"
@@ -46,7 +47,7 @@ showEditDialog({required user, required context}) {
                           borderRadius: BorderRadius.circular(5))),
                 ),
                 SizedBox(
-                  height: 4,
+                  height: 7,
                 ),
                 TextFormField(
                   controller: user == "suppliers"
@@ -58,7 +59,7 @@ showEditDialog({required user, required context}) {
                           borderRadius: BorderRadius.circular(5))),
                 ),
                 SizedBox(
-                  height: 4,
+                  height: 7,
                 ),
                 TextFormField(
                   controller: user == "suppliers"
@@ -70,7 +71,7 @@ showEditDialog({required user, required context}) {
                           borderRadius: BorderRadius.circular(5))),
                 ),
                 SizedBox(
-                  height: 4,
+                  height: 7,
                 ),
                 TextFormField(
                   controller: user == "suppliers"
@@ -101,9 +102,11 @@ showEditDialog({required user, required context}) {
                         onPressed: () {
                           Navigator.pop(context);
                           if (user == "suppliers") {
-                            supplierController.updateSupplier(context,customersController.customer.value?.id);
+                            supplierController.updateSupplier(context,
+                                customersController.customer.value?.id);
                           } else {
-                            customersController.updateCustomer(context,customersController.customer.value?.id);
+                            customersController.updateCustomer(context,
+                                customersController.customer.value?.id);
                           }
                         },
                         child: Text("Save Changes".toUpperCase(),

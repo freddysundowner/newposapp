@@ -28,7 +28,8 @@ class WalletController extends GetxController with GetTickerProviderStateMixin {
   void save(uid, context) async {
     if (amountController.text == "") {
       // Get.snackbar("", "Please enter a valid amount ");
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Please enter a valid amount")));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text("Please enter a valid amount")));
     } else {
       try {
         LoadingDialog.showLoadingDialog(
@@ -50,7 +51,6 @@ class WalletController extends GetxController with GetTickerProviderStateMixin {
         }
       } catch (e) {
         Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
-
       }
     }
   }
@@ -62,7 +62,8 @@ class WalletController extends GetxController with GetTickerProviderStateMixin {
 
       if (response != null) {
         List fetchedData = response["body"];
-        List<DepositModel> data = fetchedData.map((e) => DepositModel.fromJson(e)).toList();
+        List<DepositModel> data =
+            fetchedData.map((e) => DepositModel.fromJson(e)).toList();
         deposits.assignAll(data);
       } else {
         deposits.value = [];
@@ -73,7 +74,7 @@ class WalletController extends GetxController with GetTickerProviderStateMixin {
     }
   }
 
-  getWalletUsage(uid) async {
+  getWalletUsage(uid, type) async {
     try {
       gettingUsageLoad.value = true;
       var response = await Wallet().getusage(uid);

@@ -164,7 +164,6 @@ class Login extends StatelessWidget {
                             ),
                           ),
                           onPressed: () {
-                            Get.to(() => Home());
                             authController.login(context);
                           },
                         );
