@@ -22,16 +22,7 @@ import '../sales/all_sales_page.dart';
 import '../stock/stock_page.dart';
 
 class HomePage extends StatelessWidget {
-  HomePage({Key? key}) : super(key: key) {
-    salesController.getSalesByDates(
-        shopId: shopController.currentShop.value?.id,
-        startingDate: DateTime.now(),
-        endingDate: DateTime.now(),
-        type: "notcashflow");
-    shopController.getShopsByAdminId(
-      adminId: authController.currentUser.value?.id,
-    );
-  }
+  HomePage({Key? key}) : super(key: key) ;
 
   ShopController shopController = Get.find<ShopController>();
   SalesController salesController = Get.put(SalesController());

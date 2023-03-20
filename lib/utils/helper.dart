@@ -11,6 +11,22 @@ import 'package:get/get.dart';
 
 import '../screens/home/home.dart';
 
+missingValueDialog(context, message) {
+  showDialog(
+      context: context,
+      builder: (_) {
+        return AlertDialog(
+          content: Text(message),
+          actions: [
+            TextButton(
+                onPressed: () {
+                  Get.back();
+                },
+                child: Text("Ok"))
+          ],
+        );
+      });
+}
 class Helper extends StatelessWidget {
   final AppBar? appBar;
   final Widget widget;
@@ -169,4 +185,5 @@ class Helper extends StatelessWidget {
           );
         });
   }
+
 }

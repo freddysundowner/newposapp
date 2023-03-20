@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutterpos/controllers/AuthController.dart';
 import 'package:flutterpos/controllers/attendant_controller.dart';
+import 'package:flutterpos/controllers/sales_controller.dart';
+import 'package:flutterpos/controllers/shop_controller.dart';
 import 'package:flutterpos/responsive/responsiveness.dart';
 import 'package:flutterpos/utils/helper.dart';
 import 'package:flutterpos/widgets/bigtext.dart';
@@ -11,8 +14,19 @@ import '../../controllers/home_controller.dart';
 import '../../utils/colors.dart';
 
 class Home extends StatelessWidget {
-  Home({Key? key}) : super(key: key);
+  Home({Key? key}) : super(key: key){
+    salesController.getSalesByDates(
+        shopId: shopController.currentShop.value?.id,
+        startingDate: DateTime.now(),
+        endingDate: DateTime.now(),
+        type: "notcashflow");
+    // shopController.getShopsByAdminId(
+    //   adminId: Get.find<AuthController>().currentUser.value?.id,
+    // );
+  }
   HomeController homeControler = Get.put(HomeController());
+  SalesController salesController = Get.put(SalesController());
+  ShopController shopController = Get.put(ShopController());
   AttendantController attendantController = Get.find<AttendantController>();
 
   @override

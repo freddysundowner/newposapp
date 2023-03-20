@@ -39,10 +39,11 @@ class CustomersPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ResponsiveWidget(
-        largeScreen: defaultTab("large"), smallScreen: defaultTab("small"));
+        largeScreen: defaultTab("large", context),
+        smallScreen: defaultTab("small", context));
   }
 
-  Widget defaultTab(types) {
+  Widget defaultTab(types, context) {
     return DefaultTabController(
       length: 2,
       child: Scaffold(
@@ -51,7 +52,8 @@ class CustomersPage extends StatelessWidget {
           titleSpacing: 0.0,
           elevation: 0.3,
           centerTitle: false,
-          leading: Get.find<AuthController>().usertype == "attendant"
+          leading: Get.find<AuthController>().usertype == "attendant" &&
+                  MediaQuery.of(context).size.width > 600
               ? Container()
               : IconButton(
                   onPressed: () {

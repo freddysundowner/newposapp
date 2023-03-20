@@ -341,9 +341,16 @@ showPasswordResetDialog(BuildContext context, String id) {
                           authController.textEditingControllerNewPassword,
                       obscureText: true,
                       decoration: InputDecoration(
-                          contentPadding: EdgeInsets.all(3),
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(5))),
+                        contentPadding: EdgeInsets.all(3),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(5),
+                          borderSide: BorderSide(color: Colors.grey),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(5),
+                          borderSide: BorderSide(color: Colors.grey),
+                        ),
+                      ),
                     )
                   ],
                 ),
@@ -361,9 +368,16 @@ showPasswordResetDialog(BuildContext context, String id) {
                           authController.textEditingControllerConfirmPassword,
                       obscureText: true,
                       decoration: InputDecoration(
-                          contentPadding: EdgeInsets.all(3),
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(5))),
+                        contentPadding: EdgeInsets.all(3),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(5),
+                          borderSide: BorderSide(color: Colors.grey),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(5),
+                          borderSide: BorderSide(color: Colors.grey),
+                        ),
+                      ),
                     )
                   ],
                 ),
@@ -419,5 +433,3 @@ showPasswordResetDialog(BuildContext context, String id) {
         );
       });
 }
-
-

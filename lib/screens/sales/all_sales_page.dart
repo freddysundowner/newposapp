@@ -4,6 +4,7 @@ import 'package:flutterpos/controllers/shop_controller.dart';
 import 'package:flutterpos/models/sales_model.dart';
 import 'package:flutterpos/responsive/responsiveness.dart';
 import 'package:flutterpos/screens/sales/create_sale.dart';
+import 'package:flutterpos/screens/stock/badstocks.dart';
 import 'package:flutterpos/utils/helper.dart';
 import 'package:get/get.dart';
 
@@ -63,23 +64,47 @@ class AllSalesPage extends StatelessWidget {
                     majorTitle(title: "Sales", color: Colors.black, size: 18.0),
                   Spacer(),
                   if (authController.usertype == "attendant")
-                    InkWell(
-                        onTap: () {
-                          if (MediaQuery.of(context).size.width > 600) {
-                            homeController.selectedWidget.value = CreateSale(
-                              page: "allSales",
-                            );
-                          } else {
-                            Get.to(() => CreateSale(page: "allSales"));
-                          }
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.only(right: 15.0),
-                          child: majorTitle(
-                              title: "Create Sale",
-                              color: AppColors.mainColor,
-                              size: 18.0),
-                        )),
+                    PopupMenuButton(
+                      itemBuilder: (ctx) => [
+                        PopupMenuItem(
+                          child: ListTile(
+                            onTap: () {
+                              Get.back();
+                              if (MediaQuery.of(context).size.width > 600) {
+                                homeController.selectedWidget.value =
+                                    CreateSale(
+                                  page: "allSales",
+                                );
+                              } else {
+                                Get.to(() => CreateSale(page: "allSales"));
+                              }
+                            },
+                            title: Text("Create Sale"),
+                          ),
+                        ),
+                        PopupMenuItem(
+                          child: ListTile(
+                            onTap: () {
+                              Get.back();
+                              if (MediaQuery.of(context).size.width > 600) {
+                                homeController.selectedWidget.value =
+                                    BadStockPage(
+                                  page: "sales",
+                                );
+                              } else {
+                                Get.to(() => BadStockPage(page: "sales"));
+                              }
+                            },
+                            title: Text("BadStock"),
+                          ),
+                        ),
+                      ],
+                      icon: Icon(
+                        Icons.more_vert,
+                        color: Colors.black,
+                        size: 30,
+                      ),
+                    ),
                 ],
               ),
               leading: Get.find<AuthController>().usertype == "attendant" &&

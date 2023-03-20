@@ -20,6 +20,7 @@ import '../../widgets/sales_card.dart';
 import '../../widgets/smalltext.dart';
 import '../customers/create_customers.dart';
 import '../product/product_selection.dart';
+import 'components/discount_dialog.dart';
 import 'components/edit_price_dialog.dart';
 
 class CreateSale extends StatelessWidget {
@@ -730,6 +731,7 @@ class CreateSale extends StatelessWidget {
 
   Widget showPopUpdialog(
       {required context, required index, required ProductModel productModel}) {
+    TextEditingController textEditingController = TextEditingController();
     return PopupMenuButton(
       itemBuilder: (ctx) => [
         PopupMenuItem(
@@ -748,6 +750,11 @@ class CreateSale extends StatelessWidget {
             leading: Icon(Icons.discount),
             onTap: () {
               Get.back();
+              discountDialog(
+                  context: context,
+                  controller: textEditingController,
+                  productModel: productModel,
+                  index: index);
             },
             title: Text("Give Discount"),
           ),

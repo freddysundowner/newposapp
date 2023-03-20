@@ -87,6 +87,14 @@ class AttendantLanding extends StatelessWidget {
                                       .map((e) => sideMenu(e.name))
                                       .toList(),
                         ),
+                        SizedBox(height: 10),
+                        InkWell(
+                          onTap: () {
+                            authController.logout();
+                          },
+                          child: majorTitle(
+                              title: "Logout", color: Colors.black, size: 16),
+                        ),
                       ],
                     ),
                   ),

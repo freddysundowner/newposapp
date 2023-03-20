@@ -100,117 +100,121 @@ class ProductPage extends StatelessWidget {
               ),
             ),
             body: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 1, right: 10, top: 10),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        searchWidget(),
-                        SizedBox(width: 100),
-                        sortWidget(context)
-                      ],
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 15),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding:
+                          const EdgeInsets.only(left: 1, right: 10, top: 10),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          searchWidget(),
+                          SizedBox(width: 100),
+                          sortWidget(context)
+                        ],
+                      ),
                     ),
-                  ),
-                  SizedBox(height: 30),
-                  Obx(() {
-                    return productController.getProductLoad.value
-                        ? Center(
-                            child: CircularProgressIndicator(),
-                          )
-                        : productController.products.length == 0
-                            ? Center(
-                                child: Text(
-                                "No Entries found",
-                                style: TextStyle(color: AppColors.mainColor),
-                              ))
-                            : Theme(
-                                data: Theme.of(context)
-                                    .copyWith(dividerColor: Colors.grey),
-                                child: Container(
-                                  width: double.infinity,
-                                  margin: EdgeInsets.only(
-                                      right: 10, left: 5, bottom: 20),
-                                  child: DataTable(
-                                    decoration: BoxDecoration(
-                                        border: Border.all(
-                                      width: 1,
-                                      color: Colors.black,
-                                    )),
-                                    columnSpacing: 30.0,
-                                    columns: [
-                                      DataColumn(
-                                          label: Text('Product',
-                                              textAlign: TextAlign.center)),
-                                      DataColumn(
-                                          label: Text('Category',
-                                              textAlign: TextAlign.center)),
-                                      DataColumn(
-                                          label: Text('Available',
-                                              textAlign: TextAlign.center)),
-                                      DataColumn(
-                                          label: Text('Buying Price',
-                                              textAlign: TextAlign.center)),
-                                      DataColumn(
-                                          label: Text('Selling Price',
-                                              textAlign: TextAlign.center)),
-                                      DataColumn(
-                                          label: Text('',
-                                              textAlign: TextAlign.center)),
-                                    ],
-                                    rows: List.generate(
-                                        productController.products.length,
-                                        (index) {
-                                      ProductModel productBody =
-                                          productController.products
-                                              .elementAt(index);
-                                      final y = productBody.name;
-                                      final x = productBody.category!.name;
-                                      final w = productBody.quantity;
-                                      final z = productBody.buyingPrice;
-                                      final a = productBody.sellingPrice![0];
+                    SizedBox(height: 30),
+                    Obx(() {
+                      return productController.getProductLoad.value
+                          ? Center(
+                              child: CircularProgressIndicator(),
+                            )
+                          : productController.products.length == 0
+                              ? Center(
+                                  child: Text(
+                                  "No Entries found",
+                                  style: TextStyle(color: AppColors.mainColor),
+                                ))
+                              : Theme(
+                                  data: Theme.of(context)
+                                      .copyWith(dividerColor: Colors.grey),
+                                  child: Container(
+                                    width: double.infinity,
+                                    margin: EdgeInsets.only(
+                                        right: 10, left: 5, bottom: 20),
+                                    child: DataTable(
+                                      decoration: BoxDecoration(
+                                          border: Border.all(
+                                        width: 1,
+                                        color: Colors.black,
+                                      )),
+                                      columnSpacing: 30.0,
+                                      columns: [
+                                        DataColumn(
+                                            label: Text('Product',
+                                                textAlign: TextAlign.center)),
+                                        DataColumn(
+                                            label: Text('Category',
+                                                textAlign: TextAlign.center)),
+                                        DataColumn(
+                                            label: Text('Available',
+                                                textAlign: TextAlign.center)),
+                                        DataColumn(
+                                            label: Text('Buying Price',
+                                                textAlign: TextAlign.center)),
+                                        DataColumn(
+                                            label: Text('Selling Price',
+                                                textAlign: TextAlign.center)),
+                                        DataColumn(
+                                            label: Text('',
+                                                textAlign: TextAlign.center)),
+                                      ],
+                                      rows: List.generate(
+                                          productController.products.length,
+                                          (index) {
+                                        ProductModel productBody =
+                                            productController.products
+                                                .elementAt(index);
+                                        final y = productBody.name;
+                                        final x = productBody.category!.name;
+                                        final w = productBody.quantity;
+                                        final z = productBody.buyingPrice;
+                                        final a = productBody.sellingPrice![0];
 
-                                      return DataRow(cells: [
-                                        DataCell(Container(
-                                            width: 75, child: Text(y!))),
-                                        DataCell(Container(
-                                            width: 75,
-                                            child: Text(x.toString()))),
-                                        DataCell(Container(
-                                            width: 75,
-                                            child: Text(w.toString()))),
-                                        DataCell(Container(
-                                            width: 75,
-                                            child: Text(z.toString()))),
-                                        DataCell(Container(
-                                            width: 75,
-                                            child: Text(a.toString()))),
-                                        DataCell(Align(
-                                          child: InkWell(
-                                            onTap: () {
-                                              productOperions(
-                                                  context,
-                                                  productBody,
-                                                  createShopController
-                                                      .currentShop.value!.id);
-                                            },
-                                            child: Container(
-                                                width: 75,
-                                                child: Center(
-                                                    child:
-                                                        Icon(Icons.more_vert))),
-                                          ),
-                                          alignment: Alignment.topRight,
-                                        )),
-                                      ]);
-                                    }),
+                                        return DataRow(cells: [
+                                          DataCell(Container(
+                                              width: 75, child: Text(y!))),
+                                          DataCell(Container(
+                                              width: 75,
+                                              child: Text(x.toString()))),
+                                          DataCell(Container(
+                                              width: 75,
+                                              child: Text(w.toString()))),
+                                          DataCell(Container(
+                                              width: 75,
+                                              child: Text(z.toString()))),
+                                          DataCell(Container(
+                                              width: 75,
+                                              child: Text(a.toString()))),
+                                          DataCell(Align(
+                                            child: InkWell(
+                                              onTap: () {
+                                                productOperions(
+                                                    context,
+                                                    productBody,
+                                                    createShopController
+                                                        .currentShop.value!.id);
+                                              },
+                                              child: Container(
+                                                  width: 75,
+                                                  child: Center(
+                                                      child: Icon(
+                                                          Icons.more_vert))),
+                                            ),
+                                            alignment: Alignment.topRight,
+                                          )),
+                                        ]);
+                                      }),
+                                    ),
                                   ),
-                                ),
-                              );
-                  }),
-                ],
+                                );
+                    }),
+                  ],
+                ),
               ),
             ),
           ),
@@ -429,7 +433,7 @@ class ProductPage extends StatelessWidget {
   Widget searchWidget() {
     return Expanded(
       child: TextFormField(
-        // controller: productController.searchProductController,
+        controller: productController.searchProductController,
         onChanged: (value) {
           if (value == "") {
             productController.products.clear();

@@ -28,7 +28,6 @@ class Customer {
   updateCustomer({required Map<String, dynamic> body, required id}) async {
     var response = await DbBase()
         .databaseRequest(customer + id, DbBase().patchRequestType);
-    print("response is ${response}");
     return jsonDecode(response);
   }
 

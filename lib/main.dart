@@ -10,7 +10,6 @@ import 'package:flutterpos/screens/landing/landing.dart';
 import 'package:flutterpos/screens/shop/create_shop.dart';
 import 'package:flutterpos/utils/colors.dart';
 import 'package:get/get.dart';
-import 'package:http/http.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,8 +23,6 @@ class MyApp extends StatelessWidget {
       Get.put<AttendantController>(AttendantController());
   AuthController authController = Get.put<AuthController>(AuthController());
   HomeController homeController = Get.put<HomeController>(HomeController());
-
-
 
   @override
   Widget build(BuildContext context) {

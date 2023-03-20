@@ -37,7 +37,7 @@ class CountingPage extends StatelessWidget {
         centerTitle: false,
         elevation: 0.3,
         titleSpacing: 0.0,
-        leading: Get.find<AuthController>().usertype.value == "attendant"
+        leading: Get.find<AuthController>().usertype.value == "attendant"&&MediaQuery.of(context).size.width>600
             ? Container()
             : IconButton(
                 onPressed: () {
@@ -379,10 +379,8 @@ class CountingPage extends StatelessWidget {
                   Constants().sortOrderCaunt.length,
                   (index) => SimpleDialogOption(
                         onPressed: () {
-                          productController.selectedSortOrderCount.value =
-                              Constants().sortOrderCaunt.elementAt(index);
-                          productController.selectedSortOrderCountSearch.value =
-                              Constants().sortOrderCauntList.elementAt(index);
+                          productController.selectedSortOrderCount.value = Constants().sortOrderCaunt.elementAt(index);
+                          productController.selectedSortOrderCountSearch.value = Constants().sortOrderCauntList.elementAt(index);
                           productController.getProductsByCount(
                               "${shopController.currentShop.value?.id}",
                               productController

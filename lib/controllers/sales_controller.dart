@@ -444,7 +444,6 @@ class SalesController extends GetxController
           shopId,
           DateFormat("yyyy-MM-dd").format(start),
           DateFormat("yyyy-MM-dd").format(end));
-      print(response);
       profitModel.value = SalesSummary.fromJson(response);
     } catch (e) {
       print(e);
@@ -457,23 +456,20 @@ class SalesController extends GetxController
     super.onInit();
   }
 
-  void returnSale(id,salesId,context)async{
+  void returnSale(id, salesId, context) async {
     try {
       salesOrderItemLoad.value = true;
-
       var response = await Sales().retunSale(id);
-      print(response);
       if (response["status"] != false) {
-      getSalesBySaleId(salesId);
-      }else{
-        showSnackBar(message: response["message"], color: Colors.red, context: context);
+        getSalesBySaleId(salesId);
+      } else {
+        showSnackBar(
+            message: response["message"], color: Colors.red, context: context);
       }
       salesOrderItemLoad.value = false;
     } catch (e) {
       salesOrderItemLoad.value = false;
     }
-
-
   }
 
   totalSales() {

@@ -88,6 +88,7 @@ class ShopController extends GetxController {
   getShopsByAdminId({required adminId, String? name}) async {
     try {
       gettingShopsLoad.value = true;
+      print("iam called");
       var response =
           await Shop().getShopsByAdminId(adminId: adminId, name: name);
       if (response != null) {

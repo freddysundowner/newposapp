@@ -43,7 +43,6 @@ class ExpenseController extends GetxController {
       LoadingDialog.showLoadingDialog(
           context: context, key: _keyLoader, title: "creating category");
       var response = await Categories().createExpenseCategories(body: body);
-      print("response is ${response}");
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
       if (response["status"] == true) {
         textEditingControllerCategory.text = "";
@@ -101,7 +100,6 @@ class ExpenseController extends GetxController {
           "attendantId": attendantId,
           "date": DateFormat("yyyy-dd-MM").format(DateTime.now()),
         };
-        print(body);
         var response = await Expense().createExpense(body: body);
         Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
         if (response["status"] == true) {
@@ -151,9 +149,6 @@ class ExpenseController extends GetxController {
           shopId: shopId,
           startDate: DateFormat("yyyy-MM-dd").format(startingDate),
           endDate: DateFormat("yyyy-MM-dd").format(endingDate));
-
-      print(response);
-
       if (response["status"] == true) {
         List fetchedList = response["body"];
         List<ExpenseModel> expenseBody =

@@ -24,8 +24,8 @@ class ExpensePage extends StatelessWidget {
     var endDate = converTimeToMonth()["endDate"];
     expenseController.getExpenseByDate(
         shopId: "${shopController.currentShop.value?.id}",
-        startingDate:  DateTime.parse(startDate),
-        endingDate:  DateTime.parse(endDate),
+        startingDate: DateTime.parse(startDate),
+        endingDate: DateTime.parse(endDate),
         type: "notcashflow");
   }
 
@@ -39,99 +39,101 @@ class ExpensePage extends StatelessWidget {
         largeScreen: Scaffold(
             backgroundColor: Colors.white,
             appBar: _appBar(context),
-            body: Container(
-              padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-              child: Column(
-                children: [
-                  SizedBox(height: 5),
-                  Center(
-                    child: Container(
-                      width: MediaQuery.of(context).size.width * 0.4,
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(8),
-                          boxShadow: [
-                            BoxShadow(
-                                color: Colors.black26,
-                                offset: Offset(0, 1),
-                                blurRadius: 1.0)
-                          ]),
-                      child: totalsContainer(),
+            body: SingleChildScrollView(
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                child: Column(
+                  children: [
+                    SizedBox(height: 5),
+                    Center(
+                      child: Container(
+                        width: MediaQuery.of(context).size.width * 0.4,
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(8),
+                            boxShadow: [
+                              BoxShadow(
+                                  color: Colors.black26,
+                                  offset: Offset(0, 1),
+                                  blurRadius: 1.0)
+                            ]),
+                        child: totalsContainer(),
+                      ),
                     ),
-                  ),
-                  SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Obx(() {
-                        return majorTitle(
-                            title:
-                                "${expenseController.expenses.length} Entries",
-                            color: Colors.black,
-                            size: 15.0);
-                      }),
-                      addExpenseContainer("large")
-                    ],
-                  ),
-                  Obx(() {
-                    return expenseController.getExpenseByDateLoad.value
-                        ? Center(
-                            child: CircularProgressIndicator(),
-                          )
-                        : expenseController.expenses.length == 0
-                            ? noItemsFound(context, true)
-                            : Container(
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 15, vertical: 10),
-                                width: double.infinity,
-                                child: Theme(
-                                  data: Theme.of(context)
-                                      .copyWith(dividerColor: Colors.grey),
-                                  child: DataTable(
-                                    decoration: BoxDecoration(
-                                        border: Border.all(
-                                      width: 1,
-                                      color: Colors.black,
-                                    )),
-                                    columnSpacing: 30.0,
-                                    columns: [
-                                      DataColumn(
-                                          label: Text('Name',
-                                              textAlign: TextAlign.center)),
-                                      DataColumn(
-                                          label: Text('Category',
-                                              textAlign: TextAlign.center)),
-                                      DataColumn(
-                                          label: Text(
-                                              'Amount(${shopController.currentShop.value?.currency})',
-                                              textAlign: TextAlign.center)),
-                                    ],
-                                    rows: List.generate(
-                                        expenseController.expenses.length,
-                                        (index) {
-                                      ExpenseModel expenseModel =
-                                          expenseController.expenses
-                                              .elementAt(index);
-                                      final y = expenseModel.name;
-                                      final x = expenseModel.category;
+                    SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Obx(() {
+                          return majorTitle(
+                              title:
+                                  "${expenseController.expenses.length} Entries",
+                              color: Colors.black,
+                              size: 15.0);
+                        }),
+                        addExpenseContainer("large")
+                      ],
+                    ),
+                    Obx(() {
+                      return expenseController.getExpenseByDateLoad.value
+                          ? Center(
+                              child: CircularProgressIndicator(),
+                            )
+                          : expenseController.expenses.length == 0
+                              ? noItemsFound(context, true)
+                              : Container(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 15, vertical: 10),
+                                  width: double.infinity,
+                                  child: Theme(
+                                    data: Theme.of(context)
+                                        .copyWith(dividerColor: Colors.grey),
+                                    child: DataTable(
+                                      decoration: BoxDecoration(
+                                          border: Border.all(
+                                        width: 1,
+                                        color: Colors.black,
+                                      )),
+                                      columnSpacing: 30.0,
+                                      columns: [
+                                        DataColumn(
+                                            label: Text('Name',
+                                                textAlign: TextAlign.center)),
+                                        DataColumn(
+                                            label: Text('Category',
+                                                textAlign: TextAlign.center)),
+                                        DataColumn(
+                                            label: Text(
+                                                'Amount(${shopController.currentShop.value?.currency})',
+                                                textAlign: TextAlign.center)),
+                                      ],
+                                      rows: List.generate(
+                                          expenseController.expenses.length,
+                                          (index) {
+                                        ExpenseModel expenseModel =
+                                            expenseController.expenses
+                                                .elementAt(index);
+                                        final y = expenseModel.name;
+                                        final x = expenseModel.category;
 
-                                      return DataRow(cells: [
-                                        DataCell(Container(
-                                            width: 75, child: Text(y!))),
-                                        DataCell(Container(
-                                            width: 75,
-                                            child: Text(x.toString()))),
-                                        DataCell(Container(
-                                            width: 75,
-                                            child: Text(
-                                                "${expenseModel.amount}"))),
-                                      ]);
-                                    }),
+                                        return DataRow(cells: [
+                                          DataCell(Container(
+                                              width: 75, child: Text(y!))),
+                                          DataCell(Container(
+                                              width: 75,
+                                              child: Text(x.toString()))),
+                                          DataCell(Container(
+                                              width: 75,
+                                              child: Text(
+                                                  "${expenseModel.amount}"))),
+                                        ]);
+                                      }),
+                                    ),
                                   ),
-                                ),
-                              );
-                  }),
-                ],
+                                );
+                    }),
+                  ],
+                ),
               ),
             )),
         smallScreen: Scaffold(

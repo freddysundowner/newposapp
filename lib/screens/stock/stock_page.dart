@@ -17,6 +17,7 @@ import '../home/home_page.dart';
 import '../product/counting_page.dart';
 import '../product/create_product.dart';
 import '../product/products_page.dart';
+import 'badstocks.dart';
 import 'create_purchase.dart';
 
 class StockPage extends StatelessWidget {
@@ -111,13 +112,23 @@ class StockPage extends StatelessWidget {
                           },
                           color: Colors.amberAccent),
                       stockContainerDesktop(
+                          title: "Bad Stock",
+                          subtitle: "View/Add faulty goods",
+                          icon: Icons.remove_circle_outline,
+                          onPresssed: () {
+                            Get.find<HomeController>().selectedWidget.value =
+                                BadStockPage(page: "stock",);
+                          },
+                          color: Colors.redAccent),
+                      stockContainerDesktop(
                           title: "Transfer",
                           subtitle: "Transfer stock to  another shop",
                           icon: Icons.compare_arrows,
                           onPresssed: () {
-                            Get.find<HomeController>().selectedWidget.value = StockTransfer();
+                            Get.find<HomeController>().selectedWidget.value =
+                                StockTransfer();
                           },
-                          color: Colors.green)
+                          color: Colors.green),
                     ],
                   ),
                 )
@@ -173,6 +184,15 @@ class StockPage extends StatelessWidget {
                           Get.to(() => CountingPage());
                         },
                         color: Colors.amberAccent),
+                    stockContainers(
+                        title: "Bad Stock",
+                        subtitle: "View/Add faulty goods",
+                        icon: Icons.remove_circle_outline,
+                        onPresssed: () {
+                          Get.to(()=>BadStockPage(page: "stock",))
+                              ;
+                        },
+                        color: Colors.redAccent),
                     stockContainers(
                         title: "Transfer",
                         subtitle: "Transfer stock to  another shop",

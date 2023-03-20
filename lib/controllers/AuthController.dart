@@ -263,19 +263,19 @@ class AuthController extends GetxController {
       Map<String, dynamic> body = {
         "password": textEditingControllerNewPassword.text
       };
-      var response = await Admin().updatePassword(id: id, body: body);
+      await Admin().updatePassword(id: id, body: body);
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
-      if (response["status"] == true) {
-        showSnackBar(
-            message: response["message"],
-            color: AppColors.mainColor,
-            context: context);
-      } else {
-        showSnackBar(
-            message: response["message"],
-            color: AppColors.mainColor,
-            context: context);
-      }
+      // if (response["status"] == true) {
+      //   showSnackBar(
+      //       message: response["message"],
+      //       color: AppColors.mainColor,
+      //       context: context);
+      // } else {
+      //   showSnackBar(
+      //       message: response["message"],
+      //       color: AppColors.mainColor,
+      //       context: context);
+      // }
     } catch (e) {
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
     }

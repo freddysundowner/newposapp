@@ -16,6 +16,7 @@ import 'package:get/get.dart';
 import '../models/product_category_model.dart';
 import '../models/product_count_model.dart';
 import '../models/product_model.dart';
+import '../screens/sales/all_sales_page.dart';
 import '../services/product.dart';
 import '../utils/dates.dart';
 import '../widgets/loading_dialog.dart';
@@ -25,6 +26,9 @@ class ProductController extends GetxController {
   RxList<ProductModel> products = RxList([]);
   RxList selectedSupplier = RxList([]);
   RxList<ProductCountModel> countHistoryList = RxList([]);
+  RxBool showBadStockWidget = RxBool(false);
+  RxBool saveBadstockLoad = RxBool(false);
+  Rxn<ProductModel> selectedBadStock = Rxn(null);
 
   RxList<ProductCategoryModel> productCategory = RxList([]);
   RxString categoryName = RxString("");
@@ -422,7 +426,6 @@ class ProductController extends GetxController {
       loadingCountHistory.value = true;
       countHistoryList.clear();
       var response = await Products().getProductCount(shopId);
-      print(response["body"][0]);
       if (response != null) {
         List history = response["body"];
         List<ProductCountModel> countHistory =
@@ -436,6 +439,39 @@ class ProductController extends GetxController {
     } catch (e) {
       print(e);
       loadingCountHistory.value = false;
+    }
+  }
+
+  saveBadStock({required String shop, required page, required context}) async {
+    try {
+      saveBadstockLoad.value = true;
+      Map<String, dynamic> body = {
+        "productId": selectedBadStock.value?.id,
+        "quantity": qtyController.text,
+        "description": itemNameController.text,
+        "shopId": shop
+      };
+      var response = await Products().saveBadStock(body: body);
+      if (response["status"] == true) {
+        showBadStockWidget.value = false;
+        selectedBadStock.value = null;
+        qtyController.clear();
+        itemNameController.clear();
+        if (MediaQuery.of(context).size.width > 600) {
+          if (page == "sales") {
+            Get.find<HomeController>().selectedWidget.value =
+                AllSalesPage(page: "badstock");
+          } else {
+            Get.find<HomeController>().selectedWidget.value = StockPage();
+          }
+        } else {
+          Get.back();
+        }
+      }
+      saveBadstockLoad.value = false;
+    } catch (e) {
+      saveBadstockLoad.value = false;
+      print(e);
     }
   }
 }

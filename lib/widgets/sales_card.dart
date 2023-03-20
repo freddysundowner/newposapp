@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
 import 'package:flutterpos/models/product_model.dart';
+import 'package:flutterpos/screens/sales/components/discount_dialog.dart';
 import 'package:flutterpos/screens/sales/components/edit_price_dialog.dart';
 import 'package:flutterpos/widgets/smalltext.dart';
 import 'package:flutterpos/widgets/snackBars.dart';
@@ -97,58 +98,8 @@ Widget SalesContainer(
             alignment: Alignment.topRight,
             child: InkWell(
               onTap: () {
-                showDialog(
-                    context: context,
-                    builder: (context) {
-                      return AlertDialog(
-                        title: Text("Add Discount"),
-                        content: Padding(
-                          padding: const EdgeInsets.all(5.0),
-                          child: TextFormField(
-                              controller: textEditingController,
-                              keyboardType: TextInputType.number,
-                              decoration: InputDecoration(
-                                  hintText: "0",
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ))),
-                        ),
-                        actions: [
-                          TextButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            child: Text(
-                              "Cancel".toUpperCase(),
-                              style: TextStyle(color: Colors.blue),
-                            ),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                              if (int.parse(textEditingController.text) >
-                                  (productModel.discount! *
-                                      productModel.cartquantity!)) {
-                                showSnackBar(
-                                    message:
-                                        "discount cannot be greater than ${productModel.discount! * productModel.cartquantity!}",
-                                    color: Colors.red,
-                                    context: context);
-                              } else {
-                                productModel.allowedDiscount =
-                                    int.parse(textEditingController.text);
-                                textEditingController.text = "";
-                                salesController.calculateAmount(index);
-                              }
-                            },
-                            child: Text(
-                              "Save now".toUpperCase(),
-                              style: TextStyle(color: Colors.blue),
-                            ),
-                          ),
-                        ],
-                      );
-                    });
+                discountDialog(context: context, controller: textEditingController, productModel: productModel, index: index);
+
               },
               child: Text(
                 "Discount",

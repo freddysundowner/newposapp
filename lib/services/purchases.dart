@@ -8,7 +8,6 @@ class Purchases {
     var response = await DbBase().databaseRequest(
         purchases + "updatepurchases/${shopId}", DbBase().patchRequestType,
         body: body);
-    print(response);
     return jsonDecode(response);
   }
 

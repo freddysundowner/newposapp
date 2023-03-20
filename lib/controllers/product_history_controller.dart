@@ -21,17 +21,16 @@ class ProductHistoryController extends GetxController
       if (response["status"] == true) {
         List fetchedHistory = response["body"];
         List<ProductHistoryModel> fetchedProductHistory =
-        fetchedHistory.map((e) => ProductHistoryModel.fromJson(e)).toList();
+            fetchedHistory.map((e) => ProductHistoryModel.fromJson(e)).toList();
         product.assignAll(fetchedProductHistory);
       } else {
         product.value = [];
       }
       gettingHistoryLoad.value = false;
     } catch (e) {
-
       print(e);
 
-      List data=[
+      List data = [
         {
           "_id": "63fdd0f98b658aafbf4e228b",
           "product": {
@@ -40,9 +39,7 @@ class ProductHistoryController extends GetxController
             "quantity": 193,
             "category": "63fdce708b658aafbf4e21ec",
             "stockLevel": 110,
-            "sellingPrice": [
-              "1300"
-            ],
+            "sellingPrice": ["1300"],
             "discount": 0,
             "shop": {
               "_id": "63fa089e46721b7480474be5",
@@ -85,9 +82,7 @@ class ProductHistoryController extends GetxController
             "quantity": 193,
             "category": "63fdce708b658aafbf4e21ec",
             "stockLevel": 110,
-            "sellingPrice": [
-              "1300"
-            ],
+            "sellingPrice": ["1300"],
             "discount": 0,
             "shop": {
               "_id": "63fa089e46721b7480474be5",
@@ -130,9 +125,7 @@ class ProductHistoryController extends GetxController
             "quantity": 193,
             "category": "63fdce708b658aafbf4e21ec",
             "stockLevel": 110,
-            "sellingPrice": [
-              "1300"
-            ],
+            "sellingPrice": ["1300"],
             "discount": 0,
             "shop": {
               "_id": "63fa089e46721b7480474be5",
@@ -175,9 +168,7 @@ class ProductHistoryController extends GetxController
             "quantity": 193,
             "category": "63fdce708b658aafbf4e21ec",
             "stockLevel": 110,
-            "sellingPrice": [
-              "1300"
-            ],
+            "sellingPrice": ["1300"],
             "discount": 0,
             "shop": {
               "_id": "63fa089e46721b7480474be5",
@@ -220,9 +211,7 @@ class ProductHistoryController extends GetxController
             "quantity": 193,
             "category": "63fdce708b658aafbf4e21ec",
             "stockLevel": 110,
-            "sellingPrice": [
-              "1300"
-            ],
+            "sellingPrice": ["1300"],
             "discount": 0,
             "shop": {
               "_id": "63fa089e46721b7480474be5",
@@ -259,7 +248,7 @@ class ProductHistoryController extends GetxController
         }
       ];
       List<ProductHistoryModel> fetchedProductHistory =
-      data.map((e) => ProductHistoryModel.fromJson(e)).toList();
+          data.map((e) => ProductHistoryModel.fromJson(e)).toList();
       product.assignAll(fetchedProductHistory);
       gettingHistoryLoad.value = false;
     }
