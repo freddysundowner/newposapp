@@ -90,7 +90,7 @@ class CustomerInfoPage extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    majorTitle(title: name, color: Colors.black, size: 18),
+                    // majorTitle(title: name, color: Colors.black, size: 18),
                     minorTitle(title: phone, color: Colors.grey)
                   ],
                 ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutterpos/controllers/AuthController.dart';
+import 'package:flutterpos/controllers/attendant_controller.dart';
 import 'package:flutterpos/controllers/home_controller.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
 import 'package:flutterpos/models/product_model.dart';
@@ -28,6 +29,7 @@ class ProductPage extends StatelessWidget {
   ShopController createShopController = Get.find<ShopController>();
   ProductController productController = Get.find<ProductController>();
   AuthController authController = Get.find<AuthController>();
+  AttendantController attendantController = Get.find<AttendantController>();
 
   @override
   Widget build(BuildContext context) {
@@ -396,14 +398,17 @@ class ProductPage extends StatelessWidget {
                 },
                 title: Text("Product History"),
               ),
-            ListTile(
-                leading: Icon(Icons.edit),
-                title: Text("Edit"),
-                onTap: () {
-                  Get.back();
-                  Get.find<HomeController>().selectedWidget.value =
-                      CreateProduct(page: "edit", productModel: product);
-                }),
+            if (authController.usertype == "admin" ||
+                (authController.usertype == "attendant" &&
+                    attendantController.checkRole("edit_entries")))
+              ListTile(
+                  leading: Icon(Icons.edit),
+                  title: Text("Edit"),
+                  onTap: () {
+                    Get.back();
+                    Get.find<HomeController>().selectedWidget.value =
+                        CreateProduct(page: "edit", productModel: product);
+                  }),
             if (authController.usertype == "admin")
               ListTile(
                   leading: Icon(Icons.code),
@@ -411,18 +416,28 @@ class ProductPage extends StatelessWidget {
                     Get.back();
                   },
                   title: Text('Generate Barcode')),
+            if (authController.usertype == "admin" ||
+                (authController.usertype == "attendant" &&
+                    attendantController.checkRole("edit_entries")))
+              ListTile(
+                leading: Icon(Icons.delete),
+                onTap: () {
+                  Get.back();
+                  deleteDialog(
+                      context: context,
+                      onPressed: () {
+                        productController.deleteProduct(
+                            id: product.id, context: context, shopId: shopId);
+                      });
+                },
+                title: Text("Delete"),
+              ),
             ListTile(
-              leading: Icon(Icons.delete),
+              leading: Icon(Icons.clear),
               onTap: () {
                 Get.back();
-                deleteDialog(
-                    context: context,
-                    onPressed: () {
-                      productController.deleteProduct(
-                          id: product.id, context: context, shopId: shopId);
-                    });
-              },
-              title: Text("Delete"),
+             },
+              title: Text("Close"),
             )
           ],
         );

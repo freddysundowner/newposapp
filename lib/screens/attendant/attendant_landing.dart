@@ -44,8 +44,7 @@ class AttendantLanding extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    homeController.selectedWidget.value =
-        Container(child: noItemsFound(context, true));
+    homeController.selectedWidget.value = Container(child: noItemsFound(context, true));
     return ResponsiveWidget(
         largeScreen: Obx(() => Scaffold(
             backgroundColor: Colors.white,
@@ -109,25 +108,24 @@ class AttendantLanding extends StatelessWidget {
             appBar: AppBar(
                 elevation: 0.0,
                 automaticallyImplyLeading: false,
-                backgroundColor: AppColors.mainColor,
+                backgroundColor: Colors.white,
                 title: Obx(() {
                   return Text(
                     attendantController.attendant.value?.shop == null
                         ? ""
                         : "${attendantController.attendant.value?.shop!.name}"
                             .capitalize!,
-                    style: TextStyle(color: Colors.white),
+                    style: TextStyle(color:AppColors.mainColor,),
                   );
                 }),
                 actions: [
                   IconButton(
-                    onPressed: () async {
-                      await attendantController.getAttendantsById(
-                          attendantController.attendant.value!.id);
+                    onPressed: () {
+                      _refreshUser();
                     },
                     icon: Icon(
                       Icons.refresh_outlined,
-                      color: Colors.white,
+                      color: AppColors.mainColor,
                     ),
                   ),
                   IconButton(
@@ -136,14 +134,14 @@ class AttendantLanding extends StatelessWidget {
                     },
                     icon: Icon(
                       Icons.logout_outlined,
-                      color: Colors.white,
+                      color: Colors.redAccent,
                     ),
                   ),
                 ]),
             body: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(height: 50),
+                SizedBox(height: 10),
                 Center(
                   child: Container(
                     width: 100,
@@ -178,14 +176,13 @@ class AttendantLanding extends StatelessWidget {
                                         if (e.key == "expenses") {
                                           Get.to(() => ExpensePage());
                                         } else if (e.key == "add_products") {
-                                          // Get.to(() => CreateProduct(page: "create",productModel: ProductModel()));
                                           Get.to(() => ProductPage());
                                         } else if (e.key == "sales") {
-                                          // Get.to(() => CreateSale());
+
                                           Get.to(() => AllSalesPage(
                                               page: "AtedantLanding"));
                                         } else if (e.key == "stockin") {
-                                          // Get.to(CreatePurchase());
+
                                           Get.to(() => ViewPurchases());
                                         } else if (e.key == "customers") {
                                           Get.to(

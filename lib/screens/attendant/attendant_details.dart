@@ -107,7 +107,7 @@ class AttendantDetails extends StatelessWidget {
                       ? Center(
                           child: CircularProgressIndicator(),
                         )
-                      : updateAttendantButton(),
+                      : updateAttendantButton(context),
                 )),
           ),
         ));
@@ -175,12 +175,14 @@ class AttendantDetails extends StatelessWidget {
     );
   }
 
-  Widget updateAttendantButton() {
+  Widget updateAttendantButton(context) {
     return InkWell(
       splashColor: Colors.transparent,
       onTap: () {
         attendantController.updateAttedant(
-            id: attendantModel.id, rolesData: attendantModel.roles);
+            id: attendantModel.id,
+            rolesData: attendantModel.roles,
+            context: context);
       },
       child: Container(
         padding: EdgeInsets.all(10),

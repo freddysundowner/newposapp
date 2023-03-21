@@ -27,6 +27,7 @@ missingValueDialog(context, message) {
         );
       });
 }
+
 class Helper extends StatelessWidget {
   final AppBar? appBar;
   final Widget widget;
@@ -63,7 +64,8 @@ class Helper extends StatelessWidget {
       appBar: appBar == null ? null : appBar,
       floatingActionButton:
           Get.find<AuthController>().currentUser.value == null ||
-                  MediaQuery.of(context).size.width > 600
+                  MediaQuery.of(context).size.width > 600 ||
+                  Get.find<AuthController>().usertype == "attendant"
               ? null
               : FloatingActionButton(
                   onPressed: () {
@@ -100,7 +102,8 @@ class Helper extends StatelessWidget {
                 ),
                 Expanded(
                   child: GridView.builder(
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
                               childAspectRatio: 1.5,
                               crossAxisCount: 3,
                               crossAxisSpacing: 10,
@@ -185,5 +188,4 @@ class Helper extends StatelessWidget {
           );
         });
   }
-
 }

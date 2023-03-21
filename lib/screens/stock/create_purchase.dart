@@ -34,6 +34,7 @@ class CreatePurchase extends StatelessWidget {
   final FocusNode _focusNode = FocusNode();
   final GlobalKey _autocompleteKey = GlobalKey();
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -79,15 +80,15 @@ class CreatePurchase extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(height: 10),
-
-                Container(
-                  child: searchWidget(
-                      autoCompletKey: _autocompleteKey,
-                      focusNode: _focusNode,
-                      shopId: shopController.currentShop.value?.id!,
-                      page: "purchase"),
-                  padding: EdgeInsets.only(left: 30, right: 80),
-                ),
+                if (MediaQuery.of(context).size.width > 600)
+                  Container(
+                    child: searchWidget(
+                        autoCompletKey: _autocompleteKey,
+                        focusNode: _focusNode,
+                        shopId: shopController.currentShop.value?.id!,
+                        page: "purchase"),
+                    padding: EdgeInsets.only(left: 30, right: 80),
+                  ),
                 Obx(() {
                   return purchaseController.selectedList.length == 0
                       ? Container()
@@ -122,7 +123,8 @@ class CreatePurchase extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             SizedBox(
-                                height: MediaQuery.of(context).size.height * 0.4),
+                                height:
+                                    MediaQuery.of(context).size.height * 0.4),
                             Center(child: CircularProgressIndicator()),
                           ],
                         )
@@ -161,16 +163,16 @@ class CreatePurchase extends StatelessWidget {
                                   rows: List.generate(
                                       purchaseController.selectedList.length,
                                       (index) {
-                                    ProductModel productModel = purchaseController
-                                        .selectedList
-                                        .elementAt(index);
+                                    ProductModel productModel =
+                                        purchaseController.selectedList
+                                            .elementAt(index);
                                     final y = productModel.name!;
                                     final x =
                                         productModel.cartquantity.toString();
                                     final z = productModel.buyingPrice;
-                                    final w =
-                                        int.parse(productModel.sellingPrice![0]) *
-                                            productModel.cartquantity!;
+                                    final w = int.parse(
+                                            productModel.sellingPrice![0]) *
+                                        productModel.cartquantity!;
 
                                     return DataRow(cells: [
                                       DataCell(
@@ -183,7 +185,8 @@ class CreatePurchase extends StatelessWidget {
                                                     .decrementItem(index);
                                               },
                                               icon: Icon(Icons.remove,
-                                                  color: Colors.black, size: 16)),
+                                                  color: Colors.black,
+                                                  size: 16)),
                                           Container(
                                               padding: EdgeInsets.only(
                                                   top: 5,
@@ -209,7 +212,8 @@ class CreatePurchase extends StatelessWidget {
                                                     .incrementItem(index);
                                               },
                                               icon: Icon(Icons.add,
-                                                  color: Colors.black, size: 16)),
+                                                  color: Colors.black,
+                                                  size: 16)),
                                         ]),
                                       )),
                                       DataCell(

@@ -315,7 +315,6 @@ class ExpensePage extends StatelessWidget {
 
   AppBar _appBar(context) {
     return AppBar(
-      titleSpacing: 0,
       backgroundColor: Colors.white,
       elevation: 0.3,
       centerTitle: false,

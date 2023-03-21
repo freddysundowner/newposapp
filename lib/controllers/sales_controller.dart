@@ -198,6 +198,8 @@ class SalesController extends GetxController
         }
         if (screen == "admin") {
           Get.back();
+        } else {
+          Get.back();
         }
       } else if (response["status"] == false &&
           selectedPaymentMethod.value == "Wallet") {

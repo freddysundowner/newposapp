@@ -280,12 +280,10 @@ class ProductController extends GetxController {
   deleteProduct(
       {required id, required BuildContext context, required shopId}) async {
     try {
+      getProductLoad.value = true;
       var response = await Products().deleteProduct(id: id);
+      print(response);
       if (response["status"] == true) {
-        showSnackBar(
-            message: response["message"],
-            color: AppColors.mainColor,
-            context: context);
         await getProductsBySort(shopId: shopId, type: "all");
       } else {
         showSnackBar(
@@ -293,7 +291,11 @@ class ProductController extends GetxController {
             color: AppColors.mainColor,
             context: context);
       }
-    } catch (e) {}
+
+      getProductLoad.value = false;
+    } catch (e) {
+      getProductLoad.value = false;
+    }
   }
 
   updateProduct(

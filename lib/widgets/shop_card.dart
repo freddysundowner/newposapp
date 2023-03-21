@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutterpos/controllers/home_controller.dart';
 import 'package:flutterpos/models/shop_model.dart';
 import 'package:flutterpos/screens/shop/shop_details.dart';
 import 'package:flutterpos/widgets/smalltext.dart';
@@ -14,23 +13,9 @@ Widget shopCard(
   return InkWell(
     onTap: () {
       if (page == "shop") {
-        Get
-            .find<HomeController>()
-            .selectedWidget
-            .value =
-            ShopDetails(shopModel: shopModel);
+        Get.to(() => ShopDetails(shopModel: shopModel));
       } else {
-        if (MediaQuery
-            .of(context)
-            .size
-            .width > 600) {
-          Get
-              .find<HomeController>()
-              .selectedWidget
-              .value = ProductSelections(shopModel: shopModel);
-        } else {
-          Get.to(() => ProductSelections(shopModel: shopModel));
-        }
+        Get.to(() => ProductSelections(shopModel: shopModel));
       }
     },
     child: Container(

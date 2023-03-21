@@ -173,22 +173,22 @@ class AttendantController extends GetxController {
         "fullnames": nameController.text,
         "roles": rolesData.map((element) => element.toJson()).toList(),
       };
-
       var response = await Attendant().updateAttendant(id: id, body: body);
       if (response != null) {
         int index = attendants.indexWhere((element) => element.id == id);
         if (index != -1) {
           attendants[index] = AttendantModel.fromJson(response);
           attendants.refresh();
-        }
-        if (MediaQuery.of(context!).size.width > 600) {
-          Get.find<HomeController>().selectedWidget.value = AttendantsPage();
-        } else {
-          Get.back();
+          if (MediaQuery.of(context!).size.width > 600) {
+            Get.find<HomeController>().selectedWidget.value = AttendantsPage();
+          } else {
+            Get.back();
+          }
         }
       }
       creatingAttendantsLoad.value = false;
     } catch (e) {
+      print(e);
       creatingAttendantsLoad.value = false;
     }
   }

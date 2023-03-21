@@ -1,14 +1,15 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 
 import 'package:flutter/material.dart';
+import 'package:flutterpos/controllers/attendant_controller.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
 import 'package:flutterpos/models/product_model.dart';
 import 'package:flutterpos/screens/sales/components/discount_dialog.dart';
 import 'package:flutterpos/screens/sales/components/edit_price_dialog.dart';
 import 'package:flutterpos/widgets/smalltext.dart';
-import 'package:flutterpos/widgets/snackBars.dart';
 import 'package:get/get.dart';
 
+import '../controllers/AuthController.dart';
 import '../controllers/sales_controller.dart';
 import 'bigtext.dart';
 import 'normal_text.dart';
@@ -20,6 +21,8 @@ Widget SalesContainer(
     required type}) {
   SalesController salesController = Get.find<SalesController>();
   ShopController shopController = Get.find<ShopController>();
+  AuthController authController = Get.find<AuthController>();
+  AttendantController attendantController = Get.find<AttendantController>();
   TextEditingController textEditingController = TextEditingController();
   return Padding(
     padding: const EdgeInsets.all(5.0),
@@ -27,7 +30,7 @@ Widget SalesContainer(
       elevation: 4,
       child: Container(
         padding: EdgeInsets.all(8.0),
-        width: type=="small"?double.infinity:250,
+        width: type == "small" ? double.infinity : 250,
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -72,16 +75,22 @@ Widget SalesContainer(
                       minorTitle(
                           title: "${productModel.selling}", color: Colors.grey),
                       SizedBox(width: 10),
-                      InkWell(
-                          onTap: () {
-                            salesController.textEditingSellingPrice.text =
-                                "${productModel.minPrice}";
-                            showEditDialogPrice(context: context, productModel: productModel, index: index);
-                          },
-                          child: Text(
-                            "Edit",
-                            style: TextStyle(color: Colors.red),
-                          )),
+                      if (authController.usertype == "admin" ||
+                          (authController.usertype == "attendant" &&
+                              attendantController.checkRole("edit_entries")))
+                        InkWell(
+                            onTap: () {
+                              salesController.textEditingSellingPrice.text =
+                                  "${productModel.minPrice}";
+                              showEditDialogPrice(
+                                  context: context,
+                                  productModel: productModel,
+                                  index: index);
+                            },
+                            child: Text(
+                              "Edit",
+                              style: TextStyle(color: Colors.red),
+                            )),
                     ],
                   ),
                 ],
@@ -89,25 +98,26 @@ Widget SalesContainer(
             ],
           ),
           SizedBox(height: 10),
-          // if (Get.find<AuthController>().currentUser.value?.type ==
-          //             "attendant" &&
-          //         Get.find<AuthController>().checkRole("cangivediscounts") ==
-          //             true ||
-          //     Get.find<AuthController>().currentUser.value?.type == "admin")
-          Align(
-            alignment: Alignment.topRight,
-            child: InkWell(
-              onTap: () {
-                discountDialog(context: context, controller: textEditingController, productModel: productModel, index: index);
-
-              },
-              child: Text(
-                "Discount",
-                textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.blue),
+          if ((authController.usertype == "attendant" &&
+                  attendantController.checkRole("discount") == true) ||
+              authController.usertype == "admin")
+            Align(
+              alignment: Alignment.topRight,
+              child: InkWell(
+                onTap: () {
+                  discountDialog(
+                      context: context,
+                      controller: textEditingController,
+                      productModel: productModel,
+                      index: index);
+                },
+                child: Text(
+                  "Discount",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Colors.blue),
+                ),
               ),
             ),
-          ),
           type == "small"
               ? Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,

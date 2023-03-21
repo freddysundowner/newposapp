@@ -8,7 +8,8 @@ import '../screens/customers/customer_info_page.dart';
 import '../utils/colors.dart';
 import 'bigtext.dart';
 
-Widget customerWidget({required CustomerModel customerModel, required type,required context}) {
+Widget customerWidget(
+    {required CustomerModel customerModel, required type, required context}) {
   return Card(
       color: AppColors.mainColor,
       child: Container(
@@ -60,7 +61,7 @@ Widget customerWidget({required CustomerModel customerModel, required type,requi
                     Get.to(() => CustomerInfoPage(
                           id: customerModel.id,
                           user: type,
-                          name: customerModel.fullName,
+                          name: customerModel.fullName.toString(),
                           phone: customerModel.phoneNumber,
                         ));
                   }

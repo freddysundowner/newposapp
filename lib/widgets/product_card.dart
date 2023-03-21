@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutterpos/controllers/AuthController.dart';
+import 'package:flutterpos/controllers/attendant_controller.dart';
 import 'package:flutterpos/controllers/product_controller.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
 import 'package:flutterpos/models/product_model.dart';
@@ -88,12 +89,13 @@ Widget productCard(
 showProductModal(context, ProductModel product, shopId) {
   ProductController productController = Get.find<ProductController>();
   AuthController authController = Get.find<AuthController>();
+  AttendantController attendantController = Get.find<AttendantController>();
 
   return showModalBottomSheet<void>(
       context: context,
       builder: (BuildContext context) {
         return Container(
-          height: MediaQuery.of(context).size.height * 0.3,
+          height: MediaQuery.of(context).size.height * 0.4,
           child: Column(
             children: [
               Padding(
@@ -111,6 +113,9 @@ showProductModal(context, ProductModel product, shopId) {
                       Get.to(() => ProductHistory(product: product));
                     },
                     title: Text('Product History')),
+              if (authController.usertype == "admin" ||
+                  (authController.usertype == "attendant" &&
+                      attendantController.checkRole("edit_entries")))
               ListTile(
                   leading: Icon(Icons.edit),
                   onTap: () {
@@ -134,6 +139,9 @@ showProductModal(context, ProductModel product, shopId) {
                               .name!);
                     },
                     title: Text('Generate Barcode')),
+              if (authController.usertype == "admin" ||
+                  (authController.usertype == "attendant" &&
+                      attendantController.checkRole("edit_entries")))
               ListTile(
                   leading: Icon(Icons.delete),
                   onTap: () {
@@ -146,6 +154,15 @@ showProductModal(context, ProductModel product, shopId) {
                         });
                   },
                   title: Text('Delete')),
+
+              ListTile(
+                  leading: Icon(Icons.clear),
+                  onTap: () {
+                    Get.back();
+
+
+                  },
+                  title: Text('Close')),
             ],
           ),
         );

@@ -117,7 +117,9 @@ class StockPage extends StatelessWidget {
                           icon: Icons.remove_circle_outline,
                           onPresssed: () {
                             Get.find<HomeController>().selectedWidget.value =
-                                BadStockPage(page: "stock",);
+                                BadStockPage(
+                              page: "stock",
+                            );
                           },
                           color: Colors.redAccent),
                       stockContainerDesktop(
@@ -165,7 +167,7 @@ class StockPage extends StatelessWidget {
                         subtitle: "Add to an existing stock",
                         icon: Icons.add,
                         onPresssed: () {
-                          Get.to(() => CreatePurchase());
+                          Get.to(CreatePurchase());
                         },
                         color: Colors.blueAccent),
                     stockContainers(
@@ -189,8 +191,9 @@ class StockPage extends StatelessWidget {
                         subtitle: "View/Add faulty goods",
                         icon: Icons.remove_circle_outline,
                         onPresssed: () {
-                          Get.to(()=>BadStockPage(page: "stock",))
-                              ;
+                          Get.to(() => BadStockPage(
+                                page: "stock",
+                              ));
                         },
                         color: Colors.redAccent),
                     stockContainers(

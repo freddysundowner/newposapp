@@ -1,5 +1,7 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 import 'package:flutter/material.dart';
+import 'package:flutterpos/controllers/AuthController.dart';
+import 'package:flutterpos/controllers/attendant_controller.dart';
 import 'package:flutterpos/controllers/purchase_controller.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
 import 'package:flutterpos/models/product_model.dart';
@@ -14,6 +16,8 @@ Widget purchasesCard(
     {required context, required ProductModel productModel, required index}) {
   PurchaseController salesController = Get.find<PurchaseController>();
   ShopController shopController = Get.find<ShopController>();
+  AuthController authController= Get.find<AuthController>();
+  AttendantController attendantController = Get.find<AttendantController>();
   return Padding(
     padding: const EdgeInsets.all(10.0),
     child: Card(
@@ -67,6 +71,9 @@ Widget purchasesCard(
                           color: Colors.grey,
                           size: 14.0),
                       SizedBox(width: 10),
+                      if (authController.usertype == "admin" ||
+                          (authController.usertype == "attendant" &&
+                              attendantController.checkRole("edit_entries")))
                       InkWell(
                           onTap: () {
                             Get.to(() => CreateProduct(

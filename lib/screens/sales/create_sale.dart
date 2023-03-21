@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterpos/controllers/attendant_controller.dart';
 import 'package:flutterpos/controllers/home_controller.dart';
 import 'package:flutterpos/controllers/product_controller.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
@@ -35,8 +36,8 @@ class CreateSale extends StatelessWidget {
   ShopController createShopController = Get.find<ShopController>();
   CustomerController customersController = Get.find<CustomerController>();
   AuthController authController = Get.find<AuthController>();
+  AttendantController attendantController = Get.find<AttendantController>();
   ProductController productController = Get.find<ProductController>();
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   final FocusNode _focusNode = FocusNode();
   final GlobalKey _autocompleteKey = GlobalKey();
 
@@ -50,7 +51,6 @@ class CreateSale extends StatelessWidget {
       child: ResponsiveWidget(
         largeScreen: Scaffold(
           backgroundColor: Colors.white,
-          key: _scaffoldKey,
           appBar: AppBar(
             backgroundColor: Colors.white,
             elevation: 0.3,
@@ -734,31 +734,37 @@ class CreateSale extends StatelessWidget {
     TextEditingController textEditingController = TextEditingController();
     return PopupMenuButton(
       itemBuilder: (ctx) => [
-        PopupMenuItem(
-          child: ListTile(
-            leading: Icon(Icons.edit),
-            onTap: () {
-              Get.back();
-              showEditDialogPrice(
-                  context: context, productModel: productModel, index: index);
-            },
-            title: Text("Edit Selling price"),
+        if (authController.usertype == "admin" ||
+            (authController.usertype == "attendant" &&
+                attendantController.checkRole("edit_entries")))
+          PopupMenuItem(
+            child: ListTile(
+              leading: Icon(Icons.edit),
+              onTap: () {
+                Get.back();
+                showEditDialogPrice(
+                    context: context, productModel: productModel, index: index);
+              },
+              title: Text("Edit Selling price"),
+            ),
           ),
-        ),
-        PopupMenuItem(
-          child: ListTile(
-            leading: Icon(Icons.discount),
-            onTap: () {
-              Get.back();
-              discountDialog(
-                  context: context,
-                  controller: textEditingController,
-                  productModel: productModel,
-                  index: index);
-            },
-            title: Text("Give Discount"),
+        if (authController.usertype == "admin" ||
+            (authController.usertype == "attendant" &&
+                attendantController.checkRole("discounts")))
+          PopupMenuItem(
+            child: ListTile(
+              leading: Icon(Icons.discount),
+              onTap: () {
+                Get.back();
+                discountDialog(
+                    context: context,
+                    controller: textEditingController,
+                    productModel: productModel,
+                    index: index);
+              },
+              title: Text("Give Discount"),
+            ),
           ),
-        ),
         PopupMenuItem(
           child: ListTile(
             leading: Icon(Icons.clear),

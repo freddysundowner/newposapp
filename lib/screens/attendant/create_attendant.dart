@@ -13,8 +13,10 @@ import '../../widgets/attendant_user_inputs.dart';
 import '../../widgets/bigtext.dart';
 
 class CreateAttendant extends StatelessWidget {
+
   CreateAttendant({Key? key}) : super(key: key) {
-    attendantController.nameController.text = "";
+    attendantController.nameController.clear();
+    attendantController.passwordController.clear();
   }
 
   AttendantController attendantController = Get.find<AttendantController>();

@@ -83,7 +83,10 @@ class FinancePage extends StatelessWidget {
                                 },
                                 color: Colors.amber.shade100,
                                 icon: Icons.query_stats,
-                                amount: "${salesController.profitModel.value?.grossProfit}"),
+                                amount: salesController.profitModel.value ==
+                                        null
+                                    ? 0
+                                    : "${salesController.profitModel.value?.grossProfit}"),
                           )),
                       Obx(() {
                         return Padding(
@@ -97,8 +100,9 @@ class FinancePage extends StatelessWidget {
                             },
                             color: Colors.purple.shade100,
                             icon: Icons.show_chart,
-                            amount:
-                                "${salesController.profitModel.value?.totalExpense}",
+                            amount: salesController.profitModel.value == null
+                                ? 0
+                                : "${salesController.profitModel.value?.totalExpense}",
                           ),
                         );
                       }),
@@ -118,7 +122,9 @@ class FinancePage extends StatelessWidget {
                             },
                             color: Colors.blue.shade100,
                             icon: Icons.sell_rounded,
-                            amount: "${salesController.profitModel.value?.sales}",
+                            amount: salesController.profitModel.value == null
+                                ? 0
+                                : "${salesController.profitModel.value?.sales}",
                           ),
                         );
                       }),
@@ -208,8 +214,9 @@ class FinancePage extends StatelessWidget {
                       },
                       color: Colors.amber.shade100,
                       icon: Icons.query_stats,
-                      amount:
-                          "${salesController.profitModel.value?.grossProfit}");
+                      amount: salesController.profitModel.value == null
+                          ? 0
+                          : "${salesController.profitModel.value?.grossProfit}");
                 }),
                 Obx(() {
                   return financeCards(
@@ -220,8 +227,9 @@ class FinancePage extends StatelessWidget {
                     },
                     color: Colors.purple.shade100,
                     icon: Icons.show_chart,
-                    amount:
-                        "${salesController.profitModel.value?.totalExpense}",
+                    amount: salesController.profitModel.value == null
+                        ? 0
+                        : "${salesController.profitModel.value?.totalExpense}",
                   );
                 }),
                 Obx(() {
@@ -237,7 +245,9 @@ class FinancePage extends StatelessWidget {
                     },
                     color: Colors.blue.shade100,
                     icon: Icons.sell_rounded,
-                    amount: "${salesController.profitModel.value?.sales}",
+                    amount: salesController.profitModel.value == null
+                        ? 0
+                        : "${salesController.profitModel.value?.sales}",
                   );
                 }),
                 InkWell(
