@@ -6,14 +6,13 @@ import 'client.dart';
 
 class Sales {
   createSales(Map<String, dynamic> salesdata) async {
-
     var response = await DbBase()
         .databaseRequest(sales, DbBase().postRequestType, body: salesdata);
     var data = jsonDecode(response);
     return data;
   }
 
-  getSalesByDate(shopId, startDate, endDate) async{
+  getSalesByDate(shopId, startDate, endDate) async {
     var response = await DbBase().databaseRequest(
         sales + "todaysales/" + shopId + "/" + startDate + "/" + endDate,
         DbBase().getRequestType);
@@ -30,21 +29,22 @@ class Sales {
   }
 
   getShopSales(shopId) async {
-    var response = await DbBase().databaseRequest(sales + "allsales/" + shopId, DbBase().getRequestType);
+    var response = await DbBase()
+        .databaseRequest(sales + "allsales/" + shopId, DbBase().getRequestType);
     var data = jsonDecode(response);
     return data;
   }
 
-  getSalesOnCredit( shopId)async {
-    var response = await DbBase().databaseRequest(sales + "salesoncredit/${shopId}" ,
-        DbBase().getRequestType);
+  getSalesOnCredit(shopId) async {
+    var response = await DbBase().databaseRequest(
+        sales + "salesoncredit/${shopId}", DbBase().getRequestType);
     var data = jsonDecode(response);
     return data;
   }
 
-  retunSale(id)async {
-    var response = await DbBase().databaseRequest(sales + "returnproduct/${id}" ,
-        DbBase().postRequestType);
+  retunSale(id) async {
+    var response = await DbBase().databaseRequest(
+        sales + "returnproduct/${id}", DbBase().postRequestType);
     var data = jsonDecode(response);
     return data;
   }

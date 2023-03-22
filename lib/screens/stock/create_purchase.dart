@@ -333,14 +333,15 @@ class CreatePurchase extends StatelessWidget {
                                   ),
                                 ),
                               ),
-                              IconButton(
-                                  onPressed: () {
-                                    purchaseController.scanQR(
-                                        shopId: shopController
-                                            .currentShop.value?.id,
-                                        context: context);
-                                  },
-                                  icon: Icon(Icons.qr_code))
+                              if (authController.usertype == "admin")
+                                IconButton(
+                                    onPressed: () {
+                                      purchaseController.scanQR(
+                                          shopId: shopController
+                                              .currentShop.value?.id,
+                                          context: context);
+                                    },
+                                    icon: Icon(Icons.qr_code))
                             ],
                           ),
                           SizedBox(height: 10),

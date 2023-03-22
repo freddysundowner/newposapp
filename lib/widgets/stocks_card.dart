@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 
 import 'package:flutter/material.dart';
+import 'package:flutterpos/controllers/purchase_controller.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
 import 'package:flutterpos/models/supply_order_model.dart';
 import 'package:flutterpos/widgets/snackBars.dart';
@@ -135,7 +136,9 @@ showProductModal(context, SupplyOrderModel supplyOrderModel, type) {
                     Get.back();
                     if (supplyOrderModel.supplier == null) {
                       showSnackBar(
-                          message:  "please select customer to sell to", color: Colors.red,context: context);
+                          message: "please select customer to sell to",
+                          color: Colors.red,
+                          context: context);
                     } else {
                       showQuantityDialog(context, supplyOrderModel);
                     }
@@ -155,12 +158,15 @@ showProductModal(context, SupplyOrderModel supplyOrderModel, type) {
 }
 
 showQuantityDialog(context, SupplyOrderModel supplyOrderModel) {
+  PurchaseController purchaseController = Get.find<PurchaseController>();
   return showDialog(
       context: context,
       builder: (context) {
         return Dialog(
           child: Container(
             height: MediaQuery.of(context).size.height * 0.3,
+            width:
+                MediaQuery.of(context).size.width > 600 ? 300 : double.infinity,
             padding: EdgeInsets.fromLTRB(10, 20, 20, 5),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -168,6 +174,7 @@ showQuantityDialog(context, SupplyOrderModel supplyOrderModel) {
                 Text("Add Quantity to return"),
                 SizedBox(height: 10),
                 TextFormField(
+                  controller: purchaseController.textEditingControllerAmount,
                   decoration: InputDecoration(
                       hintText: "Quantity",
                       border: OutlineInputBorder(
@@ -189,6 +196,16 @@ showQuantityDialog(context, SupplyOrderModel supplyOrderModel) {
                     TextButton(
                       onPressed: () {
                         Navigator.pop(context);
+                        if (purchaseController
+                                .textEditingControllerAmount.text.isEmpty ||
+                            int.parse(purchaseController
+                                    .textEditingControllerAmount.text) >
+                                supplyOrderModel.quantity!) {
+                          showSnackBar(
+                              message: "Enter a valid amount",
+                              color: Colors.redAccent,
+                              context: context);
+                        }
                       },
                       child: Text(
                         "Save Now".toUpperCase(),
@@ -197,7 +214,6 @@ showQuantityDialog(context, SupplyOrderModel supplyOrderModel) {
                     )
                   ],
                 ),
-                SizedBox(height: 10),
               ],
             ),
           ),

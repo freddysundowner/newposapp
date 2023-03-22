@@ -212,7 +212,6 @@ class SalesController extends GetxController
 
       saveSaleLoad.value = false;
     } catch (e) {
-      print(e);
       if (MediaQuery.of(context).size.width > 600)
         Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
       saveSaleLoad.value = false;

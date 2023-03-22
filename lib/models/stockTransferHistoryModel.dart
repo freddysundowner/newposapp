@@ -23,8 +23,8 @@ class StockTransferHistory {
   factory StockTransferHistory.fromJson(Map<String, dynamic> json) =>
       StockTransferHistory(
         id: json["_id"],
-        from: ShopModel.fromJson(json["from"]),
-        to: ShopModel.fromJson(json["to"]),
+        from: json["from"]==null?ShopModel():ShopModel.fromJson(json["from"]),
+        to:json["to"]==null?ShopModel(): ShopModel.fromJson(json["to"]),
         product: List<ProductModel>.from(
             json["product"].map((x) => ProductModel.fromJson(x))),
         type: json["type"],

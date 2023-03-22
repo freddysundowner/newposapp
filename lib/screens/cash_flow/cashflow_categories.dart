@@ -311,7 +311,7 @@ class CashInUi extends StatelessWidget {
                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                             childAspectRatio:
                                 MediaQuery.of(context).size.width *
-                                    3 /
+                                    6 /
                                     MediaQuery.of(context).size.height,
                             crossAxisCount: 2,
                             crossAxisSpacing: 10,
@@ -487,7 +487,7 @@ class CashOutUi extends StatelessWidget {
                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                             childAspectRatio:
                                 MediaQuery.of(context).size.width *
-                                    3 /
+                                    6 /
                                     MediaQuery.of(context).size.height,
                             crossAxisCount: 2,
                             crossAxisSpacing: 10,

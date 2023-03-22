@@ -137,8 +137,7 @@ class BadStockPage extends StatelessWidget {
               Text("Category", style: TextStyle(color: Colors.grey)),
               InkWell(
                 onTap: () {
-                  if (productController.products.length == 0 &&
-                      !productController.getProductLoad.value) {
+                  if (productController.products.length == 0 && !productController.getProductLoad.value) {
                     showDialog(
                         context: context,
                         builder: (BuildContext context) {

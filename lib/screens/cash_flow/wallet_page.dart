@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterpos/controllers/AuthController.dart';
 import 'package:flutterpos/controllers/home_controller.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
 import 'package:flutterpos/models/deposit_model.dart';
@@ -75,9 +76,9 @@ class WalletPage extends StatelessWidget {
                 onTap: (index) {
                   if (index == 0) {
                     walletController.getWallet(uid);
-                    walletController.getWalletUsage(uid,"deposit");
+                    walletController.getWalletUsage(uid, "deposit");
                   } else {
-                    walletController.getWalletUsage(uid,"usage");
+                    walletController.getWalletUsage(uid, "usage");
                   }
                 },
                 tabs: [
@@ -184,11 +185,12 @@ class WalletPage extends StatelessWidget {
       ),
       centerTitle: false,
       actions: [
-        IconButton(
-            onPressed: () {
-              showModalSheet(context, title, uid);
-            },
-            icon: Icon(Icons.download))
+        if (Get.find<AuthController>().usertype == "admin")
+          IconButton(
+              onPressed: () {
+                showModalSheet(context, title, uid);
+              },
+              icon: Icon(Icons.download))
       ],
     );
   }
@@ -295,6 +297,7 @@ class WalletPage extends StatelessWidget {
 
 class DepositHistory extends StatelessWidget {
   final uid;
+
   DepositHistory({Key? key, required this.uid}) : super(key: key);
   WalletController walletController = Get.find<WalletController>();
   ShopController shopController = Get.find<ShopController>();
@@ -310,67 +313,67 @@ class DepositHistory extends StatelessWidget {
               ? Center(
                   child: Text("No Entries found"),
                 )
-              :MediaQuery.of(context).size.width > 600
-          ? SingleChildScrollView(
-        child: Container(
-          width: double.infinity,
-          padding:
-          EdgeInsets.symmetric(horizontal: 5, vertical: 10),
-          child: Theme(
-            data: Theme.of(context)
-                .copyWith(dividerColor: Colors.grey),
-            child: DataTable(
-              decoration: BoxDecoration(
-                  border: Border.all(
-                    width: 1,
-                    color: Colors.black,
-                  )),
-              columnSpacing: 30.0,
-              columns: [
-                DataColumn(
-                    label: Text('Receipt Number',
-                        textAlign: TextAlign.center)),
-                DataColumn(
-                    label: Text(
-                        'Amount(${shopController.currentShop.value?.currency})',
-                        textAlign: TextAlign.center)),
-                DataColumn(
-                    label: Text('Date',
-                        textAlign: TextAlign.center)),
-              ],
-              rows: List.generate(walletController.usages.length,
-                      (index) {
-                    DepositModel depositModel =
-                    walletController.usages.elementAt(index);
-                    final y = depositModel.recieptNumber;
-                    final x = depositModel.amount.toString();
-                    final w = depositModel.createdAt!;
+              : MediaQuery.of(context).size.width > 600
+                  ? SingleChildScrollView(
+                      child: Container(
+                        width: double.infinity,
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+                        child: Theme(
+                          data: Theme.of(context)
+                              .copyWith(dividerColor: Colors.grey),
+                          child: DataTable(
+                            decoration: BoxDecoration(
+                                border: Border.all(
+                              width: 1,
+                              color: Colors.black,
+                            )),
+                            columnSpacing: 30.0,
+                            columns: [
+                              DataColumn(
+                                  label: Text('Receipt Number',
+                                      textAlign: TextAlign.center)),
+                              DataColumn(
+                                  label: Text(
+                                      'Amount(${shopController.currentShop.value?.currency})',
+                                      textAlign: TextAlign.center)),
+                              DataColumn(
+                                  label: Text('Date',
+                                      textAlign: TextAlign.center)),
+                            ],
+                            rows: List.generate(walletController.usages.length,
+                                (index) {
+                              DepositModel depositModel =
+                                  walletController.usages.elementAt(index);
+                              final y = depositModel.recieptNumber;
+                              final x = depositModel.amount.toString();
+                              final w = depositModel.createdAt!;
 
-                    return DataRow(cells: [
-                      DataCell(Container(width: 75, child: Text(y!))),
-                      DataCell(Container(width: 75, child: Text(x))),
-                      DataCell(Container(
-                          child: Text(
-                              DateFormat("yyyy-dd-MMM hh:mm a")
-                                  .format(w)))),
-                    ]);
-                  }),
-            ),
-          ),
-        ),
-      )
-          : ListView.builder(
-                  itemCount: walletController.deposits.length,
-                  shrinkWrap: true,
-                  itemBuilder: (context, index) {
-                    DepositModel depositModel =
-                        walletController.deposits.elementAt(index);
-                    return WalletCard(
-                        context: context,
-                        uid: uid,
-                        type: "deposit",
-                        depositBody: depositModel);
-                  });
+                              return DataRow(cells: [
+                                DataCell(Container(width: 75, child: Text(y!))),
+                                DataCell(Container(width: 75, child: Text(x))),
+                                DataCell(Container(
+                                    child: Text(
+                                        DateFormat("yyyy-dd-MMM hh:mm a")
+                                            .format(w)))),
+                              ]);
+                            }),
+                          ),
+                        ),
+                      ),
+                    )
+                  : ListView.builder(
+                      itemCount: walletController.deposits.length,
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) {
+                        DepositModel depositModel =
+                            walletController.deposits.elementAt(index);
+                        return WalletCard(
+                            context: context,
+                            uid: uid,
+                            type: "deposit",
+                            depositBody: depositModel);
+                      });
     });
   }
 }

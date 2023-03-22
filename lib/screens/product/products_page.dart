@@ -87,7 +87,7 @@ class ProductPage extends StatelessWidget {
                     ),
                   ),
                   Spacer(),
-                  if (authController.usertype == "attendant")
+                  if (authController.usertype=="attendant")
                     InkWell(
                         onTap: () {
                           Get.find<HomeController>().selectedWidget.value =
@@ -97,7 +97,7 @@ class ProductPage extends StatelessWidget {
                         child: majorTitle(
                             title: "Add Product",
                             color: AppColors.mainColor,
-                            size: 16))
+                            size: 16.0))
                 ],
               ),
             ),
@@ -238,33 +238,36 @@ class ProductPage extends StatelessWidget {
                   color: Colors.black,
                 ),
               ),
-              title: Row(
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      majorTitle(
-                          title: "Shop Products",
-                          color: Colors.black,
-                          size: 16.0),
-                      minorTitle(
-                          title:
-                              "${createShopController.currentShop.value?.name}",
-                          color: Colors.grey)
-                    ],
-                  ),
-                  Spacer(),
-                  if (authController.usertype.value == "attendant")
-                    InkWell(
-                        onTap: () {
-                          Get.to(() => CreateProduct(
-                              page: "create", productModel: ProductModel()));
-                        },
-                        child: majorTitle(
-                            title: "Add Product",
-                            color: AppColors.mainColor,
-                            size: 16))
-                ],
+              title: Padding(
+                padding: const EdgeInsets.only(right: 10.0),
+                child: Row(
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        majorTitle(
+                            title: "Shop Products",
+                            color: Colors.black,
+                            size: 16.0),
+                        minorTitle(
+                            title:
+                                "${createShopController.currentShop.value?.name}",
+                            color: Colors.grey)
+                      ],
+                    ),
+                    Spacer(),
+                    if (authController.usertype.value == "attendant")
+                      InkWell(
+                          onTap: () {
+                            Get.to(() => CreateProduct(
+                                page: "create", productModel: ProductModel()));
+                          },
+                          child: majorTitle(
+                              title: "Add Product",
+                              color: AppColors.mainColor,
+                              size: 16.0))
+                  ],
+                ),
               ),
             ),
             body: SingleChildScrollView(

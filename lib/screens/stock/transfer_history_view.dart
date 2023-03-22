@@ -27,9 +27,8 @@ class TransferHistoryView extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white.withOpacity(0.9),
       appBar: AppBar(
-          backgroundColor: MediaQuery.of(context).size.width > 600
-              ? Colors.white
-              : AppColors.mainColor,
+          backgroundColor: Colors.white
+              ,
           elevation: 0.0,
           leading: IconButton(
             onPressed: () {
@@ -40,10 +39,7 @@ class TransferHistoryView extends StatelessWidget {
                 Get.back();
               }
             },
-            icon: Icon(Icons.arrow_back_ios,
-                color: MediaQuery.of(context).size.width > 600
-                    ? Colors.black
-                    : Colors.white),
+            icon: Icon(Icons.arrow_back_ios, color: Colors.black),
           ),
           title: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -51,7 +47,7 @@ class TransferHistoryView extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Transfer History View'),
+                  Text('Transfer History View',style: TextStyle(color: Colors.white),),
                 ],
               ),
             ],

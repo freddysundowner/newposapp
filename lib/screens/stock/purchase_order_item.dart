@@ -11,6 +11,7 @@ import 'package:intl/intl.dart';
 
 import '../../widgets/bigtext.dart';
 import '../../widgets/smalltext.dart';
+import '../../widgets/snackBars.dart';
 import '../../widgets/stocks_card.dart';
 
 class PurchaseOrderItems extends StatelessWidget {
@@ -96,6 +97,9 @@ class PurchaseOrderItems extends StatelessWidget {
                                 DataColumn(
                                     label: Text('Date',
                                         textAlign: TextAlign.center)),
+                                DataColumn(
+                                    label:
+                                        Text('', textAlign: TextAlign.center)),
                               ],
                               rows: List.generate(
                                   purchaseController.purchaseOrderItems.length,
@@ -119,6 +123,48 @@ class PurchaseOrderItems extends StatelessWidget {
                                   DataCell(Container(
                                       child: Text(DateFormat("MM-dd-yyyy")
                                           .format(w!)))),
+                                  DataCell(Container(
+                                    child: Align(
+                                      alignment: Alignment.topRight,
+                                      child: PopupMenuButton(
+                                        itemBuilder: (ctx) => [
+                                          PopupMenuItem(
+                                            child: ListTile(
+                                              onTap: () {
+                                                Get.back();
+                                                if (saleOrderItemModel
+                                                        .supplier ==
+                                                    null) {
+                                                  showSnackBar(
+                                                      message:
+                                                          "please select customer to sell to",
+                                                      color: Colors.red,
+                                                      context: context);
+                                                } else {
+                                                  showQuantityDialog(context,
+                                                      saleOrderItemModel);
+                                                }
+                                              },
+                                              title: Text("Return to Supplier"),
+                                            ),
+                                          ),
+                                          PopupMenuItem(
+                                            child: ListTile(
+                                              onTap: () {
+                                                Get.back();
+                                              },
+                                              title: Text("Close"),
+                                            ),
+                                          ),
+                                        ],
+                                        icon: Icon(
+                                          Icons.more_vert,
+                                          color: Colors.black,
+                                          size: 30,
+                                        ),
+                                      ),
+                                    ),
+                                  )),
                                 ]);
                               }),
                             ),
@@ -128,20 +174,6 @@ class PurchaseOrderItems extends StatelessWidget {
                       ],
                     ),
                   );
-
-        ListView.builder(
-            itemCount: purchaseController.purchaseOrderItems.length,
-            physics: NeverScrollableScrollPhysics(),
-            shrinkWrap: true,
-            itemBuilder: (context, index) {
-              SupplyOrderModel supplyOrderModel =
-                  purchaseController.purchaseOrderItems.elementAt(index);
-
-              return stockCard(
-                  context: context,
-                  supplyOrderModel: supplyOrderModel,
-                  type: "today");
-            });
       }), smallScreen: Obx(() {
         return purchaseController.getPurchaseOrderItemLoad.value
             ? Center(
