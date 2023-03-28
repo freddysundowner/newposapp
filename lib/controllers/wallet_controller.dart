@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutterpos/controllers/CustomerController.dart';
+import 'package:flutterpos/controllers/home_controller.dart';
+import 'package:flutterpos/controllers/shop_controller.dart';
+import 'package:flutterpos/screens/sales/create_sale.dart';
 import 'package:get/get.dart';
 
 import '../models/deposit_model.dart';
@@ -8,13 +11,10 @@ import '../widgets/loading_dialog.dart';
 
 class WalletController extends GetxController with GetTickerProviderStateMixin {
   final GlobalKey<State> _keyLoader = new GlobalKey<State>();
-  RxBool gettingUsageLoad = RxBool(false);
   RxBool gettingWalletLoad = RxBool(false);
   RxBool createWalletLoad = RxBool(false);
   RxBool updateWalletLoad = RxBool(false);
-  RxList usages = RxList([]);
-  RxList deposits = RxList([]);
-
+  RxList<DepositModel> deposits = RxList([]);
   late TabController tabController;
 
   TextEditingController amountController = TextEditingController();
@@ -25,9 +25,8 @@ class WalletController extends GetxController with GetTickerProviderStateMixin {
     super.onInit();
   }
 
-  void save(uid, context) async {
+  void save(uid, context, page) async {
     if (amountController.text == "") {
-      // Get.snackbar("", "Please enter a valid amount ");
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text("Please enter a valid amount")));
     } else {
@@ -36,32 +35,41 @@ class WalletController extends GetxController with GetTickerProviderStateMixin {
             context: context,
             title: "Depositing for customer",
             key: _keyLoader);
+
         Map<String, dynamic> body = {
           "amount": amountController.text,
-          "customerId": uid,
-          "type": "deposit"
+          "shop": Get.find<ShopController>().currentShop.value!.id!,
         };
-        var response = await Wallet().createWallet(body);
+        var response = await Wallet().createWallet(body, uid);
         Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
-
-        if (response["ststus"] == true) {
-          await Get.find<CustomerController>().getCustomerById(uid);
+        if (response["status"] == true) {
           amountController.text = "";
-          await getWallet(uid);
+          await Get.find<CustomerController>().getCustomerById(uid);
+          if (page != null) {
+            if (page == "small") {
+              Get.back();
+            } else {
+              Get.find<HomeController>().selectedWidget.value = CreateSale();
+            }
+          }
+
+          await getWallet(uid, "deposit");
         }
+
       } catch (e) {
+        print(e);
         Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
       }
     }
   }
 
-  getWallet(uid) async {
+  getWallet(uid, type) async {
     try {
       gettingWalletLoad.value = true;
-      var response = await Wallet().getWallet(uid);
+      var response = await Wallet().getWallet(uid, type);
 
       if (response != null) {
-        List fetchedData = response["body"];
+        List fetchedData = response;
         List<DepositModel> data =
             fetchedData.map((e) => DepositModel.fromJson(e)).toList();
         deposits.assignAll(data);
@@ -70,25 +78,8 @@ class WalletController extends GetxController with GetTickerProviderStateMixin {
       }
       gettingWalletLoad.value = false;
     } catch (e) {
+      print(e);
       gettingWalletLoad.value = false;
-    }
-  }
-
-  getWalletUsage(uid, type) async {
-    try {
-      gettingUsageLoad.value = true;
-      var response = await Wallet().getusage(uid);
-      if (response != null) {
-        List fetchedData = response["body"];
-        List<DepositModel> data =
-            fetchedData.map((e) => DepositModel.fromJson(e)).toList();
-        usages.assignAll(data);
-      } else {
-        usages.value = [];
-      }
-      gettingUsageLoad.value = false;
-    } catch (e) {
-      gettingUsageLoad.value = false;
     }
   }
 
@@ -97,8 +88,9 @@ class WalletController extends GetxController with GetTickerProviderStateMixin {
       updateWalletLoad.value = true;
       Map<String, dynamic> body = {"amount": amount, "customerId": uid};
       var response = await Wallet().updateWallet(id, body);
+
       await Get.find<CustomerController>().getCustomerById(uid);
-      await getWallet(uid);
+      // await getWallet(uid);
       updateWalletLoad.value = false;
     } catch (e) {
       updateWalletLoad.value = false;

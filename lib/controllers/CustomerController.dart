@@ -34,7 +34,7 @@ class CustomerController extends GetxController
   Rxn<CustomerModel> customer = Rxn(null);
 
   RxString activeItem = RxString("All");
-  RxString customerActiveItem=RxString("Credit");
+  RxString customerActiveItem = RxString("Credit");
   late TabController tabController;
   RxInt initialPage = RxInt(0);
 
@@ -58,9 +58,8 @@ class CustomerController extends GetxController
     )),
   ];
 
-
-
-  createCustomer({required shopId, required BuildContext context, required page}) async {
+  createCustomer(
+      {required shopId, required BuildContext context, required page}) async {
     try {
       creatingCustomerLoad.value = true;
       LoadingDialog.showLoadingDialog(
@@ -80,26 +79,22 @@ class CustomerController extends GetxController
                 CustomersPage(type: "customers");
           }
           if (page == "createSale") {
-            Get.find<HomeController>().selectedWidget.value =
-                CreateSale();
+            Get.find<HomeController>().selectedWidget.value = CreateSale();
           }
           if (page == "createProduct") {
-            Get.find<HomeController>().selectedWidget.value =
-                CreateProduct(
-                  page: "create",
-                  productModel: ProductModel(),
-                );
+            Get.find<HomeController>().selectedWidget.value = CreateProduct(
+              page: "create",
+              productModel: ProductModel(),
+            );
           }
           if (page == "createPurchase") {
-            Get.find<HomeController>().selectedWidget.value =
-                CreatePurchase();
+            Get.find<HomeController>().selectedWidget.value = CreatePurchase();
           }
         } else {
           Get.back();
         }
-        await getCustomersInShop(shopId,"all");
+        await getCustomersInShop(shopId, "all");
         Get.back();
-
       } else {
         showSnackBar(
             message: response["message"], color: Colors.red, context: context);
@@ -111,11 +106,11 @@ class CustomerController extends GetxController
     }
   }
 
-  getCustomersInShop(shopId,type) async {
+  getCustomersInShop(shopId, type) async {
     try {
       customers.clear();
       gettingCustomersLoad.value = true;
-      var response = await Customer().getCustomersByShopId(shopId,type);
+      var response = await Customer().getCustomersByShopId(shopId, type);
       if (response["status"] == true) {
         List fetchedCustomers = response["body"];
         List<CustomerModel> customerData =
@@ -126,61 +121,6 @@ class CustomerController extends GetxController
       }
       gettingCustomersLoad.value = false;
     } catch (e) {
-      List cust = [
-        {
-          "_id": "63fc4c278e7d4a3bbf48872b",
-          "fullName": "peter",
-          "phoneNumber": "0987654321",
-          "shopId": {
-            "_id": "63fa089e46721b7480474be5",
-            "name": "apple",
-            "location": "nakuru",
-            "owner": "63f9efe3879e16801054a0b0",
-            "type": "electronics",
-            "currency": "ARS",
-            "createdAt": "2023-02-25T13:09:50.801Z",
-            "updatedAt": "2023-02-27T10:53:46.012Z",
-            "__v": 0
-          },
-          "walletBalance": 0,
-          "credit": 200000,
-          "onCredit": true,
-          "gender": "",
-          "email": "",
-          "address": "",
-          "createdAt": "2023-02-27T06:22:31.905Z",
-          "updatedAt": "2023-02-28T12:48:41.298Z",
-          "__v": 0
-        },
-        {
-          "_id": "63fc6cb88e7d4a3bbf488c8f",
-          "fullName": "petero",
-          "phoneNumber": "07820156609",
-          "shopId": {
-            "_id": "63fa089e46721b7480474be5",
-            "name": "apple",
-            "location": "nakuru",
-            "owner": "63f9efe3879e16801054a0b0",
-            "type": "electronics",
-            "currency": "ARS",
-            "createdAt": "2023-02-25T13:09:50.801Z",
-            "updatedAt": "2023-02-27T10:53:46.012Z",
-            "__v": 0
-          },
-          "walletBalance": 0,
-          "credit": 5600,
-          "onCredit": true,
-          "gender": "",
-          "email": "",
-          "address": "",
-          "createdAt": "2023-02-27T08:41:28.717Z",
-          "updatedAt": "2023-02-28T06:58:36.252Z",
-          "__v": 0
-        }
-      ];
-      List<CustomerModel> customerData =
-          cust.map((e) => CustomerModel.fromJson(e)).toList();
-      customers.assignAll(customerData);
       gettingCustomersLoad.value = false;
     }
   }
@@ -193,6 +133,7 @@ class CustomerController extends GetxController
     addressController.text = "";
     amountController.text = "";
   }
+
   getCustomerById(id) async {
     try {
       gettingCustomer.value = true;
@@ -237,10 +178,6 @@ class CustomerController extends GetxController
       var response = await Customer().updateCustomer(body: body, id: id);
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
       if (response["status"] == true) {
-        showSnackBar(
-            message: response["message"],
-            color: AppColors.mainColor,
-            context: context);
         clearTexts();
         await getCustomerById(id);
       } else {
@@ -262,13 +199,14 @@ class CustomerController extends GetxController
       var response = await Customer().deleteCustomer(id: id);
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
       if (response["status"] == true) {
-        if (MediaQuery.of(context).size.width>600) {
-          Get.find<HomeController>().selectedWidget.value=CustomersPage(type: "customers");
-        }  else{
+        if (MediaQuery.of(context).size.width > 600) {
+          Get.find<HomeController>().selectedWidget.value =
+              CustomersPage(type: "customers");
+        } else {
           Get.back();
         }
         clearTexts();
-        await getCustomersInShop(shopId,"all");
+        await getCustomersInShop(shopId, "all");
       } else {
         showSnackBar(
             message: response["message"],

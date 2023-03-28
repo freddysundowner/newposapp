@@ -6,7 +6,9 @@ import 'package:flutterpos/controllers/shop_controller.dart';
 import 'package:flutterpos/models/deposit_model.dart';
 import 'package:flutterpos/responsive/responsiveness.dart';
 import 'package:flutterpos/screens/customers/customer_info_page.dart';
+import 'package:flutterpos/screens/sales/create_sale.dart';
 import 'package:flutterpos/utils/helper.dart';
+import 'package:flutterpos/widgets/pdf/wallet_pdf.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
@@ -20,33 +22,42 @@ class WalletPage extends StatelessWidget {
   final title;
   final uid;
   final phone;
+  final String? page;
 
   WalletPage(
-      {Key? key, required this.title, required this.uid, required this.phone})
-      : super(key: key);
+      {Key? key,
+      required this.title,
+      required this.uid,
+      required this.phone,
+      this.page})
+      : super(key: key) {
+    customersController.getCustomerById(uid);
+    walletController.getWallet(uid, "deposit");
+  }
+
   WalletController walletController = Get.find<WalletController>();
   CustomerController customersController = Get.find<CustomerController>();
 
   @override
   Widget build(BuildContext context) {
-    customersController.getCustomerById(uid);
-    walletController.getWallet(uid);
     return ResponsiveWidget(
-        largeScreen: Scaffold(
-          appBar: _appBar(context, "large"),
-          body: Container(
-            child: SingleChildScrollView(
-              physics: NeverScrollableScrollPhysics(),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  walletBalanceContainer(context, "large"),
-                  tabsPage(context)
-                ],
+        largeScreen: Obx(() {
+          return Scaffold(
+            appBar: _appBar(context, "large"),
+            body: Container(
+              child: SingleChildScrollView(
+                physics: NeverScrollableScrollPhysics(),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    walletBalanceContainer(context, "large"),
+                    tabsPage(context)
+                  ],
+                ),
               ),
             ),
-          ),
-        ),
+          );
+        }),
         smallScreen: Obx(() => Helper(
               appBar: _appBar(context, "small"),
               widget: SingleChildScrollView(
@@ -75,10 +86,9 @@ class WalletPage extends StatelessWidget {
                 indicatorWeight: 3,
                 onTap: (index) {
                   if (index == 0) {
-                    walletController.getWallet(uid);
-                    walletController.getWalletUsage(uid, "deposit");
+                    walletController.getWallet(uid, "deposit");
                   } else {
-                    walletController.getWalletUsage(uid, "usage");
+                    walletController.getWallet(uid, "usage");
                   }
                 },
                 tabs: [
@@ -93,11 +103,14 @@ class WalletPage extends StatelessWidget {
               child: TabBarView(
                 controller: walletController.tabController,
                 children: [
-                  DepositHistory(uid: uid),
-                  UsageHistory(
+                  DepositHistory(
                     uid: uid,
-                    customer: title,
-                  )
+                    type: "deposit",
+                  ),
+                  DepositHistory(
+                    uid: uid,
+                    type: "usage",
+                  ),
                 ],
               ),
             ),
@@ -138,10 +151,12 @@ class WalletPage extends StatelessWidget {
           InkWell(
             onTap: () {
               showDepositDialog(
-                context: context,
-                uid: uid,
-                title: "Add a deposit",
-              );
+                  context: context,
+                  uid: uid,
+                  title: "Add a deposit",
+                  page: MediaQuery.of(context).size.width <= 600
+                      ? "small"
+                      : "large");
             },
             child: Container(
               padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
@@ -167,7 +182,9 @@ class WalletPage extends StatelessWidget {
       backgroundColor: type == "small" ? AppColors.mainColor : Colors.white,
       leading: IconButton(
           onPressed: () {
-            if (type == "large") {
+            if (page != null && page == "makesale") {
+              Get.find<HomeController>().selectedWidget.value = CreateSale();
+            } else if (type == "large") {
               Get.find<HomeController>().selectedWidget.value =
                   CustomerInfoPage(
                       id: uid, user: "customer", name: title, phone: phone);
@@ -196,6 +213,8 @@ class WalletPage extends StatelessWidget {
   }
 
   showModalSheet(context, title, uid) {
+    WalletController walletController = Get.find<WalletController>();
+    ShopController shopController = Get.find<ShopController>();
     return showModalBottomSheet<void>(
         context: context,
         builder: (BuildContext context) {
@@ -214,14 +233,11 @@ class WalletPage extends StatelessWidget {
                     padding: const EdgeInsets.all(8.0),
                     child: InkWell(
                       onTap: () async {
-                        // await walletController.getWalletUsage(uid);
-                        // createPdf(
-                        //     type: "deposit",
-                        //     walletController: walletController,
-                        //     attendant: Get.find<  AuthController>().currentUser.value!.name,
-                        //     customer: title,
-                        //     shop:Get.find<CreateShopController>().currentShop.value!.name );
                         Navigator.pop(context);
+                        WalletPdf(
+                            shop: shopController.currentShop.value!.name!,
+                            deposits: walletController.deposits,
+                            type: "deposit");
                       },
                       child: Container(
                         width: double.infinity,
@@ -241,15 +257,11 @@ class WalletPage extends StatelessWidget {
                     padding: const EdgeInsets.all(8.0),
                     child: GestureDetector(
                       onTap: () async {
-                        // await  walletController.getWalletUsage(uid);
-                        // createPdf(
-                        //     type: "usage",
-                        //     walletController: walletController,
-                        //     attendant: Get.find<  AuthController>().currentUser.value!.name,
-                        //     customer: title,
-                        //     shop:Get.find<CreateShopController>().currentShop.value!.name );
                         Navigator.pop(context);
-                        Navigator.pop(context);
+                        WalletPdf(
+                            shop: shopController.currentShop.value!.name!,
+                            deposits: walletController.deposits,
+                            type: "usage");
                       },
                       child: Container(
                         width: double.infinity,
@@ -297,8 +309,10 @@ class WalletPage extends StatelessWidget {
 
 class DepositHistory extends StatelessWidget {
   final uid;
+  final type;
 
-  DepositHistory({Key? key, required this.uid}) : super(key: key);
+  DepositHistory({Key? key, required this.uid, required this.type})
+      : super(key: key);
   WalletController walletController = Get.find<WalletController>();
   ShopController shopController = Get.find<ShopController>();
 
@@ -309,7 +323,7 @@ class DepositHistory extends StatelessWidget {
           ? Center(
               child: CircularProgressIndicator(),
             )
-          : walletController.deposits.length == 0
+          : walletController.deposits.isEmpty
               ? Center(
                   child: Text("No Entries found"),
                 )
@@ -341,10 +355,10 @@ class DepositHistory extends StatelessWidget {
                                   label: Text('Date',
                                       textAlign: TextAlign.center)),
                             ],
-                            rows: List.generate(walletController.usages.length,
-                                (index) {
+                            rows: List.generate(
+                                walletController.deposits.length, (index) {
                               DepositModel depositModel =
-                                  walletController.usages.elementAt(index);
+                                  walletController.deposits.elementAt(index);
                               final y = depositModel.recieptNumber;
                               final x = depositModel.amount.toString();
                               final w = depositModel.createdAt!;
@@ -365,99 +379,14 @@ class DepositHistory extends StatelessWidget {
                   : ListView.builder(
                       itemCount: walletController.deposits.length,
                       shrinkWrap: true,
+                      physics: ScrollPhysics(),
                       itemBuilder: (context, index) {
                         DepositModel depositModel =
                             walletController.deposits.elementAt(index);
                         return WalletCard(
                             context: context,
                             uid: uid,
-                            type: "deposit",
-                            depositBody: depositModel);
-                      });
-    });
-  }
-}
-
-class UsageHistory extends StatelessWidget {
-  final uid;
-  final customer;
-
-  UsageHistory({Key? key, required this.uid, required this.customer})
-      : super(key: key);
-  WalletController walletController = Get.find<WalletController>();
-  ShopController shopController = Get.find<ShopController>();
-
-  @override
-  Widget build(BuildContext context) {
-    return Obx(() {
-      return walletController.gettingUsageLoad.value
-          ? Center(
-              child: CircularProgressIndicator(),
-            )
-          : walletController.usages.length == 0
-              ? Center(
-                  child: Text("No Entries found"),
-                )
-              : MediaQuery.of(context).size.width > 600
-                  ? SingleChildScrollView(
-                      child: Container(
-                        width: double.infinity,
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 5, vertical: 10),
-                        child: Theme(
-                          data: Theme.of(context)
-                              .copyWith(dividerColor: Colors.grey),
-                          child: DataTable(
-                            decoration: BoxDecoration(
-                                border: Border.all(
-                              width: 1,
-                              color: Colors.black,
-                            )),
-                            columnSpacing: 30.0,
-                            columns: [
-                              DataColumn(
-                                  label: Text('Receipt Number',
-                                      textAlign: TextAlign.center)),
-                              DataColumn(
-                                  label: Text(
-                                      'Amount(${shopController.currentShop.value?.currency})',
-                                      textAlign: TextAlign.center)),
-                              DataColumn(
-                                  label: Text('Date',
-                                      textAlign: TextAlign.center)),
-                            ],
-                            rows: List.generate(walletController.usages.length,
-                                (index) {
-                              DepositModel depositModel =
-                                  walletController.usages.elementAt(index);
-                              final y = depositModel.recieptNumber;
-                              final x = depositModel.amount.toString();
-                              final w = depositModel.createdAt!;
-
-                              return DataRow(cells: [
-                                DataCell(Container(width: 75, child: Text(y!))),
-                                DataCell(Container(width: 75, child: Text(x))),
-                                DataCell(Container(
-                                    child: Text(
-                                        DateFormat("yyyy-dd-MMM hh:mm a")
-                                            .format(w)))),
-                              ]);
-                            }),
-                          ),
-                        ),
-                      ),
-                    )
-                  : ListView.builder(
-                      itemCount: walletController.usages.length,
-                      shrinkWrap: true,
-                      itemBuilder: (context, index) {
-                        DepositModel depositModel =
-                            walletController.usages.elementAt(index);
-                        return WalletCard(
-                            context: context,
-                            uid: uid,
-                            type: "usage",
-                            customer: customer,
+                            type: type,
                             depositBody: depositModel);
                       });
     });

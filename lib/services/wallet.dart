@@ -4,28 +4,25 @@ import 'apiurls.dart';
 import 'client.dart';
 
 class Wallet {
-  createWallet(Map<String, dynamic> body) async {
-    var response = await DbBase()
-        .databaseRequest(wallet, DbBase().postRequestType, body: body);
-    return jsonDecode(response);
-  }
+  createWallet(Map<String, dynamic> body, uid) async {
 
-  getWallet(uid) async {
     var response = await DbBase().databaseRequest(
-        wallet + "customerwallet/" + uid, DbBase().getRequestType);
+        "${customerDeposit}" + uid, DbBase().putRequestType,
+        body: body);
+
     return jsonDecode(response);
   }
 
-  getusage(uid) async {
-    var response =
-        await DbBase().databaseRequest(usage + uid, DbBase().getRequestType);
-    var data = jsonDecode(response);
-    return data;
+  getWallet(uid,type) async {
+    var response = await DbBase().databaseRequest(
+        "${customerTransaction}"+ uid, DbBase().getRequestType,body: {"type":type});
+    return jsonDecode(response);
   }
+
 
   updateWallet(uid, body) async {
     var response = await DbBase()
-        .databaseRequest(wallet + uid, DbBase().patchRequestType, body: body);
+        .databaseRequest(wallet + uid, DbBase().putRequestType, body: body);
     return jsonDecode(response);
     ;
   }
@@ -36,10 +33,4 @@ class Wallet {
     return jsonDecode(response);
   }
 
-// getShopWallet(uid) async{
-//   var response = await DbBase()
-//       .databaseRequest(trackDeposit + "totalshopwallet/${uid}", DbBase().getRequestType);
-//   var data = jsonDecode(response);
-//   return response;
-// }
 }

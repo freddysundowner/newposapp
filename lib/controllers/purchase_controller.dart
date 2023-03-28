@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:flutterpos/controllers/home_controller.dart';
 import 'package:flutterpos/controllers/product_controller.dart';
+import 'package:flutterpos/models/customer_model.dart';
 import 'package:flutterpos/models/product_model.dart';
 import 'package:flutterpos/models/purchase_order.dart';
 import 'package:flutterpos/models/supply_order_model.dart';
@@ -21,8 +22,8 @@ class PurchaseController extends GetxController {
   RxList<SupplyOrderModel> purchaseOrderItems = RxList([]);
   RxInt grandTotal = RxInt(0);
   RxInt balance = RxInt(0);
-  RxString selectedSupplier = RxString("");
-  RxString selectedSupplierId = RxString("");
+  Rxn<CustomerModel> selectedSupplier = Rxn(null);
+
   RxBool getPurchaseLoad = RxBool(false);
   RxBool getPurchaseByDateLoad = RxBool(false);
   RxBool getPurchaseOrderItemLoad = RxBool(false);
@@ -47,7 +48,8 @@ class PurchaseController extends GetxController {
             key: _keyLoader);
         var products = selectedList.map((element) => element).toList();
         var supplier = {
-          "supplier": selectedSupplierId.value,
+          if (selectedSupplier.value != null)
+            "supplier": selectedSupplier.value!.id,
           "balance": balance.value,
           "total": grandTotal.value,
           "attendant": attendantid,
@@ -64,8 +66,7 @@ class PurchaseController extends GetxController {
           balance.value = 0;
           selectedList.value = [];
           grandTotal.value = 0;
-          selectedSupplier.value = "";
-          selectedSupplierId.value = "";
+          selectedSupplier.value = null;
           textEditingControllerAmount.text = "0";
           if (screen == "admin") {
             if (MediaQuery.of(context).size.width > 600) {
@@ -105,8 +106,7 @@ class PurchaseController extends GetxController {
       var response = await Purchases().getPurchaseOrderItems(id: id);
       if (response["status"] == true) {
         List fetchedResponse = response["body"];
-        List<SupplyOrderModel> supply =
-            fetchedResponse.map((e) => SupplyOrderModel.fromJson(e)).toList();
+        List<SupplyOrderModel> supply = fetchedResponse.map((e) => SupplyOrderModel.fromJson(e)).toList();
         purchaseOrderItems.assignAll(supply);
       } else {
         purchaseOrderItems.value = RxList([]);

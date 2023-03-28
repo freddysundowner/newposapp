@@ -1,17 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:flutterpos/controllers/cashflow_controller.dart';
 import 'package:flutterpos/controllers/home_controller.dart';
+import 'package:flutterpos/models/cashflow_category.dart';
+import 'package:flutterpos/screens/cash_flow/cash_at_bank.dart';
 import 'package:flutterpos/utils/colors.dart';
 import 'package:flutterpos/widgets/delete_dialog.dart';
 import 'package:get/get.dart';
 
 import '../bank_history.dart';
 
-Widget categoryCard(context) {
+Widget categoryCard(context, {required CashFlowCategory cashflowCategory}) {
   return Padding(
     padding: const EdgeInsets.all(8.0),
     child: InkWell(
       onTap: () {
-        actionsBottomSheet(context: context);
+        if (cashflowCategory.name == "bank") {
+          Get.to(() => CashAtBank());
+        } else {
+          actionsBottomSheet(
+              context: context, cashflowCategory: cashflowCategory);
+        }
       },
       child: Container(
         padding: EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 3),
@@ -32,11 +40,11 @@ Widget categoryCard(context) {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Name",
+                  cashflowCategory.name!,
                   style: TextStyle(color: Colors.black),
                 ),
                 Text(
-                  "${200}",
+                  cashflowCategory.amount!.toString(),
                   style: TextStyle(color: Colors.black),
                 ),
               ],
@@ -48,7 +56,12 @@ Widget categoryCard(context) {
   );
 }
 
-actionsBottomSheet({required context}) {
+actionsBottomSheet(
+    {required context, required CashFlowCategory cashflowCategory}) {
+  CashflowController cashflowController = Get.find<CashflowController>();
+  cashflowController.textEditingControllerCategory.text =
+      cashflowCategory.name!;
+
   showModalBottomSheet(
       context: context,
       builder: (_) {
@@ -70,13 +83,16 @@ actionsBottomSheet({required context}) {
                   if (MediaQuery.of(context).size.width > 600) {
                     Get.find<HomeController>().selectedWidget.value =
                         CashHistory(
-                            title: "Faulu",
+                            title: cashflowCategory.name,
                             subtitle: "All records",
                             page: "cashflowcategory",
-                            id: "1230");
+                            id: cashflowCategory.id);
                   } else {
                     Get.to(() => CashHistory(
-                        title: "Faulu", subtitle: "All records", id: "1230",page: "bank",));
+                        title: cashflowCategory.name,
+                        subtitle: "All records",
+                        page: "cashflowcategory",
+                        id: cashflowCategory.id));
                   }
                 },
                 title: Text("View List"),
@@ -99,6 +115,8 @@ actionsBottomSheet({required context}) {
                                 Text("Edit Category"),
                                 Spacer(),
                                 TextFormField(
+                                  controller: cashflowController
+                                      .textEditingControllerCategory,
                                   decoration: InputDecoration(
                                       contentPadding: EdgeInsets.all(10),
                                       fillColor: Colors.white,
@@ -135,6 +153,13 @@ actionsBottomSheet({required context}) {
                                     TextButton(
                                         onPressed: () {
                                           Get.back();
+                                          if (cashflowController
+                                              .textEditingControllerCategory
+                                              .text
+                                              .isNotEmpty) {
+                                            cashflowController.editCategory(
+                                                cashflowCategory.id);
+                                          }
                                         },
                                         child: Text(
                                           "Save".toUpperCase(),
@@ -155,7 +180,9 @@ actionsBottomSheet({required context}) {
                 leading: Icon(Icons.delete),
                 onTap: () {
                   Get.back();
-                  deleteDialog(context: context, onPressed: () {});
+                  deleteDialog(context: context, onPressed: () {
+                    cashflowController.deleteCategory(cashflowCategory.id);
+                  });
                 },
                 title: Text("Delete"),
               )

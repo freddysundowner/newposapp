@@ -15,8 +15,7 @@ import 'bank_history.dart';
 
 class CashAtBank extends StatelessWidget {
   CashAtBank({Key? key}) : super(key: key) {
-    cashflowController
-        .fetchCashAtBank(createShopController.currentShop.value?.id);
+    cashflowController.fetchCashAtBank(createShopController.currentShop.value?.id);
   }
 
   ShopController createShopController = Get.find<ShopController>();
@@ -125,7 +124,8 @@ class CashAtBank extends StatelessWidget {
                   decoration: BoxDecoration(
                       color: Colors.grey.withOpacity(0.8),
                       borderRadius: BorderRadius.circular(20)),
-                  child: Text("KES ${0}"),
+                  child: Obx(() => Text(
+                      "${createShopController.currentShop.value!.currency!}  ${cashflowController.totalcashAtBank.value}")),
                 )
               ],
             ),
@@ -247,10 +247,10 @@ class CashAtBank extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Text("KES"),
+                    Text("${createShopController.currentShop.value!.currency}"),
                     SizedBox(width: 2),
                     Text(
-                      "${bankModel.amount ?? 0}",
+                      "${bankModel.amount}",
                       style: TextStyle(
                           color: Colors.black, fontWeight: FontWeight.bold),
                     ),
@@ -276,9 +276,9 @@ class CashAtBank extends StatelessWidget {
                 InkWell(
                   onTap: () {
                     Get.to(() => CashHistory(
-                          title: "Faulu",
+                          title: bankModel.name,
                           subtitle: "All records",
-                          id: "1230",
+                          id: bankModel.id,
                           page: "bank",
                         ));
                   },

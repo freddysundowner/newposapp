@@ -8,6 +8,7 @@ import 'package:flutterpos/responsive/responsiveness.dart';
 import 'package:flutterpos/screens/stock/purchase_order_item.dart';
 import 'package:flutterpos/screens/stock/stock_page.dart';
 import 'package:flutterpos/widgets/no_items_found.dart';
+import 'package:flutterpos/widgets/pdf/purchases_pdf.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
@@ -60,8 +61,7 @@ class ViewPurchases extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  majorTitle(
-                      title: "Purchases", color: Colors.black, size: 16.0),
+                  majorTitle(title: "Purchases", color: Colors.black, size: 16.0),
                   minorTitle(
                       title: "${shopController.currentShop.value?.name}",
                       color: Colors.grey)
@@ -88,6 +88,19 @@ class ViewPurchases extends StatelessWidget {
             ],
           ),
         ),
+        actions: [
+          InkWell(
+              onTap: () {
+                PurchasesPdf(
+                    shop: shopController.currentShop.value!.name!,
+                    sales: purchaseController.purchaseByDate,
+                    type: "type");
+              },
+              child: Icon(
+                Icons.download,
+                color: Colors.black,
+              ))
+        ],
       ),
       body: ResponsiveWidget(
         largeScreen: Obx(() {

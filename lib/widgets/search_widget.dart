@@ -3,6 +3,7 @@ import 'package:flutterpos/controllers/product_controller.dart';
 import 'package:flutterpos/controllers/purchase_controller.dart';
 import 'package:flutterpos/controllers/sales_controller.dart';
 import 'package:flutterpos/models/product_model.dart';
+import 'package:flutterpos/widgets/snackBars.dart';
 import 'package:get/get.dart';
 
 Widget searchWidget(
@@ -58,9 +59,17 @@ Widget searchWidget(
                           onSelected(opt);
                           productController.searchProductController.text = "";
                         } else {
-                          salesController.changeSelectedList(opt);
                           onSelected(opt);
-                          productController.searchProductController.text = "";
+                          if (opt.quantity!<= 0) {
+                            showSnackBar(message: "Product out of stock", color: Colors.red, context: context);
+                            productController.searchProductController.text = "";
+                          } else{
+                            salesController.changeSelectedList(opt);
+                            productController.searchProductController.text = "";
+
+                          }
+
+
                         }
                       },
                       child: Container(

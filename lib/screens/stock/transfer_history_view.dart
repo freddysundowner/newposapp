@@ -6,7 +6,6 @@ import 'package:flutterpos/models/product_model.dart';
 import 'package:flutterpos/models/stockTransferHistoryModel.dart';
 import 'package:flutterpos/responsive/responsiveness.dart';
 import 'package:flutterpos/screens/stock/transfer_history.dart';
-import 'package:flutterpos/utils/colors.dart';
 import 'package:flutterpos/widgets/no_items_found.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -15,20 +14,17 @@ import '../../controllers/shop_controller.dart';
 
 class TransferHistoryView extends StatelessWidget {
   final StockTransferHistory stockTransferHistory;
+  TransferHistoryView({Key? key, required this.stockTransferHistory}) : super(key: key);
 
-  TransferHistoryView({Key? key, required this.stockTransferHistory})
-      : super(key: key);
   ShopController shopController = Get.find<ShopController>();
-  StockTransferController stockTransferController =
-      Get.find<StockTransferController>();
+  StockTransferController stockTransferController = Get.find<StockTransferController>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white.withOpacity(0.9),
       appBar: AppBar(
-          backgroundColor: Colors.white
-              ,
+          backgroundColor: Colors.white,
           elevation: 0.0,
           leading: IconButton(
             onPressed: () {
@@ -47,7 +43,10 @@ class TransferHistoryView extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Transfer History View',style: TextStyle(color: Colors.white),),
+                  Text(
+                    'Transfer History View',
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ],
               ),
             ],
@@ -86,23 +85,7 @@ class TransferHistoryView extends StatelessWidget {
                                   label: Text('Date',
                                       textAlign: TextAlign.center)),
                             ],
-                            rows: List.generate(
-                                shopController.AdminShops.length, (index) {
-                              ProductModel productModel = stockTransferHistory
-                                  .product!
-                                  .elementAt(index);
-                              final y = productModel.name;
-                              final x = productModel.quantity;
-                              final z = productModel.createdAt!;
-
-                              return DataRow(cells: [
-                                DataCell(Container(child: Text(y!))),
-                                DataCell(Container(child: Text(x.toString()))),
-                                DataCell(Container(
-                                    child: Text(
-                                        DateFormat("dd/MM/yyyy").format(z)))),
-                              ]);
-                            }),
+                            rows:[],
                           ),
                         ),
                       ),

@@ -1,18 +1,21 @@
 import 'dart:io';
 
-import 'package:flutterpos/models/sales_model.dart';
 import 'package:intl/intl.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 
-SalesPdf(
+import '../../models/purchase_order.dart';
+
+PurchasesPdf(
     {required final shop,
-    required List<SalesModel> sales,
+    required List<PurchaseOrder> sales,
     required type}) async {
-  int sum=0;
-  sales.forEach((element) {sum+=element.grandTotal!;});
+  int sum = 0;
+  sales.forEach((element) {
+    sum += element.total!;
+  });
   final pdf = pw.Document();
   pdf.addPage(
     pw.Page(
@@ -43,15 +46,15 @@ SalesPdf(
                         headers: [
                           "Receipt Number",
                           "Amount",
-                          "Payment Meethod",
+                          "Products",
                           "Date"
                         ],
                         data: sales
                             .map((e) => [
                                   e.receiptNumber,
-                                  e.grandTotal,
-                                  e.paymentMethod,
-                              DateFormat("dd/MM/yyyy").format (e.createdAt!)
+                                  e.total,
+                                  e.productCount,
+                                  DateFormat("dd/MM/yyyy").format(e.createdAt!)
                                 ])
                             .toList())),
                 pw.SizedBox(height: 10),
@@ -60,16 +63,17 @@ SalesPdf(
                   child: pw.SizedBox(
                       width: 200,
                       child: pw.Column(
-                        mainAxisAlignment: pw.MainAxisAlignment.end,
+                          mainAxisAlignment: pw.MainAxisAlignment.end,
                           children: [
-                        pw.Text(
-                          "Totals ${sum}",
-                          style: pw.TextStyle(
-                              fontWeight: pw.FontWeight.bold, fontSize: 16),
-                        ),
-                        pw.Divider(
-                            thickness: 1, color: PdfColor.fromInt(0xFF000000))
-                      ])),
+                            pw.Text(
+                              "Totals ${sum}",
+                              style: pw.TextStyle(
+                                  fontWeight: pw.FontWeight.bold, fontSize: 16),
+                            ),
+                            pw.Divider(
+                                thickness: 1,
+                                color: PdfColor.fromInt(0xFF000000))
+                          ])),
                 ),
                 pw.SizedBox(height: 10),
               ],
@@ -81,7 +85,7 @@ SalesPdf(
 
   final bytes = await pdf.save();
   final dir = await getApplicationDocumentsDirectory();
-  final file = File('${dir.path}/$type-Sales.pdf');
+  final file = File('${dir.path}/Purchases.pdf');
   await file.writeAsBytes(bytes);
   await OpenFile.open(file.path);
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutterpos/controllers/attendant_controller.dart';
 import 'package:flutterpos/controllers/home_controller.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
 import 'package:flutterpos/models/sales_model.dart';
@@ -22,7 +23,7 @@ import '../sales/all_sales_page.dart';
 import '../stock/stock_page.dart';
 
 class HomePage extends StatelessWidget {
-  HomePage({Key? key}) : super(key: key) ;
+  HomePage({Key? key}) : super(key: key);
 
   ShopController shopController = Get.find<ShopController>();
   SalesController salesController = Get.put(SalesController());
@@ -292,147 +293,160 @@ class HomePage extends StatelessWidget {
             ),
           ),
         ),
-        smallScreen: Scaffold(
-            body: SingleChildScrollView(
-          child: Container(
-            width: double.infinity,
-            padding: EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // SizedBox(height: 50),
-                majorTitle(
-                    title: "Current Shop", color: Colors.black, size: 20.0),
-                SizedBox(height: 5),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Obx(() {
-                      return minorTitle(
-                          title: shopController.currentShop.value == null
-                              ? ""
-                              : shopController.currentShop.value!.name,
-                          color: AppColors.mainColor);
-                    }),
-                    InkWell(
-                      onTap: () async {
-                        await shopController.getShopsByAdminId(
-                          adminId: authController.currentUser.value?.id,
-                        );
-                        showShopModalBottomSheet(context);
-                      },
-                      child: Container(
-                        padding: EdgeInsets.all(5),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(50),
-                          border:
-                              Border.all(color: AppColors.mainColor, width: 2),
-                        ),
-                        child: minorTitle(
-                            title: "Change Shop", color: AppColors.mainColor),
-                      ),
-                    )
-                  ],
-                ),
-                SizedBox(height: 20),
-                showTodaySales(context),
-                SizedBox(height: 20),
-                majorTitle(
-                    title: "Enterprise Operations",
-                    color: Colors.black,
-                    size: 20.0),
-                SizedBox(height: 20),
-                Container(
-                  width: double.infinity,
-                  padding: EdgeInsets.all(15),
-                  decoration: BoxDecoration(
-                      color: AppColors.mainColor,
-                      borderRadius: BorderRadius.circular(20)),
-                  child: GridView.count(
-                    crossAxisCount: 3,
-                    crossAxisSpacing: 10,
-                    mainAxisSpacing: 10,
-                    shrinkWrap: true,
-                    physics: ScrollPhysics(),
+        smallScreen: RefreshIndicator(
+          onRefresh: () async {
+            await shopController.getShopsByAdminId(
+                adminId: authController.currentUser.value!.id);
+            await salesController.getSalesByDates(
+                shopId: shopController.currentShop.value?.id,
+                startingDate: DateTime.now(),
+                endingDate: DateTime.now(),
+                type: "notcashflow");
+            await Get.find<AttendantController>().getAttendantRoles();
+          },
+          child: Scaffold(
+              body: SingleChildScrollView(
+            child: Container(
+              width: double.infinity,
+              padding: EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // SizedBox(height: 50),
+                  majorTitle(
+                      title: "Current Shop", color: Colors.black, size: 20.0),
+                  SizedBox(height: 5),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      gridItems(
-                          title: "Sell",
-                          iconData: Icons.sell_rounded,
-                          isSmallScreen: true,
-                          function: () {
-                            // homeController.selectedWidget.value=CreateSale();
-                            Get.to(() => CreateSale());
-                          }),
-                      gridItems(
-                          title: "Finance",
-                          isSmallScreen: true,
-                          iconData: Icons.request_quote_outlined,
-                          function: () {
-                            Get.to(() => FinancePage());
-                          }),
-                      gridItems(
-                          title: "Stock",
-                          isSmallScreen: true,
-                          iconData: Icons.production_quantity_limits,
-                          function: () {
-                            Get.to(() => StockPage());
-                          }),
-                      gridItems(
-                          title: "Suppliers",
-                          iconData: Icons.people_alt,
-                          isSmallScreen: true,
-                          function: () {
-                            Get.to(() => CustomersPage(type: "suppliers"));
-                          }),
-                      gridItems(
-                          title: "Customers",
-                          iconData: Icons.people_outline_outlined,
-                          isSmallScreen: true,
-                          function: () {
-                            Get.to(() => CustomersPage(type: "customers"));
-                          }),
-                      gridItems(
-                          title: "Usage",
-                          iconData: Icons.data_usage,
-                          isSmallScreen: true,
-                          function: () {
-                            // Get.to(()=>ExtendUsage());
-                          }),
+                      Obx(() {
+                        return minorTitle(
+                            title: shopController.currentShop.value == null
+                                ? ""
+                                : shopController.currentShop.value!.name,
+                            color: AppColors.mainColor);
+                      }),
+                      InkWell(
+                        onTap: () async {
+                          await shopController.getShopsByAdminId(
+                            adminId: authController.currentUser.value?.id,
+                          );
+                          showShopModalBottomSheet(context);
+                        },
+                        child: Container(
+                          padding: EdgeInsets.all(5),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(50),
+                            border: Border.all(
+                                color: AppColors.mainColor, width: 2),
+                          ),
+                          child: minorTitle(
+                              title: "Change Shop", color: AppColors.mainColor),
+                        ),
+                      )
                     ],
                   ),
-                ),
-                SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    majorTitle(
-                        title: "Sales History",
-                        color: Colors.black,
-                        size: 20.0),
-                    InkWell(
-                        onTap: () {
-                          salesController.salesInitialIndex.value = 0;
-                          Get.to(() => AllSalesPage(
-                                page: "homePage",
-                              ));
-                        },
-                        child: minorTitle(
-                            title: "See all", color: AppColors.lightDeepPurple))
-                  ],
-                ),
-                SizedBox(height: 10),
-                Obx(() {
-                  return salesController.getSalesByDateLoad.value
-                      ? Center(
-                          child: CircularProgressIndicator(),
-                        )
-                      : salesListView();
-                })
-              ],
+                  SizedBox(height: 20),
+                  showTodaySales(context),
+                  SizedBox(height: 20),
+                  majorTitle(
+                      title: "Enterprise Operations",
+                      color: Colors.black,
+                      size: 20.0),
+                  SizedBox(height: 20),
+                  Container(
+                    width: double.infinity,
+                    padding: EdgeInsets.all(15),
+                    decoration: BoxDecoration(
+                        color: AppColors.mainColor,
+                        borderRadius: BorderRadius.circular(20)),
+                    child: GridView.count(
+                      crossAxisCount: 3,
+                      crossAxisSpacing: 10,
+                      mainAxisSpacing: 10,
+                      shrinkWrap: true,
+                      physics: ScrollPhysics(),
+                      children: [
+                        gridItems(
+                            title: "Sell",
+                            iconData: Icons.sell_rounded,
+                            isSmallScreen: true,
+                            function: () {
+                              // homeController.selectedWidget.value=CreateSale();
+                              Get.to(() => CreateSale());
+                            }),
+                        gridItems(
+                            title: "Finance",
+                            isSmallScreen: true,
+                            iconData: Icons.request_quote_outlined,
+                            function: () {
+                              Get.to(() => FinancePage());
+                            }),
+                        gridItems(
+                            title: "Stock",
+                            isSmallScreen: true,
+                            iconData: Icons.production_quantity_limits,
+                            function: () {
+                              Get.to(() => StockPage());
+                            }),
+                        gridItems(
+                            title: "Suppliers",
+                            iconData: Icons.people_alt,
+                            isSmallScreen: true,
+                            function: () {
+                              Get.to(() => CustomersPage(type: "suppliers"));
+                            }),
+                        gridItems(
+                            title: "Customers",
+                            iconData: Icons.people_outline_outlined,
+                            isSmallScreen: true,
+                            function: () {
+                              Get.to(() => CustomersPage(type: "customers"));
+                            }),
+                        gridItems(
+                            title: "Usage",
+                            iconData: Icons.data_usage,
+                            isSmallScreen: true,
+                            function: () {
+                              // Get.to(()=>ExtendUsage());
+                            }),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      majorTitle(
+                          title: "Sales History",
+                          color: Colors.black,
+                          size: 20.0),
+                      InkWell(
+                          onTap: () {
+                            salesController.salesInitialIndex.value = 0;
+                            Get.to(() => AllSalesPage(
+                                  page: "homePage",
+                                ));
+                          },
+                          child: minorTitle(
+                              title: "See all",
+                              color: AppColors.lightDeepPurple))
+                    ],
+                  ),
+                  SizedBox(height: 10),
+                  Obx(() {
+                    return salesController.getSalesByDateLoad.value
+                        ? Center(
+                            child: CircularProgressIndicator(),
+                          )
+                        : salesListView();
+                  })
+                ],
+              ),
             ),
-          ),
-        )));
+          )),
+        ));
   }
 
   showShopModalBottomSheet(context) {

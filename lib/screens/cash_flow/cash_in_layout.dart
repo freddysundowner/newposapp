@@ -14,15 +14,21 @@ import '../../utils/colors.dart';
 import '../../widgets/bigtext.dart';
 
 class CashInLayout extends StatelessWidget {
-  CashInLayout({Key? key}) : super(key: key);
+  CashInLayout({Key? key}) : super(key: key) {
+    cashflowController.selectedCashFlowCategories.value = null;
+    cashflowController.cashFlowCategories.clear();
+    cashflowController.getCategory(
+        "cash-in", createShopController.currentShop.value!.id);
+  }
+
   ShopController createShopController = Get.find<ShopController>();
+
   CashflowController cashflowController = Get.find<CashflowController>();
   CategoryController categoryController = Get.find<CategoryController>();
+  ShopController shopController = Get.find<ShopController>();
 
   @override
   Widget build(BuildContext context) {
-    categoryController.getCategories(
-        createShopController.currentShop.value!.id, "cash-in");
     return WillPopScope(
       onWillPop: () async {
         cashflowController.clearInputs();
@@ -139,8 +145,8 @@ class CashInLayout extends StatelessWidget {
                         Text("Category", style: TextStyle(color: Colors.grey)),
                         InkWell(
                           onTap: () {
-                            if (categoryController.categories.length == 0 &&
-                                !categoryController.loadingCategories.value) {
+                            if (cashflowController.cashFlowCategories.length ==
+                                0) {
                               showDialog(
                                   context: context,
                                   builder: (BuildContext context) {
@@ -163,26 +169,27 @@ class CashInLayout extends StatelessWidget {
                                   builder: (context) {
                                     return SimpleDialog(
                                       children: List.generate(
-                                          categoryController.categories.length,
+                                          cashflowController
+                                              .cashFlowCategories.length,
                                           (index) => SimpleDialogOption(
                                                 onPressed: () {
-                                                  categoryController
-                                                          .selectedCategory
+                                                  cashflowController
+                                                          .selectedCashFlowCategories
                                                           .value =
-                                                      categoryController
-                                                          .categories
+                                                      cashflowController
+                                                          .cashFlowCategories
                                                           .elementAt(index);
                                                   cashflowController
                                                           .textEditingControllerName
                                                           .text =
-                                                      categoryController
-                                                          .categories
-                                                          .elementAt(index)
+                                                      cashflowController
+                                                          .selectedCashFlowCategories
+                                                          .value!
                                                           .name!;
                                                   Navigator.pop(context);
                                                 },
                                                 child: Text(
-                                                    "${categoryController.categories.elementAt(index).name}"),
+                                                    "${cashflowController.cashFlowCategories.elementAt(index).name}"),
                                               )),
                                     );
                                   });
@@ -199,11 +206,12 @@ class CashInLayout extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Obx(
-                                  () => Text(categoryController
-                                              .selectedCategory.value ==
+                                  () => Text(cashflowController
+                                              .selectedCashFlowCategories
+                                              .value ==
                                           null
                                       ? "Select Category"
-                                      : "${categoryController.selectedCategory.value!.name}"),
+                                      : "${cashflowController.selectedCashFlowCategories.value!.name}"),
                                 ),
                                 Icon(Icons.arrow_drop_down, color: Colors.grey)
                               ],
@@ -228,6 +236,8 @@ class CashInLayout extends StatelessWidget {
                                   content: Padding(
                                     padding: const EdgeInsets.all(5.0),
                                     child: TextFormField(
+                                        controller: cashflowController
+                                            .textEditingControllerCategory,
                                         decoration: InputDecoration(
                                             hintText:
                                                 "eg.Loan,Capital,Contribution etc",
@@ -248,6 +258,11 @@ class CashInLayout extends StatelessWidget {
                                     ),
                                     TextButton(
                                       onPressed: () {
+                                        cashflowController.createCategory(
+                                            "cash-in",
+                                            shopController
+                                                .currentShop.value!.id!,
+                                            context);
                                         Navigator.pop(context);
                                       },
                                       child: Text(

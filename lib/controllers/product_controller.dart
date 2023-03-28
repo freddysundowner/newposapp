@@ -282,7 +282,6 @@ class ProductController extends GetxController {
     try {
       getProductLoad.value = true;
       var response = await Products().deleteProduct(id: id);
-      print(response);
       if (response["status"] == true) {
         await getProductsBySort(shopId: shopId, type: "all");
       } else {

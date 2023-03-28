@@ -24,7 +24,7 @@ class DepositModel {
     id: json["_id"],
     customerId: json["customerId"],
     amount: json["amount"],
-    recieptNumber: json["recieptNumber"],
+    recieptNumber: json["receiptNumber"],
     type:json["type"],
     createdAt: DateTime.parse(json["createdAt"]),
     updatedAt: DateTime.parse(json["updatedAt"]),

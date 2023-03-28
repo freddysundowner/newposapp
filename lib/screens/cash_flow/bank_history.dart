@@ -1,11 +1,16 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 import 'package:flutter/material.dart';
+import 'package:flutterpos/controllers/cashflow_controller.dart';
 import 'package:flutterpos/controllers/home_controller.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
+import 'package:flutterpos/models/bank_transactions.dart';
 import 'package:flutterpos/responsive/responsiveness.dart';
 import 'package:flutterpos/screens/cash_flow/cash_at_bank.dart';
 import 'package:flutterpos/screens/cash_flow/cashflow_categories.dart';
 import 'package:flutterpos/utils/helper.dart';
+import 'package:flutterpos/widgets/no_items_found.dart';
+import 'package:flutterpos/widgets/pdf/history_pdf.dart';
+import 'package:flutterpos/widgets/snackBars.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
@@ -17,78 +22,85 @@ class CashHistory extends StatelessWidget {
   final id;
   final page;
   ShopController createShopController = Get.find<ShopController>();
+  CashflowController cashflowController = Get.find<CashflowController>();
 
-  //cashflowcategory
-  //cashflowcategory
-  //bank
   CashHistory(
       {Key? key,
       required this.title,
       required this.subtitle,
       required this.id,
       required this.page})
-      : super(key: key);
+      : super(key: key) {
+    if (page == "cashflowcategory") {
+      cashflowController.getCategoryHistory(id);
+    } else {
+      cashflowController.getBankTransactions(id);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return ResponsiveWidget(
       largeScreen: Scaffold(
         backgroundColor: Colors.white,
-        appBar: _appBar("large"),
+        appBar: _appBar("large", context),
         body: Padding(
           padding: EdgeInsets.symmetric(horizontal: 20),
           child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  width: double.infinity,
-                  padding: EdgeInsets.symmetric(horizontal: 5, vertical: 10),
-                  child: Theme(
-                    data: Theme.of(context).copyWith(dividerColor: Colors.grey),
-                    child: DataTable(
-                      decoration: BoxDecoration(
-                          border: Border.all(
-                        width: 1,
-                        color: Colors.black,
-                      )),
-                      columnSpacing: 30.0,
-                      columns: [
-                        DataColumn(
-                            label: Text('Name', textAlign: TextAlign.center)),
-                        DataColumn(
-                            label: Text(
-                                'Amount(${createShopController.currentShop.value?.currency})',
-                                textAlign: TextAlign.center)),
-                        DataColumn(
-                            label: Text('Date', textAlign: TextAlign.center)),
-                        DataColumn(
-                            label: Text('', textAlign: TextAlign.center)),
-                      ],
-                      rows: List.generate(10, (index) {
-                        final y = "Equity";
-                        final x = "300";
+                Obx(() {
+                  return cashflowController.loadingBankHistory.value
+                      ? Center(
+                          child: CircularProgressIndicator(),
+                        )
+                      : cashflowController.bankTransactions.length == 0
+                          ? noItemsFound(context, true)
+                          : Container(
+                              width: double.infinity,
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 5, vertical: 10),
+                              child: Theme(
+                                data: Theme.of(context)
+                                    .copyWith(dividerColor: Colors.grey),
+                                child: DataTable(
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                    width: 1,
+                                    color: Colors.black,
+                                  )),
+                                  columnSpacing: 30.0,
+                                  columns: [
+                                    DataColumn(
+                                        label: Text(
+                                            'Amount(${createShopController.currentShop.value?.currency})',
+                                            textAlign: TextAlign.center)),
+                                    DataColumn(
+                                        label: Text('Date',
+                                            textAlign: TextAlign.center)),
+                                  ],
+                                  rows: List.generate(
+                                      cashflowController
+                                          .bankTransactions.length, (index) {
+                                    BankTransactions bankTransactions =
+                                        cashflowController.bankTransactions
+                                            .elementAt(index);
+                                    final y = bankTransactions.amount;
+                                    final x = bankTransactions.createdAt;
 
-                        return DataRow(cells: [
-                          DataCell(Container(width: 75, child: Text(y))),
-                          DataCell(Container(width: 75, child: Text(x))),
-                          DataCell(Container(
-                              child: Text(DateFormat("yyyy-dd-MM")
-                                  .format(DateTime.now())))),
-                          DataCell(InkWell(
-                            onTap: () {},
-                            child: Align(
-                                child: Container(
-                              padding: EdgeInsets.only(top: 10),
-                              child: Icon(Icons.more_vert),
-                              alignment: Alignment.topRight,
-                            )),
-                          )),
-                        ]);
-                      }),
-                    ),
-                  ),
-                ),
+                                    return DataRow(cells: [
+                                      DataCell(
+                                          Container(child: Text(y.toString()))),
+                                      DataCell(Container(
+                                          child: Text(DateFormat("yyyy-dd-MM")
+                                              .format(x!)))),
+                                    ]);
+                                  }),
+                                ),
+                              ),
+                            );
+                }),
                 SizedBox(height: 60),
               ],
             ),
@@ -96,13 +108,25 @@ class CashHistory extends StatelessWidget {
         ),
       ),
       smallScreen: Helper(
-        widget: ListView.builder(
-            itemCount: 10,
-            shrinkWrap: true,
-            itemBuilder: (context, index) {
-              return bankTransactionsCard();
-            }),
-        appBar: _appBar("small"),
+        widget: Obx(() {
+          return cashflowController.loadingBankHistory.value
+              ? Center(
+                  child: CircularProgressIndicator(),
+                )
+              : cashflowController.bankTransactions.length == 0
+                  ? noItemsFound(context, true)
+                  : ListView.builder(
+                      itemCount: cashflowController.bankTransactions.length,
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) {
+                        BankTransactions bankTransactions = cashflowController
+                            .bankTransactions
+                            .elementAt(index);
+                        return bankTransactionsCard(
+                            bankTransactions: bankTransactions);
+                      });
+        }),
+        appBar: _appBar("small", context),
         bottomNavigationBar: BottomAppBar(
           child: Container(
             padding: EdgeInsets.all(10),
@@ -120,7 +144,8 @@ class CashHistory extends StatelessWidget {
                   decoration: BoxDecoration(
                       color: Colors.grey.withOpacity(0.8),
                       borderRadius: BorderRadius.circular(20)),
-                  child: Text("KES ${400}"),
+                  child: Obx(() => Text(
+                      "${createShopController.currentShop.value!.currency!} ${cashflowController.totalcashAtBankHistory.value}")),
                 )
               ],
             ),
@@ -175,7 +200,7 @@ class CashHistory extends StatelessWidget {
         });
   }
 
-  Widget bankTransactionsCard() {
+  Widget bankTransactionsCard({required BankTransactions bankTransactions}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -197,17 +222,12 @@ class CashHistory extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Name",
-                    style: TextStyle(
-                        color: Colors.black, fontWeight: FontWeight.bold),
-                  ),
-                  Text(
-                    "${DateFormat("MMM dd yyyy hh:mm a").format(DateTime.now())}",
+                    "${DateFormat("MMM dd yyyy hh:mm a").format(bankTransactions.createdAt!)}",
                     style: TextStyle(
                         color: Colors.grey, fontWeight: FontWeight.w600),
                   ),
                   Text(
-                    "@${400}",
+                    "@${bankTransactions.amount}",
                     style: TextStyle(
                         color: Colors.grey, fontWeight: FontWeight.w600),
                   ),
@@ -224,7 +244,7 @@ class CashHistory extends StatelessWidget {
     );
   }
 
-  AppBar _appBar(type) {
+  AppBar _appBar(type, context) {
     return AppBar(
       elevation: 0.3,
       backgroundColor: Colors.white,
@@ -252,7 +272,7 @@ class CashHistory extends StatelessWidget {
       title: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("${title} Bank".capitalize!,
+          Text("${title}".capitalize!,
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.bold,
@@ -265,7 +285,23 @@ class CashHistory extends StatelessWidget {
           )
         ],
       ),
-      actions: [IconButton(onPressed: () async {}, icon: Icon(Icons.download))],
+      actions: [
+        IconButton(
+            onPressed: () async {
+              if (cashflowController.bankTransactions.length == 0) {
+                showSnackBar(
+                    message: "No Items to download",
+                    color: Colors.black,
+                    context: context);
+              } else {
+                HistoryPdf(
+                    shop: createShopController.currentShop.value!.name!,
+                    name: title,
+                    sales: cashflowController.bankTransactions);
+              }
+            },
+            icon: Icon(Icons.download))
+      ],
     );
   }
 }

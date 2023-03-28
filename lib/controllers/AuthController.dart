@@ -289,20 +289,8 @@ class AuthController extends GetxController {
           "attend_id": attendantUidController.text,
           "password": attendantPasswordController.text,
         };
-        //roles: [{key: sales, value: sales},
-        // {key: stockin, value: Stockin },
-        // {key: discounts, value: Discount},
-        // {key: add_products, value: Add products},
-        // {key: expenses, value: Add expenses},
-        // {key: customers, value: Manage Customers},
-        // {key: Suppliers, value: Manage suppliers},
-        // {key: stock_balance, value: Stock balance},
-        // {key: count_stock, value: Count stock},
-        // {key: edit_entries, value: Edit entries}]
-
-
         var response = await Attendant().loginAttendant(body: data);
-        print(response["body"]);
+
         if (response["error"] != null) {
           String message = response["error"];
           Get.snackbar("", message,

@@ -7,6 +7,8 @@ import 'package:flutterpos/controllers/shop_controller.dart';
 import 'package:flutterpos/responsive/responsiveness.dart';
 import 'package:flutterpos/screens/finance/finance_page.dart';
 import 'package:flutterpos/widgets/no_items_found.dart';
+import 'package:flutterpos/widgets/pdf/expense_pdf.dart';
+import 'package:flutterpos/widgets/snackBars.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
@@ -336,7 +338,28 @@ class ExpensePage extends StatelessWidget {
               ),
             ),
       title: majorTitle(title: "Expenses", color: Colors.black, size: 16.0),
-      actions: [dateChoser(context)],
+      actions: [
+        dateChoser(context),
+        if (Get.find<AuthController>().usertype == "admin")
+          InkWell(
+            onTap: () {
+              if (expenseController.expenses.length == 0) {
+                showSnackBar(
+                    message: "No items to download",
+                    color: Colors.black,
+                    context: context);
+              } else {
+                ExpensePdf(shop: shopController.currentShop.value!.name!, expenses: expenseController.expenses);
+
+              }
+            },
+            child: Icon(
+              Icons.download,
+              color: Colors.black,
+            ),
+          ),
+        SizedBox(width: 10)
+      ],
     );
   }
 }

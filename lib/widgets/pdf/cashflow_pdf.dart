@@ -1,17 +1,52 @@
 import 'dart:io';
 
+import 'package:flutterpos/models/cashflow_summary.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 
-CashFlowPdf(
-    {required final shop,
-    required type,
-    required currency,
-    required cashInHand,
-    required cashIn,
-    required cashOut}) async {
+CashFlowPdf({
+  required final shop,
+  required type,
+  required currency,
+  required date,
+  required CashflowSummary cashflowSummary,
+}) async {
+  List data = [
+    {
+      "name": "Total Cashinhand",
+      "data": cashflowSummary.cashinhand,
+    },
+    {
+      "name": "TotalCashout",
+      "data": cashflowSummary.totalcashout,
+    },
+    {
+      "name": "TotalCashin",
+      "data": cashflowSummary.totalcashin,
+    },
+    {
+      "name": "TotalWallet",
+      "data": cashflowSummary.totalwallet,
+    },
+    {
+      "name": "TotalBanked",
+      "data": cashflowSummary.totalbanked,
+    },
+    {
+      "name": "TotalSales",
+      "data": cashflowSummary.totalSales,
+    },
+    {
+      "name": "TotalPurchases",
+      "data": cashflowSummary.totalpurchases,
+    },
+    {
+      "name": "TotalExpenses",
+      "data": cashflowSummary.totalExpenses,
+    },
+  ];
   final pdf = pw.Document();
   pdf.addPage(
     pw.Page(
@@ -23,7 +58,7 @@ CashFlowPdf(
               children: [
                 pw.Center(
                   child: pw.Text(
-                    "${shop}",
+                    "${shop}".toUpperCase(),
                     style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
                   ),
                 ),
@@ -36,22 +71,28 @@ CashFlowPdf(
                 ),
                 pw.SizedBox(height: 20),
                 pw.SizedBox(height: 15.0),
-                pw.Row(children: [
-                  pw.Row(children: [
-                    pw.Text("Cash in Hand ",
-                        style: pw.TextStyle(color: PdfColor.fromHex("#FFFRRR")))
-                  ])
-                ]),
+                pw.Row(
+                    mainAxisAlignment: pw.MainAxisAlignment.center,
+                    children: [
+                      pw.Text("As On: ",
+                          style: pw.TextStyle(
+                              color: PdfColor.fromInt(0xFFF000000),
+                              fontWeight: pw.FontWeight.bold,
+                              fontSize: 15)),
+                      pw.Text("${date}",
+                          style: pw.TextStyle(
+                              color: PdfColor.fromInt(0xFFF000000),
+                              fontWeight: pw.FontWeight.bold,
+                              fontSize: 15))
+                    ]),
                 pw.SizedBox(height: 15.0),
-                // pw.Table.fromTextArray(
-                //     border: pw.TableBorder.all(width: 1), //table border
-                //     headers: [
-                //       "Cash At Hand",
-                //       "Amount",
-                //       "Payment Meethod",
-                //       "Date"
-                //     ],
-                //     data: []),
+                pw.Table.fromTextArray(
+                    border: pw.TableBorder.all(width: 1), //table border
+                    headers: [
+                      "Name",
+                      "Amount($currency)",
+                    ],
+                    data: data.map((e) => [e["name"], e["data"]]).toList()),
                 pw.SizedBox(height: 10),
               ],
             ),
@@ -62,7 +103,7 @@ CashFlowPdf(
 
   final bytes = await pdf.save();
   final dir = await getApplicationDocumentsDirectory();
-  final file = File('${dir.path}/$shop-barcode.pdf');
+  final file = File('${dir.path}/$shop-Cashflow.pdf');
   await file.writeAsBytes(bytes);
   await OpenFile.open(file.path);
 }

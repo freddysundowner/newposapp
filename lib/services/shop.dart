@@ -13,8 +13,11 @@ class Shop {
 
   getShopsByAdminId({required adminId, String? name}) async {
     var response = await DbBase().databaseRequest(
-        name == null ||name==""? adminShop + adminId : "${searchShop}/$name/$adminId",
-        DbBase().getRequestType);
+        name == null || name == ""
+            ? adminShop + adminId
+            : "${searchShop}/$name/",
+        DbBase().getRequestType,
+        body: {"id": adminId});
     return jsonDecode(response);
   }
 

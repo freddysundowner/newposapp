@@ -2,9 +2,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterpos/controllers/home_controller.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
+import 'package:flutterpos/models/customer_model.dart';
 import 'package:flutterpos/models/product_model.dart';
 import 'package:flutterpos/models/sales_model.dart';
 import 'package:flutterpos/models/sales_order_item_model.dart';
+import 'package:flutterpos/screens/cash_flow/wallet_page.dart';
 import 'package:flutterpos/screens/home/home_page.dart';
 import 'package:flutterpos/screens/sales/all_sales_page.dart';
 import 'package:get/get.dart';
@@ -40,8 +42,8 @@ class SalesController extends GetxController
   RxBool salesOnCreditLoad = RxBool(false);
   RxBool salesByShopLoad = RxBool(false);
   RxString selectedPaymentMethod = RxString("Cash");
-  RxString selectedCustomer = RxString("");
-  RxString selectedCustomerId = RxString("");
+  Rxn<CustomerModel> selectedCustomer = Rxn(null);
+
   RxList<SaleOrderItemModel> salesHistory = RxList([]);
 
   var dueDate = new DateFormat('MMMM/dd/yyyy hh:mm a')
@@ -57,9 +59,12 @@ class SalesController extends GetxController
       selectedList.add(value);
       index = selectedList.indexWhere((element) => element.id == value.id);
     } else {
-      var data =
-          int.parse(selectedList[index].cartquantity.toString()) + 1; // +=1;
-      selectedList[index].cartquantity = data;
+      if (selectedList[index].cartquantity! >=
+          selectedList[index].cartquantity! + 1) {
+        var data =
+            int.parse(selectedList[index].cartquantity.toString()) + 1; // +=1;
+        selectedList[index].cartquantity = data;
+      }
     }
     calculateAmount(index);
 
@@ -110,32 +115,77 @@ class SalesController extends GetxController
   saveSale(
       {required attendantsUID,
       required shopUID,
-      required customerId,
       required context,
       required screen}) {
+    String size = MediaQuery.of(context).size.width > 600 ? "large" : "small";
     if (selectedPaymentMethod.value == "Credit") {
-      if (customerId == "") {
+      if (selectedCustomer.value == null) {
         ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text("please select customer to sell to")));
       } else {
         showSaleDatePicker(
             context: context,
-            customerIds: customerId,
             shopId: shopUID,
+            size: size,
             attendantsId: attendantsUID,
             screen: screen);
       }
-    } else if (selectedPaymentMethod.value == "Wallet" && customerId == "") {
+    } else if (selectedPaymentMethod.value == "Wallet" &&
+        selectedCustomer.value == null) {
       showSnackBar(
           message: "please select customer to sell to",
           color: Colors.redAccent,
           context: context);
+    } else if (selectedPaymentMethod.value == "Wallet" &&
+        selectedCustomer.value != null &&
+        selectedCustomer.value!.walletBalance! < grandTotal.value) {
+      showDialog(
+          context: context,
+          builder: (_) {
+            return AlertDialog(
+              title: Text("Deposit For customer"),
+              content:
+                  Text("Wallet  balance insufficient!! deposit for customer"),
+              actions: [
+                TextButton(
+                    onPressed: () {
+                      Get.back();
+                    },
+                    child: Text(
+                      "Cancel".capitalize!,
+                      style: TextStyle(color: AppColors.mainColor),
+                    )),
+                TextButton(
+                    onPressed: () {
+                      Get.back();
+                      if (MediaQuery.of(context).size.width > 600) {
+                        Get.find<HomeController>().selectedWidget.value =
+                            WalletPage(
+                                title: selectedCustomer.value!.fullName,
+                                uid: selectedCustomer.value!.id,
+                                page: "makesale",
+                                phone: selectedCustomer.value!.phoneNumber);
+                      } else {
+                        Get.to(() => WalletPage(
+                            title: selectedCustomer.value!.fullName,
+                            uid: selectedCustomer.value!.id,
+                            page: "makesale",
+                            phone: selectedCustomer.value!.phoneNumber));
+                      }
+                    },
+                    child: Text(
+                      "Okay".capitalize!,
+                      style: TextStyle(color: AppColors.mainColor),
+                    ))
+              ],
+            );
+          });
     } else {
       saveSaleData(
-          customerId: customerId,
           attendantId: attendantsUID,
           shopId: shopUID,
           type: "noncredit",
+          size: size,
           context: context,
           screen: screen);
     }
@@ -144,16 +194,14 @@ class SalesController extends GetxController
   saveSaleData(
       {required attendantId,
       required shopId,
-      required customerId,
       required type,
       required context,
+      required size,
       required screen}) async {
     try {
-      if (MediaQuery.of(context).size.width > 600) {
-        LoadingDialog.showLoadingDialog(
-            context: context, title: "Creating Sale", key: _keyLoader);
-      }
-      saveSaleLoad.value = true;
+      LoadingDialog.showLoadingDialog(
+          context: context, title: "Creating Sale", key: _keyLoader);
+
       var totaldiscount = 0;
       selectedList.forEach((element) {
         totaldiscount += int.parse(element.allowedDiscount.toString());
@@ -166,17 +214,19 @@ class SalesController extends GetxController
         "totaldiscount": totaldiscount,
         "shop": shopId,
         "creditTotal": balance.value,
-        "customerId": customerId,
+        if (selectedCustomer.value != null)
+          "customerId": selectedCustomer.value!.id,
         "duedate": type == "noncredit" ? "" : dueDate.value
       };
       var products = selectedList.map((element) => element).toList();
+      print("called");
       var response = await Sales().createSales({
         "sale": sale,
         "products": products,
         "date": DateFormat("yyyy-MM-dd").format(DateTime.now()),
       });
-      if (MediaQuery.of(context).size.width > 600)
-        Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
+
+      Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
       if (response["status"] == true) {
         selectedList.value = [];
         grandTotal.value = 0;
@@ -188,41 +238,30 @@ class SalesController extends GetxController
             startingDate: DateTime.now(),
             endingDate: DateTime.now(),
             type: "notcashflow");
-        if (MediaQuery.of(context).size.width > 600) {
+        if (size == "large") {
           if (screen == "allSales") {
             Get.find<HomeController>().selectedWidget.value =
                 AllSalesPage(page: "AttendantLanding");
           } else {
             Get.find<HomeController>().selectedWidget.value = HomePage();
           }
-        }
-        if (screen == "admin") {
+        } else if (screen == "admin") {
           Get.back();
         } else {
           Get.back();
         }
-      } else if (response["status"] == false &&
-          selectedPaymentMethod.value == "Wallet") {
-        saveSaleLoad.value = false;
-        showDepositAllertDialog(context);
       } else {
         showSnackBar(
             message: response["message"], color: Colors.red, context: context);
       }
-
-      saveSaleLoad.value = false;
-    } catch (e) {
-      if (MediaQuery.of(context).size.width > 600)
-        Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
-      saveSaleLoad.value = false;
-    }
+    } catch (e) {}
   }
 
   showSaleDatePicker(
       {required context,
       required shopId,
       required attendantsId,
-      required customerIds,
+      required size,
       required screen}) {
     showModalBottomSheet(
         context: context,
@@ -275,8 +314,8 @@ class SalesController extends GetxController
                             saveSaleData(
                                 type: "credit",
                                 attendantId: attendantsId,
-                                customerId: customerIds,
                                 shopId: shopId,
+                                size: size,
                                 context: context,
                                 screen: screen);
                           },
@@ -343,8 +382,8 @@ class SalesController extends GetxController
       required endingDate,
       required type}) async {
     try {
+      sales.clear();
       todaySalesLoad.value = true;
-
       totalSalesByDate.value = 0;
       var now = type != "cashflow" ? endingDate : DateTime.now();
       var tomm = now.add(new Duration(days: 1));
@@ -400,6 +439,7 @@ class SalesController extends GetxController
 
   getSalesByShop({required id}) async {
     try {
+      sales.clear();
       salesByShopLoad.value = true;
       var response = await Sales().getShopSales(id);
       if (response["status"] == true) {

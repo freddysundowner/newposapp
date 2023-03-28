@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutterpos/controllers/AuthController.dart';
+import 'package:flutterpos/controllers/cashflow_controller.dart';
 import 'package:flutterpos/controllers/expense_controller.dart';
 import 'package:flutterpos/controllers/home_controller.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
@@ -15,11 +16,12 @@ class CreateExpense extends StatelessWidget {
   ExpenseController expenseController = Get.find<ExpenseController>();
   ShopController shopController = Get.find<ShopController>();
   AuthController authController = Get.find<AuthController>();
+  CashflowController cashflowController = Get.find<CashflowController>();
 
   @override
   Widget build(BuildContext context) {
-    expenseController.getCategories(
-        shopController.currentShop.value?.id, "cash-out");
+    cashflowController.getCategory(
+        "cash-out", shopController.currentShop.value?.id);
     return Scaffold(
       appBar: AppBar(
         titleSpacing: 0,
@@ -28,8 +30,14 @@ class CreateExpense extends StatelessWidget {
         elevation: 0.3,
         leading: IconButton(
           onPressed: () {
-            if (MediaQuery.of(context).size.width > 600) {
-              Get.find<HomeController>().selectedWidget.value = ExpensePage();
+            if (MediaQuery
+                .of(context)
+                .size
+                .width > 600) {
+              Get
+                  .find<HomeController>()
+                  .selectedWidget
+                  .value = ExpensePage();
             } else {
               Get.back();
             }
@@ -40,7 +48,7 @@ class CreateExpense extends StatelessWidget {
           ),
         ),
         title:
-            majorTitle(title: " Add Expenses", color: Colors.black, size: 16.0),
+        majorTitle(title: " Add Expenses", color: Colors.black, size: 16.0),
       ),
       body: ResponsiveWidget(
           largeScreen: Scaffold(
@@ -49,13 +57,20 @@ class CreateExpense extends StatelessWidget {
               alignment: Alignment.topLeft,
               child: Container(
                   color: Colors.white,
-                  width: MediaQuery.of(context).size.width * 0.5,
-                  height: MediaQuery.of(context).size.height * 0.7,
+                  width: MediaQuery
+                      .of(context)
+                      .size
+                      .width * 0.5,
+                  height: MediaQuery
+                      .of(context)
+                      .size
+                      .height * 0.7,
                   child: expenseCreateCard(context)),
             ),
           ),
           smallScreen: SingleChildScrollView(
-            child: Column(children: [
+            child:
+            Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: expenseCreateCard(context),
@@ -68,9 +83,17 @@ class CreateExpense extends StatelessWidget {
 
   Widget expenseCreateCard(context) {
     return Card(
-      elevation: MediaQuery.of(context).size.width > 600 ? 0 : 2,
+      elevation: MediaQuery
+          .of(context)
+          .size
+          .width > 600 ? 0 : 2,
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 80.0, vertical: 20),
+        padding: EdgeInsets.symmetric(
+            horizontal: MediaQuery
+                .of(context)
+                .size
+                .width > 600 ? 80 : 10.0,
+            vertical: 20),
         decoration: BoxDecoration(
             color: Colors.white, borderRadius: BorderRadius.circular(8)),
         child: Form(
@@ -88,13 +111,17 @@ class CreateExpense extends StatelessWidget {
                         SizedBox(height: 3),
                         InkWell(
                           onTap: () {
-                            if (expenseController.categories.length == 0) {
+                            if (cashflowController.cashFlowCategories.length ==
+                                0 &&
+                                cashflowController
+                                    .loadingCashFlowCategories.value !=
+                                    true) {
                               showDialog(
                                   context: context,
                                   builder: (BuildContext context) {
                                     return AlertDialog(
                                       content:
-                                          Text("Add Category to continue."),
+                                      Text("Add Category to continue."),
                                       actions: [
                                         TextButton(
                                           child: Text("OK"),
@@ -111,19 +138,25 @@ class CreateExpense extends StatelessWidget {
                                   builder: (_) {
                                     return SimpleDialog(
                                       children: List.generate(
-                                        expenseController.categories.length,
-                                        (index) => SimpleDialogOption(
-                                          onPressed: () {
-                                            expenseController
+                                        cashflowController
+                                            .cashFlowCategories.length,
+                                            (index) =>
+                                            SimpleDialogOption(
+                                              onPressed: () {
+                                                expenseController
                                                     .selectedExpense.value =
-                                                expenseController.categories
+                                                cashflowController
+                                                    .cashFlowCategories
                                                     .elementAt(index)
                                                     .name!;
-                                            Navigator.pop(context);
-                                          },
-                                          child: Text(
-                                              "${expenseController.categories.elementAt(index).name}"),
-                                        ),
+                                                Navigator.pop(context);
+                                              },
+                                              child: Text(
+                                                  "${cashflowController
+                                                      .cashFlowCategories
+                                                      .elementAt(index)
+                                                      .name}"),
+                                            ),
                                       ),
                                       elevation: 10,
                                     );
@@ -167,13 +200,13 @@ class CreateExpense extends StatelessWidget {
                                   content: Padding(
                                     padding: const EdgeInsets.all(5.0),
                                     child: TextFormField(
-                                        controller: expenseController
+                                        controller: cashflowController
                                             .textEditingControllerCategory,
                                         decoration: InputDecoration(
                                             hintText: "eg, rent",
                                             border: OutlineInputBorder(
                                               borderRadius:
-                                                  BorderRadius.circular(10),
+                                              BorderRadius.circular(10),
                                             ))),
                                   ),
                                   actions: [
@@ -189,10 +222,13 @@ class CreateExpense extends StatelessWidget {
                                     TextButton(
                                       onPressed: () {
                                         Navigator.pop(context);
-                                        expenseController.createExpenseCategory(
-                                            shopController
-                                                .currentShop.value?.id,
+                                        cashflowController.createCategory(
+                                            "cash-out",
+                                            shopController.currentShop.value,
                                             context);
+
+
+
                                       },
                                       child: Text(
                                         "Save now".toUpperCase(),
@@ -275,7 +311,7 @@ class CreateExpense extends StatelessWidget {
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(20),
                           border:
-                              Border.all(color: AppColors.mainColor, width: 2)),
+                          Border.all(color: AppColors.mainColor, width: 2)),
                       child: majorTitle(
                           title: "Save",
                           color: AppColors.mainColor,

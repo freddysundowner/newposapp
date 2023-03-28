@@ -331,7 +331,7 @@ class OutWidget extends StatelessWidget {
                                   stockTransferController.transferHistory
                                       .elementAt(index);
                               final y =
-                                  "${stockTransferHistory.from!.name!} to ${stockTransferHistory.to!.name!}";
+                                  "${stockTransferHistory.from!.name!} to ${stockTransferHistory.to!.name ?? ""}";
                               final x = stockTransferHistory.product!.length;
                               final z = stockTransferHistory.createdAt;
 

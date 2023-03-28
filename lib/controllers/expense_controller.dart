@@ -19,65 +19,14 @@ class ExpenseController extends GetxController {
   RxBool getExpenseByDateLoad = RxBool(false);
   RxInt totalExpenses = RxInt(0);
   RxList<ExpenseModel> expenses = RxList([]);
+  RxBool loadingExpensesCategory= RxBool(false);
 
   TextEditingController textEditingControllerAmount = TextEditingController();
   TextEditingController textEditingControllerCategory = TextEditingController();
   TextEditingController textEditingControllerName = TextEditingController();
 
   RxString selectedExpense = RxString("");
-  RxList<ExpenseCategoryModel> categories = RxList([]);
 
-  createExpenseCategory(shopId, context) async {
-    try {
-      if (textEditingControllerCategory.text == "") {
-        showSnackBar(
-            message: "please enter expense name",
-            color: Colors.redAccent,
-            context: context);
-      }
-      Map<String, dynamic> body = {
-        "type": "cash-out",
-        "name": textEditingControllerCategory.text,
-        "shop": shopId,
-      };
-      LoadingDialog.showLoadingDialog(
-          context: context, key: _keyLoader, title: "creating category");
-      var response = await Categories().createExpenseCategories(body: body);
-      Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
-      if (response["status"] == true) {
-        textEditingControllerCategory.text = "";
-        showSnackBar(
-            message: "Category created",
-            color: AppColors.mainColor,
-            context: context);
-        await getCategories(shopId, "cash-out");
-      } else {
-        showSnackBar(
-            message: "Category created", color: Colors.red, context: context);
-      }
-    } catch (e) {
-      print(e);
-      Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
-    }
-  }
-
-  getCategories(shopId, type) async {
-    try {
-      var response = await Categories().getExpenseCategories(id: shopId);
-      categories.clear();
-      if (response["status"] == true) {
-        List fetchedData = response["body"];
-        List<ExpenseCategoryModel> categoryData =
-            fetchedData.map((e) => ExpenseCategoryModel.fromJson(e)).toList();
-        categories.assignAll(categoryData);
-        if (selectedExpense.value == "") {
-          selectedExpense.value = categoryData[0].name!;
-        }
-      } else {
-        categories.value = [];
-      }
-    } catch (e) {}
-  }
 
   saveExpense({required shopId, required attendantId, required context}) async {
     if (textEditingControllerName.text == "") {

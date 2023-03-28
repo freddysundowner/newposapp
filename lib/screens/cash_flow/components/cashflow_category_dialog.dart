@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutterpos/controllers/cashflow_controller.dart';
+import 'package:flutterpos/models/cashflow_category.dart';
 import 'package:get/get.dart';
 
 import '../../../controllers/home_controller.dart';
@@ -6,10 +8,9 @@ import '../../../utils/colors.dart';
 import '../../../widgets/delete_dialog.dart';
 import '../bank_history.dart';
 
-cashFlowCategoryDialog(context) {
-  return
-
-    PopupMenuButton(
+cashFlowCategoryDialog(context, {required CashFlowCategory cashflowCategory}) {
+  CashflowController cashflowController = Get.find<CashflowController>();
+  return PopupMenuButton(
     itemBuilder: (ctx) => [
       PopupMenuItem(
         child: ListTile(
@@ -17,7 +18,11 @@ cashFlowCategoryDialog(context) {
           onTap: () {
             Get.back();
             Get.find<HomeController>().selectedWidget.value = CashHistory(
-                title: "Faulu", subtitle: "All records", id: "1230",page: "cashflowcategory",);
+              title: cashflowCategory.name,
+              subtitle: "All records",
+              id: cashflowCategory.id,
+              page: "cashflowcategory",
+            );
           },
           title: Text("View List"),
         ),
@@ -42,6 +47,8 @@ cashFlowCategoryDialog(context) {
                           Text("Edit Category"),
                           Spacer(),
                           TextFormField(
+                            controller: cashflowController
+                                .textEditingControllerCategory,
                             decoration: InputDecoration(
                                 contentPadding: EdgeInsets.all(10),
                                 fillColor: Colors.white,
@@ -76,6 +83,13 @@ cashFlowCategoryDialog(context) {
                               TextButton(
                                   onPressed: () {
                                     Get.back();
+                                    if (cashflowController
+                                        .textEditingControllerCategory
+                                        .text
+                                        .isNotEmpty) {
+                                      cashflowController
+                                          .editCategory(cashflowCategory.id);
+                                    }
                                   },
                                   child: Text(
                                     "Save".toUpperCase(),
@@ -98,7 +112,11 @@ cashFlowCategoryDialog(context) {
           leading: Icon(Icons.delete),
           onTap: () {
             Get.back();
-            deleteDialog(context: context, onPressed: () {});
+            deleteDialog(
+                context: context,
+                onPressed: () {
+                  cashflowController.deleteCategory(cashflowCategory.id);
+                });
           },
           title: Text("Delete"),
         ),

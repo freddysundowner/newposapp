@@ -116,6 +116,7 @@ class SupplierController extends GetxController {
   getSuppliersInShop(shopId, type) async {
     try {
       suppliers.clear();
+      productController.selectedSupplier.clear();
       getsupplierLoad.value = true;
       var response = await Supplier().getSuppliersByShopId(shopId, type);
       if (response != null) {
@@ -175,7 +176,6 @@ class SupplierController extends GetxController {
         if (emailController.text != "") "email": emailController.text,
         if (addressController.text != "") "address": addressController.text
       };
-
       var response = await Supplier().updateSupplier(body: body, id: id);
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
       if (response["status"] == true) {

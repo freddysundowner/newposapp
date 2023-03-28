@@ -4,7 +4,6 @@ import 'package:flutterpos/services/client.dart';
 
 import 'apiurls.dart';
 
-
 class Credit {
   getCredit(attendantId, shopId, uid) async {
     var response = await DbBase().databaseRequest(
@@ -24,7 +23,7 @@ class Credit {
 
   deleteCredit(id) async {
     var response =
-    await DbBase().databaseRequest(credit + id, DbBase().deleteRequestType);
+        await DbBase().databaseRequest(credit + id, DbBase().deleteRequestType);
     var data = jsonDecode(response);
     return data;
   }

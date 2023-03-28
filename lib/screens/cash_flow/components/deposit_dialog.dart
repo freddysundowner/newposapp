@@ -8,12 +8,12 @@ showDepositDialog(
     {required context,
     required uid,
     required title,
+    String? page  ,
     DepositModel? depositModel}) {
   WalletController walletController = Get.find<WalletController>();
   if (title == "edit") {
-    // walletController.amountController.text = depositBody!.amount.toString();
+    walletController.amountController.text = depositModel!.amount.toString();
   }
-
   return showDialog(
       context: context,
       builder: (context) {
@@ -27,17 +27,20 @@ showDepositDialog(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title),
+                Text(
+                  "${title}".capitalize!,
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12),
+                ),
                 SizedBox(height: 10),
                 TextFormField(
                   controller: walletController.amountController,
                   decoration: InputDecoration(
-                      hintText:
-                          // title == "edit"
-                          //     ? depositBody!.amount.toString()
-                          //     :
-
-                          "Amount",
+                      hintText: title == "edit"
+                          ? depositModel!.amount.toString()
+                          : "Amount",
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(5))),
                 ),
@@ -69,13 +72,13 @@ showDepositDialog(
                       onPressed: () {
                         Navigator.pop(context);
                         if (title == "edit") {
-                          walletController.amountController.text = "";
-                          // walletController.updateWallet(
-                          //     amount: depositBody!.amount,
-                          //     id: depositBody.id,
-                          //     uid: uid);
+                          // walletController.amountController.text = "";
+                          walletController.updateWallet(
+                              amount: walletController.amountController.text,
+                              id: depositModel!.id,
+                              uid: uid);
                         } else {
-                          walletController.save(uid, context);
+                          walletController.save(uid, context,page);
                         }
                       },
                       child: Text(

@@ -6,6 +6,7 @@ import 'package:flutterpos/responsive/responsiveness.dart';
 import 'package:flutterpos/screens/sales/create_sale.dart';
 import 'package:flutterpos/screens/stock/badstocks.dart';
 import 'package:flutterpos/utils/helper.dart';
+import 'package:flutterpos/widgets/pdf/sales_pdf.dart';
 import 'package:get/get.dart';
 
 import '../../controllers/home_controller.dart';
@@ -112,7 +113,6 @@ class AllSalesPage extends StatelessWidget {
                   ? null
                   : IconButton(
                       onPressed: () {
-                        print(page);
                         if (MediaQuery.of(context).size.width > 600) {
                           if (page == "homePage") {
                             Get.find<HomeController>().selectedWidget.value =
@@ -144,12 +144,21 @@ class AllSalesPage extends StatelessWidget {
                       ),
                     ),
               actions: [
-                // IconButton(
-                //     onPressed: () {},
-                //     icon: Icon(
-                //       Icons.download_rounded,
-                //       color: Colors.black,
-                //     ))
+                IconButton(
+                    onPressed: () {
+                      SalesPdf(
+                          shop: shopController.currentShop.value!.name!,
+                          sales: salesController.sales,
+                          type: salesController.salesInitialIndex.value == 0
+                              ? "All"
+                              : salesController.salesInitialIndex.value == 1
+                                  ? "Credit"
+                                  : "Today");
+                    },
+                    icon: Icon(
+                      Icons.download_rounded,
+                      color: Colors.black,
+                    ))
               ],
               bottom: TabBar(
                 indicatorColor: AppColors.mainColor,

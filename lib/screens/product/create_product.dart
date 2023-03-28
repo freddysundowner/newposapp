@@ -39,8 +39,7 @@ class CreateProduct extends StatelessWidget {
     if (page == "create") {
       supplierController.getSuppliersInShop(
           shopController.currentShop.value!.id!, "all");
-      productController.getProductCategory(
-          shopId: shopController.currentShop.value?.id);
+      productController.getProductCategory(shopId: shopController.currentShop.value?.id);
     } else {
       productController.assignTextFields(productModel);
     }

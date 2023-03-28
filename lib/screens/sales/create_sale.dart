@@ -103,13 +103,15 @@ class CreateSale extends StatelessWidget {
                               InkWell(
                                 splashColor: Colors.transparent,
                                 onTap: () {
-                                  if (salesController.selectedList.length ==
-                                      0) {
+                                  if (salesController.selectedList.length == 0) {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                         new SnackBar(
                                             content: Text(
                                                 "Please select products to sell")));
                                   } else {
+                                    salesController.selectedCustomer.value=null;
+                                    salesController.selectedPaymentMethod.value="Cash";
+                                    customersController.getCustomersInShop(createShopController.currentShop.value?.id, "all");
                                     confirmPayment(context, "large");
                                   }
                                 },
@@ -377,6 +379,9 @@ class CreateSale extends StatelessWidget {
                                           content: Text(
                                               "Please select products to sell")));
                                 } else {
+                                  salesController.selectedCustomer.value=null;
+                                  salesController.selectedPaymentMethod.value="Cash";
+                                  customersController.getCustomersInShop(createShopController.currentShop.value?.id, "all");
                                   confirmPayment(context, "small");
                                 }
                               },
@@ -649,15 +654,7 @@ class CreateSale extends StatelessWidget {
                                                           .value =
                                                       customersController
                                                           .customers
-                                                          .elementAt(index)
-                                                          .fullName!;
-                                                  salesController
-                                                          .selectedCustomerId
-                                                          .value =
-                                                      customersController
-                                                          .customers
-                                                          .elementAt(index)
-                                                          .id!;
+                                                          .elementAt(index);
                                                   Navigator.pop(context);
                                                 },
                                                 child: Text(
@@ -678,7 +675,10 @@ class CreateSale extends StatelessWidget {
                                 Obx(() {
                                   return majorTitle(
                                       title: salesController
-                                          .selectedCustomer.value,
+                                                  .selectedCustomer.value ==
+                                              null
+                                          ? ""
+                                          : "${salesController.selectedCustomer.value!.fullName!}",
                                       color: Colors.black,
                                       size: 12.0);
                                 }),
@@ -710,8 +710,6 @@ class CreateSale extends StatelessWidget {
                                         .currentUser.value?.attendantId,
                                     shopUID: createShopController
                                         .currentShop.value?.id,
-                                    customerId: salesController
-                                        .selectedCustomerId.value,
                                     context: context);
                               },
                               child: majorTitle(

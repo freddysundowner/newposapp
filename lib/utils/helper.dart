@@ -61,6 +61,7 @@ class Helper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: appBar == null ? null : appBar,
       floatingActionButton:
           Get.find<AuthController>().currentUser.value == null ||

@@ -15,14 +15,16 @@ class Transactions {
 
   getCashAtBank(shopId) async {
     var response = await DbBase().databaseRequest(
-        "$transaction/bybank/$shopId/", DbBase().getRequestType);
+        "$cashflow" + "banks/balances/$shopId/", DbBase().getRequestType);
+
     return jsonDecode(response);
   }
 
   createBank({required Map<String, dynamic> body}) async {
     var response = await DbBase().databaseRequest(
-        "$transaction/createbank", DbBase().postRequestType,
+        "$cashflow/create/bank", DbBase().postRequestType,
         body: body);
+
     return jsonDecode(response);
   }
 
@@ -37,7 +39,57 @@ class Transactions {
 
   createTransaction({required Map<String, dynamic> body}) async {
     var response = await DbBase()
-        .databaseRequest(transaction, DbBase().postRequestType, body: body);
+        .databaseRequest(cashflow, DbBase().postRequestType, body: body);
+    var data = jsonDecode(response);
+    return data;
+  }
+
+  createCategory({required Map<String, dynamic> body}) async {
+    var response = await DbBase().databaseRequest(
+        "${cashflow}" + "category", DbBase().postRequestType,
+        body: body);
+    var data = jsonDecode(response);
+    return data;
+  }
+
+  getCategory({required shop, required type}) async {
+    var response = await DbBase().databaseRequest(
+        "${cashflow}" + "$shop/$type", DbBase().getRequestType);
+    var data = jsonDecode(response);
+    return data;
+  }
+
+  getBakTransactions({required id}) async {
+    var response = await DbBase().databaseRequest(
+        "${cashflow}" + "bank/bank/transactions/$id", DbBase().getRequestType);
+    var data = jsonDecode(response);
+    return data;
+  }
+
+  getCategoryHistory({required id})async{
+    var response = await DbBase().databaseRequest(
+        "${cashflow}" + "category/category/$id", DbBase().getRequestType);
+    var data = jsonDecode(response);
+    return data;
+  }
+
+  ediCategory({required Map<String, dynamic> body, required id})async{
+    var response = await DbBase().databaseRequest(
+        "${cashflow}" + "category/$id", DbBase().patchRequestType,body: body);
+    var data = jsonDecode(response);
+    return data;
+  }
+
+  deleteCategory({String? id}) async{
+    var response = await DbBase().databaseRequest(
+        "${cashflow}" + "category/$id", DbBase().deleteRequestType);
+    var data = jsonDecode(response);
+    return data;
+  }
+
+  getCashFlowSummary({required id, required date}) async{
+    var response = await DbBase().databaseRequest(
+        "${cashflow}" + "salessummary/$id/$date", DbBase().getRequestType);
     var data = jsonDecode(response);
     return data;
   }

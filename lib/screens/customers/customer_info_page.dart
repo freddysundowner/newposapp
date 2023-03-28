@@ -286,13 +286,11 @@ class CustomerInfoPage extends StatelessWidget {
                                     Get.to(
                                       () => WalletPage(
                                           title: customerController
-                                                  .customer.value?.fullName ??
-                                              "trial",
-                                          uid:
-                                              "${customerController.customer.value?.id ?? "123"}",
+                                                  .customer.value?.fullName ,
+                                          uid: "${customerController.customer.value?.id }",
                                           phone: customerController.customer
-                                                  .value?.phoneNumber ??
-                                              "0700000000"),
+                                                  .value?.phoneNumber
+                                      ),
                                     );
                                   },
                                   child: Container(
@@ -394,9 +392,9 @@ class CustomerInfoPage extends StatelessWidget {
                       onTap: (index) {
                         customerController.initialPage.value = index;
                         if (index == 0) {
+                          print(index);
                           if (user == "suppliers") {
-                            supplierController.getSupplierCredit(
-                                "${shopController.currentShop.value!.id!}", id);
+                            supplierController.getSupplierCredit("${shopController.currentShop.value!.id!}", id);
                           } else {
                             creditController.getCustomerCredit(
                                 authController.currentUser.value == null
@@ -406,7 +404,7 @@ class CustomerInfoPage extends StatelessWidget {
                                 id);
                           }
                         }
-                        if (index == 1) {
+                        else if (index == 1) {
                           customerController.getCustomerPurchases(id, user);
                         } else {
                           if (user == "suppliers") {
@@ -421,9 +419,7 @@ class CustomerInfoPage extends StatelessWidget {
           Expanded(
             flex: 1,
             child: Container(
-              color: MediaQuery.of(context).size.width > 600
-                  ? Colors.white
-                  : Colors.grey.withOpacity(0.11),
+              color: Colors.white,
               child: TabBarView(
                 controller: customerController.tabController,
                 children: [

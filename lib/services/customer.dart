@@ -27,7 +27,7 @@ class Customer {
 
   updateCustomer({required Map<String, dynamic> body, required id}) async {
     var response = await DbBase()
-        .databaseRequest(customer + id, DbBase().patchRequestType);
+        .databaseRequest(customer + id, DbBase().patchRequestType,body:body);
     return jsonDecode(response);
   }
 
@@ -46,8 +46,7 @@ class Customer {
   }
 
   getReturns(uid) async {
-    var response = await DbBase()
-        .databaseRequest(customerReturns + uid, DbBase().getRequestType);
+    var response = await DbBase().databaseRequest(customerReturns + uid, DbBase().getRequestType);
     var data = jsonDecode(response);
     return data;
   }

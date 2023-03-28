@@ -105,6 +105,8 @@ class CreatePurchase extends StatelessWidget {
                               InkWell(
                                 splashColor: Colors.transparent,
                                 onTap: () {
+                                  purchaseController.selectedSupplier.value =
+                                      null;
                                   saveFunction(context);
                                 },
                                 child: majorTitle(
@@ -375,6 +377,7 @@ class CreatePurchase extends StatelessWidget {
     return InkWell(
       splashColor: Colors.transparent,
       onTap: () {
+        purchaseController.selectedSupplier.value = null;
         saveFunction(context);
       },
       child: Container(
@@ -572,15 +575,7 @@ class CreatePurchase extends StatelessWidget {
                                                               .value =
                                                           supplierController
                                                               .suppliers
-                                                              .elementAt(index)
-                                                              .fullName!;
-                                                      purchaseController
-                                                              .selectedSupplierId
-                                                              .value =
-                                                          supplierController
-                                                              .suppliers
-                                                              .elementAt(index)
-                                                              .id!;
+                                                              .elementAt(index);
                                                       Navigator.pop(context);
                                                     },
                                                     child: Text(
@@ -601,7 +596,13 @@ class CreatePurchase extends StatelessWidget {
                                     Obx(() {
                                       return majorTitle(
                                           title: purchaseController
-                                              .selectedSupplier.value,
+                                                      .selectedSupplier.value ==
+                                                  null
+                                              ? ""
+                                              : purchaseController
+                                                  .selectedSupplier
+                                                  .value!
+                                                  .fullName,
                                           color: Colors.black,
                                           size: 12.0);
                                     }),
