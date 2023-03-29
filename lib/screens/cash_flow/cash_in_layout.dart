@@ -2,7 +2,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutterpos/controllers/cashflow_controller.dart';
-import 'package:flutterpos/controllers/category_controller.dart';
 import 'package:flutterpos/controllers/home_controller.dart';
 import 'package:flutterpos/responsive/responsiveness.dart';
 import 'package:flutterpos/screens/cash_flow/cash_flow_manager.dart';
@@ -24,7 +23,7 @@ class CashInLayout extends StatelessWidget {
   ShopController createShopController = Get.find<ShopController>();
 
   CashflowController cashflowController = Get.find<CashflowController>();
-  CategoryController categoryController = Get.find<CategoryController>();
+
   ShopController shopController = Get.find<ShopController>();
 
   @override

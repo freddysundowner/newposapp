@@ -131,12 +131,6 @@ class AllSalesPage extends StatelessWidget {
                           Get.back();
                         }
 
-                        // salesController.getSalesByDates(
-                        //     shopId: shopController.currentShop.value?.id,
-                        //     startingDate: DateTime.now(),
-                        //     endingDate: DateTime.now(),
-                        //     type: "notcashflow");
-                        // Get.back();
                       },
                       icon: Icon(
                         Icons.arrow_back_ios,
@@ -144,6 +138,7 @@ class AllSalesPage extends StatelessWidget {
                       ),
                     ),
               actions: [
+                if (authController.usertype=="admin")
                 IconButton(
                     onPressed: () {
                       SalesPdf(

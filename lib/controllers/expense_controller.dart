@@ -5,9 +5,7 @@ import 'package:flutterpos/widgets/loading_dialog.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
-import '../models/expense_category_model.dart';
 import '../models/expense_model.dart';
-import '../services/categories.dart';
 import '../services/expense.dart';
 import '../utils/colors.dart';
 import '../widgets/snackBars.dart';
@@ -19,14 +17,13 @@ class ExpenseController extends GetxController {
   RxBool getExpenseByDateLoad = RxBool(false);
   RxInt totalExpenses = RxInt(0);
   RxList<ExpenseModel> expenses = RxList([]);
-  RxBool loadingExpensesCategory= RxBool(false);
+  RxBool loadingExpensesCategory = RxBool(false);
 
   TextEditingController textEditingControllerAmount = TextEditingController();
   TextEditingController textEditingControllerCategory = TextEditingController();
   TextEditingController textEditingControllerName = TextEditingController();
 
   RxString selectedExpense = RxString("");
-
 
   saveExpense({required shopId, required attendantId, required context}) async {
     if (textEditingControllerName.text == "") {
@@ -54,7 +51,8 @@ class ExpenseController extends GetxController {
         if (response["status"] == true) {
           textEditingControllerName.text = "";
           textEditingControllerAmount.text = "";
-          await getExpenseByDate(
+          selectedExpense.value = "";
+          getExpenseByDate(
               shopId: "${shopId}",
               startingDate: startdate.value,
               endingDate: enddate.value,
@@ -84,16 +82,9 @@ class ExpenseController extends GetxController {
       required startingDate,
       required type}) async {
     try {
-      totalExpenses.value = 0;
       expenses.clear();
+      totalExpenses.value = 0;
       getExpenseByDateLoad.value = true;
-      // var now = type != "cashflow" ? endingDate : DateTime.now();
-      // var tomm = now.add(new Duration(days: 1));
-      // var today = new DateFormat()
-      //     .parse(
-      //         new DateFormat().format(type != "cashflow" ? startingDate : now))
-      //     .toIso8601String();
-      // var tomorrow = new DateFormat().parse(new DateFormat().format(tomm));
       var response = await Expense().getExpenseByDate(
           shopId: shopId,
           startDate: DateFormat("yyyy-MM-dd").format(startingDate),

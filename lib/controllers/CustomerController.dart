@@ -25,12 +25,10 @@ class CustomerController extends GetxController
   TextEditingController amountController = TextEditingController();
   RxBool creatingCustomerLoad = RxBool(false);
   RxBool gettingCustomersLoad = RxBool(false);
-  RxBool customerReturnsLoad = RxBool(false);
   RxBool gettingCustomer = RxBool(false);
   RxBool customerPurchaseLoad = RxBool(false);
   RxList<CustomerModel> customers = RxList([]);
   RxList<SaleOrderItemModel> customerPurchases = RxList([]);
-  RxList<SaleOrderItemModel> customerReturns = RxList([]);
   Rxn<CustomerModel> customer = Rxn(null);
 
   RxString activeItem = RxString("All");
@@ -94,7 +92,6 @@ class CustomerController extends GetxController
           Get.back();
         }
         await getCustomersInShop(shopId, "all");
-        Get.back();
       } else {
         showSnackBar(
             message: response["message"], color: Colors.red, context: context);
@@ -150,12 +147,12 @@ class CustomerController extends GetxController
     }
   }
 
-  assignTextFields() {
-    nameController.text = customer.value!.fullName!;
-    phoneController.text = customer.value!.phoneNumber!;
-    emailController.text = customer.value!.email!;
-    genderController.text = customer.value!.gender!;
-    addressController.text = customer.value!.address!;
+  assignTextFields(CustomerModel customerModel) {
+    nameController.text = customerModel.fullName!;
+    phoneController.text = customerModel.phoneNumber!;
+    emailController.text = customerModel.email!;
+    genderController.text = customerModel.gender!;
+    addressController.text = customerModel.address!;
   }
 
   @override
@@ -164,22 +161,26 @@ class CustomerController extends GetxController
     super.onInit();
   }
 
-  updateCustomer(context, String? id) async {
+  updateCustomer(context, String id) async {
     try {
       LoadingDialog.showLoadingDialog(
           context: context, title: "Updating customer...", key: _keyLoader);
       Map<String, dynamic> body = {
         if (nameController.text != "") "fullName": nameController.text,
-        "phoneNumber": phoneController.text,
-        "gender": genderController.text,
-        "email": emailController.text,
-        "address": addressController.text
+        if (phoneController.text != "") "phoneNumber": phoneController.text,
+        if (genderController.text != "") "gender": genderController.text,
+        if (emailController.text != "") "email": emailController.text,
+        if (addressController.text != "") "address": addressController.text
       };
       var response = await Customer().updateCustomer(body: body, id: id);
+      print(response);
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
       if (response["status"] == true) {
         clearTexts();
-        await getCustomerById(id);
+        customer.value = CustomerModel.fromJson(response["body"]);
+        int index = customers.indexWhere((element) => element.id == id);
+        customers[index] = customer.value!;
+        customers.refresh();
       } else {
         showSnackBar(
             message: response["message"],
@@ -218,20 +219,18 @@ class CustomerController extends GetxController
     }
   }
 
-  getCustomerPurchases(uid, type) async {
+  getCustomerPurchases(uid, type, String operation) async {
     try {
+      customerPurchases.clear();
       customerPurchaseLoad.value = true;
-      var response = await Customer().getPurchases(uid, type);
+      var response = await Customer().getPurchases(uid, type, operation);
+
       if (response["status"] == true) {
         customerPurchases.clear();
         List fetchedProducts = response["body"];
         List<SaleOrderItemModel> listProducts =
             fetchedProducts.map((e) => SaleOrderItemModel.fromJson(e)).toList();
-        for (var i = 0; i < listProducts.length; i++) {
-          if (listProducts[i].returned != true) {
-            customerPurchases.add(listProducts[i]);
-          }
-        }
+        customerPurchases.assignAll(listProducts);
       } else {
         customerPurchases.value = [];
       }
@@ -239,25 +238,6 @@ class CustomerController extends GetxController
       customerPurchaseLoad.value = false;
     } catch (e) {
       customerPurchaseLoad.value = false;
-    }
-  }
-
-  getCustomerReturns(uid) async {
-    try {
-      customerReturnsLoad.value = true;
-      var response = await Customer().getReturns(uid);
-      if (response != null) {
-        List fetchedProducts = response["body"];
-        List<SaleOrderItemModel> listProducts =
-            fetchedProducts.map((e) => SaleOrderItemModel.fromJson(e)).toList();
-        customerReturns.assignAll(listProducts);
-      } else {
-        customerReturns.value = [];
-      }
-
-      customerReturnsLoad.value = false;
-    } catch (e) {
-      customerReturnsLoad.value = false;
     }
   }
 }

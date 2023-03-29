@@ -48,10 +48,8 @@ Widget customerDebtCard({required CustomerModel customerModel, required type}) {
               child: InkWell(
                 onTap: () {
                   Get.to(() => CustomerInfoPage(
-                        id: customerModel.id,
+                        customerModel: customerModel,
                         user: type,
-                        name: customerModel.fullName,
-                        phone: customerModel.phoneNumber,
                       ));
                 },
                 child: Container(

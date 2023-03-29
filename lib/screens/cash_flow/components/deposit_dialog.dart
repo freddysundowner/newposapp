@@ -9,6 +9,7 @@ showDepositDialog(
     required uid,
     required title,
     String? page  ,
+    String ?size,
     DepositModel? depositModel}) {
   WalletController walletController = Get.find<WalletController>();
   if (title == "edit") {
@@ -78,7 +79,7 @@ showDepositDialog(
                               id: depositModel!.id,
                               uid: uid);
                         } else {
-                          walletController.save(uid, context,page);
+                          walletController.save(uid, context,page,size);
                         }
                       },
                       child: Text(

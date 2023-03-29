@@ -52,17 +52,13 @@ Widget customerWidget(
                   if (MediaQuery.of(context).size.width > 600) {
                     Get.find<HomeController>().selectedWidget.value =
                         CustomerInfoPage(
-                      id: customerModel.id,
+                      customerModel: customerModel,
                       user: type,
-                      name: customerModel.fullName,
-                      phone: customerModel.phoneNumber,
                     );
                   } else {
                     Get.to(() => CustomerInfoPage(
-                          id: customerModel.id,
+                          customerModel: customerModel,
                           user: type,
-                          name: customerModel.fullName.toString(),
-                          phone: customerModel.phoneNumber,
                         ));
                   }
                 },

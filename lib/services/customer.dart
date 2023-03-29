@@ -37,17 +37,10 @@ class Customer {
     return jsonDecode(response);
   }
 
-  getPurchases(uid, type) async {
-    var response = await DbBase()
-        .databaseRequest(customerPurchase + uid, DbBase().getRequestType);
-
+  getPurchases(uid, type,operation) async {
+    var response = await DbBase().databaseRequest(operation=="returns"?customerReturns + uid:customerPurchase + uid, DbBase().getRequestType);
     var data = jsonDecode(response);
     return data;
   }
 
-  getReturns(uid) async {
-    var response = await DbBase().databaseRequest(customerReturns + uid, DbBase().getRequestType);
-    var data = jsonDecode(response);
-    return data;
-  }
 }

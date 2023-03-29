@@ -3,13 +3,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutterpos/controllers/home_controller.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
+import 'package:flutterpos/models/customer_model.dart';
 import 'package:flutterpos/models/sales_model.dart';
 import 'package:flutterpos/models/sales_order_item_model.dart';
 import 'package:flutterpos/responsive/responsiveness.dart';
 import 'package:flutterpos/screens/cash_flow/wallet_page.dart';
 import 'package:flutterpos/screens/customers/customers_page.dart';
 import 'package:flutterpos/utils/helper.dart';
-import 'package:flutterpos/widgets/bigtext.dart';
 import 'package:flutterpos/widgets/no_items_found.dart';
 import 'package:flutterpos/widgets/smalltext.dart';
 import 'package:get/get.dart';
@@ -22,23 +22,19 @@ import '../../controllers/credit_controller.dart';
 import '../../controllers/supplierController.dart';
 import '../../models/stock_in_credit.dart';
 import '../../utils/colors.dart';
+import '../../widgets/creditPurchaseCard.dart';
+import '../../widgets/credit_history_card.dart';
 import '../../widgets/delete_dialog.dart';
 import '../../widgets/edit_dialog.dart';
-import '../../widgets/credit_history_card.dart';
 import '../../widgets/purchase_card.dart';
+import '../cash_flow/payment_history.dart';
+import '../stock/purchase_order_item.dart';
 
 class CustomerInfoPage extends StatelessWidget {
-  final id;
   final user;
-  final name;
-  final phone;
+  final CustomerModel customerModel;
 
-  CustomerInfoPage(
-      {Key? key,
-      required this.id,
-      required this.user,
-      required this.name,
-      required this.phone})
+  CustomerInfoPage({Key? key, required this.user, required this.customerModel})
       : super(key: key);
   CustomerController customerController = Get.find<CustomerController>();
   SupplierController supplierController = Get.find<SupplierController>();
@@ -67,12 +63,6 @@ class CustomerInfoPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (user == "suppliers") {
-      supplierController.getSupplierById(id);
-    } else {
-      customerController.getCustomerById(id);
-    }
-
     return WillPopScope(
       onWillPop: () async {
         customerController.initialPage.value = 0;
@@ -90,8 +80,10 @@ class CustomerInfoPage extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // majorTitle(title: name, color: Colors.black, size: 18),
-                    minorTitle(title: phone, color: Colors.grey)
+                    minorTitle(
+                        title: customerModel.fullName,
+                        color: Colors.black,
+                        size: 18)
                   ],
                 ),
                 if (user != "suppliers")
@@ -99,9 +91,7 @@ class CustomerInfoPage extends StatelessWidget {
                     onTap: () {
                       Get.find<HomeController>().selectedWidget.value =
                           WalletPage(
-                        title: name,
-                        uid: "${customerController.customer.value?.id}",
-                        phone: phone,
+                        customerModel: customerModel,
                       );
                     },
                     child: Container(
@@ -139,14 +129,14 @@ class CustomerInfoPage extends StatelessWidget {
               IconButton(
                   onPressed: () {
                     if (user == "suppliers") {
-                      supplierController.assignTextFields();
+                      supplierController.assignTextFields(customerModel);
                     } else {
-                      customerController.assignTextFields();
+                      customerController.assignTextFields(customerModel);
                     }
                     showEditDialog(
-                      user: user,
-                      context: context,
-                    );
+                        user: user,
+                        context: context,
+                        customerModel: customerModel);
                   },
                   icon: Icon(
                     Icons.edit,
@@ -160,7 +150,7 @@ class CustomerInfoPage extends StatelessWidget {
                           if (user == "suppliers") {
                             supplierController.deleteSuppler(
                                 context: context,
-                                id: customerController.customer.value?.id,
+                                id: supplierController.supplier.value?.id,
                                 shopId: shopController.currentShop.value?.id);
                           } else {
                             customerController.deleteCustomer(
@@ -204,20 +194,11 @@ class CustomerInfoPage extends StatelessWidget {
                         ),
                         SizedBox(height: 10),
                         Center(
-                          child: Obx(() {
-                            return Text(
-                              supplierController.supplier.value == null ||
-                                      customerController.customer.value == null
-                                  ? name
-                                  : user == "suppliers"
-                                      ? "${supplierController.supplier.value == null ? "" : supplierController.supplier.value?.fullName}"
-                                      : "${customerController.customer.value == null ? "" : customerController.customer.value?.fullName}",
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold),
-                            );
-                          }),
-                        ),
+                            child: Text(
+                          customerModel.fullName!,
+                          style: TextStyle(
+                              color: Colors.white, fontWeight: FontWeight.bold),
+                        )),
                         SizedBox(height: 5),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -227,18 +208,10 @@ class CustomerInfoPage extends StatelessWidget {
                               color: Colors.white,
                               size: 14,
                             ),
-                            Obx(() {
-                              return Text(
-                                supplierController.supplier.value == null ||
-                                        customerController.customer.value ==
-                                            null
-                                    ? phone
-                                    : user == "suppliers"
-                                        ? "${supplierController.supplier.value?.phoneNumber}"
-                                        : "${customerController.customer.value?.phoneNumber}",
-                                style: TextStyle(color: Colors.white),
-                              );
-                            }),
+                            Text(
+                              customerModel.phoneNumber!,
+                              style: TextStyle(color: Colors.white),
+                            )
                           ],
                         ),
                         SizedBox(height: 10),
@@ -252,9 +225,7 @@ class CustomerInfoPage extends StatelessWidget {
                               IconButton(
                                   onPressed: () {
                                     launchMessage(
-                                        number: user == "suppliers"
-                                            ? "${supplierController.supplier.value?.phoneNumber}"
-                                            : "${customerController.customer.value?.phoneNumber}",
+                                        number: customerModel.phoneNumber,
                                         message: user == "suppliers"
                                             ? "we will be paying your debt very soon"
                                             : "Aquick reminde that you owe our shop please pay your debt ");
@@ -264,9 +235,7 @@ class CustomerInfoPage extends StatelessWidget {
                               IconButton(
                                   onPressed: () {
                                     launchWhatsApp(
-                                        number: user == "suppliers"
-                                            ? "${supplierController.supplier.value?.phoneNumber}"
-                                            : "${customerController.customer.value?.phoneNumber}",
+                                        number: customerModel.phoneNumber,
                                         message: user == "suppliers"
                                             ? "we will be paying your debt very soon"
                                             : "Aquick reminde that you owe our shop please pay your debt ");
@@ -285,11 +254,7 @@ class CustomerInfoPage extends StatelessWidget {
                                   onTap: () {
                                     Get.to(
                                       () => WalletPage(
-                                          title: customerController
-                                                  .customer.value?.fullName ,
-                                          uid: "${customerController.customer.value?.id }",
-                                          phone: customerController.customer
-                                                  .value?.phoneNumber
+                                        customerModel: customerModel,
                                       ),
                                     );
                                   },
@@ -335,14 +300,14 @@ class CustomerInfoPage extends StatelessWidget {
                 IconButton(
                     onPressed: () {
                       if (user == "suppliers") {
-                        supplierController.assignTextFields();
+                        supplierController.assignTextFields(customerModel);
                       } else {
-                        customerController.assignTextFields();
+                        customerController.assignTextFields(customerModel);
                       }
                       showEditDialog(
-                        user: user,
-                        context: context,
-                      );
+                          user: user,
+                          context: context,
+                          customerModel: customerModel);
                     },
                     icon: Icon(Icons.edit)),
                 IconButton(
@@ -353,7 +318,7 @@ class CustomerInfoPage extends StatelessWidget {
                             if (user == "suppliers") {
                               supplierController.deleteSuppler(
                                   context: context,
-                                  id: customerController.customer.value?.id,
+                                  id: supplierController.supplier.value?.id,
                                   shopId: shopController.currentShop.value?.id);
                             } else {
                               customerController.deleteCustomer(
@@ -394,22 +359,25 @@ class CustomerInfoPage extends StatelessWidget {
                         if (index == 0) {
                           print(index);
                           if (user == "suppliers") {
-                            supplierController.getSupplierCredit("${shopController.currentShop.value!.id!}", id);
+                            supplierController.getSupplierCredit(
+                                "${shopController.currentShop.value!.id!}",
+                                customerModel.id);
                           } else {
                             creditController.getCustomerCredit(
                                 authController.currentUser.value == null
                                     ? attendantController.attendant.value?.id
                                     : authController.currentUser.value?.id,
                                 "${createShopController.currentShop.value!.id!}",
-                                id);
+                                customerModel.id);
                           }
-                        }
-                        else if (index == 1) {
-                          customerController.getCustomerPurchases(id, user);
+                        } else if (index == 1) {
+                          customerController.getCustomerPurchases(
+                              customerModel.id, user, "purchases");
                         } else {
                           if (user == "suppliers") {
                           } else {
-                            customerController.getCustomerReturns(id);
+                            customerController.getCustomerPurchases(
+                                customerModel.id, user, "returns");
                           }
                         }
                       },
@@ -421,11 +389,12 @@ class CustomerInfoPage extends StatelessWidget {
             child: Container(
               color: Colors.white,
               child: TabBarView(
+                physics: NeverScrollableScrollPhysics(),
                 controller: customerController.tabController,
                 children: [
-                  CreditInfo(id: id, user: user),
-                  Purchase(id: id, user: user),
-                  Returns(id: id, user: user)
+                  CreditInfo(customerModel: customerModel, user: user),
+                  Purchase(id: customerModel.id, user: user),
+                  Purchase(id: customerModel.id, user: user)
                 ],
               ),
             ),
@@ -605,92 +574,8 @@ class Purchase extends StatelessWidget {
   }
 }
 
-class Returns extends StatelessWidget {
-  CustomerController customerController = Get.find<CustomerController>();
-  SupplierController supplierController = Get.find<SupplierController>();
-
-  final id;
-  final user;
-
-  Returns({Key? key, required this.id, required this.user}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Obx(() {
-      return customerController.customerReturnsLoad.value
-          ? Center(child: CircularProgressIndicator())
-          : customerController.customerReturns.length == 0
-              ? noItemsFound(context, true)
-              : MediaQuery.of(context).size.width > 600
-                  ? SingleChildScrollView(
-                      child: Container(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                        width: double.infinity,
-                        child: Theme(
-                          data: Theme.of(context)
-                              .copyWith(dividerColor: Colors.grey),
-                          child: DataTable(
-                            decoration: BoxDecoration(
-                                border: Border.all(
-                              width: 1,
-                              color: Colors.black,
-                            )),
-                            columnSpacing: 30.0,
-                            columns: [
-                              DataColumn(
-                                  label: Text('Name',
-                                      textAlign: TextAlign.center)),
-                              DataColumn(
-                                  label:
-                                      Text('Qty', textAlign: TextAlign.center)),
-                              DataColumn(
-                                  label: Text('Total',
-                                      textAlign: TextAlign.center)),
-                              DataColumn(
-                                  label: Text('Date',
-                                      textAlign: TextAlign.center)),
-                            ],
-                            rows: List.generate(
-                                customerController.customerReturns.length,
-                                (index) {
-                              SaleOrderItemModel saleOrder = customerController
-                                  .customerReturns
-                                  .elementAt(index);
-                              final y = saleOrder.product!.name;
-                              final x = saleOrder.itemCount;
-                              final z = saleOrder.total;
-                              final a = saleOrder.createdAt!;
-
-                              return DataRow(cells: [
-                                DataCell(Container(child: Text(y!))),
-                                DataCell(Container(child: Text(x.toString()))),
-                                DataCell(Container(child: Text(z.toString()))),
-                                DataCell(Container(
-                                    child: Text(
-                                        DateFormat("dd-MM-yyyy").format(a)))),
-                              ]);
-                            }),
-                          ),
-                        ),
-                      ),
-                    )
-                  : ListView.builder(
-                      itemCount: customerController.customerReturns.length,
-                      shrinkWrap: true,
-                      itemBuilder: (context, index) {
-                        SaleOrderItemModel saleOrderItemModel =
-                            customerController.customerReturns.elementAt(index);
-                        return purchaseCard(
-                            context: context,
-                            saleOrderItemModel: saleOrderItemModel);
-                      });
-    });
-  }
-}
-
 class CreditInfo extends StatelessWidget {
-  final id;
+  final CustomerModel customerModel;
   final user;
   CreditController creditController = Get.find<CreditController>();
   SupplierController supplierController = Get.find<SupplierController>();
@@ -699,42 +584,104 @@ class CreditInfo extends StatelessWidget {
   ShopController createShopController = Get.find<ShopController>();
   AuthController authController = Get.find<AuthController>();
 
-  CreditInfo({Key? key, required this.id, required this.user})
+  CreditInfo({Key? key, required this.customerModel, required this.user})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Obx(() {
       return user == "suppliers"
-          ? supplierController.stockInCredit.length == 0
+          ? supplierController.returningLoad.value
               ? Center(
-                  child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Center(
-                      child: Text(
-                        "No entries found.",
-                        style: TextStyle(color: Colors.black),
-                      ),
-                    ),
-                    Center(
-                      child: Text(
-                        "For now",
-                        style: TextStyle(color: Colors.grey),
-                      ),
-                    ),
-                  ],
-                ))
-              : ListView.builder(
-                  itemCount: supplierController.stockInCredit.length,
-                  shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  itemBuilder: (context, index) {
-                    StockInCredit salesBody =
-                        supplierController.stockInCredit.elementAt(index);
+                  child: CircularProgressIndicator(),
+                )
+              : supplierController.stockInCredit.length == 0
+                  ? Center(
+                      child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Center(
+                          child: Text(
+                            "No entries found.",
+                            style: TextStyle(color: Colors.black),
+                          ),
+                        ),
+                        Center(
+                          child: Text(
+                            "For now",
+                            style: TextStyle(color: Colors.grey),
+                          ),
+                        ),
+                      ],
+                    ))
+                  : MediaQuery.of(context).size.width > 600
+                      ? SingleChildScrollView(
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 15, vertical: 10),
+                            width: double.infinity,
+                            child: Theme(
+                              data: Theme.of(context)
+                                  .copyWith(dividerColor: Colors.grey),
+                              child: DataTable(
+                                decoration: BoxDecoration(
+                                    border: Border.all(
+                                  width: 1,
+                                  color: Colors.black,
+                                )),
+                                columnSpacing: 30.0,
+                                columns: [
+                                  DataColumn(
+                                      label: Text('Receipt Number',
+                                          textAlign: TextAlign.center)),
+                                  DataColumn(
+                                      label: Text('Balance',
+                                          textAlign: TextAlign.center)),
+                                  DataColumn(
+                                      label: Text('Total',
+                                          textAlign: TextAlign.center)),
+                                  DataColumn(
+                                      label: Text('Date',
+                                          textAlign: TextAlign.center)),
+                                ],
+                                rows: List.generate(
+                                    customerController.customerPurchases.length,
+                                    (index) {
+                                  StockInCredit salesBody = supplierController
+                                      .stockInCredit
+                                      .elementAt(index);
+                                  final y = salesBody.recietNumber;
+                                  final x = salesBody.balance;
+                                  final z = salesBody.total;
+                                  final a = salesBody.createdAt!;
 
-                    return Container();
-                  })
+                                  return DataRow(cells: [
+                                    DataCell(Container(child: Text(y!))),
+                                    DataCell(
+                                        Container(child: Text(x.toString()))),
+                                    DataCell(
+                                        Container(child: Text(z.toString()))),
+                                    DataCell(Container(
+                                        child: Text(DateFormat("dd-MM-yyyy")
+                                            .format(a)))),
+                                  ]);
+                                }),
+                              ),
+                            ),
+                          ),
+                        )
+                      : ListView.builder(
+                          itemCount: supplierController.stockInCredit.length,
+                          shrinkWrap: true,
+                          physics: NeverScrollableScrollPhysics(),
+                          itemBuilder: (context, index) {
+                            StockInCredit salesBody = supplierController
+                                .stockInCredit
+                                .elementAt(index);
+
+                            return CreditPurchaseHistoryCard(
+                                context, salesBody);
+                          })
           : creditController.getCreditLoad.value
               ? Center(child: CircularProgressIndicator())
               : creditController.credit.length == 0
@@ -756,15 +703,150 @@ class CreditInfo extends StatelessWidget {
                         ),
                       ],
                     ))
-                  : ListView.builder(
-                      itemCount: creditController.credit.length,
-                      shrinkWrap: true,
-                      itemBuilder: (context, index) {
-                        SalesModel salesBody =
-                            creditController.credit.elementAt(index);
+                  : MediaQuery.of(context).size.width > 600
+                      ? SingleChildScrollView(
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 15, vertical: 10),
+                            width: double.infinity,
+                            child: Theme(
+                              data: Theme.of(context)
+                                  .copyWith(dividerColor: Colors.grey),
+                              child: DataTable(
+                                decoration: BoxDecoration(
+                                    border: Border.all(
+                                  width: 1,
+                                  color: Colors.black,
+                                )),
+                                columnSpacing: 30.0,
+                                columns: [
+                                  DataColumn(
+                                      label: Text('Receipt Number',
+                                          textAlign: TextAlign.center)),
+                                  DataColumn(
+                                      label: Text('Balance',
+                                          textAlign: TextAlign.center)),
+                                  DataColumn(
+                                      label: Text('Total',
+                                          textAlign: TextAlign.center)),
+                                  DataColumn(
+                                      label: Text('Date',
+                                          textAlign: TextAlign.center)),
+                                  DataColumn(
+                                      label: Text('',
+                                          textAlign: TextAlign.center)),
+                                ],
+                                rows: List.generate(
+                                    creditController.credit.length, (index) {
+                                  SalesModel salesBody =
+                                      creditController.credit.elementAt(index);
+                                  final y = salesBody.receiptNumber;
+                                  final x = salesBody.creditTotal;
+                                  final z = salesBody.grandTotal;
+                                  final a = salesBody.createdAt!;
 
-                        return CreditHistoryCard(context, salesBody);
-                      });
+                                  return DataRow(cells: [
+                                    DataCell(Container(child: Text(y!))),
+                                    DataCell(
+                                        Container(child: Text(x.toString()))),
+                                    DataCell(
+                                        Container(child: Text(z.toString()))),
+                                    DataCell(Container(
+                                        child: Text(DateFormat("dd-MM-yyyy")
+                                            .format(a)))),
+                                    DataCell(Align(
+                                      alignment: Alignment.topRight,
+                                      child: Container(
+                                        child: PopupMenuButton(
+                                          itemBuilder: (ctx) => [
+                                            PopupMenuItem(
+                                              child: ListTile(
+                                                leading: Icon(Icons.list),
+                                                onTap: () {
+                                                  Navigator.pop(context);
+                                                  if (MediaQuery.of(context)
+                                                          .size
+                                                          .width >
+                                                      600) {
+                                                    Get.find<HomeController>()
+                                                            .selectedWidget
+                                                            .value =
+                                                        PurchaseOrderItems(
+                                                            id: salesBody.id);
+                                                  } else {
+                                                    Get.to(() =>
+                                                        PurchaseOrderItems(
+                                                            id: salesBody.id));
+                                                  }
+                                                },
+                                                title: Text('View Purchases'),
+                                              ),
+                                            ),
+                                            PopupMenuItem(
+                                              child: ListTile(
+                                                leading: Icon(Icons.payment),
+                                                onTap: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                title: Text('Pay'),
+                                              ),
+                                            ),
+                                            PopupMenuItem(
+                                              child: ListTile(
+                                                leading: Icon(Icons.wallet),
+                                                onTap: () {
+                                                  Navigator.pop(context);
+                                                  if (MediaQuery.of(context)
+                                                          .size
+                                                          .width >
+                                                      600) {
+                                                    Get.find<HomeController>()
+                                                        .selectedWidget
+                                                        .value = PaymentHistory(
+                                                      customerModel:
+                                                          customerModel,
+                                                    );
+                                                  } else {
+                                                    Get.to(() => PaymentHistory(
+                                                          customerModel:
+                                                              customerModel,
+                                                        ));
+                                                  }
+                                                },
+                                                title: Text('Payment History'),
+                                              ),
+                                            ),
+                                            PopupMenuItem(
+                                              child: ListTile(
+                                                leading: Icon(
+                                                    Icons.file_copy_outlined),
+                                                onTap: () async {
+                                                  Navigator.pop(context);
+                                                },
+                                                title: Text('Generate Report'),
+                                              ),
+                                            ),
+                                          ],
+                                          icon: Icon(Icons.more_vert),
+                                        ),
+                                      ),
+                                    )),
+                                  ]);
+                                }),
+                              ),
+                            ),
+                          ),
+                        )
+                      : ListView.builder(
+                          itemCount: creditController.credit.length,
+                          shrinkWrap: true,
+                          itemBuilder: (context, index) {
+                            SalesModel salesBody =
+                                creditController.credit.elementAt(index);
+
+                            return CreditHistoryCard(
+                                context, salesBody, customerModel);
+                          });
     });
   }
 }

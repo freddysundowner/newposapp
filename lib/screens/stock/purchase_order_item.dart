@@ -16,8 +16,9 @@ import '../../widgets/stocks_card.dart';
 
 class PurchaseOrderItems extends StatelessWidget {
   final id;
+  final String? page;
 
-  PurchaseOrderItems({Key? key, required this.id}) : super(key: key);
+  PurchaseOrderItems({Key? key, required this.id,this.page}) : super(key: key);
   ShopController createShopController = Get.find<ShopController>();
   PurchaseController purchaseController = Get.find<PurchaseController>();
 
@@ -33,7 +34,12 @@ class PurchaseOrderItems extends StatelessWidget {
         leading: IconButton(
           onPressed: () {
             if (MediaQuery.of(context).size.width > 600) {
-              Get.find<HomeController>().selectedWidget.value = ViewPurchases();
+              if (page!=null&&page=="customerInfoPage") {
+
+              }  else{
+                Get.find<HomeController>().selectedWidget.value = ViewPurchases();
+              }
+
             } else {
               Get.back();
             }
@@ -53,7 +59,8 @@ class PurchaseOrderItems extends StatelessWidget {
           ],
         ),
       ),
-      body: ResponsiveWidget(largeScreen: Obx(() {
+      body: ResponsiveWidget(
+          largeScreen: Obx(() {
         return purchaseController.getPurchaseOrderItemLoad.value
             ? Column(
                 mainAxisAlignment: MainAxisAlignment.center,

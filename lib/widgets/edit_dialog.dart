@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutterpos/models/customer_model.dart';
 import 'package:get/get.dart';
 
 import '../controllers/CustomerController.dart';
 import '../controllers/supplierController.dart';
 
-showEditDialog({required user, required context}) {
+showEditDialog({required user, required context,required CustomerModel customerModel}) {
   CustomerController customersController = Get.find<CustomerController>();
   SupplierController supplierController = Get.find<SupplierController>();
   showDialog(
@@ -102,11 +103,9 @@ showEditDialog({required user, required context}) {
                         onPressed: () {
                           Navigator.pop(context);
                           if (user == "suppliers") {
-                            supplierController.updateSupplier(context,
-                                customersController.customer.value?.id);
+                            supplierController.updateSupplier(context,customerModel.id!);
                           } else {
-                            customersController.updateCustomer(context,
-                                customersController.customer.value?.id);
+                            customersController.updateCustomer(context, customerModel.id!);
                           }
                         },
                         child: Text("Save Changes".toUpperCase(),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutterpos/controllers/product_controller.dart';
-import 'package:flutterpos/controllers/sales_controller.dart';
 import 'package:flutterpos/models/customer_model.dart';
+import 'package:flutterpos/services/purchases.dart';
 import 'package:flutterpos/services/supplier.dart';
 import 'package:flutterpos/utils/colors.dart';
 import 'package:flutterpos/widgets/snackBars.dart';
@@ -157,15 +157,15 @@ class SupplierController extends GetxController {
     }
   }
 
-  assignTextFields() {
-    nameController.text = supplier.value!.fullName!;
-    phoneController.text = supplier.value!.phoneNumber!;
-    emailController.text = supplier.value!.email!;
-    genderController.text = supplier.value!.gender!;
-    addressController.text = supplier.value!.address!;
+  assignTextFields(CustomerModel customerModel) {
+    nameController.text = customerModel.fullName!;
+    phoneController.text = customerModel.phoneNumber!;
+    emailController.text = customerModel.email!;
+    genderController.text = customerModel.gender!;
+    addressController.text = customerModel.address!;
   }
 
-  updateSupplier(BuildContext context, String? id) async {
+  updateSupplier(BuildContext context, String id) async {
     try {
       LoadingDialog.showLoadingDialog(
           context: context, title: "Updating supplier...", key: _keyLoader);
@@ -177,14 +177,14 @@ class SupplierController extends GetxController {
         if (addressController.text != "") "address": addressController.text
       };
       var response = await Supplier().updateSupplier(body: body, id: id);
+      print(response);
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
       if (response["status"] == true) {
-        showSnackBar(
-            message: response["message"],
-            color: AppColors.mainColor,
-            context: context);
         clearTexts();
-        await getSupplierById(id);
+        supplier.value = CustomerModel.fromJson(response["body"]);
+        int index = suppliers.indexWhere((element) => element.id == id);
+        suppliers[index] = supplier.value!;
+        suppliers.refresh();
       } else {
         showSnackBar(
             message: response["message"],
@@ -199,9 +199,12 @@ class SupplierController extends GetxController {
   deleteSuppler(
       {required BuildContext context, required id, required shopId}) async {
     try {
+      print("user${id}");
+      print("shop${shopId}");
       LoadingDialog.showLoadingDialog(
           context: context, title: "deleting customer...", key: _keyLoader);
       var response = await Supplier().deleteCustomer(id: id);
+      print(response);
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
       if (response["status"] == true) {
         if (MediaQuery.of(context).size.width > 600) {
@@ -210,10 +213,6 @@ class SupplierController extends GetxController {
         } else {
           Get.back();
         }
-        showSnackBar(
-            message: response["message"],
-            color: AppColors.mainColor,
-            context: context);
 
         await getSuppliersInShop(shopId, "all");
       } else {
@@ -228,39 +227,30 @@ class SupplierController extends GetxController {
   }
 
   returnOrderToSupplier(uid, quantity, shopId, context) async {
-    SalesController salesController = Get.find<SalesController>();
     try {
-      returningLoad.value = true;
-      if (quantityController.text == "") {
-        showSnackBar(
-            color: Colors.red,
-            message: "Enter quantity to return",
-            context: context);
-      } else if (int.parse(quantityController.text) > quantity) {
-        showSnackBar(
-            message: "Quantity cannot be greater than $quantity",
-            color: Colors.red,
-            context: context);
-      } else {
-        Map<String, dynamic> body = {
-          "quantity": int.parse(quantityController.text)
-        };
-        await Supplier().returnOrderToSupplier(uid, body);
-        quantityController.text = "";
-        showSnackBar(
-            message: "Product Has been Returned",
-            color: AppColors.mainColor,
-            context: context);
-      }
+      LoadingDialog.showLoadingDialog(
+          context: context, title: "Creating supplier...", key: _keyLoader);
 
-      returningLoad.value = false;
+      Map<String, dynamic> body = {
+        "quantity": int.parse(quantity),
+      };
+      var response = await Purchases().returnOrderToSupplier(uid, body);
+      print(response);
+      Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
+      quantityController.text = "";
+      showSnackBar(
+          message: "Product Has been Returned",
+          color: AppColors.mainColor,
+          context: context);
     } catch (e) {
-      returningLoad.value = false;
+      print(e);
+      Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
     }
   }
 
   getSupplierCredit(shopId, uid) async {
     try {
+      returningLoad.value = true;
       var response = await Supplier().getCredit(shopId, uid);
       if (response != null) {
         List fetchedCredit = response["body"];
@@ -270,7 +260,21 @@ class SupplierController extends GetxController {
       } else {
         stockInCredit.value = [];
       }
-    } catch (e) {}
+      returningLoad.value = false;
+    } catch (e) {
+      StockInCredit stockInCredits = StockInCredit(
+          id: "12345",
+          supplier: "12345",
+          shop: "123crffre4567",
+          attendant: "12356fser",
+          balance: 100,
+          total: 2000,
+          recietNumber: "23ijfnjnMM",
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now());
+      stockInCredit.add(stockInCredits);
+      returningLoad.value = false;
+    }
   }
 
   depositForSUpplier(StockInCredit stockInCredit, context) async {
@@ -303,14 +307,8 @@ class SupplierController extends GetxController {
   }
 
   deleteProductFromStock(String productId, String shopId, context) async {
-    SalesController salesController = Get.find<SalesController>();
     var response = await Supplier().deleteStockProduct(productId);
-    if (response["status"] == true) {
-      showSnackBar(
-          message: response["message"],
-          color: AppColors.mainColor,
-          context: context);
-    } else {
+    if (response["status"] != true) {
       showSnackBar(
           message: response["message"], color: Colors.red, context: context);
     }

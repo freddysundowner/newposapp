@@ -278,6 +278,7 @@ class ProductPage extends StatelessWidget {
                     child: Row(
                       children: [
                         searchWidget(),
+                        if(authController.usertype=="admin")
                         IconButton(
                             onPressed: () async {
                               productController.scanQR(

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
-import 'package:flutterpos/controllers/category_controller.dart';
 import 'package:flutterpos/controllers/home_controller.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
 import 'package:flutterpos/models/bank_model.dart';
@@ -129,11 +128,9 @@ class CashflowController extends GetxController
     }
   }
 
-
   clearInputs() {
     textEditingControllerName.clear();
     textEditingControllerAmount.clear();
-    Get.find<CategoryController>().selectedCategory.value = null;
   }
 
   getCashFlowTransactions() {}

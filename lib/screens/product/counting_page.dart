@@ -27,6 +27,7 @@ class CountingPage extends StatelessWidget {
 
   ProductController productController = Get.find<ProductController>();
   ShopController shopController = Get.find<ShopController>();
+  AuthController authController = Get.find<AuthController>();
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +38,8 @@ class CountingPage extends StatelessWidget {
         centerTitle: false,
         elevation: 0.3,
         titleSpacing: 0.0,
-        leading: Get.find<AuthController>().usertype.value == "attendant"&&MediaQuery.of(context).size.width>600
+        leading: Get.find<AuthController>().usertype.value == "attendant" &&
+                MediaQuery.of(context).size.width > 600
             ? Container()
             : IconButton(
                 onPressed: () {
@@ -293,14 +295,15 @@ class CountingPage extends StatelessWidget {
                   Expanded(
                     child: searchTextField(),
                   ),
-                  IconButton(
-                      onPressed: () async {
-                        productController.scanQR(
-                            shopId: "${shopController.currentShop.value!.id}",
-                            type: "count",
-                            context: context);
-                      },
-                      icon: Icon(Icons.qr_code))
+                  if (authController.usertype == "admin")
+                    IconButton(
+                        onPressed: () async {
+                          productController.scanQR(
+                              shopId: "${shopController.currentShop.value!.id}",
+                              type: "count",
+                              context: context);
+                        },
+                        icon: Icon(Icons.qr_code))
                 ],
               ),
             ),
@@ -316,7 +319,7 @@ class CountingPage extends StatelessWidget {
                 ],
               ),
             ),
-            if (Get.find<AuthController>().currentUser.value != null)
+            if (Get.find<AuthController>().currentUser.value != null&& authController.usertype=="admin")
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Row(
@@ -379,8 +382,10 @@ class CountingPage extends StatelessWidget {
                   Constants().sortOrderCaunt.length,
                   (index) => SimpleDialogOption(
                         onPressed: () {
-                          productController.selectedSortOrderCount.value = Constants().sortOrderCaunt.elementAt(index);
-                          productController.selectedSortOrderCountSearch.value = Constants().sortOrderCauntList.elementAt(index);
+                          productController.selectedSortOrderCount.value =
+                              Constants().sortOrderCaunt.elementAt(index);
+                          productController.selectedSortOrderCountSearch.value =
+                              Constants().sortOrderCauntList.elementAt(index);
                           productController.getProductsByCount(
                               "${shopController.currentShop.value?.id}",
                               productController

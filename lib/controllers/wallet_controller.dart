@@ -25,7 +25,7 @@ class WalletController extends GetxController with GetTickerProviderStateMixin {
     super.onInit();
   }
 
-  void save(uid, context, page) async {
+  void save(uid, context, page, size) async {
     if (amountController.text == "") {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text("Please enter a valid amount")));
@@ -46,7 +46,7 @@ class WalletController extends GetxController with GetTickerProviderStateMixin {
           amountController.text = "";
           await Get.find<CustomerController>().getCustomerById(uid);
           if (page != null) {
-            if (page == "small") {
+            if (size == "small") {
               Get.back();
             } else {
               Get.find<HomeController>().selectedWidget.value = CreateSale();
@@ -55,7 +55,6 @@ class WalletController extends GetxController with GetTickerProviderStateMixin {
 
           await getWallet(uid, "deposit");
         }
-
       } catch (e) {
         print(e);
         Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
@@ -67,6 +66,7 @@ class WalletController extends GetxController with GetTickerProviderStateMixin {
     try {
       gettingWalletLoad.value = true;
       var response = await Wallet().getWallet(uid, type);
+      print("response$response}");
 
       if (response != null) {
         List fetchedData = response;

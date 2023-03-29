@@ -18,8 +18,17 @@ class Purchases {
   }
 
   getPurchaseOrderItems({required id}) async {
-    var response = await DbBase()
-        .databaseRequest(purchases + "purchaseditems/${id}", DbBase().getRequestType);
+    var response = await DbBase().databaseRequest(
+        purchases + "purchaseditems/${id}", DbBase().getRequestType);
     return jsonDecode(response);
+  }
+
+  returnOrderToSupplier(uid, body) async {
+    var response = await DbBase().databaseRequest(
+        purchases + "return/${uid}", DbBase().patchRequestType,
+        body: body);
+
+    var data = jsonDecode(response);
+    return data;
   }
 }

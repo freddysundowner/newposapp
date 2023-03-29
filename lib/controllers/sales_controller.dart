@@ -161,16 +161,14 @@ class SalesController extends GetxController
                       if (MediaQuery.of(context).size.width > 600) {
                         Get.find<HomeController>().selectedWidget.value =
                             WalletPage(
-                                title: selectedCustomer.value!.fullName,
-                                uid: selectedCustomer.value!.id,
-                                page: "makesale",
-                                phone: selectedCustomer.value!.phoneNumber);
+                          customerModel: selectedCustomer.value!,
+                          page: "makesale",
+                        );
                       } else {
                         Get.to(() => WalletPage(
-                            title: selectedCustomer.value!.fullName,
-                            uid: selectedCustomer.value!.id,
-                            page: "makesale",
-                            phone: selectedCustomer.value!.phoneNumber));
+                              customerModel: selectedCustomer.value!,
+                              page: "makesale",
+                            ));
                       }
                     },
                     child: Text(

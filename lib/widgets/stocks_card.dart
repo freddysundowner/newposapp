@@ -1,6 +1,8 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 
 import 'package:flutter/material.dart';
+import 'package:flutterpos/controllers/AuthController.dart';
+import 'package:flutterpos/controllers/attendant_controller.dart';
 import 'package:flutterpos/controllers/purchase_controller.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
 import 'package:flutterpos/models/supply_order_model.dart';
@@ -115,8 +117,8 @@ Widget stockCard(
 }
 
 showProductModal(context, SupplyOrderModel supplyOrderModel, type) {
-  SupplierController supplierController = Get.find<SupplierController>();
-  ShopController shopController = Get.find<ShopController>();
+  AuthController authController = Get.find<AuthController>();
+  AttendantController attendantController = Get.find<AttendantController>();
   return showModalBottomSheet<void>(
       context: context,
       builder: (BuildContext context) {
@@ -144,14 +146,17 @@ showProductModal(context, SupplyOrderModel supplyOrderModel, type) {
                     }
                   },
                 ),
-                ListTile(
-                  title: Text("Delete"),
-                  leading: Icon(Icons.delete, color: Colors.red),
-                  onTap: () {
-                    Get.back();
-                    deleteDialog(context: context, onPressed: () {});
-                  },
-                ),
+                if (authController.usertype == "admin" ||
+                    (authController.usertype == "attendant" &&
+                        attendantController.checkRole("edit_entries")))
+                  ListTile(
+                    title: Text("Delete"),
+                    leading: Icon(Icons.delete, color: Colors.red),
+                    onTap: () {
+                      Get.back();
+                      deleteDialog(context: context, onPressed: () {});
+                    },
+                  ),
               ],
             ));
       });
@@ -159,6 +164,7 @@ showProductModal(context, SupplyOrderModel supplyOrderModel, type) {
 
 showQuantityDialog(context, SupplyOrderModel supplyOrderModel) {
   PurchaseController purchaseController = Get.find<PurchaseController>();
+  ShopController shopController = Get.find<ShopController>();
   return showDialog(
       context: context,
       builder: (context) {
@@ -196,15 +202,19 @@ showQuantityDialog(context, SupplyOrderModel supplyOrderModel) {
                     TextButton(
                       onPressed: () {
                         Navigator.pop(context);
-                        if (purchaseController
-                                .textEditingControllerAmount.text.isEmpty ||
+                        if (purchaseController.textEditingControllerAmount.text.isEmpty ||
                             int.parse(purchaseController
-                                    .textEditingControllerAmount.text) >
-                                supplyOrderModel.quantity!) {
+                                    .textEditingControllerAmount.text) > supplyOrderModel.quantity!) {
                           showSnackBar(
                               message: "Enter a valid amount",
                               color: Colors.redAccent,
                               context: context);
+                        } else {
+                          Get.find<SupplierController>().returnOrderToSupplier(
+                              supplyOrderModel.id,
+                              purchaseController.textEditingControllerAmount.text,
+                              shopController.currentShop.value!.id!,
+                              context);
                         }
                       },
                       child: Text(

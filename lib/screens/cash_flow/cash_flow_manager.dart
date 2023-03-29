@@ -63,21 +63,26 @@ class CashFlowManager extends StatelessWidget {
         largeScreen: Scaffold(
           backgroundColor: Colors.white,
           appBar: appBar(context),
-          body: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(child: cashInHandWidget(context, "large")),
-              SizedBox(height: 20),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 15),
-                child: cashFlowCategory(context),
-              ),
-              SizedBox(height: 20),
-              Container(
-                  margin: EdgeInsets.symmetric(horizontal: 25),
-                  width: double.infinity,
-                  child: dataTable()),
-            ],
+          body: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 15.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(child: cashInHandWidget(context, "large")),
+                SizedBox(height: 20),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 15),
+                  child: cashFlowCategory(context),
+                ),
+                SizedBox(height: 20),
+                Container(
+                    margin: EdgeInsets.symmetric(horizontal: 25),
+                    width: double.infinity,
+                    child: dataTable()),
+                SizedBox(height: 20),
+                Center(child: cashTotals("large")),
+              ],
+            ),
           ),
         ),
         smallScreen: RefreshIndicator(
@@ -104,47 +109,52 @@ class CashFlowManager extends StatelessWidget {
                   height: kToolbarHeight,
                   padding: EdgeInsets.all(10),
                   color: Colors.white,
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        children: [
-                          Text("Total CashIn"),
-                          Obx(() {
-                            return cashFlowController
-                                    .loadingCashflowSummry.value
-                                ? cashFlowloadingShimmer()
-                                : Text(
-                                    "KES ${cashFlowController.cashflowSummary.value?.totalcashin ?? 0}",
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 12));
-                          })
-                        ],
-                      ),
-                      Column(
-                        children: [
-                          Text("Total CashOut"),
-                          Obx(() {
-                            return cashFlowController
-                                    .loadingCashflowSummry.value
-                                ? cashFlowloadingShimmer()
-                                : Text(
-                                    "KES ${cashFlowController.cashflowSummary.value?.totalcashout ?? 0}",
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 12));
-                          })
-                        ],
-                      )
-                    ],
-                  ),
+                  child: cashTotals("small"),
                 ),
               )),
         ));
+  }
+
+  Widget cashTotals(String size) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: size == "large"
+          ? MainAxisAlignment.center
+          : MainAxisAlignment.spaceBetween,
+      children: [
+        Column(
+          children: [
+            Text("Total CashIn"),
+            Obx(() {
+              return cashFlowController.loadingCashflowSummry.value
+                  ? cashFlowloadingShimmer()
+                  : Text(
+                      "KES ${cashFlowController.cashflowSummary.value?.totalcashin ?? 0}",
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12));
+            })
+          ],
+        ),
+        if (size == "large") Spacer(),
+        Column(
+          children: [
+            Text("Total CashOut"),
+            Obx(() {
+              return cashFlowController.loadingCashflowSummry.value
+                  ? cashFlowloadingShimmer()
+                  : Text(
+                      "KES ${cashFlowController.cashflowSummary.value?.totalcashout ?? 0}",
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12));
+            })
+          ],
+        )
+      ],
+    );
   }
 
   Widget cashInHandWidget(context, type) {

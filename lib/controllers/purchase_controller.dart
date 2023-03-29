@@ -68,6 +68,7 @@ class PurchaseController extends GetxController {
           grandTotal.value = 0;
           selectedSupplier.value = null;
           textEditingControllerAmount.text = "0";
+          getPurchase(shopId: shopId);
           if (screen == "admin") {
             if (MediaQuery.of(context).size.width > 600) {
               Get.find<HomeController>().selectedWidget.value = ViewPurchases();
@@ -106,7 +107,8 @@ class PurchaseController extends GetxController {
       var response = await Purchases().getPurchaseOrderItems(id: id);
       if (response["status"] == true) {
         List fetchedResponse = response["body"];
-        List<SupplyOrderModel> supply = fetchedResponse.map((e) => SupplyOrderModel.fromJson(e)).toList();
+        List<SupplyOrderModel> supply =
+            fetchedResponse.map((e) => SupplyOrderModel.fromJson(e)).toList();
         purchaseOrderItems.assignAll(supply);
       } else {
         purchaseOrderItems.value = RxList([]);

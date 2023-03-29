@@ -38,10 +38,9 @@ Widget customerTable({required customers, required context, required type}) {
                   onTap: () {
                     Get.find<HomeController>().selectedWidget.value =
                         CustomerInfoPage(
-                            id: customerModel.id,
+                          customerModel: customerModel,
                             user: type,
-                            name: customerModel.fullName,
-                            phone: customerModel.fullName);
+                           );
                   },
                   child: Align(
                     child: Center(

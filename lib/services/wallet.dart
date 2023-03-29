@@ -5,7 +5,6 @@ import 'client.dart';
 
 class Wallet {
   createWallet(Map<String, dynamic> body, uid) async {
-
     var response = await DbBase().databaseRequest(
         "${customerDeposit}" + uid, DbBase().putRequestType,
         body: body);
@@ -13,12 +12,13 @@ class Wallet {
     return jsonDecode(response);
   }
 
-  getWallet(uid,type) async {
+  getWallet(uid, type) async {
     var response = await DbBase().databaseRequest(
-        "${customerTransaction}"+ uid, DbBase().getRequestType,body: {"type":type});
+        "${customerTransaction}" + uid, DbBase().getRequestType,
+        body: {"type": type});
+
     return jsonDecode(response);
   }
-
 
   updateWallet(uid, body) async {
     var response = await DbBase()
@@ -32,5 +32,4 @@ class Wallet {
         .databaseRequest(wallet + uid, DbBase().deleteRequestType, body: body);
     return jsonDecode(response);
   }
-
 }

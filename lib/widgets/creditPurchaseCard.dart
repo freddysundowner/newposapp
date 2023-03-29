@@ -1,19 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:flutterpos/controllers/home_controller.dart';
-import 'package:flutterpos/models/customer_model.dart';
 import 'package:flutterpos/models/sales_model.dart';
-import 'package:flutterpos/screens/stock/purchase_order_item.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 import '../controllers/CustomerController.dart';
 import '../controllers/sales_controller.dart';
-import '../screens/cash_flow/payment_history.dart';
+import '../models/stock_in_credit.dart';
 
-Widget CreditHistoryCard(context, SalesModel salesBody,CustomerModel customerModel) {
+Widget CreditPurchaseHistoryCard(context, StockInCredit salesBody) {
   return InkWell(
     onTap: () {
-      showBottomSheet(context, salesBody,customerModel);
+      showBottomSheet(context, salesBody);
     },
     child: Container(
         margin: EdgeInsets.all(4),
@@ -30,11 +27,11 @@ Widget CreditHistoryCard(context, SalesModel salesBody,CustomerModel customerMod
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("#${salesBody.receiptNumber}"),
+                Text("#${salesBody.recietNumber}"),
                 Text("Date: ${DateFormat().format(salesBody.createdAt!)}"),
-                Text("Quantity: ${salesBody.quantity}"),
+                Text("Quantity: ${salesBody.balance}"),
                 Text(
-                  "Due: ${salesBody.creditTotal}",
+                  "Due: ${salesBody.total}",
                   style: TextStyle(color: Colors.red),
                 ),
               ],
@@ -50,7 +47,7 @@ Widget CreditHistoryCard(context, SalesModel salesBody,CustomerModel customerMod
   );
 }
 
-showBottomSheet(BuildContext context, SalesModel salesBody,CustomerModel customerModel,) {
+showBottomSheet(BuildContext context, StockInCredit salesBody) {
   SalesController salesController = Get.find<SalesController>();
   CustomerController customersController = Get.find<CustomerController>();
   return showModalBottomSheet<void>(
@@ -70,23 +67,17 @@ showBottomSheet(BuildContext context, SalesModel salesBody,CustomerModel custome
                 ListTile(
                   leading: Icon(Icons.list),
                   onTap: () {
-                    Navigator.pop(context);
 
-                    if (MediaQuery.of(context).size.width > 600) {
-                      Get.find<HomeController>().selectedWidget.value =
-                          PurchaseOrderItems(id: salesBody.id);
-                    } else {
-                      Get.to(() => PurchaseOrderItems(id: salesBody.id));
-                    }
+                    Navigator.pop(context);
                   },
                   title: Text('View Purchases'),
                 ),
-                if (salesBody.creditTotal! > 0)
+                if (salesBody.total! > 0)
                   ListTile(
                     leading: Icon(Icons.payment),
                     onTap: () {
                       Navigator.pop(context);
-                      showAmountDialog(context, salesBody);
+                      // showAmountDialog(context, salesBody);
                     },
                     title: Text('Pay'),
                   ),
@@ -94,12 +85,6 @@ showBottomSheet(BuildContext context, SalesModel salesBody,CustomerModel custome
                   leading: Icon(Icons.wallet),
                   onTap: () {
                     Navigator.pop(context);
-                    if (MediaQuery.of(context).size.width > 600) {
-                      Get.find<HomeController>().selectedWidget.value =
-                          PaymentHistory(customerModel: customerModel,);
-                    } else {
-                      Get.to(() => PaymentHistory(customerModel: customerModel,));
-                    }
                   },
                   title: Text('Payment History'),
                 ),

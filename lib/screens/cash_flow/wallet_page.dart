@@ -14,25 +14,22 @@ import 'package:intl/intl.dart';
 
 import '../../controllers/CustomerController.dart';
 import '../../controllers/wallet_controller.dart';
+import '../../models/customer_model.dart';
 import '../../utils/colors.dart';
 import 'components/deposit_dialog.dart';
 import 'components/wallet_card.dart';
 
 class WalletPage extends StatelessWidget {
-  final title;
-  final uid;
-  final phone;
+  final CustomerModel customerModel;
   final String? page;
 
   WalletPage(
       {Key? key,
-      required this.title,
-      required this.uid,
-      required this.phone,
+       required this.customerModel,
       this.page})
       : super(key: key) {
-    customersController.getCustomerById(uid);
-    walletController.getWallet(uid, "deposit");
+    customersController.getCustomerById(customerModel.id);
+    walletController.getWallet(customerModel.id, "deposit");
   }
 
   WalletController walletController = Get.find<WalletController>();
@@ -86,9 +83,9 @@ class WalletPage extends StatelessWidget {
                 indicatorWeight: 3,
                 onTap: (index) {
                   if (index == 0) {
-                    walletController.getWallet(uid, "deposit");
+                    walletController.getWallet(customerModel.id, "deposit");
                   } else {
-                    walletController.getWallet(uid, "usage");
+                    walletController.getWallet(customerModel.id, "usage");
                   }
                 },
                 tabs: [
@@ -104,11 +101,11 @@ class WalletPage extends StatelessWidget {
                 controller: walletController.tabController,
                 children: [
                   DepositHistory(
-                    uid: uid,
+                    uid: customerModel.id,
                     type: "deposit",
                   ),
                   DepositHistory(
-                    uid: uid,
+                    uid: customerModel.id,
                     type: "usage",
                   ),
                 ],
@@ -152,9 +149,10 @@ class WalletPage extends StatelessWidget {
             onTap: () {
               showDepositDialog(
                   context: context,
-                  uid: uid,
+                  uid: customerModel.id,
                   title: "Add a deposit",
-                  page: MediaQuery.of(context).size.width <= 600
+                  page: page,
+                  size: MediaQuery.of(context).size.width <= 600
                       ? "small"
                       : "large");
             },
@@ -187,7 +185,7 @@ class WalletPage extends StatelessWidget {
             } else if (type == "large") {
               Get.find<HomeController>().selectedWidget.value =
                   CustomerInfoPage(
-                      id: uid, user: "customer", name: title, phone: phone);
+                      user: "customer",customerModel: customerModel,);
             } else {
               Get.back();
             }
@@ -197,7 +195,7 @@ class WalletPage extends StatelessWidget {
             color: type == "small" ? Colors.white : Colors.black,
           )),
       title: Text(
-        "${title}".capitalize!,
+        "${customerModel.fullName}".capitalize!,
         style: TextStyle(color: type == "small" ? Colors.white : Colors.black),
       ),
       centerTitle: false,
@@ -205,9 +203,10 @@ class WalletPage extends StatelessWidget {
         if (Get.find<AuthController>().usertype == "admin")
           IconButton(
               onPressed: () {
-                showModalSheet(context, title, uid);
+                showModalSheet(context, customerModel.fullName, customerModel.id);
               },
-              icon: Icon(Icons.download))
+              icon: Icon(Icons.download,
+                  color: type == "small" ? Colors.white : Colors.black))
       ],
     );
   }
