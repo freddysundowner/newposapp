@@ -51,18 +51,14 @@ class Products {
 
   getProductCountInShop(String shopId, String type, startDate, endDate) async {
     var response = await DbBase().databaseRequest(
-        type == "all"
-            ? product + "shop/${shopId}"
-            : type == "countedtoday"
-                ? product + "countedtoday/${shopId}/${startDate}/${endDate}"
-                : type == "notcountedtoday"
-                    ? product + "notcountedtoday/${shopId}/${startDate}"
-                    : type == "nevercounted"
-                        ? product + "nevercounted/${shopId}"
-                        : "",
+      product + "filter?shopid=${shopId}&type=${type}&startDate=${startDate}&endDate=${endDate}",
         DbBase().getRequestType);
 
+
+
+
     var data = jsonDecode(response);
+    print(data);
     return data;
   }
 

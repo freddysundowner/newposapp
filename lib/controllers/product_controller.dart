@@ -12,6 +12,7 @@ import 'package:flutterpos/services/category.dart';
 import 'package:flutterpos/utils/colors.dart';
 import 'package:flutterpos/widgets/snackBars.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 import '../models/product_category_model.dart';
 import '../models/product_count_model.dart';
@@ -373,13 +374,20 @@ class ProductController extends GetxController {
   getProductsByCount(String shopId, String type) async {
     try {
       getProductCountLoad.value = true;
-      var startDate = convertTimeToMilliSeconds()["startDate"];
-      var endDate = convertTimeToMilliSeconds()["endDate"];
+      var now = new DateTime.now();
+      var tomm = now.add(new Duration(days: 1));
       var response = await Products()
-          .getProductCountInShop(shopId, type, startDate, endDate);
+          .getProductCountInShop(shopId, type,
+          DateFormat("yyyy-MM-dd").format(now),
+          DateFormat("yyyy-MM-dd").format(tomm),
+
+
+      );
+
+
       products.clear();
       if (response != null) {
-        List fetchedProducts = response["body"];
+        List fetchedProducts = response["products"];
         List<ProductModel> listProducts =
             fetchedProducts.map((e) => ProductModel.fromJson(e)).toList();
         products.assignAll(listProducts);
@@ -388,6 +396,7 @@ class ProductController extends GetxController {
       }
       getProductCountLoad.value = false;
     } catch (e) {
+      print(e);
       getProductCountLoad.value = false;
     }
   }
@@ -416,7 +425,9 @@ class ProductController extends GetxController {
             : Get.find<AttendantController>().attendant.value?.id,
         "product": product.id,
       };
-      await Products().updateProductCount(body);
+      print(body);
+      var res=await Products().updateProductCount(body);
+      print(res);
     } catch (e) {
       print(e);
     }

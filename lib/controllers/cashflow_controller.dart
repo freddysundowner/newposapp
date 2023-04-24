@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+import 'package:flutterpos/controllers/AuthController.dart';
 import 'package:flutterpos/controllers/home_controller.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
 import 'package:flutterpos/models/bank_model.dart';
@@ -158,9 +159,12 @@ class CashflowController extends GetxController
         "type": type,
         "name": textEditingControllerCategory.text,
         "shop": shopId,
+        "admin":Get.find<AuthController>().currentUser.value!.id
       };
+      print(body);
 
       var response = await Transactions().createCategory(body: body);
+      print(response);
       if (response["status"] == true) {
         textEditingControllerCategory.clear();
         getCategory(type, shopId);

@@ -28,9 +28,9 @@ class Sales {
     return data;
   }
 
-  getShopSales(shopId) async {
+  getShopSales(shopId,attendantId) async {
     var response = await DbBase()
-        .databaseRequest(sales + "allsales/" + shopId, DbBase().getRequestType);
+        .databaseRequest(sales + "allsales/$shopId?attendant=$attendantId", DbBase().getRequestType);
     var data = jsonDecode(response);
     return data;
   }

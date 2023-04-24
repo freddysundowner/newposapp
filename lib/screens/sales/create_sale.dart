@@ -103,15 +103,21 @@ class CreateSale extends StatelessWidget {
                               InkWell(
                                 splashColor: Colors.transparent,
                                 onTap: () {
-                                  if (salesController.selectedList.length == 0) {
+                                  if (salesController.selectedList.length ==
+                                      0) {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                         new SnackBar(
                                             content: Text(
                                                 "Please select products to sell")));
                                   } else {
-                                    salesController.selectedCustomer.value=null;
-                                    salesController.selectedPaymentMethod.value="Cash";
-                                    customersController.getCustomersInShop(createShopController.currentShop.value?.id, "all");
+                                    salesController.selectedCustomer.value =
+                                        null;
+                                    salesController
+                                        .selectedPaymentMethod.value = "Cash";
+                                    customersController.getCustomersInShop(
+                                        createShopController
+                                            .currentShop.value?.id,
+                                        "all");
                                     confirmPayment(context, "large");
                                   }
                                 },
@@ -379,9 +385,13 @@ class CreateSale extends StatelessWidget {
                                           content: Text(
                                               "Please select products to sell")));
                                 } else {
-                                  salesController.selectedCustomer.value=null;
-                                  salesController.selectedPaymentMethod.value="Cash";
-                                  customersController.getCustomersInShop(createShopController.currentShop.value?.id, "all");
+                                  salesController.selectedCustomer.value = null;
+                                  salesController.selectedPaymentMethod.value =
+                                      "Cash";
+                                  customersController.getCustomersInShop(
+                                      createShopController
+                                          .currentShop.value?.id,
+                                      "all");
                                   confirmPayment(context, "small");
                                 }
                               },
@@ -706,8 +716,11 @@ class CreateSale extends StatelessWidget {
                                 Navigator.pop(context);
                                 salesController.saveSale(
                                     screen: page == null ? "admin" : page,
-                                    attendantsUID: authController
-                                        .currentUser.value?.attendantId,
+                                    attendantsUID: page == "allSales"
+                                        ? attendantController
+                                            .attendant.value!.id
+                                        : authController
+                                            .currentUser.value?.attendantId,
                                     shopUID: createShopController
                                         .currentShop.value?.id,
                                     context: context);

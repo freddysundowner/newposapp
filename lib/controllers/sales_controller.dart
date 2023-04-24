@@ -207,7 +207,7 @@ class SalesController extends GetxController
       var sale = {
         "quantity": selectedList.length,
         "total": grandTotal.value,
-        "attendantid": attendantId,
+        "attendantId": attendantId,
         "paymentMethod": selectedPaymentMethod.value,
         "totaldiscount": totaldiscount,
         "shop": shopId,
@@ -216,6 +216,9 @@ class SalesController extends GetxController
           "customerId": selectedCustomer.value!.id,
         "duedate": type == "noncredit" ? "" : dueDate.value
       };
+
+      print("Body${sale}");
+
       var products = selectedList.map((element) => element).toList();
       print("called");
       var response = await Sales().createSales({
@@ -435,11 +438,12 @@ class SalesController extends GetxController
     }
   }
 
-  getSalesByShop({required id}) async {
+  getSalesByShop({required id, String? attendantId}) async {
     try {
       sales.clear();
       salesByShopLoad.value = true;
-      var response = await Sales().getShopSales(id);
+      var response = await Sales().getShopSales(id, attendantId);
+      print("response is$response}");
       if (response["status"] == true) {
         List data = response["body"];
         List<SalesModel> saleData =

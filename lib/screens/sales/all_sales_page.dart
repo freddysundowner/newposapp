@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutterpos/controllers/AuthController.dart';
+import 'package:flutterpos/controllers/attendant_controller.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
 import 'package:flutterpos/models/sales_model.dart';
 import 'package:flutterpos/responsive/responsiveness.dart';
@@ -24,16 +25,22 @@ class AllSalesPage extends StatelessWidget {
   final page;
 
   AllSalesPage({Key? key, required this.page}) : super(key: key) {
-    salesController.getSalesByShop(id: shopController.currentShop.value?.id);
+    salesController.getSalesByShop(
+        id: shopController.currentShop.value?.id,
+        attendantId: page == "AtedantLanding"
+            ? attendantController.attendant.value!.id
+            : "");
   }
 
   SalesController salesController = Get.find<SalesController>();
   ShopController shopController = Get.find<ShopController>();
   HomeController homeController = Get.find<HomeController>();
   AuthController authController = Get.find<AuthController>();
+  AttendantController attendantController = Get.find<AttendantController>();
 
   @override
   Widget build(BuildContext context) {
+    print(page);
     return WillPopScope(
       onWillPop: () async {
         salesController.getSalesByDates(
@@ -130,7 +137,6 @@ class AllSalesPage extends StatelessWidget {
                         } else {
                           Get.back();
                         }
-
                       },
                       icon: Icon(
                         Icons.arrow_back_ios,
@@ -138,22 +144,22 @@ class AllSalesPage extends StatelessWidget {
                       ),
                     ),
               actions: [
-                if (authController.usertype=="admin")
-                IconButton(
-                    onPressed: () {
-                      SalesPdf(
-                          shop: shopController.currentShop.value!.name!,
-                          sales: salesController.sales,
-                          type: salesController.salesInitialIndex.value == 0
-                              ? "All"
-                              : salesController.salesInitialIndex.value == 1
-                                  ? "Credit"
-                                  : "Today");
-                    },
-                    icon: Icon(
-                      Icons.download_rounded,
-                      color: Colors.black,
-                    ))
+                if (authController.usertype == "admin")
+                  IconButton(
+                      onPressed: () {
+                        SalesPdf(
+                            shop: shopController.currentShop.value!.name!,
+                            sales: salesController.sales,
+                            type: salesController.salesInitialIndex.value == 0
+                                ? "All"
+                                : salesController.salesInitialIndex.value == 1
+                                    ? "Credit"
+                                    : "Today");
+                      },
+                      icon: Icon(
+                        Icons.download_rounded,
+                        color: Colors.black,
+                      ))
               ],
               bottom: TabBar(
                 indicatorColor: AppColors.mainColor,
@@ -163,7 +169,10 @@ class AllSalesPage extends StatelessWidget {
                   salesController.salesInitialIndex.value = value;
                   if (value == 0) {
                     salesController.getSalesByShop(
-                        id: shopController.currentShop.value?.id);
+                        id: shopController.currentShop.value?.id,
+                        attendantId: page == "AtedantLanding"
+                            ? attendantController.attendant.value!.id
+                            : "");
                   } else if (value == 1) {
                     salesController.getSalesOnCredit(
                       shopId: shopController.currentShop.value?.id,
