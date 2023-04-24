@@ -9,6 +9,7 @@ import 'package:flutterpos/screens/stock/badstocks.dart';
 import 'package:flutterpos/utils/helper.dart';
 import 'package:flutterpos/widgets/pdf/sales_pdf.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 import '../../controllers/home_controller.dart';
 import '../../controllers/sales_controller.dart';
@@ -29,7 +30,9 @@ class AllSalesPage extends StatelessWidget {
         id: shopController.currentShop.value?.id,
         attendantId: page == "AtedantLanding"
             ? attendantController.attendant.value!.id
-            : "");
+            : "",
+        onCredit: "",
+        startingDate: "");
   }
 
   SalesController salesController = Get.find<SalesController>();
@@ -172,17 +175,37 @@ class AllSalesPage extends StatelessWidget {
                         id: shopController.currentShop.value?.id,
                         attendantId: page == "AtedantLanding"
                             ? attendantController.attendant.value!.id
-                            : "");
+                            : "",
+                        onCredit: "",
+                        startingDate: "");
                   } else if (value == 1) {
-                    salesController.getSalesOnCredit(
-                      shopId: shopController.currentShop.value?.id,
-                    );
+                    salesController.getSalesByShop(
+                        id: shopController.currentShop.value?.id,
+                        attendantId: page == "AtedantLanding"
+                            ? attendantController.attendant.value!.id
+                            : "",
+                        onCredit: true,
+                        startingDate: "");
                   } else {
+                    salesController.getSalesByShop(
+                        id: shopController.currentShop.value?.id,
+                        attendantId: page == "AtedantLanding"
+                            ? attendantController.attendant.value!.id
+                            : "",
+                        onCredit: "",
+                        startingDate:
+                            "${DateFormat("yyyy-MM-dd").format(DateTime.now())}");
+
+
                     salesController.getSalesByDates(
                         shopId: shopController.currentShop.value?.id,
                         startingDate: DateTime.now(),
                         endingDate: DateTime.now(),
-                        type: "notcashflow");
+                        type: "notcashflow",
+                        attendantId: page == "AtedantLanding"
+                    ? attendantController.attendant.value!.id
+                        : ""
+                    );
                   }
                 },
                 tabs: [
@@ -200,8 +223,8 @@ class AllSalesPage extends StatelessWidget {
                   salesController.salesInitialIndex.value == 0
                       ? AllSales()
                       : salesController.salesInitialIndex.value == 1
-                          ? SalesOnCredit()
-                          : TodaySales()
+                          ? AllSales()
+                          : AllSales()
                 ],
               ),
             ),
@@ -281,154 +304,151 @@ class AllSales extends StatelessWidget {
   }
 }
 
-class TodaySales extends StatelessWidget {
-  SalesController salesController = Get.find<SalesController>();
-  ShopController createShopController = Get.find<ShopController>();
-
-  TodaySales({Key? key}) : super(key: key) {
-    salesController.getSalesByDates(
-        shopId: createShopController.currentShop.value?.id,
-        startingDate: DateTime.now(),
-        endingDate: DateTime.now(),
-        type: "notcashflow");
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Obx(() {
-      return salesController.todaySalesLoad.value
-          ? Center(
-              child: CircularProgressIndicator(),
-            )
-          : salesController.sales.length == 0
-              ? Center(
-                  child: normalText(
-                      title: "No sales made today",
-                      color: Colors.black,
-                      size: 14.0),
-                )
-              : MediaQuery.of(context).size.width > 600
-                  ? SingleChildScrollView(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          salesTable(context, "sales"),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          Align(
-                            alignment: Alignment.bottomRight,
-                            child: Container(
-                              width: 200,
-                              padding: EdgeInsets.only(right: 10),
-                              child: Column(
-                                children: [
-                                  Row(
-                                    children: [
-                                      Text("Total Sales:"),
-                                      SizedBox(
-                                        width: 10,
-                                      ),
-                                      Text(
-                                          "${createShopController.currentShop.value?.currency} ${salesController.totalSales()}"),
-                                    ],
-                                  ),
-                                  Divider(
-                                    thickness: 2,
-                                    color: Colors.black,
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: 60),
-                        ],
-                      ),
-                    )
-                  : ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: salesController.sales.length,
-                      itemBuilder: (context, index) {
-                        SalesModel salesModel =
-                            salesController.sales.elementAt(index);
-                        return soldCard(
-                            salesModel: salesModel, context: context);
-                      });
-    });
-  }
-}
-
-class SalesOnCredit extends StatelessWidget {
-  SalesController salesController = Get.find<SalesController>();
-  ShopController shopController = Get.find<ShopController>();
-
-  SalesOnCredit({Key? key}) : super(key: key) {
-    salesController.getSalesOnCredit(
-      shopId: shopController.currentShop.value?.id,
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Obx(() {
-      return salesController.salesOnCreditLoad.value
-          ? Center(
-              child: CircularProgressIndicator(),
-            )
-          : salesController.sales.length == 0
-              ? Center(
-                  child: normalText(
-                      title: "No sales made on credit",
-                      color: Colors.black,
-                      size: 14.0),
-                )
-              : MediaQuery.of(context).size.width > 600
-                  ? SingleChildScrollView(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          salesTable(context, "sales"),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          Align(
-                            alignment: Alignment.bottomRight,
-                            child: Container(
-                              width: 200,
-                              padding: EdgeInsets.only(right: 10),
-                              child: Column(
-                                children: [
-                                  Row(
-                                    children: [
-                                      Text("Total Sales:"),
-                                      SizedBox(
-                                        width: 10,
-                                      ),
-                                      Text(
-                                          "${shopController.currentShop.value?.currency} ${salesController.totalSales()}"),
-                                    ],
-                                  ),
-                                  Divider(
-                                    thickness: 2,
-                                    color: Colors.black,
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: 60),
-                        ],
-                      ),
-                    )
-                  : ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: salesController.sales.length,
-                      itemBuilder: (context, index) {
-                        SalesModel salesModel =
-                            salesController.sales.elementAt(index);
-                        return soldCard(
-                            salesModel: salesModel, context: context);
-                      });
-    });
-  }
-}
+// class TodaySales extends StatelessWidget {
+//   SalesController salesController = Get.find<SalesController>();
+//   ShopController createShopController = Get.find<ShopController>();
+//
+//   TodaySales({Key? key}) : super(key: key) {
+//     salesController.getSalesByDates(
+//         shopId: createShopController.currentShop.value?.id,
+//         startingDate: DateTime.now(),
+//         endingDate: DateTime.now(),
+//         type: "notcashflow");
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Obx(() {
+//       return salesController.todaySalesLoad.value
+//           ? Center(
+//               child: CircularProgressIndicator(),
+//             )
+//           : salesController.sales.length == 0
+//               ? Center(
+//                   child: normalText(
+//                       title: "No sales made today",
+//                       color: Colors.black,
+//                       size: 14.0),
+//                 )
+//               : MediaQuery.of(context).size.width > 600
+//                   ? SingleChildScrollView(
+//                       child: Column(
+//                         crossAxisAlignment: CrossAxisAlignment.start,
+//                         children: [
+//                           salesTable(context, "sales"),
+//                           SizedBox(
+//                             height: 10,
+//                           ),
+//                           Align(
+//                             alignment: Alignment.bottomRight,
+//                             child: Container(
+//                               width: 200,
+//                               padding: EdgeInsets.only(right: 10),
+//                               child: Column(
+//                                 children: [
+//                                   Row(
+//                                     children: [
+//                                       Text("Total Sales:"),
+//                                       SizedBox(
+//                                         width: 10,
+//                                       ),
+//                                       Text(
+//                                           "${createShopController.currentShop.value?.currency} ${salesController.totalSales()}"),
+//                                     ],
+//                                   ),
+//                                   Divider(
+//                                     thickness: 2,
+//                                     color: Colors.black,
+//                                   )
+//                                 ],
+//                               ),
+//                             ),
+//                           ),
+//                           SizedBox(height: 60),
+//                         ],
+//                       ),
+//                     )
+//                   : ListView.builder(
+//                       shrinkWrap: true,
+//                       itemCount: salesController.sales.length,
+//                       itemBuilder: (context, index) {
+//                         SalesModel salesModel =
+//                             salesController.sales.elementAt(index);
+//                         return soldCard(
+//                             salesModel: salesModel, context: context);
+//                       });
+//     });
+//   }
+// }
+//
+// class SalesOnCredit extends StatelessWidget {
+//   SalesController salesController = Get.find<SalesController>();
+//   ShopController shopController = Get.find<ShopController>();
+//
+//   SalesOnCredit({Key? key}) : super(key: key) {
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Obx(() {
+//       return salesController.salesOnCreditLoad.value
+//           ? Center(
+//               child: CircularProgressIndicator(),
+//             )
+//           : salesController.sales.length == 0
+//               ? Center(
+//                   child: normalText(
+//                       title: "No sales made on credit",
+//                       color: Colors.black,
+//                       size: 14.0),
+//                 )
+//               : MediaQuery.of(context).size.width > 600
+//                   ? SingleChildScrollView(
+//                       child: Column(
+//                         crossAxisAlignment: CrossAxisAlignment.start,
+//                         children: [
+//                           salesTable(context, "sales"),
+//                           SizedBox(
+//                             height: 10,
+//                           ),
+//                           Align(
+//                             alignment: Alignment.bottomRight,
+//                             child: Container(
+//                               width: 200,
+//                               padding: EdgeInsets.only(right: 10),
+//                               child: Column(
+//                                 children: [
+//                                   Row(
+//                                     children: [
+//                                       Text("Total Sales:"),
+//                                       SizedBox(
+//                                         width: 10,
+//                                       ),
+//                                       Text(
+//                                           "${shopController.currentShop.value?.currency} ${salesController.totalSales()}"),
+//                                     ],
+//                                   ),
+//                                   Divider(
+//                                     thickness: 2,
+//                                     color: Colors.black,
+//                                   )
+//                                 ],
+//                               ),
+//                             ),
+//                           ),
+//                           SizedBox(height: 60),
+//                         ],
+//                       ),
+//                     )
+//                   : ListView.builder(
+//                       shrinkWrap: true,
+//                       itemCount: salesController.sales.length,
+//                       itemBuilder: (context, index) {
+//                         SalesModel salesModel =
+//                             salesController.sales.elementAt(index);
+//                         return soldCard(
+//                             salesModel: salesModel, context: context);
+//                       });
+//     });
+//   }
+// }

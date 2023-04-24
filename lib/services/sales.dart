@@ -28,19 +28,13 @@ class Sales {
     return data;
   }
 
-  getShopSales(shopId,attendantId) async {
+  getShopSales(shopId,attendantId,onCredit,date) async {
     var response = await DbBase()
-        .databaseRequest(sales + "allsales/$shopId?attendant=$attendantId", DbBase().getRequestType);
+        .databaseRequest(sales + "allsales/$shopId?attendant=$attendantId&oncredit=$onCredit&startdate=$date", DbBase().getRequestType);
     var data = jsonDecode(response);
     return data;
   }
 
-  getSalesOnCredit(shopId) async {
-    var response = await DbBase().databaseRequest(
-        sales + "salesoncredit/${shopId}", DbBase().getRequestType);
-    var data = jsonDecode(response);
-    return data;
-  }
 
   retunSale(id) async {
     var response = await DbBase().databaseRequest(

@@ -9,6 +9,7 @@ import 'package:flutterpos/screens/sales/components/sales_table.dart';
 import 'package:flutterpos/screens/sales/create_sale.dart';
 import 'package:flutterpos/widgets/no_items_found.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 import '../../controllers/AuthController.dart';
 import '../../controllers/sales_controller.dart';
@@ -263,7 +264,8 @@ class HomePage extends StatelessWidget {
                                 salesController.salesInitialIndex.value = 0;
                                 salesController.activeItem.value = "All Sales";
                                 salesController.getSalesByShop(
-                                    id: shopController.currentShop.value?.id);
+                                    id: shopController.currentShop.value?.id,
+                                    onCredit: "");
                                 Get.find<HomeController>()
                                     .selectedWidget
                                     .value = AllSalesPage(page: "homePage");
@@ -431,6 +433,10 @@ class HomePage extends StatelessWidget {
                       InkWell(
                           onTap: () {
                             salesController.salesInitialIndex.value = 0;
+                            salesController.getSalesByShop(
+                                id: shopController.currentShop.value?.id,
+                                onCredit: "",
+                                startingDate: "");
                             Get.to(() => AllSalesPage(
                                   page: "homePage",
                                 ));
@@ -576,11 +582,12 @@ class HomePage extends StatelessWidget {
                 );
               } else {
                 salesController.salesInitialIndex.value = 2;
-                salesController.getSalesByDates(
-                    shopId: shopController.currentShop.value?.id,
-                    startingDate: DateTime.now(),
-                    endingDate: DateTime.now(),
-                    type: "notcashflow");
+                salesController.getSalesByShop(
+                    id: shopController.currentShop.value?.id,
+                    onCredit: "",
+                    startingDate:
+                        "${DateFormat("yyyy-MM-dd").format(DateTime.now())}");
+
                 Get.to(() => AllSalesPage(
                       page: "homePage",
                     ));

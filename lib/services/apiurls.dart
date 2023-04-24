@@ -35,6 +35,9 @@ const roles = BASE_URL + "roles";
 const sales = BASE_URL + "sale/";
 const singleSaleItems = sales + "getSale/";
 
+// badstock
+const badstock = BASE_URL + "badstock/";
+
 //transactions
 const transaction = "${BASE_URL}transaction";
 const credit = BASE_URL + "/credit/";

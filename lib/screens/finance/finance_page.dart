@@ -118,7 +118,7 @@ class FinancePage extends StatelessWidget {
                                 page: "financePage",
                               );
                               salesController.getSalesByShop(
-                                  id: shopController.currentShop.value?.id);
+                                  id: shopController.currentShop.value?.id,onCredit: "");
                             },
                             color: Colors.blue.shade100,
                             icon: Icons.sell_rounded,
@@ -241,7 +241,7 @@ class FinancePage extends StatelessWidget {
                             page: "financePage",
                           ));
                       salesController.getSalesByShop(
-                          id: shopController.currentShop.value?.id);
+                          id: shopController.currentShop.value?.id,onCredit: "");
                     },
                     color: Colors.blue.shade100,
                     icon: Icons.sell_rounded,

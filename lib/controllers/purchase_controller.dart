@@ -68,7 +68,7 @@ class PurchaseController extends GetxController {
           grandTotal.value = 0;
           selectedSupplier.value = null;
           textEditingControllerAmount.text = "0";
-          getPurchase(shopId: shopId);
+          getPurchase(shopId: shopId,attendantId: attendantid);
           if (screen == "admin") {
             if (MediaQuery.of(context).size.width > 600) {
               Get.find<HomeController>().selectedWidget.value = ViewPurchases();
@@ -83,10 +83,11 @@ class PurchaseController extends GetxController {
     }
   }
 
-  getPurchase({required shopId}) async {
+  getPurchase({required shopId,String ?attendantId}) async {
     try {
       getPurchaseLoad.value = true;
-      var response = await Purchases().getPurchase(shopId: shopId);
+      var response = await Purchases().getPurchase(shopId: shopId,attendantId:attendantId);
+      print(response);
       if (response["status"] == true) {
         List fetchedResponse = response["body"];
         List<PurchaseOrder> supply =

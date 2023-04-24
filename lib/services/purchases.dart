@@ -11,9 +11,10 @@ class Purchases {
     return jsonDecode(response);
   }
 
-  getPurchase({required shopId}) async {
+  getPurchase({required shopId, String? attendantId}) async {
     var response = await DbBase().databaseRequest(
-        purchases + "purchase/${shopId}", DbBase().getRequestType);
+        purchases + "purchase?shop=${shopId}&attendant=${attendantId}",
+        DbBase().getRequestType);
     return jsonDecode(response);
   }
 

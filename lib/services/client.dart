@@ -30,7 +30,6 @@ class DbBase {
       }
       request.headers.addAll(headers);
       http.StreamedResponse response = await request.send();
-
       if (response.statusCode == 404) {
         //  AuthAPI().getToken();
       }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutterpos/controllers/attendant_controller.dart';
 import 'package:flutterpos/controllers/home_controller.dart';
 import 'package:flutterpos/controllers/product_controller.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
@@ -630,7 +631,12 @@ class CreatePurchase extends StatelessWidget {
                         Navigator.pop(context);
                         purchaseController.createPurchase(
                             shopId: shopController.currentShop.value!.id,
-                            attendantid: authController.currentUser.value!.id,
+                            attendantid: authController.usertype == "admin"
+                                ? authController.currentUser.value!.id
+                                : Get.find<AttendantController>()
+                                    .attendant
+                                    .value!
+                                    .id,
                             screen: "admin",
                             context: context);
                       },

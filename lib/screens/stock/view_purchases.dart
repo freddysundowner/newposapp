@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutterpos/controllers/AuthController.dart';
+import 'package:flutterpos/controllers/attendant_controller.dart';
 import 'package:flutterpos/controllers/home_controller.dart';
 import 'package:flutterpos/controllers/purchase_controller.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
@@ -21,12 +22,17 @@ import 'create_purchase.dart';
 class ViewPurchases extends StatelessWidget {
   ViewPurchases({Key? key}) : super(key: key) {
     purchaseController.getPurchase(
-        shopId: shopController.currentShop.value?.id);
+      shopId: shopController.currentShop.value?.id,
+      attendantId: attendantController.attendant.value == null
+          ? ""
+          : attendantController.attendant.value?.id,
+    );
   }
 
   ShopController shopController = Get.find<ShopController>();
   PurchaseController purchaseController = Get.find<PurchaseController>();
   AuthController authController = Get.find<AuthController>();
+  AttendantController attendantController = Get.find<AttendantController>();
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +67,8 @@ class ViewPurchases extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  majorTitle(title: "Purchases", color: Colors.black, size: 16.0),
+                  majorTitle(
+                      title: "Purchases", color: Colors.black, size: 16.0),
                   minorTitle(
                       title: "${shopController.currentShop.value?.name}",
                       color: Colors.grey)

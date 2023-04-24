@@ -1,6 +1,7 @@
 import 'package:f_datetimerangepicker/f_datetimerangepicker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterpos/controllers/AuthController.dart';
+import 'package:flutterpos/controllers/attendant_controller.dart';
 import 'package:flutterpos/controllers/expense_controller.dart';
 import 'package:flutterpos/controllers/home_controller.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
@@ -25,10 +26,13 @@ class ExpensePage extends StatelessWidget {
     var startDate = converTimeToMonth()["startDate"];
     var endDate = converTimeToMonth()["endDate"];
     expenseController.getExpenseByDate(
-        shopId: "${shopController.currentShop.value?.id}",
-        startingDate: DateTime.parse(startDate),
-        endingDate: DateTime.parse(endDate),
-        type: "notcashflow");
+      shopId: "${shopController.currentShop.value?.id}",
+      startingDate: DateTime.parse(startDate),
+      endingDate: DateTime.parse(endDate),
+      attendant: authController.usertype == "admin"
+          ? ""
+          : Get.find<AttendantController>().attendant.value!.id,
+    );
   }
 
   ExpenseController expenseController = Get.find<ExpenseController>();
@@ -261,10 +265,10 @@ class ExpensePage extends StatelessWidget {
           expenseController.startdate.value = start;
           expenseController.enddate.value = end;
           expenseController.getExpenseByDate(
-              shopId: "${shopController.currentShop.value?.id}",
-              startingDate: expenseController.startdate.value,
-              endingDate: expenseController.enddate.value,
-              type: "notcashflow");
+            shopId: "${shopController.currentShop.value?.id}",
+            startingDate: expenseController.startdate.value,
+            endingDate: expenseController.enddate.value,
+          );
         }).showPicker(context);
   }
 
@@ -349,8 +353,9 @@ class ExpensePage extends StatelessWidget {
                     color: Colors.black,
                     context: context);
               } else {
-                ExpensePdf(shop: shopController.currentShop.value!.name!, expenses: expenseController.expenses);
-
+                ExpensePdf(
+                    shop: shopController.currentShop.value!.name!,
+                    expenses: expenseController.expenses);
               }
             },
             child: Icon(

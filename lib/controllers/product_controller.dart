@@ -6,6 +6,7 @@ import 'package:flutterpos/controllers/attendant_controller.dart';
 import 'package:flutterpos/controllers/home_controller.dart';
 import 'package:flutterpos/controllers/purchase_controller.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
+import 'package:flutterpos/models/badstock.dart';
 import 'package:flutterpos/screens/product/products_page.dart';
 import 'package:flutterpos/screens/stock/stock_page.dart';
 import 'package:flutterpos/services/category.dart';
@@ -19,7 +20,6 @@ import '../models/product_count_model.dart';
 import '../models/product_model.dart';
 import '../screens/sales/all_sales_page.dart';
 import '../services/product.dart';
-import '../utils/dates.dart';
 import '../widgets/loading_dialog.dart';
 
 class ProductController extends GetxController {
@@ -30,6 +30,7 @@ class ProductController extends GetxController {
   RxBool showBadStockWidget = RxBool(false);
   RxBool saveBadstockLoad = RxBool(false);
   Rxn<ProductModel> selectedBadStock = Rxn(null);
+  RxList<BadStock> badstocks = RxList([]);
 
   RxList<ProductCategoryModel> productCategory = RxList([]);
   RxString categoryName = RxString("");
@@ -376,14 +377,12 @@ class ProductController extends GetxController {
       getProductCountLoad.value = true;
       var now = new DateTime.now();
       var tomm = now.add(new Duration(days: 1));
-      var response = await Products()
-          .getProductCountInShop(shopId, type,
-          DateFormat("yyyy-MM-dd").format(now),
-          DateFormat("yyyy-MM-dd").format(tomm),
-
-
+      var response = await Products().getProductCountInShop(
+        shopId,
+        type,
+        DateFormat("yyyy-MM-dd").format(now),
+        DateFormat("yyyy-MM-dd").format(tomm),
       );
-
 
       products.clear();
       if (response != null) {
@@ -426,7 +425,7 @@ class ProductController extends GetxController {
         "product": product.id,
       };
       print(body);
-      var res=await Products().updateProductCount(body);
+      var res = await Products().updateProductCount(body);
       print(res);
     } catch (e) {
       print(e);
@@ -454,16 +453,22 @@ class ProductController extends GetxController {
     }
   }
 
-  saveBadStock({required String shop, required page, required context}) async {
+  saveBadStock(
+      {required String shop,
+      required page,
+      required context,
+      attendant}) async {
     try {
       saveBadstockLoad.value = true;
       Map<String, dynamic> body = {
-        "productId": selectedBadStock.value?.id,
+        "product": selectedBadStock.value?.id,
         "quantity": qtyController.text,
         "description": itemNameController.text,
-        "shopId": shop
+        "attendantId": attendant,
+        "shop": shop
       };
       var response = await Products().saveBadStock(body: body);
+
       if (response["status"] == true) {
         showBadStockWidget.value = false;
         selectedBadStock.value = null;
@@ -479,6 +484,27 @@ class ProductController extends GetxController {
         } else {
           Get.back();
         }
+      }
+      saveBadstockLoad.value = false;
+    } catch (e) {
+      saveBadstockLoad.value = false;
+      print(e);
+    } finally {
+      getBadStock(shopId: shop);
+    }
+  }
+
+  getBadStock({required shopId,String?attendant}) async {
+    try {
+      saveBadstockLoad.value = true;
+      badstocks.clear();
+      var response = await Products().getBadStock(shopId,attendant);
+      if (response["status"] == true) {
+        List responseData = response["body"];
+        List<BadStock> jsonData =
+            responseData.map((e) => BadStock.fromJson(e)).toList();
+        badstocks.addAll(jsonData);
+        print("object ${badstocks.length}");
       }
       saveBadstockLoad.value = false;
     } catch (e) {

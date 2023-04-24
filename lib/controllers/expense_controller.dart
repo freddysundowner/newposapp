@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutterpos/controllers/AuthController.dart';
+import 'package:flutterpos/controllers/attendant_controller.dart';
 import 'package:flutterpos/controllers/home_controller.dart';
 import 'package:flutterpos/screens/finance/expense_page.dart';
 import 'package:flutterpos/widgets/loading_dialog.dart';
@@ -56,7 +58,9 @@ class ExpenseController extends GetxController {
               shopId: "${shopId}",
               startingDate: startdate.value,
               endingDate: enddate.value,
-              type: "notcashflow");
+              attendant: Get.find<AuthController>().usertype == "admin"
+                  ? ""
+                  : Get.find<AttendantController>().attendant.value!.id);
 
           if (MediaQuery.of(context).size.width > 600) {
             Get.find<HomeController>().selectedWidget.value = ExpensePage();
@@ -80,7 +84,7 @@ class ExpenseController extends GetxController {
       {required shopId,
       required endingDate,
       required startingDate,
-      required type}) async {
+      String? attendant}) async {
     try {
       expenses.clear();
       totalExpenses.value = 0;
@@ -88,7 +92,8 @@ class ExpenseController extends GetxController {
       var response = await Expense().getExpenseByDate(
           shopId: shopId,
           startDate: DateFormat("yyyy-MM-dd").format(startingDate),
-          endDate: DateFormat("yyyy-MM-dd").format(endingDate));
+          endDate: DateFormat("yyyy-MM-dd").format(endingDate),
+          attendant: attendant);
       if (response["status"] == true) {
         List fetchedList = response["body"];
         List<ExpenseModel> expenseBody =

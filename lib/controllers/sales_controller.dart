@@ -381,7 +381,8 @@ class SalesController extends GetxController
       {required shopId,
       required startingDate,
       required endingDate,
-      required type}) async {
+      required type,
+      String ?attendantId}) async {
     try {
       sales.clear();
       todaySalesLoad.value = true;
@@ -438,11 +439,11 @@ class SalesController extends GetxController
     }
   }
 
-  getSalesByShop({required id, String? attendantId}) async {
+  getSalesByShop({required id, String? attendantId,required onCredit, String? startingDate}) async {
     try {
       sales.clear();
       salesByShopLoad.value = true;
-      var response = await Sales().getShopSales(id, attendantId);
+      var response = await Sales().getShopSales(id, attendantId,onCredit,startingDate);
       print("response is$response}");
       if (response["status"] == true) {
         List data = response["body"];
@@ -458,27 +459,6 @@ class SalesController extends GetxController
     }
   }
 
-  getSalesOnCredit({String? shopId}) async {
-    try {
-      salesOnCreditLoad.value = true;
-      var response = await Sales().getSalesOnCredit(shopId);
-
-      if (response["status"] == true) {
-        sales.clear();
-
-        List fetchedProducts = response["body"];
-        List<SalesModel> listProducts =
-            fetchedProducts.map((e) => SalesModel.fromJson(e)).toList();
-        sales.assignAll(listProducts);
-      } else {
-        sales.value = [];
-      }
-
-      salesOnCreditLoad.value = false;
-    } catch (e) {
-      salesOnCreditLoad.value = false;
-    }
-  }
 
   getProfitTransaction(
       {required start, required end, required type, required shopId}) async {

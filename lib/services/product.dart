@@ -23,7 +23,8 @@ class Products {
   }
 
   searchProduct(String shopId, String text) async {
-    var response = await DbBase().databaseRequest(product + "search/${shopId}/${text}", DbBase().getRequestType);
+    var response = await DbBase().databaseRequest(
+        product + "search/${shopId}/${text}", DbBase().getRequestType);
     var data = jsonDecode(response);
     return data;
   }
@@ -51,11 +52,9 @@ class Products {
 
   getProductCountInShop(String shopId, String type, startDate, endDate) async {
     var response = await DbBase().databaseRequest(
-      product + "filter?shopid=${shopId}&type=${type}&startDate=${startDate}&endDate=${endDate}",
+        product +
+            "filter?shopid=${shopId}&type=${type}&startDate=${startDate}&endDate=${endDate}",
         DbBase().getRequestType);
-
-
-
 
     var data = jsonDecode(response);
     print(data);
@@ -63,7 +62,6 @@ class Products {
   }
 
   updateProductCount(Map<String, dynamic> body) async {
-
     var response = await DbBase().databaseRequest(
         product + "increasecount/", DbBase().postRequestType,
         body: body);
@@ -95,10 +93,18 @@ class Products {
 
   getProductSaleHistory(productId) {}
 
-  saveBadStock({required Map<String, dynamic> body}) async{
+  saveBadStock({required Map<String, dynamic> body}) async {
+    var response = await DbBase()
+        .databaseRequest(badstock, DbBase().postRequestType, body: body);
+    var data = jsonDecode(response);
+    return data;
+  }
+
+  getBadStock(shopId, attendant) async {
     var response = await DbBase().databaseRequest(
-        product + "badstock/", DbBase().postRequestType,
-        body: body);
+      "${badstock}shop?shop=$shopId&attendant=$attendant",
+      DbBase().getRequestType,
+    );
     var data = jsonDecode(response);
     return data;
   }

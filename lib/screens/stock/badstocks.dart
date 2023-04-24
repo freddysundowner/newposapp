@@ -1,25 +1,37 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutterpos/controllers/AuthController.dart';
+import 'package:flutterpos/controllers/attendant_controller.dart';
 import 'package:flutterpos/controllers/home_controller.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
+import 'package:flutterpos/models/badstock.dart';
 import 'package:flutterpos/responsive/responsiveness.dart';
 import 'package:flutterpos/screens/sales/all_sales_page.dart';
 import 'package:flutterpos/screens/stock/stock_page.dart';
 import 'package:flutterpos/utils/colors.dart';
 import 'package:flutterpos/utils/helper.dart';
-import 'package:flutterpos/widgets/no_items_found.dart';
 import 'package:get/get.dart';
 
 import '../../controllers/product_controller.dart';
 import '../../utils/themer.dart';
 import '../../widgets/bigtext.dart';
+import '../../widgets/no_items_found.dart';
 
 class BadStockPage extends StatelessWidget {
   final page;
 
-  BadStockPage({Key? key, required this.page}) : super(key: key);
+  BadStockPage({Key? key, required this.page}) : super(key: key) {
+    productController.getBadStock(
+        shopId: shopController.currentShop.value!.id,
+        attendant: authController.usertype.value == "admin"
+            ? ""
+            : attendantController.attendant.value?.id!);
+  }
+
   ProductController productController = Get.find<ProductController>();
   ShopController shopController = Get.find<ShopController>();
+  AttendantController attendantController = Get.find<AttendantController>();
+  AuthController authController = Get.find<AuthController>();
 
   @override
   Widget build(BuildContext context) {
@@ -105,7 +117,105 @@ class BadStockPage extends StatelessWidget {
                     ),
                   );
           }),
-          noItemsFound(context, true),
+          Obx(() {
+            return productController.saveBadstockLoad.value
+                ? Column(
+                    children: [
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.4,
+                      ),
+                      Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    ],
+                  )
+                : productController.badstocks.isEmpty
+                    ? noItemsFound(context, true)
+                    : ListView.builder(
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        itemCount: productController.badstocks.length,
+                        itemBuilder: (context, index) {
+                          BadStock badstock =
+                              productController.badstocks.elementAt(index);
+                          return Container(
+                            padding: EdgeInsets.all(10),
+                            margin: EdgeInsets.symmetric(horizontal: 10)
+                                .copyWith(bottom: 5),
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(8),
+                                color: Colors.white,
+                                boxShadow: [
+                                  BoxShadow(
+                                      offset: Offset(1, 1),
+                                      blurRadius: 1,
+                                      color: Colors.grey)
+                                ]),
+                            child: Row(
+                              children: [
+                                // CircleAvatar(
+                                //   backgroundColor: Colors.deepPurple,
+                                //   child: ClipOval(
+                                //     child: Icon(
+                                //       Icons.water_damage,
+                                //       color: Colors.white,
+                                //     ),
+                                //   ),
+                                // ),
+                                SizedBox(
+                                  width: 5,
+                                ),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        "${badstock.product!.name!}"
+                                            .capitalize!,
+                                        style: TextStyle(
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.w500),
+                                      ),
+                                      SizedBox(
+                                        height: 5,
+                                      ),
+                                      Text(
+                                        "${badstock.description}",
+                                        style: TextStyle(
+                                            color: Colors.black, fontSize: 15),
+                                      ),
+                                      SizedBox(
+                                        height: 5,
+                                      ),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(
+                                            "Quantity: ${badstock.quantity!.toString()}",
+                                            style:
+                                                TextStyle(color: Colors.black),
+                                          ),
+                                          Align(
+                                            alignment: Alignment.bottomRight,
+                                            child: Text(
+                                              "By: ${badstock.attendantId!.fullnames}",
+                                              style: TextStyle(
+                                                  color: Colors.black,
+                                                  fontSize: 15),
+                                            ),
+                                          ),
+                                        ],
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        });
+          })
         ],
       ),
     );
@@ -137,7 +247,8 @@ class BadStockPage extends StatelessWidget {
               Text("Category", style: TextStyle(color: Colors.grey)),
               InkWell(
                 onTap: () {
-                  if (productController.products.length == 0 && !productController.getProductLoad.value) {
+                  if (productController.products.length == 0 &&
+                      !productController.getProductLoad.value) {
                     showDialog(
                         context: context,
                         builder: (BuildContext context) {
@@ -286,6 +397,9 @@ class BadStockPage extends StatelessWidget {
                               productController.saveBadStock(
                                   shop:
                                       "${shopController.currentShop.value?.id!}",
+                                  attendant: authController.usertype == "admin"
+                                      ? authController.currentUser.value!.id
+                                      : attendantController.attendant.value!.id,
                                   page: page,
                                   context: context);
                             }

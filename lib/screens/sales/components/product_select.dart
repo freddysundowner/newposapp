@@ -15,7 +15,8 @@ Widget shopcard({required product, required type}) {
       onTap: () {
         if (type == "product") {
           if (product.quantity <= 0) {
-            Get.snackbar("", "Product is Already Out off Stock");
+            Get.snackbar("", "Product is Already Out off Stock",
+                backgroundColor: Colors.deepPurple, colorText: Colors.white);
           } else {
             Get.back();
           }
@@ -24,7 +25,8 @@ Widget shopcard({required product, required type}) {
           Get.back();
         } else {
           if (product.quantity <= 0) {
-            Get.snackbar("", "Product is Already Out off Stock");
+            Get.snackbar("", "Product is Already Out off Stock",
+                backgroundColor: Colors.deepPurple, colorText: Colors.white);
           } else {
             salesController.selecteProduct.value = product;
             salesController.changeSelectedList(product);
