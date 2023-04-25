@@ -27,7 +27,7 @@ class Customer {
 
   updateCustomer({required Map<String, dynamic> body, required id}) async {
     var response = await DbBase()
-        .databaseRequest(customer + id, DbBase().patchRequestType,body:body);
+        .databaseRequest(customer + id, DbBase().patchRequestType, body: body);
     return jsonDecode(response);
   }
 
@@ -37,10 +37,19 @@ class Customer {
     return jsonDecode(response);
   }
 
-  getPurchases(uid, type,operation) async {
-    var response = await DbBase().databaseRequest(operation=="returns"?customerReturns + uid:customerPurchase + uid, DbBase().getRequestType);
+  getPurchases(
+      {required uid,
+      required type,
+      required operation,
+      required attendantId,}) async {
+    var response = await DbBase().databaseRequest(
+        operation == "returns"
+            ? "${customerReturns}/customer?customer=$uid&attendant=$attendantId"
+            : customerPurchase + uid,
+        DbBase().getRequestType);
     var data = jsonDecode(response);
     return data;
   }
+
 
 }

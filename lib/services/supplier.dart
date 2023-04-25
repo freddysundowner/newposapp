@@ -51,15 +51,25 @@ class Supplier {
     var response = await DbBase().databaseRequest(
         supplier + "pay/${stockInCredit.id}", DbBase().patchRequestType,
         body: body);
-    var data = jsonDecode(response);
-    return data;
+    return jsonDecode(response);
+
   }
 
   getCredit(shopId, uid) async {
     var response = await DbBase().databaseRequest(
         supplier + "stockinhistory/${shopId}/${uid}", DbBase().getRequestType);
-    var data = jsonDecode(response);
-    return data;
+    print(response);
+    return jsonDecode(response);
+
   }
 
+  getSupplierSupplies(
+      {required supplierId, required attendantId, required returned}) async {
+    var response = await DbBase().databaseRequest(
+        supplier +
+            "supplier/returns?supplier=$supplierId&attendant=$attendantId&returned=$returned",
+        DbBase().getRequestType);
+    return jsonDecode(response);
+
+  }
 }

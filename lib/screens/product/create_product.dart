@@ -39,7 +39,8 @@ class CreateProduct extends StatelessWidget {
     if (page == "create") {
       supplierController.getSuppliersInShop(
           shopController.currentShop.value!.id!, "all");
-      productController.getProductCategory(shopId: shopController.currentShop.value?.id);
+      productController.getProductCategory(
+          shopId: shopController.currentShop.value?.id);
     } else {
       productController.assignTextFields(productModel);
     }
@@ -722,7 +723,7 @@ class CreateProduct extends StatelessWidget {
                 if (page == "create") {
                   productController.saveProducts(
                       "${shopController.currentShop.value!.id}",
-                      authController.currentUser.value == null
+                      authController.usertype != "admin"
                           ? "${Get.find<AttendantController>().attendant.value!.id}"
                           : "${authController.currentUser.value!.attendantId!}",
                       context);

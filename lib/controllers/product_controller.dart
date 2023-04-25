@@ -424,7 +424,6 @@ class ProductController extends GetxController {
             : Get.find<AttendantController>().attendant.value?.id,
         "product": product.id,
       };
-      print(body);
       var res = await Products().updateProductCount(body);
       print(res);
     } catch (e) {
@@ -504,7 +503,6 @@ class ProductController extends GetxController {
         List<BadStock> jsonData =
             responseData.map((e) => BadStock.fromJson(e)).toList();
         badstocks.addAll(jsonData);
-        print("object ${badstocks.length}");
       }
       saveBadstockLoad.value = false;
     } catch (e) {

@@ -1,5 +1,8 @@
+import 'package:flutterpos/models/attendant_model.dart';
 import 'package:flutterpos/models/customer_model.dart';
 import 'package:flutterpos/models/product_model.dart';
+import 'package:flutterpos/models/shop_model.dart';
+import 'package:flutterpos/services/shop.dart';
 
 class SupplyOrderModel {
   SupplyOrderModel({
@@ -18,8 +21,8 @@ class SupplyOrderModel {
 
   String? id;
   ProductModel? product;
-  String? shop;
-  String? attendantid;
+  ShopModel? shop;
+  AttendantModel? attendantid;
   CustomerModel? supplier;
   int? total;
   int? quantity;
@@ -34,8 +37,11 @@ class SupplyOrderModel {
         product: json["product"] == null
             ? null
             : ProductModel.fromJson(json["product"]),
-        shop: json["shop"],
-        attendantid: json["attendantid"],
+        shop: json["shop"]==null|| json["shop"].toString().length<=40?null:ShopModel.fromJson(json["shop"]),
+        attendantid: json["attendantId"] == null ||
+                json["attendantId"].toString().length <= 40
+            ? null
+            : AttendantModel.fromJson(json["attendantId"]),
         supplier: json["supplier"] != null
             ? CustomerModel.fromJson(json["supplier"])
             : null,
@@ -47,4 +53,3 @@ class SupplyOrderModel {
         v: json["__v"],
       );
 }
-

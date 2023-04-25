@@ -21,7 +21,7 @@ class CustomersPage extends StatelessWidget {
   final type;
 
   CustomersPage({Key? key, required this.type}) : super(key: key) {
-    if (type == "suppliers") {
+    if (type == "supplier") {
       supplierController.getSuppliersInShop(
           shopController.currentShop.value?.id, "all");
     } else {
@@ -117,7 +117,7 @@ class CustomersPage extends StatelessWidget {
             labelColor: AppColors.mainColor,
             unselectedLabelColor: Colors.grey,
             onTap: (value) {
-              if (type == "suppliers") {
+              if (type == "supplier") {
                 supplierController.getSuppliersInShop(
                     shopController.currentShop.value?.id,
                     value == 0 ? "all" : "debtors");
@@ -162,7 +162,7 @@ class Customers extends StatelessWidget {
       body: Padding(
         padding: EdgeInsets.only(top: 5),
         child: Obx(() {
-          return type == "suppliers"
+          return type == "supplier"
               ? supplierController.getsupplierLoad.value
                   ? Center(
                       child: CircularProgressIndicator(),

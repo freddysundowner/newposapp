@@ -123,7 +123,7 @@ showProductModal(context, SupplyOrderModel supplyOrderModel, type) {
       context: context,
       builder: (BuildContext context) {
         return Container(
-            height: MediaQuery.of(context).size.height * 0.25,
+            height: MediaQuery.of(context).size.height * 0.3,
             child: Column(
               children: [
                 Container(
@@ -142,10 +142,12 @@ showProductModal(context, SupplyOrderModel supplyOrderModel, type) {
                           color: Colors.red,
                           context: context);
                     } else {
-                      showQuantityDialog(context, supplyOrderModel);
+                      Get.find<SupplierController>().returnOrderToSupplier(uid:supplyOrderModel.id,context:context);
                     }
                   },
                 ),
+
+
                 if (authController.usertype == "admin" ||
                     (authController.usertype == "attendant" &&
                         attendantController.checkRole("edit_entries")))
@@ -210,11 +212,7 @@ showQuantityDialog(context, SupplyOrderModel supplyOrderModel) {
                               color: Colors.redAccent,
                               context: context);
                         } else {
-                          Get.find<SupplierController>().returnOrderToSupplier(
-                              supplyOrderModel.id,
-                              purchaseController.textEditingControllerAmount.text,
-                              shopController.currentShop.value!.id!,
-                              context);
+
                         }
                       },
                       child: Text(

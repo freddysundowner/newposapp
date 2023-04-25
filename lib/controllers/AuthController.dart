@@ -99,7 +99,6 @@ class AuthController extends GetxController {
           "password": passwordController.text,
         };
         var response = await Admin().loginAdmin(body: body);
-        print("response data${response}");
         loginuserLoad.value = false;
         if (response["error"] != null) {
           showSnackBar(
@@ -139,7 +138,6 @@ class AuthController extends GetxController {
       String id = await getUserId();
       var user = await Admin().getUserById(id);
 
-      print("fetched user${user}");
       if (user["status"] == false) {
         getUserByIdLoad.value = false;
         logout();

@@ -26,13 +26,15 @@ import '../stock/stock_page.dart';
 class HomePage extends StatelessWidget {
   ShopController shopController = Get.find<ShopController>();
   SalesController salesController = Get.put(SalesController());
-
+  AttendantController attendantController = Get.put(AttendantController());
   HomePage({Key? key}) : super(key: key) {
-    salesController.getSalesByDates(
-        shopId: shopController.currentShop.value?.id,
-        startingDate: DateTime.now(),
-        endingDate: DateTime.now(),
-        type: "notcashflow");
+    salesController.getSalesByShop(
+        id: shopController.currentShop.value?.id,
+        attendantId: authController.usertype == "admin"
+            ?"": attendantController.attendant.value!.id,
+        onCredit: "",
+        startingDate:
+        "${DateFormat("yyyy-MM-dd").format(DateTime.now())}");
   }
 
   AuthController authController = Get.find<AuthController>();
@@ -110,12 +112,13 @@ class HomePage extends StatelessWidget {
                                         shopController.currentShop.value =
                                             element;
                                         Get.back();
-                                        salesController.getSalesByDates(
-                                            shopId: shopController
-                                                .currentShop.value?.id,
-                                            startingDate: DateTime.now(),
-                                            endingDate: DateTime.now(),
-                                            type: "notcashflow");
+                                        salesController.getSalesByShop(
+                                            id: shopController.currentShop.value?.id,
+                                            attendantId: authController.usertype == "admin"
+                                                ?"": attendantController.attendant.value!.id,
+                                            onCredit: "",
+                                            startingDate:
+                                            "${DateFormat("yyyy-MM-dd").format(DateTime.now())}");
                                       },
                                       title: Text(element.name!),
                                     ),
@@ -214,7 +217,7 @@ class HomePage extends StatelessWidget {
                               function: () {
                                 Get.find<HomeController>()
                                     .selectedWidget
-                                    .value = CustomersPage(type: "suppliers");
+                                    .value = CustomersPage(type: "supplier");
                               }),
                         ),
                         Container(
@@ -279,7 +282,7 @@ class HomePage extends StatelessWidget {
                 }),
                 SizedBox(height: 10),
                 Obx(() {
-                  return salesController.todaySalesLoad.value
+                  return salesController.salesByShopLoad.value
                       ? Center(
                           child: Column(
                             children: [
@@ -305,11 +308,13 @@ class HomePage extends StatelessWidget {
           onRefresh: () async {
             await shopController.getShopsByAdminId(
                 adminId: authController.currentUser.value!.id);
-            await salesController.getSalesByDates(
-                shopId: shopController.currentShop.value?.id,
-                startingDate: DateTime.now(),
-                endingDate: DateTime.now(),
-                type: "notcashflow");
+            await salesController.getSalesByShop(
+                id: shopController.currentShop.value?.id,
+                attendantId: authController.usertype == "admin"
+                    ?"": attendantController.attendant.value!.id,
+                onCredit: "",
+                startingDate:
+                "${DateFormat("yyyy-MM-dd").format(DateTime.now())}");;
             await Get.find<AttendantController>().getAttendantRoles();
           },
           child: Scaffold(
@@ -403,7 +408,7 @@ class HomePage extends StatelessWidget {
                             iconData: Icons.people_alt,
                             isSmallScreen: true,
                             function: () {
-                              Get.to(() => CustomersPage(type: "suppliers"));
+                              Get.to(() => CustomersPage(type: "supplier"));
                             }),
                         gridItems(
                             title: "Customers",
@@ -448,7 +453,7 @@ class HomePage extends StatelessWidget {
                   ),
                   SizedBox(height: 10),
                   Obx(() {
-                    return salesController.getSalesByDateLoad.value
+                    return salesController.getSalesByLoad.value
                         ? Center(
                             child: CircularProgressIndicator(),
                           )
@@ -481,11 +486,13 @@ class HomePage extends StatelessWidget {
                   onTap: () {
                     Get.back();
                     shopController.currentShop.value = shopBody;
-                    salesController.getSalesByDates(
-                        shopId: shopController.currentShop.value?.id,
-                        startingDate: DateTime.now(),
-                        endingDate: DateTime.now(),
-                        type: "notcashflow");
+                    salesController.getSalesByShop(
+                        id: shopController.currentShop.value?.id,
+                        attendantId: authController.usertype == "admin"
+                            ?"": attendantController.attendant.value!.id,
+                        onCredit: "",
+                        startingDate:
+                        "${DateFormat("yyyy-MM-dd").format(DateTime.now())}");;
                   },
                   child: Container(
                     padding: EdgeInsets.all(10),
@@ -557,7 +564,7 @@ class HomePage extends StatelessWidget {
                   title: "Today's Sale", color: Colors.white, size: 18.0),
               SizedBox(height: 10),
               Obx(() {
-                return salesController.getSalesByDateLoad.value
+                return salesController.getSalesByLoad.value
                     ? minorTitle(title: "Calculating...", color: Colors.white)
                     : normalText(
                         title:
@@ -572,11 +579,13 @@ class HomePage extends StatelessWidget {
               if (MediaQuery.of(context).size.width > 600) {
                 salesController.salesInitialIndex.value = 2;
                 salesController.activeItem.value = "Today";
-                salesController.getSalesByDates(
-                    shopId: shopController.currentShop.value?.id,
-                    startingDate: DateTime.now(),
-                    endingDate: DateTime.now(),
-                    type: "notcashflow");
+                salesController.getSalesByShop(
+                    id: shopController.currentShop.value?.id,
+                    attendantId: authController.usertype == "admin"
+                        ?"": attendantController.attendant.value!.id,
+                    onCredit: "",
+                    startingDate:
+                    "${DateFormat("yyyy-MM-dd").format(DateTime.now())}");;
                 Get.find<HomeController>().selectedWidget.value = AllSalesPage(
                   page: "homePage",
                 );

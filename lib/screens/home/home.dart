@@ -14,16 +14,7 @@ import '../../controllers/home_controller.dart';
 import '../../utils/colors.dart';
 
 class Home extends StatelessWidget {
-  Home({Key? key}) : super(key: key){
-    salesController.getSalesByDates(
-        shopId: shopController.currentShop.value?.id,
-        startingDate: DateTime.now(),
-        endingDate: DateTime.now(),
-        type: "notcashflow");
-    // shopController.getShopsByAdminId(
-    //   adminId: Get.find<AuthController>().currentUser.value?.id,
-    // );
-  }
+  Home({Key? key}) : super(key: key);
   HomeController homeControler = Get.put(HomeController());
   SalesController salesController = Get.put(SalesController());
   ShopController shopController = Get.put(ShopController());

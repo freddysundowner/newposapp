@@ -116,16 +116,16 @@ showProductModal(context, ProductModel product, shopId) {
               if (authController.usertype == "admin" ||
                   (authController.usertype == "attendant" &&
                       attendantController.checkRole("edit_entries")))
-              ListTile(
-                  leading: Icon(Icons.edit),
-                  onTap: () {
-                    Get.back();
-                    Get.to(() => CreateProduct(
-                          page: "edit",
-                          productModel: product,
-                        ));
-                  },
-                  title: Text('Edit')),
+                ListTile(
+                    leading: Icon(Icons.edit),
+                    onTap: () {
+                      Get.back();
+                      Get.to(() => CreateProduct(
+                            page: "edit",
+                            productModel: product,
+                          ));
+                    },
+                    title: Text('Edit')),
               if (authController.usertype == "admin")
                 ListTile(
                     leading: Icon(Icons.code),
@@ -142,25 +142,24 @@ showProductModal(context, ProductModel product, shopId) {
               if (authController.usertype == "admin" ||
                   (authController.usertype == "attendant" &&
                       attendantController.checkRole("edit_entries")))
-              ListTile(
-                  leading: Icon(Icons.delete),
-                  onTap: () {
-                    Get.back();
-                    deleteDialog(
-                        context: context,
-                        onPressed: () {
-                          productController.deleteProduct(
-                              id: product.id, context: context, shopId: shopId);
-                        });
-                  },
-                  title: Text('Delete')),
-
+                ListTile(
+                    leading: Icon(Icons.delete),
+                    onTap: () {
+                      Get.back();
+                      deleteDialog(
+                          context: context,
+                          onPressed: () {
+                            productController.deleteProduct(
+                                id: product.id,
+                                context: context,
+                                shopId: shopId);
+                          });
+                    },
+                    title: Text('Delete')),
               ListTile(
                   leading: Icon(Icons.clear),
                   onTap: () {
                     Get.back();
-
-
                   },
                   title: Text('Close')),
             ],

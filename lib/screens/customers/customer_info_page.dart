@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutterpos/controllers/home_controller.dart';
+import 'package:flutterpos/controllers/sales_controller.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
 import 'package:flutterpos/models/customer_model.dart';
 import 'package:flutterpos/models/sales_model.dart';
@@ -21,6 +22,7 @@ import '../../controllers/attendant_controller.dart';
 import '../../controllers/credit_controller.dart';
 import '../../controllers/supplierController.dart';
 import '../../models/stock_in_credit.dart';
+import '../../models/supply_order_model.dart';
 import '../../utils/colors.dart';
 import '../../widgets/creditPurchaseCard.dart';
 import '../../widgets/credit_history_card.dart';
@@ -36,6 +38,7 @@ class CustomerInfoPage extends StatelessWidget {
 
   CustomerInfoPage({Key? key, required this.user, required this.customerModel})
       : super(key: key);
+
   CustomerController customerController = Get.find<CustomerController>();
   SupplierController supplierController = Get.find<SupplierController>();
   ShopController shopController = Get.find<ShopController>();
@@ -43,6 +46,7 @@ class CustomerInfoPage extends StatelessWidget {
   AttendantController attendantController = Get.find<AttendantController>();
   ShopController createShopController = Get.find<ShopController>();
   AuthController authController = Get.find<AuthController>();
+  SalesController salesControler = Get.find<SalesController>();
 
   launchWhatsApp({required number, required message}) async {
     // String url = "whatsapp://send?phone=+254${number}&text=$message";
@@ -86,7 +90,7 @@ class CustomerInfoPage extends StatelessWidget {
                         size: 18)
                   ],
                 ),
-                if (user != "suppliers")
+                if (user != "supplier")
                   InkWell(
                     onTap: () {
                       Get.find<HomeController>().selectedWidget.value =
@@ -128,7 +132,7 @@ class CustomerInfoPage extends StatelessWidget {
             actions: [
               IconButton(
                   onPressed: () {
-                    if (user == "suppliers") {
+                    if (user == "supplier") {
                       supplierController.assignTextFields(customerModel);
                     } else {
                       customerController.assignTextFields(customerModel);
@@ -147,7 +151,7 @@ class CustomerInfoPage extends StatelessWidget {
                     deleteDialog(
                         context: context,
                         onPressed: () {
-                          if (user == "suppliers") {
+                          if (user == "supplier") {
                             supplierController.deleteSuppler(
                                 context: context,
                                 id: supplierController.supplier.value?.id,
@@ -226,7 +230,7 @@ class CustomerInfoPage extends StatelessWidget {
                                   onPressed: () {
                                     launchMessage(
                                         number: customerModel.phoneNumber,
-                                        message: user == "suppliers"
+                                        message: user == "supplier"
                                             ? "we will be paying your debt very soon"
                                             : "Aquick reminde that you owe our shop please pay your debt ");
                                   },
@@ -236,7 +240,7 @@ class CustomerInfoPage extends StatelessWidget {
                                   onPressed: () {
                                     launchWhatsApp(
                                         number: customerModel.phoneNumber,
-                                        message: user == "suppliers"
+                                        message: user == "supplier"
                                             ? "we will be paying your debt very soon"
                                             : "Aquick reminde that you owe our shop please pay your debt ");
                                   },
@@ -249,7 +253,7 @@ class CustomerInfoPage extends StatelessWidget {
                                   },
                                   icon: Icon(Icons.phone),
                                   color: Colors.white),
-                              if (user != "suppliers")
+                              if (user != "supplier")
                                 InkWell(
                                   onTap: () {
                                     Get.to(
@@ -299,7 +303,7 @@ class CustomerInfoPage extends StatelessWidget {
               actions: [
                 IconButton(
                     onPressed: () {
-                      if (user == "suppliers") {
+                      if (user == "supplier") {
                         supplierController.assignTextFields(customerModel);
                       } else {
                         customerController.assignTextFields(customerModel);
@@ -315,7 +319,7 @@ class CustomerInfoPage extends StatelessWidget {
                       deleteDialog(
                           context: context,
                           onPressed: () {
-                            if (user == "suppliers") {
+                            if (user == "supplier") {
                               supplierController.deleteSuppler(
                                   context: context,
                                   id: supplierController.supplier.value?.id,
@@ -357,27 +361,53 @@ class CustomerInfoPage extends StatelessWidget {
                       onTap: (index) {
                         customerController.initialPage.value = index;
                         if (index == 0) {
-                          print(index);
-                          if (user == "suppliers") {
+                          if (user == "supplier") {
                             supplierController.getSupplierCredit(
                                 "${shopController.currentShop.value!.id!}",
                                 customerModel.id);
                           } else {
-                            creditController.getCustomerCredit(
-                                authController.currentUser.value == null
-                                    ? attendantController.attendant.value?.id
-                                    : authController.currentUser.value?.id,
-                                "${createShopController.currentShop.value!.id!}",
-                                customerModel.id);
+                            salesControler.getSalesByShop(
+                                id: shopController.currentShop.value?.id,
+                                attendantId: authController.usertype == "admin"
+                                    ? ""
+                                    : attendantController.attendant.value!.id,
+                                onCredit: true,
+                                customer: customerModel.id,
+                                startingDate: "");
                           }
                         } else if (index == 1) {
-                          customerController.getCustomerPurchases(
-                              customerModel.id, user, "purchases");
-                        } else {
-                          if (user == "suppliers") {
+                          if (user == "supplier") {
+                            supplierController.getSupplierSupplies(
+                                returned: "",
+                                attendantId: authController.usertype == "admin"
+                                    ? ""
+                                    : attendantController.attendant.value!.id,
+                                supplierId: customerModel.id);
                           } else {
                             customerController.getCustomerPurchases(
-                                customerModel.id, user, "returns");
+                                uid: customerModel.id,
+                                type: user,
+                                operation: "purchases",
+                                attendantId: authController.usertype == "admin"
+                                    ? ""
+                                    : attendantController.attendant.value!.id);
+                          }
+                        } else {
+                          if (user == "supplier") {
+                            supplierController.getSupplierSupplies(
+                                returned: "true",
+                                attendantId: authController.usertype == "admin"
+                                    ? ""
+                                    : attendantController.attendant.value!.id,
+                                supplierId: customerModel.id);
+                          } else {
+                            customerController.getCustomerPurchases(
+                                uid: customerModel.id,
+                                type: user,
+                                operation: "returns",
+                                attendantId: authController.usertype == "admin"
+                                    ? ""
+                                    : attendantController.attendant.value!.id);
                           }
                         }
                       },
@@ -501,10 +531,15 @@ class Purchase extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print(user);
     return Obx(() {
-      return customerController.customerPurchaseLoad.value
+      return customerController.customerPurchaseLoad.value ||
+              supplierController.gettingSupplierSuppliesLoad.value
           ? Center(child: CircularProgressIndicator())
-          : customerController.customerPurchases.length == 0
+          : customerController.customerPurchases.length == 0 &&
+                      user != "supplier" ||
+                  supplierController.supplierSupplies.isEmpty &&
+                      user == "supplier"
               ? noItemsFound(context, true)
               : MediaQuery.of(context).size.width > 600
                   ? SingleChildScrollView(
@@ -560,16 +595,32 @@ class Purchase extends StatelessWidget {
                         ),
                       ),
                     )
-                  : ListView.builder(
-                      itemCount: customerController.customerPurchases.length,
-                      shrinkWrap: true,
-                      itemBuilder: (context, index) {
-                        SaleOrderItemModel saleOrder = customerController
-                            .customerPurchases
-                            .elementAt(index);
-                        return purchaseCard(
-                            context: context, saleOrderItemModel: saleOrder);
-                      });
+                  : user == "supplier"
+                      ? ListView.builder(
+                          itemCount: supplierController.supplierSupplies.length,
+                          shrinkWrap: true,
+                          itemBuilder: (context, index) {
+                            SupplyOrderModel supplyOrderModel =
+                                supplierController.supplierSupplies
+                                    .elementAt(index);
+                            return purchaseCard(
+                                context: context,
+                                supplyOrderModel: supplyOrderModel);
+                          })
+                      : ListView.builder(
+                          itemCount:
+                              customerController.customerPurchases.length,
+                          shrinkWrap: true,
+                          itemBuilder: (context, index) {
+                            SaleOrderItemModel saleOrder = customerController
+                                .customerPurchases
+                                .elementAt(index);
+
+                            return purchaseCard(
+                              context: context,
+                              saleOrderItemModel: saleOrder,
+                            );
+                          });
     });
   }
 }
@@ -583,6 +634,7 @@ class CreditInfo extends StatelessWidget {
   AttendantController attendantController = Get.find<AttendantController>();
   ShopController createShopController = Get.find<ShopController>();
   AuthController authController = Get.find<AuthController>();
+  SalesController salesController = Get.find<SalesController>();
 
   CreditInfo({Key? key, required this.customerModel, required this.user})
       : super(key: key);
@@ -590,7 +642,7 @@ class CreditInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      return user == "suppliers"
+      return user == "supplier"
           ? supplierController.returningLoad.value
               ? Center(
                   child: CircularProgressIndicator(),
@@ -682,9 +734,9 @@ class CreditInfo extends StatelessWidget {
                             return CreditPurchaseHistoryCard(
                                 context, salesBody);
                           })
-          : creditController.getCreditLoad.value
+          : salesController.salesByShopLoad.value
               ? Center(child: CircularProgressIndicator())
-              : creditController.credit.length == 0
+              : salesController.sales.length == 0
                   ? Center(
                       child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -737,9 +789,9 @@ class CreditInfo extends StatelessWidget {
                                           textAlign: TextAlign.center)),
                                 ],
                                 rows: List.generate(
-                                    creditController.credit.length, (index) {
+                                    salesController.sales.length, (index) {
                                   SalesModel salesBody =
-                                      creditController.credit.elementAt(index);
+                                      salesController.sales.elementAt(index);
                                   final y = salesBody.receiptNumber;
                                   final x = salesBody.creditTotal;
                                   final z = salesBody.grandTotal;
@@ -803,13 +855,11 @@ class CreditInfo extends StatelessWidget {
                                                     Get.find<HomeController>()
                                                         .selectedWidget
                                                         .value = PaymentHistory(
-                                                      customerModel:
-                                                          customerModel,
+                                                      id: salesBody.id!,
                                                     );
                                                   } else {
                                                     Get.to(() => PaymentHistory(
-                                                          customerModel:
-                                                              customerModel,
+                                                          id: salesBody.id!,
                                                         ));
                                                   }
                                                 },
@@ -838,11 +888,11 @@ class CreditInfo extends StatelessWidget {
                           ),
                         )
                       : ListView.builder(
-                          itemCount: creditController.credit.length,
+                          itemCount: salesController.sales.length,
                           shrinkWrap: true,
                           itemBuilder: (context, index) {
                             SalesModel salesBody =
-                                creditController.credit.elementAt(index);
+                                salesController.sales.elementAt(index);
 
                             return CreditHistoryCard(
                                 context, salesBody, customerModel);

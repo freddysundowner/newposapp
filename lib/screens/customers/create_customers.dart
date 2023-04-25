@@ -101,7 +101,7 @@ class CreateCustomer extends StatelessWidget {
                 Text("${type} Name".capitalize!),
                 SizedBox(height: 10),
                 TextFormField(
-                  controller: type == "suppliers"
+                  controller: type == "supplier"
                       ? supplierController.nameController
                       : customersController.nameController,
                   keyboardType: TextInputType.text,
@@ -130,7 +130,7 @@ class CreateCustomer extends StatelessWidget {
                 Text("Phone"),
                 SizedBox(height: 10),
                 TextFormField(
-                    controller: type == "suppliers"
+                    controller: type == "supplier"
                         ? supplierController.phoneController
                         : customersController.phoneController,
                     keyboardType: TextInputType.number,
@@ -155,7 +155,7 @@ class CreateCustomer extends StatelessWidget {
               splashColor: Colors.transparent,
               hoverColor: Colors.transparent,
               onTap: () {
-                if (type == "suppliers") {
+                if (type == "supplier") {
                   supplierController.createSupplier(
                       shopId: shopController.currentShop.value?.id,
                       context: context,page:page);

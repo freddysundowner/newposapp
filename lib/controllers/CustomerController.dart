@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutterpos/models/customer_model.dart';
+import 'package:flutterpos/models/sales_model.dart';
 import 'package:flutterpos/models/sales_order_item_model.dart';
 import 'package:flutterpos/services/customer.dart';
 import 'package:get/get.dart';
@@ -173,7 +174,7 @@ class CustomerController extends GetxController
         if (addressController.text != "") "address": addressController.text
       };
       var response = await Customer().updateCustomer(body: body, id: id);
-      print(response);
+
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
       if (response["status"] == true) {
         clearTexts();
@@ -219,12 +220,17 @@ class CustomerController extends GetxController
     }
   }
 
-  getCustomerPurchases(uid, type, String operation) async {
+  getCustomerPurchases(
+      {required uid,
+      required type,
+      required operation,
+      required attendantId,
+      String ?customer,
+      String ?returned}) async {
     try {
       customerPurchases.clear();
       customerPurchaseLoad.value = true;
-      var response = await Customer().getPurchases(uid, type, operation);
-
+      var response = await Customer().getPurchases(uid: uid, type: type, operation: operation, attendantId: attendantId);
       if (response["status"] == true) {
         customerPurchases.clear();
         List fetchedProducts = response["body"];
@@ -240,4 +246,6 @@ class CustomerController extends GetxController
       customerPurchaseLoad.value = false;
     }
   }
+
+
 }

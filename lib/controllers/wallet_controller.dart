@@ -66,8 +66,6 @@ class WalletController extends GetxController with GetTickerProviderStateMixin {
     try {
       gettingWalletLoad.value = true;
       var response = await Wallet().getWallet(uid, type);
-      print("response$response}");
-
       if (response != null) {
         List fetchedData = response;
         List<DepositModel> data =

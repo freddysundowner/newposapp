@@ -1,4 +1,4 @@
-const BASE_URL = "http://100.27.11.122:2000/";
+const BASE_URL = "http://54.237.57.225:2000/";
 //admin
 const admin = BASE_URL + "admin";
 const adminLogin = admin + "/login";
@@ -10,7 +10,7 @@ const searchShop = shop + "search";
 //customer
 const customer = BASE_URL + "customer/";
 const customerPurchase = sales + "customerpurchase/";
-const customerReturns = sales+"customerreturn/";
+const customerReturns = customer+"returns";
 const customersOnCredit = "${customer}oncredit";
 const customerDeposit="$customer"+"deposit/";
 const customerTransaction="$customer"+"transactions/";

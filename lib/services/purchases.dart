@@ -11,9 +11,10 @@ class Purchases {
     return jsonDecode(response);
   }
 
-  getPurchase({required shopId, String? attendantId}) async {
+  getPurchase({required shopId, String? attendantId, required customer}) async {
     var response = await DbBase().databaseRequest(
-        purchases + "purchase?shop=${shopId}&attendant=${attendantId}",
+        purchases +
+            "purchase?shop=${shopId}&attendant=${attendantId}&customer=$customer",
         DbBase().getRequestType);
     return jsonDecode(response);
   }
@@ -24,11 +25,9 @@ class Purchases {
     return jsonDecode(response);
   }
 
-  returnOrderToSupplier(uid, body) async {
+  returnOrderToSupplier(uid) async {
     var response = await DbBase().databaseRequest(
-        purchases + "return/${uid}", DbBase().patchRequestType,
-        body: body);
-
+        purchases + "returns/${uid}", DbBase().patchRequestType);
     var data = jsonDecode(response);
     return data;
   }

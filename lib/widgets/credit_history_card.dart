@@ -2,18 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutterpos/controllers/home_controller.dart';
 import 'package:flutterpos/models/customer_model.dart';
 import 'package:flutterpos/models/sales_model.dart';
-import 'package:flutterpos/screens/stock/purchase_order_item.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 import '../controllers/CustomerController.dart';
 import '../controllers/sales_controller.dart';
 import '../screens/cash_flow/payment_history.dart';
+import '../screens/sales/sale_order_item.dart';
 
-Widget CreditHistoryCard(context, SalesModel salesBody,CustomerModel customerModel) {
+Widget CreditHistoryCard(
+    context, SalesModel salesBody, CustomerModel customerModel) {
   return InkWell(
     onTap: () {
-      showBottomSheet(context, salesBody,customerModel);
+      showBottomSheet(context, salesBody, customerModel);
     },
     child: Container(
         margin: EdgeInsets.all(4),
@@ -50,7 +51,11 @@ Widget CreditHistoryCard(context, SalesModel salesBody,CustomerModel customerMod
   );
 }
 
-showBottomSheet(BuildContext context, SalesModel salesBody,CustomerModel customerModel,) {
+showBottomSheet(
+  BuildContext context,
+  SalesModel salesBody,
+  CustomerModel customerModel,
+) {
   SalesController salesController = Get.find<SalesController>();
   CustomerController customersController = Get.find<CustomerController>();
   return showModalBottomSheet<void>(
@@ -71,12 +76,17 @@ showBottomSheet(BuildContext context, SalesModel salesBody,CustomerModel custome
                   leading: Icon(Icons.list),
                   onTap: () {
                     Navigator.pop(context);
-
                     if (MediaQuery.of(context).size.width > 600) {
                       Get.find<HomeController>().selectedWidget.value =
-                          PurchaseOrderItems(id: salesBody.id);
+                          SaleOrderItem(
+                        id: salesBody.id,
+                        page: "customeInfo",
+                      );
                     } else {
-                      Get.to(() => PurchaseOrderItems(id: salesBody.id));
+                      Get.to(() => SaleOrderItem(
+                            id: salesBody.id,
+                            page: "customeInfo",
+                          ));
                     }
                   },
                   title: Text('View Purchases'),
@@ -96,9 +106,13 @@ showBottomSheet(BuildContext context, SalesModel salesBody,CustomerModel custome
                     Navigator.pop(context);
                     if (MediaQuery.of(context).size.width > 600) {
                       Get.find<HomeController>().selectedWidget.value =
-                          PaymentHistory(customerModel: customerModel,);
+                          PaymentHistory(
+                        id: salesBody.id!,
+                      );
                     } else {
-                      Get.to(() => PaymentHistory(customerModel: customerModel,));
+                      Get.to(() => PaymentHistory(
+                            id: salesBody.id!,
+                          ));
                     }
                   },
                   title: Text('Payment History'),
@@ -117,6 +131,7 @@ showBottomSheet(BuildContext context, SalesModel salesBody,CustomerModel custome
 
 showAmountDialog(context, SalesModel salesBody) {
   CustomerController customerController = Get.find<CustomerController>();
+  SalesController salesController = Get.find<SalesController>();
   showDialog(
       context: context,
       builder: (_) {
@@ -138,7 +153,7 @@ showAmountDialog(context, SalesModel salesBody) {
                   controller: customerController.amountController,
                   keyboardType: TextInputType.text,
                   decoration: InputDecoration(
-                      hintText: "eg 300",
+                      hintText: "eg ${salesBody.grandTotal}",
                       hintStyle: TextStyle(color: Colors.black),
                       fillColor: Colors.white,
                       filled: true,
@@ -164,6 +179,13 @@ showAmountDialog(context, SalesModel salesBody) {
             TextButton(
               onPressed: () {
                 Get.back();
+                if (salesBody.creditTotal! <
+                    int.parse(customerController.amountController.text)) {
+                } else {
+                  salesController.payCredit(
+                      salesBody: salesBody,
+                      amount: customerController.amountController.text);
+                }
               },
               child: Text(
                 "Save".toUpperCase(),

@@ -2,6 +2,7 @@ import 'package:flutterpos/models/attendant_model.dart';
 import 'package:flutterpos/models/customer_model.dart';
 import 'package:flutterpos/models/product_model.dart';
 
+
 class SaleOrderItemModel {
   SaleOrderItemModel({
     this.id,
@@ -40,9 +41,9 @@ class SaleOrderItemModel {
             ? null
             : ProductModel.fromJson(json["product"]),
         shop: json["shop"],
-        attendantid: json["attendantid"] == null
+        attendantid: json["attendantId"] == null
             ? null
-            : AttendantModel.fromJson(json["attendantid"]),
+            : AttendantModel.fromJson(json["attendantId"]),
         customerId: json["customerId"] == null
             ? null
             : CustomerModel.fromJson(json["customerId"]),

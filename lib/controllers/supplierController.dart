@@ -9,6 +9,7 @@ import 'package:get/get.dart';
 
 import '../models/product_model.dart';
 import '../models/stock_in_credit.dart';
+import '../models/supply_order_model.dart';
 import '../screens/customers/customers_page.dart';
 import '../screens/product/create_product.dart';
 import '../screens/sales/create_sale.dart';
@@ -30,10 +31,12 @@ class SupplierController extends GetxController {
   TextEditingController quantityController = TextEditingController();
 
   RxBool creatingSupplierLoad = RxBool(false);
+  RxBool gettingSupplierSuppliesLoad = RxBool(false);
   RxBool getsupplierLoad = RxBool(false);
   RxBool gettingSupplier = RxBool(false);
   RxBool supliesReturnedLoad = RxBool(false);
   RxList<CustomerModel> suppliers = RxList([]);
+  RxList<SupplyOrderModel> supplierSupplies = RxList([]);
   RxList<StockInCredit> stockInCredit = RxList([]);
   Rxn<CustomerModel> supplier = Rxn(null);
   RxBool suppliersOnCreditLoad = RxBool(false);
@@ -177,7 +180,6 @@ class SupplierController extends GetxController {
         if (addressController.text != "") "address": addressController.text
       };
       var response = await Supplier().updateSupplier(body: body, id: id);
-      print(response);
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
       if (response["status"] == true) {
         clearTexts();
@@ -199,12 +201,9 @@ class SupplierController extends GetxController {
   deleteSuppler(
       {required BuildContext context, required id, required shopId}) async {
     try {
-      print("user${id}");
-      print("shop${shopId}");
       LoadingDialog.showLoadingDialog(
           context: context, title: "deleting customer...", key: _keyLoader);
       var response = await Supplier().deleteCustomer(id: id);
-      print(response);
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
       if (response["status"] == true) {
         if (MediaQuery.of(context).size.width > 600) {
@@ -226,16 +225,13 @@ class SupplierController extends GetxController {
     }
   }
 
-  returnOrderToSupplier(uid, quantity, shopId, context) async {
+  returnOrderToSupplier({required uid, required context}) async {
     try {
       LoadingDialog.showLoadingDialog(
-          context: context, title: "Creating supplier...", key: _keyLoader);
-
-      Map<String, dynamic> body = {
-        "quantity": int.parse(quantity),
-      };
-      var response = await Purchases().returnOrderToSupplier(uid, body);
-      print(response);
+          context: context,
+          title: "returning order to  supplier...",
+          key: _keyLoader);
+      await Purchases().returnOrderToSupplier(uid);
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
       quantityController.text = "";
       showSnackBar(
@@ -252,6 +248,7 @@ class SupplierController extends GetxController {
     try {
       returningLoad.value = true;
       var response = await Supplier().getCredit(shopId, uid);
+      print(response);
       if (response != null) {
         List fetchedCredit = response["body"];
         List<StockInCredit> credits =
@@ -262,17 +259,17 @@ class SupplierController extends GetxController {
       }
       returningLoad.value = false;
     } catch (e) {
-      StockInCredit stockInCredits = StockInCredit(
-          id: "12345",
-          supplier: "12345",
-          shop: "123crffre4567",
-          attendant: "12356fser",
-          balance: 100,
-          total: 2000,
-          recietNumber: "23ijfnjnMM",
-          createdAt: DateTime.now(),
-          updatedAt: DateTime.now());
-      stockInCredit.add(stockInCredits);
+      // StockInCredit stockInCredits = StockInCredit(
+      //     id: "12345",
+      //     supplier: "12345",
+      //     shop: "123crffre4567",
+      //     attendant: "12356fser",
+      //     balance: 100,
+      //     total: 2000,
+      //     recietNumber: "23ijfnjnMM",
+      //     createdAt: DateTime.now(),
+      //     updatedAt: DateTime.now());
+      // stockInCredit.add(stockInCredits);
       returningLoad.value = false;
     }
   }
@@ -311,6 +308,28 @@ class SupplierController extends GetxController {
     if (response["status"] != true) {
       showSnackBar(
           message: response["message"], color: Colors.red, context: context);
+    }
+  }
+
+  getSupplierSupplies(
+      {required supplierId, required attendantId, required returned}) async {
+    try {
+      gettingSupplierSuppliesLoad.value=true;
+      var response = await Supplier().getSupplierSupplies(
+          supplierId: supplierId, attendantId: attendantId, returned: returned);
+      print(response);
+      if (response["status"] == true) {
+        List rawData = response["body"];
+        List<SupplyOrderModel> jsonData =
+            rawData.map((e) => SupplyOrderModel.fromJson(e)).toList();
+        supplierSupplies.assignAll(jsonData);
+      } else {
+        supplierSupplies.value = [];
+      }
+      gettingSupplierSuppliesLoad.value=false;
+    } catch (e) {
+      gettingSupplierSuppliesLoad.value=false;
+      print(e);
     }
   }
 }

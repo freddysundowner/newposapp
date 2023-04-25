@@ -109,6 +109,7 @@ class CashflowController extends GetxController
         "category": selectedCashFlowCategories.value!.id,
       };
       var response = await Transactions().createTransaction(body: body);
+      print(response);
 
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
       if (response["status"] == true) {
@@ -159,12 +160,9 @@ class CashflowController extends GetxController
         "type": type,
         "name": textEditingControllerCategory.text,
         "shop": shopId,
-        "admin":Get.find<AuthController>().currentUser.value!.id
+        "admin": Get.find<AuthController>().currentUser.value!.id
       };
-      print(body);
-
       var response = await Transactions().createCategory(body: body);
-      print(response);
       if (response["status"] == true) {
         textEditingControllerCategory.clear();
         getCategory(type, shopId);
@@ -285,7 +283,6 @@ class CashflowController extends GetxController
       loadingCashflowSummry.value = true;
       var response =
           await Transactions().getCashFlowSummary(id: shopId, date: date);
-      print(response);
       if (response != null) {
         cashflowSummary.value = CashflowSummary.fromJson(response);
       } else {
@@ -296,5 +293,12 @@ class CashflowController extends GetxController
       loadingCashflowSummry.value = false;
       print(e);
     }
+  }
+
+
+  @override
+  void onClose() {
+    tabController.dispose();
+    super.onClose();
   }
 }

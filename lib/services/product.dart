@@ -57,7 +57,6 @@ class Products {
         DbBase().getRequestType);
 
     var data = jsonDecode(response);
-    print(data);
     return data;
   }
 

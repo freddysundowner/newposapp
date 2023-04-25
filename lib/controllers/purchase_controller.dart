@@ -18,7 +18,7 @@ import '../widgets/snackBars.dart';
 class PurchaseController extends GetxController {
   final GlobalKey<State> _keyLoader = new GlobalKey<State>();
   RxList<ProductModel> selectedList = RxList([]);
-  RxList<PurchaseOrder> purchaseByDate = RxList([]);
+  RxList<PurchaseOrder> purchasedItems = RxList([]);
   RxList<SupplyOrderModel> purchaseOrderItems = RxList([]);
   RxInt grandTotal = RxInt(0);
   RxInt balance = RxInt(0);
@@ -35,7 +35,7 @@ class PurchaseController extends GetxController {
       required attendantid,
       required context,
       required screen}) async {
-    if (balance.value > 0 && selectedSupplier.value == "") {
+    if (balance.value > 0 && selectedSupplier.value == null) {
       showSnackBar(
           message: "please select supplier",
           color: Colors.red,
@@ -68,7 +68,7 @@ class PurchaseController extends GetxController {
           grandTotal.value = 0;
           selectedSupplier.value = null;
           textEditingControllerAmount.text = "0";
-          getPurchase(shopId: shopId,attendantId: attendantid);
+          getPurchase(shopId: shopId, attendantId: attendantid);
           if (screen == "admin") {
             if (MediaQuery.of(context).size.width > 600) {
               Get.find<HomeController>().selectedWidget.value = ViewPurchases();
@@ -82,19 +82,24 @@ class PurchaseController extends GetxController {
       }
     }
   }
-
-  getPurchase({required shopId,String ?attendantId}) async {
+  getPurchase(
+      {required shopId,
+      String? attendantId,
+      String? customer,}) async {
     try {
       getPurchaseLoad.value = true;
-      var response = await Purchases().getPurchase(shopId: shopId,attendantId:attendantId);
-      print(response);
+      var response = await Purchases().getPurchase(
+          shopId: shopId,
+          attendantId: attendantId,
+          customer: customer == null ? "" : customer,
+         );
       if (response["status"] == true) {
         List fetchedResponse = response["body"];
         List<PurchaseOrder> supply =
             fetchedResponse.map((e) => PurchaseOrder.fromJson(e)).toList();
-        purchaseByDate.assignAll(supply);
+        purchasedItems.assignAll(supply);
       } else {
-        purchaseByDate.value = RxList([]);
+        purchasedItems.value = RxList([]);
       }
       getPurchaseLoad.value = false;
     } catch (e) {
@@ -212,7 +217,7 @@ class PurchaseController extends GetxController {
 
   calculatePurchasemount() {
     var subTotal = 0;
-    purchaseByDate.forEach((element) {
+    purchasedItems.forEach((element) {
       subTotal = subTotal + element.total!;
     });
     return subTotal;

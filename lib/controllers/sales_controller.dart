@@ -1,8 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterpos/controllers/AuthController.dart';
 import 'package:flutterpos/controllers/home_controller.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
 import 'package:flutterpos/models/customer_model.dart';
+import 'package:flutterpos/models/payment_history.dart';
 import 'package:flutterpos/models/product_model.dart';
 import 'package:flutterpos/models/sales_model.dart';
 import 'package:flutterpos/models/sales_order_item_model.dart';
@@ -18,6 +20,8 @@ import '../services/transactions.dart';
 import '../utils/colors.dart';
 import '../widgets/loading_dialog.dart';
 import '../widgets/snackBars.dart';
+import 'CustomerController.dart';
+import 'attendant_controller.dart';
 
 class SalesController extends GetxController
     with GetSingleTickerProviderStateMixin {
@@ -28,6 +32,7 @@ class SalesController extends GetxController
   TextEditingController textEditingCredit = TextEditingController();
   RxList<ProductModel> selectedList = RxList([]);
   RxList<SalesModel> sales = RxList([]);
+  RxList<PayHistory> paymenHistory = RxList([]);
   Rxn<SalesSummary> profitModel = Rxn(null);
 
   RxInt grandTotal = RxInt(0);
@@ -36,8 +41,8 @@ class SalesController extends GetxController
   RxInt salesInitialIndex = RxInt(0);
   var selecteProduct = ProductModel().obs;
   RxBool saveSaleLoad = RxBool(false);
-  RxBool getSalesByDateLoad = RxBool(false);
-  RxBool todaySalesLoad = RxBool(false);
+  RxBool getSalesByLoad = RxBool(false);
+
   RxBool salesOrderItemLoad = RxBool(false);
   RxBool salesOnCreditLoad = RxBool(false);
   RxBool salesByShopLoad = RxBool(false);
@@ -216,11 +221,7 @@ class SalesController extends GetxController
           "customerId": selectedCustomer.value!.id,
         "duedate": type == "noncredit" ? "" : dueDate.value
       };
-
-      print("Body${sale}");
-
       var products = selectedList.map((element) => element).toList();
-      print("called");
       var response = await Sales().createSales({
         "sale": sale,
         "products": products,
@@ -234,11 +235,14 @@ class SalesController extends GetxController
         balance.value = 0;
         textEditingCredit.text = "0";
         selectedPaymentMethod.value == "Cash";
-        await getSalesByDates(
-            shopId: Get.find<ShopController>().currentShop.value?.id,
-            startingDate: DateTime.now(),
-            endingDate: DateTime.now(),
-            type: "notcashflow");
+        getSalesByShop(
+            id: Get.find<ShopController>().currentShop.value?.id,
+            attendantId: Get.find<AuthController>().usertype == "admin"
+                ?"": Get.find<AttendantController>().attendant.value!.id,
+            onCredit: "",
+            startingDate:
+            "${DateFormat("yyyy-MM-dd").format(DateTime.now())}");
+
         if (size == "large") {
           if (screen == "allSales") {
             Get.find<HomeController>().selectedWidget.value =
@@ -377,49 +381,6 @@ class SalesController extends GetxController
         });
   }
 
-  getSalesByDates(
-      {required shopId,
-      required startingDate,
-      required endingDate,
-      required type,
-      String ?attendantId}) async {
-    try {
-      sales.clear();
-      todaySalesLoad.value = true;
-      totalSalesByDate.value = 0;
-      var now = type != "cashflow" ? endingDate : DateTime.now();
-      var tomm = now.add(new Duration(days: 1));
-      var today = new DateFormat('yyyy-MM-dd')
-          .parse(new DateFormat('yyyy-MM-dd')
-              .format(type != "cashflow" ? startingDate : now))
-          .toIso8601String();
-      var tomorrow = new DateFormat('yyyy-MM-dd')
-          .parse(new DateFormat('yyyy-MM-dd').format(tomm));
-      var response = await Sales().getSalesByDate(
-          shopId,
-          "${type != "cashflow" ? today : startingDate}",
-          "${type != "cashflow" ? tomorrow : endingDate}");
-
-      if (response["status"] == true) {
-        sales.value = RxList([]);
-        List fetchedProducts = response["body"];
-
-        List<SalesModel> listProducts =
-            fetchedProducts.map((e) => SalesModel.fromJson(e)).toList();
-        for (var i = 0; i < listProducts.length; i++) {
-          totalSalesByDate += int.parse("${listProducts[i].grandTotal}");
-        }
-        sales.assignAll(listProducts);
-      } else {
-        sales.value = [];
-      }
-
-      todaySalesLoad.value = false;
-    } catch (e) {
-      todaySalesLoad.value = false;
-    }
-  }
-
   getSalesBySaleId(uid) async {
     try {
       salesOrderItemLoad.value = true;
@@ -439,17 +400,33 @@ class SalesController extends GetxController
     }
   }
 
-  getSalesByShop({required id, String? attendantId,required onCredit, String? startingDate}) async {
+  getSalesByShop(
+      {required id,
+      String? attendantId,
+      required onCredit,
+      String? startingDate,
+      String? customer}) async {
     try {
       sales.clear();
       salesByShopLoad.value = true;
-      var response = await Sales().getShopSales(id, attendantId,onCredit,startingDate);
-      print("response is$response}");
+      var response = await Sales().getShopSales(
+          shopId: id,
+          attendantId: attendantId,
+          onCredit: onCredit,
+          date: startingDate,
+          customer: customer == null ? "" : customer);
       if (response["status"] == true) {
         List data = response["body"];
+
         List<SalesModel> saleData =
             data.map((e) => SalesModel.fromJson(e)).toList();
         sales.assignAll(saleData);
+        if (startingDate != null) {
+          totalSalesByDate.value=0;
+          for (var i = 0; i < saleData.length; i++) {
+            totalSalesByDate += int.parse("${saleData[i].grandTotal}");
+          }
+        }
       } else {
         sales.value = [];
       }
@@ -458,7 +435,6 @@ class SalesController extends GetxController
       salesByShopLoad.value = false;
     }
   }
-
 
   getProfitTransaction(
       {required start, required end, required type, required shopId}) async {
@@ -510,5 +486,44 @@ class SalesController extends GetxController
           (int.parse(element.sellingPrice![0]) * element.cartquantity!);
     });
     return subTotal;
+  }
+
+  payCredit({required SalesModel salesBody, required String amount}) async {
+    try {
+      Map<String, dynamic> body = {
+        "customerId": salesBody.customerId!.id,
+        "amount": int.parse(amount),
+      };
+      var response =
+          await Sales().createPayment(body: body, saleId: salesBody.id);
+      if (response["status"] = true) {
+        Get.find<CustomerController>().amountController.clear();
+        var index = sales.indexWhere((element) => element.id == salesBody.id);
+        sales[index].creditTotal =
+            sales[index].creditTotal! - int.parse(amount);
+        sales.refresh();
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  getPaymentHistory({required String id}) async {
+    try {
+      getSalesByLoad.value = true;
+      var response = await Sales().getPaymentHistory(id: id);
+      if (response != null) {
+        List rawData = response;
+        List<PayHistory> pay =
+            rawData.map((e) => PayHistory.fromJson(e)).toList();
+        paymenHistory.assignAll(pay);
+      } else {
+        paymenHistory.value = [];
+      }
+      getSalesByLoad.value = false;
+    } catch (e) {
+      getSalesByLoad.value = false;
+      print(e);
+    }
   }
 }

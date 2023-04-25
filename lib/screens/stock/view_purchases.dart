@@ -100,7 +100,7 @@ class ViewPurchases extends StatelessWidget {
               onTap: () {
                 PurchasesPdf(
                     shop: shopController.currentShop.value!.name!,
-                    sales: purchaseController.purchaseByDate,
+                    sales: purchaseController.purchasedItems,
                     type: "type");
               },
               child: Icon(
@@ -115,7 +115,7 @@ class ViewPurchases extends StatelessWidget {
               ? Center(
                   child: CircularProgressIndicator(),
                 )
-              : purchaseController.purchaseByDate.length == 0
+              : purchaseController.purchasedItems.length == 0
                   ? noItemsFound(context, true)
                   : Padding(
                       padding: const EdgeInsets.symmetric(
@@ -157,10 +157,10 @@ class ViewPurchases extends StatelessWidget {
                                             textAlign: TextAlign.center)),
                                   ],
                                   rows: List.generate(
-                                      purchaseController.purchaseByDate.length,
+                                      purchaseController.purchasedItems.length,
                                       (index) {
                                     PurchaseOrder purchaseOrder =
-                                        purchaseController.purchaseByDate
+                                        purchaseController.purchasedItems
                                             .elementAt(index);
                                     final y = purchaseOrder.receiptNumber;
                                     final x = purchaseOrder.total.toString();
@@ -236,17 +236,17 @@ class ViewPurchases extends StatelessWidget {
               ? Center(
                   child: CircularProgressIndicator(),
                 )
-              : purchaseController.purchaseByDate.length == 0
+              : purchaseController.purchasedItems.length == 0
                   ? Center(
                       child: Text("No purchase Entries Found"),
                     )
                   : ListView.builder(
-                      itemCount: purchaseController.purchaseByDate.length,
+                      itemCount: purchaseController.purchasedItems.length,
                       physics: ScrollPhysics(),
                       shrinkWrap: true,
                       itemBuilder: (context, index) {
                         PurchaseOrder purchaseOrder =
-                            purchaseController.purchaseByDate.elementAt(index);
+                            purchaseController.purchasedItems.elementAt(index);
                         return purchaseOrderCard(purchaseOrder: purchaseOrder);
                       });
         }),

@@ -18,6 +18,7 @@ class CashFlowCategories extends StatelessWidget {
   CashFlowCategories({Key? key}) : super(key: key) {
     cashflowController.initialPage.value = 0;
     cashflowController.cashFlowCategories.clear();
+    cashflowController.cashFlowCategories.refresh();
     cashflowController.getCategory(
         "cash-in", createShopController.currentShop.value!.id);
   }

@@ -9,9 +9,7 @@ class Credit {
     var response = await DbBase().databaseRequest(
         customer + "credit/" + attendantId + "/" + shopId + "/" + uid,
         DbBase().getRequestType);
-
-    var data = jsonDecode(response);
-    return data;
+    return jsonDecode(response);
   }
 
   updateCredit(id, Map<String, dynamic> body) async {
