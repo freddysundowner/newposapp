@@ -134,15 +134,14 @@ class AttendantsPage extends StatelessWidget {
                     SizedBox(height: 5),
                     Obx(() {
                       return attendantController.getAttendantsLoad.value
-                          ? Center(child: CircularProgressIndicator())
+                          ? const Center(child: CircularProgressIndicator())
                           : attendantController.attendants.length == 0
                               ? Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Center(
                                       child: minorTitle(
-                                        title:
-                                            "This shop doesn't have attendants yet",
+                                        title: "No attendants",
                                         color: Colors.black,
                                       ),
                                     ),
