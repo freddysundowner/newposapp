@@ -16,6 +16,7 @@ class WalletController extends GetxController with GetTickerProviderStateMixin {
   RxBool updateWalletLoad = RxBool(false);
   RxList<DepositModel> deposits = RxList([]);
   late TabController tabController;
+  RxInt initialPage=RxInt(0);
 
   TextEditingController amountController = TextEditingController();
 

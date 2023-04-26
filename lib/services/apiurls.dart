@@ -33,7 +33,7 @@ const attendant = BASE_URL + "attendant/";
 const roles = BASE_URL + "roles";
 //sales
 const sales = BASE_URL + "sale/";
-const singleSaleItems = sales + "getSale/";
+const singleSaleItems = sales + "getSale";
 
 // badstock
 const badstock = BASE_URL + "badstock/";

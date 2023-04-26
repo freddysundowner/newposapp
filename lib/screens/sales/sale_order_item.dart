@@ -26,7 +26,7 @@ class SaleOrderItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    salesController.getSalesBySaleId(id);
+    salesController.getSalesBySaleId(uid: id);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(

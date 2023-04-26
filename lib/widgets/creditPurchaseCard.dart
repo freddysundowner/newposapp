@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:flutterpos/models/sales_model.dart';
+import 'package:flutterpos/screens/stock/purchase_order_item.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 import '../controllers/CustomerController.dart';
-import '../controllers/sales_controller.dart';
-import '../models/stock_in_credit.dart';
+import '../controllers/home_controller.dart';
+import '../controllers/purchase_controller.dart';
+import '../models/purchase_order.dart';
+import '../screens/cash_flow/payment_history.dart';
 
-Widget CreditPurchaseHistoryCard(context, StockInCredit salesBody) {
+Widget CreditPurchaseHistoryCard(context, PurchaseOrder salesBody) {
   return InkWell(
     onTap: () {
       showBottomSheet(context, salesBody);
@@ -27,11 +29,11 @@ Widget CreditPurchaseHistoryCard(context, StockInCredit salesBody) {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("#${salesBody.recietNumber}"),
+                Text("#${salesBody.receiptNumber}"),
                 Text("Date: ${DateFormat().format(salesBody.createdAt!)}"),
-                Text("Quantity: ${salesBody.balance}"),
+                Text("Quantity: ${salesBody.productCount}"),
                 Text(
-                  "Due: ${salesBody.total}",
+                  "Due: ${salesBody.balance}",
                   style: TextStyle(color: Colors.red),
                 ),
               ],
@@ -47,9 +49,7 @@ Widget CreditPurchaseHistoryCard(context, StockInCredit salesBody) {
   );
 }
 
-showBottomSheet(BuildContext context, StockInCredit salesBody) {
-  SalesController salesController = Get.find<SalesController>();
-  CustomerController customersController = Get.find<CustomerController>();
+showBottomSheet(BuildContext context, PurchaseOrder salesBody) {
   return showModalBottomSheet<void>(
       context: context,
       builder: (BuildContext context) {
@@ -67,17 +67,22 @@ showBottomSheet(BuildContext context, StockInCredit salesBody) {
                 ListTile(
                   leading: Icon(Icons.list),
                   onTap: () {
-
                     Navigator.pop(context);
+                    Get.to(() => PurchaseOrderItems(
+                          id: salesBody.id,
+                          page: "customer_info",
+
+                        ));
                   },
                   title: Text('View Purchases'),
                 ),
-                if (salesBody.total! > 0)
+                if (salesBody.balance! > 0)
                   ListTile(
                     leading: Icon(Icons.payment),
                     onTap: () {
                       Navigator.pop(context);
-                      // showAmountDialog(context, salesBody);
+
+                      showAmountDialog(context, salesBody);
                     },
                     title: Text('Pay'),
                   ),
@@ -85,6 +90,17 @@ showBottomSheet(BuildContext context, StockInCredit salesBody) {
                   leading: Icon(Icons.wallet),
                   onTap: () {
                     Navigator.pop(context);
+                    if (MediaQuery.of(context).size.width > 600) {
+                      Get.find<HomeController>().selectedWidget.value =
+                          PaymentHistory(
+                        id: salesBody.id!,
+                      );
+                    } else {
+                      Get.to(() => PaymentHistory(
+                            id: salesBody.id!,
+                          type:"purchase"
+                          ));
+                    }
                   },
                   title: Text('Payment History'),
                 ),
@@ -100,7 +116,7 @@ showBottomSheet(BuildContext context, StockInCredit salesBody) {
       });
 }
 
-showAmountDialog(context, SalesModel salesBody) {
+showAmountDialog(context, PurchaseOrder salesBody) {
   CustomerController customerController = Get.find<CustomerController>();
   showDialog(
       context: context,
@@ -123,7 +139,7 @@ showAmountDialog(context, SalesModel salesBody) {
                   controller: customerController.amountController,
                   keyboardType: TextInputType.text,
                   decoration: InputDecoration(
-                      hintText: "eg 300",
+                      hintText: "eg ${salesBody.total}",
                       hintStyle: TextStyle(color: Colors.black),
                       fillColor: Colors.white,
                       filled: true,
@@ -149,6 +165,13 @@ showAmountDialog(context, SalesModel salesBody) {
             TextButton(
               onPressed: () {
                 Get.back();
+                if (salesBody.balance! < int.parse(customerController.amountController.text)) {
+                } else {
+                  Get.find<PurchaseController>().paySupplierCredit(
+                    amount: customerController.amountController.text,
+                    salesBody: salesBody,
+                  );
+                }
               },
               child: Text(
                 "Save".toUpperCase(),

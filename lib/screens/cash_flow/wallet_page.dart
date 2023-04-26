@@ -23,11 +23,9 @@ class WalletPage extends StatelessWidget {
   final CustomerModel customerModel;
   final String? page;
 
-  WalletPage(
-      {Key? key,
-       required this.customerModel,
-      this.page})
+  WalletPage({Key? key, required this.customerModel, this.page})
       : super(key: key) {
+    walletController.initialPage.value = 0;
     customersController.getCustomerById(customerModel.id);
     walletController.getWallet(customerModel.id, "deposit");
   }
@@ -67,54 +65,58 @@ class WalletPage extends StatelessWidget {
   }
 
   Widget tabsPage(context) {
-    return Container(
-      height: MediaQuery.of(context).size.height * 0.9,
-      child: Column(
-        children: [
-          Container(
-            color: Colors.white,
-            width: double.infinity,
-            height: kToolbarHeight,
-            child: TabBar(
-                unselectedLabelColor: Colors.grey,
-                labelColor: Colors.purple,
-                indicatorColor: Colors.purple,
-                controller: walletController.tabController,
-                indicatorWeight: 3,
-                onTap: (index) {
-                  if (index == 0) {
-                    walletController.getWallet(customerModel.id, "deposit");
-                  } else {
-                    walletController.getWallet(customerModel.id, "usage");
-                  }
-                },
-                tabs: [
-                  Tab(text: "Deposit"),
-                  Tab(text: "Usage"),
-                ]),
-          ),
-          Expanded(
-            flex: 1,
-            child: Container(
-              color: Colors.grey.withOpacity(0.1),
-              child: TabBarView(
-                controller: walletController.tabController,
-                children: [
-                  DepositHistory(
-                    uid: customerModel.id,
-                    type: "deposit",
+    return Obx(() => DefaultTabController(
+          length: 2,
+          initialIndex: walletController.initialPage.value,
+          child: Container(
+            height: MediaQuery.of(context).size.height * 0.9,
+            child: Column(
+              children: [
+                Container(
+                  color: Colors.white,
+                  width: double.infinity,
+                  height: kToolbarHeight,
+                  child: TabBar(
+                      unselectedLabelColor: Colors.grey,
+                      labelColor: Colors.purple,
+                      indicatorColor: Colors.purple,
+                      indicatorWeight: 3,
+                      onTap: (index) {
+                        if (index == 0) {
+                          walletController.getWallet(
+                              customerModel.id, "deposit");
+                        } else {
+                          walletController.getWallet(customerModel.id, "usage");
+                        }
+                      },
+                      tabs: [
+                        Tab(text: "Deposit"),
+                        Tab(text: "Usage"),
+                      ]),
+                ),
+                Expanded(
+                  flex: 1,
+                  child: Container(
+                    color: Colors.grey.withOpacity(0.1),
+                    child: TabBarView(
+                      controller: walletController.tabController,
+                      children: [
+                        DepositHistory(
+                          uid: customerModel.id,
+                          type: "deposit",
+                        ),
+                        DepositHistory(
+                          uid: customerModel.id,
+                          type: "usage",
+                        ),
+                      ],
+                    ),
                   ),
-                  DepositHistory(
-                    uid: customerModel.id,
-                    type: "usage",
-                  ),
-                ],
-              ),
+                )
+              ],
             ),
-          )
-        ],
-      ),
-    );
+          ),
+        ));
   }
 
   Widget walletBalanceContainer(context, type) {
@@ -185,7 +187,9 @@ class WalletPage extends StatelessWidget {
             } else if (type == "large") {
               Get.find<HomeController>().selectedWidget.value =
                   CustomerInfoPage(
-                      user: "customer",customerModel: customerModel,);
+                user: "customer",
+                customerModel: customerModel,
+              );
             } else {
               Get.back();
             }
@@ -203,7 +207,8 @@ class WalletPage extends StatelessWidget {
         if (Get.find<AuthController>().usertype == "admin")
           IconButton(
               onPressed: () {
-                showModalSheet(context, customerModel.fullName, customerModel.id);
+                showModalSheet(
+                    context, customerModel.fullName, customerModel.id);
               },
               icon: Icon(Icons.download,
                   color: type == "small" ? Colors.white : Colors.black))
@@ -233,6 +238,7 @@ class WalletPage extends StatelessWidget {
                     child: InkWell(
                       onTap: () async {
                         Navigator.pop(context);
+                        walletController.initialPage.value=0;
                         WalletPdf(
                             shop: shopController.currentShop.value!.name!,
                             deposits: walletController.deposits,
@@ -257,6 +263,7 @@ class WalletPage extends StatelessWidget {
                     child: GestureDetector(
                       onTap: () async {
                         Navigator.pop(context);
+                        walletController.initialPage.value=1;
                         WalletPdf(
                             shop: shopController.currentShop.value!.name!,
                             deposits: walletController.deposits,

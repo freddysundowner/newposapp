@@ -27,14 +27,15 @@ class HomePage extends StatelessWidget {
   ShopController shopController = Get.find<ShopController>();
   SalesController salesController = Get.put(SalesController());
   AttendantController attendantController = Get.put(AttendantController());
+
   HomePage({Key? key}) : super(key: key) {
     salesController.getSalesByShop(
         id: shopController.currentShop.value?.id,
         attendantId: authController.usertype == "admin"
-            ?"": attendantController.attendant.value!.id,
+            ? ""
+            : attendantController.attendant.value!.id,
         onCredit: "",
-        startingDate:
-        "${DateFormat("yyyy-MM-dd").format(DateTime.now())}");
+        startingDate: "${DateFormat("yyyy-MM-dd").format(DateTime.now())}");
   }
 
   AuthController authController = Get.find<AuthController>();
@@ -113,12 +114,17 @@ class HomePage extends StatelessWidget {
                                             element;
                                         Get.back();
                                         salesController.getSalesByShop(
-                                            id: shopController.currentShop.value?.id,
-                                            attendantId: authController.usertype == "admin"
-                                                ?"": attendantController.attendant.value!.id,
+                                            id: shopController
+                                                .currentShop.value?.id,
+                                            attendantId:
+                                                authController.usertype ==
+                                                        "admin"
+                                                    ? ""
+                                                    : attendantController
+                                                        .attendant.value!.id,
                                             onCredit: "",
                                             startingDate:
-                                            "${DateFormat("yyyy-MM-dd").format(DateTime.now())}");
+                                                "${DateFormat("yyyy-MM-dd").format(DateTime.now())}");
                                       },
                                       title: Text(element.name!),
                                     ),
@@ -311,10 +317,12 @@ class HomePage extends StatelessWidget {
             await salesController.getSalesByShop(
                 id: shopController.currentShop.value?.id,
                 attendantId: authController.usertype == "admin"
-                    ?"": attendantController.attendant.value!.id,
+                    ? ""
+                    : attendantController.attendant.value!.id,
                 onCredit: "",
                 startingDate:
-                "${DateFormat("yyyy-MM-dd").format(DateTime.now())}");;
+                    "${DateFormat("yyyy-MM-dd").format(DateTime.now())}");
+            ;
             await Get.find<AttendantController>().getAttendantRoles();
           },
           child: Scaffold(
@@ -441,7 +449,9 @@ class HomePage extends StatelessWidget {
                             salesController.getSalesByShop(
                                 id: shopController.currentShop.value?.id,
                                 onCredit: "",
+                                attendantId: "",
                                 startingDate: "");
+
                             Get.to(() => AllSalesPage(
                                   page: "homePage",
                                 ));
@@ -489,10 +499,12 @@ class HomePage extends StatelessWidget {
                     salesController.getSalesByShop(
                         id: shopController.currentShop.value?.id,
                         attendantId: authController.usertype == "admin"
-                            ?"": attendantController.attendant.value!.id,
+                            ? ""
+                            : attendantController.attendant.value!.id,
                         onCredit: "",
                         startingDate:
-                        "${DateFormat("yyyy-MM-dd").format(DateTime.now())}");;
+                            "${DateFormat("yyyy-MM-dd").format(DateTime.now())}");
+                    ;
                   },
                   child: Container(
                     padding: EdgeInsets.all(10),
@@ -582,10 +594,12 @@ class HomePage extends StatelessWidget {
                 salesController.getSalesByShop(
                     id: shopController.currentShop.value?.id,
                     attendantId: authController.usertype == "admin"
-                        ?"": attendantController.attendant.value!.id,
+                        ? ""
+                        : attendantController.attendant.value!.id,
                     onCredit: "",
                     startingDate:
-                    "${DateFormat("yyyy-MM-dd").format(DateTime.now())}");;
+                        "${DateFormat("yyyy-MM-dd").format(DateTime.now())}");
+                ;
                 Get.find<HomeController>().selectedWidget.value = AllSalesPage(
                   page: "homePage",
                 );
@@ -594,9 +608,9 @@ class HomePage extends StatelessWidget {
                 salesController.getSalesByShop(
                     id: shopController.currentShop.value?.id,
                     onCredit: "",
+                    attendantId: "",
                     startingDate:
                         "${DateFormat("yyyy-MM-dd").format(DateTime.now())}");
-
                 Get.to(() => AllSalesPage(
                       page: "homePage",
                     ));

@@ -13,10 +13,11 @@ class Wallet {
   }
 
   getWallet(uid, type) async {
+    print(type);
     var response = await DbBase().databaseRequest(
         "${customerTransaction}" + uid, DbBase().getRequestType,
         body: {"type": type});
-
+    print(response);
     return jsonDecode(response);
   }
 

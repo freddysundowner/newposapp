@@ -20,9 +20,9 @@ class Sales {
     return data;
   }
 
-  getSalesBySaleId(uid) async {
+  getSalesBySaleId(uid,productId) async {
     var response = await DbBase()
-        .databaseRequest(singleSaleItems + uid, DbBase().getRequestType);
+        .databaseRequest("${singleSaleItems}?sale=${uid}&product=${productId}", DbBase().getRequestType);
 
     var data = jsonDecode(response);
     return data;
@@ -49,16 +49,19 @@ class Sales {
     return data;
   }
 
-  createPayment({required Map<String, dynamic> body, required saleId}) async{
-    var response = await DbBase().databaseRequest(sales+"pay/credit/$saleId", DbBase().postRequestType,body: body);
+  createPayment({required Map<String, dynamic> body, required saleId}) async {
+    var response = await DbBase().databaseRequest(
+        sales + "pay/credit/$saleId", DbBase().postRequestType,
+        body: body);
     return jsonDecode(response);
-
   }
 
-  getPaymentHistory({required String id}) async{
-    var response = await DbBase().databaseRequest(sales+"paymenthistory/$id", DbBase().getRequestType);
+  getPaymentHistory({required String id, required String type}) async {
+    var response = await DbBase().databaseRequest(
+        type == "purchase"
+            ? purchases + "paymenthistory/$id"
+            : sales + "paymenthistory/$id",
+        DbBase().getRequestType);
     return jsonDecode(response);
-
-
   }
 }

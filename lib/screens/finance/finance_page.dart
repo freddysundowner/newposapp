@@ -118,7 +118,8 @@ class FinancePage extends StatelessWidget {
                                 page: "financePage",
                               );
                               salesController.getSalesByShop(
-                                  id: shopController.currentShop.value?.id,onCredit: "");
+                                  id: shopController.currentShop.value?.id,
+                                  onCredit: "");
                             },
                             color: Colors.blue.shade100,
                             icon: Icons.sell_rounded,
@@ -237,11 +238,16 @@ class FinancePage extends StatelessWidget {
                     title: "Sales",
                     subtitle: "sales",
                     onPresssed: () {
+                      salesController.salesInitialIndex.value = 0;
+                      salesController.getSalesByShop(
+                          id: shopController.currentShop.value?.id,
+                          attendantId: "",
+                          onCredit: "",
+                          startingDate: "");
+
                       Get.to(() => AllSalesPage(
                             page: "financePage",
                           ));
-                      salesController.getSalesByShop(
-                          id: shopController.currentShop.value?.id,onCredit: "");
                     },
                     color: Colors.blue.shade100,
                     icon: Icons.sell_rounded,

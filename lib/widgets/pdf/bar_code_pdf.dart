@@ -22,7 +22,7 @@ BarcodePdf({
               children: [
                 pw.Center(
                   child: pw.Text(
-                    "${shop.name}",
+                    "${shop}",
                     style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
                   ),
                 ),

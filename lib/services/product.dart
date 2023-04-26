@@ -37,10 +37,13 @@ class Products {
 
   getProductHistory(productId, String type) async {
     var response = await DbBase().databaseRequest(
-        productHistory + "type/${productId}/${type}", DbBase().getRequestType);
-    var data = jsonDecode(response);
 
+
+        productHistory+"type/${productId}/${type}", DbBase().getRequestType);
+    var data = jsonDecode(response);
+    print(data);
     return data;
+
   }
 
   updateProduct({required id, required Map<String, dynamic> body}) async {
@@ -55,7 +58,7 @@ class Products {
         product +
             "filter?shopid=${shopId}&type=${type}&startDate=${startDate}&endDate=${endDate}",
         DbBase().getRequestType);
-
+    print(response);
     var data = jsonDecode(response);
     return data;
   }

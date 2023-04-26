@@ -75,11 +75,12 @@ class StockTransferController extends GetxController {
 
   gettingTransferHistory({required shopId, required type}) async {
     try {
+      transferHistory.clear();
       gettingTransferHistoryLoad.value = true;
-      var response =
-          await Products().getTransHistory(shopId: shopId, type: type);
+      var response = await Products().getTransHistory(shopId: shopId, type: type);
       if (response["status"] == true) {
         List jsonData = response["body"];
+        print(jsonData[0]);
         List<StockTransferHistory> transfer =
             jsonData.map((e) => StockTransferHistory.fromJson(e)).toList();
         transferHistory.assignAll(transfer);

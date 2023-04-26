@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutterpos/controllers/AuthController.dart';
 import 'package:flutterpos/controllers/attendant_controller.dart';
 import 'package:flutterpos/controllers/product_controller.dart';
+import 'package:flutterpos/controllers/product_history_controller.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
 import 'package:flutterpos/models/product_model.dart';
 import 'package:flutterpos/widgets/pdf/bar_code_pdf.dart';
@@ -110,6 +111,7 @@ showProductModal(context, ProductModel product, shopId) {
                     leading: Icon(Icons.list),
                     onTap: () {
                       Get.back();
+                      Get.find<ProductHistoryController>().tabIndex.value = 0;
                       Get.to(() => ProductHistory(product: product));
                     },
                     title: Text('Product History')),

@@ -32,7 +32,7 @@ class AttendantsPage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    createAttendantWidget(),
+                    createAttendantWidget(context),
                     Obx(() {
                       return attendantController.getAttendantsLoad.value
                           ? Center(
@@ -130,7 +130,7 @@ class AttendantsPage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    createAttendantWidget(),
+                    createAttendantWidget(context),
                     SizedBox(height: 5),
                     Obx(() {
                       return attendantController.getAttendantsLoad.value
@@ -167,12 +167,16 @@ class AttendantsPage extends StatelessWidget {
             ))));
   }
 
-  Widget createAttendantWidget() {
+  Widget createAttendantWidget(context) {
     return Padding(
       padding: const EdgeInsets.all(3.0),
       child: InkWell(
         onTap: () {
-          Get.find<HomeController>().selectedWidget.value = CreateAttendant();
+          if (MediaQuery.of(context).size.width > 600) {
+            Get.find<HomeController>().selectedWidget.value = CreateAttendant();
+          } else {
+            Get.to(() => CreateAttendant());
+          }
         },
         child: Align(
           alignment: Alignment.topRight,

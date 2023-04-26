@@ -383,7 +383,7 @@ class ProductController extends GetxController {
         DateFormat("yyyy-MM-dd").format(now),
         DateFormat("yyyy-MM-dd").format(tomm),
       );
-
+      print(response);
       products.clear();
       if (response != null) {
         List fetchedProducts = response["products"];
@@ -480,9 +480,13 @@ class ProductController extends GetxController {
           } else {
             Get.find<HomeController>().selectedWidget.value = StockPage();
           }
-        } else {
-          Get.back();
         }
+
+        getBadStock(
+            shopId: shop,
+            attendant: Get.find<AuthController>().usertype == "admin"
+                ? ""
+                : Get.find<AttendantController>().attendant.value?.id);
       }
       saveBadstockLoad.value = false;
     } catch (e) {
@@ -493,11 +497,11 @@ class ProductController extends GetxController {
     }
   }
 
-  getBadStock({required shopId,String?attendant}) async {
+  getBadStock({required shopId, String? attendant}) async {
     try {
       saveBadstockLoad.value = true;
       badstocks.clear();
-      var response = await Products().getBadStock(shopId,attendant);
+      var response = await Products().getBadStock(shopId, attendant);
       if (response["status"] == true) {
         List responseData = response["body"];
         List<BadStock> jsonData =

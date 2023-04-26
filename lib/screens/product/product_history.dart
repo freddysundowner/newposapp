@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutterpos/controllers/home_controller.dart';
+import 'package:flutterpos/controllers/purchase_controller.dart';
+import 'package:flutterpos/controllers/sales_controller.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
 import 'package:flutterpos/models/product_model.dart';
 import 'package:flutterpos/screens/product/products_page.dart';
@@ -8,7 +10,8 @@ import 'package:intl/intl.dart';
 
 import '../../controllers/product_history_controller.dart';
 import '../../models/product_history_model.dart';
-import '../../models/product_sales_history.dart';
+import '../../models/sales_order_item_model.dart';
+import '../../models/supply_order_model.dart';
 import '../../utils/colors.dart';
 import '../../widgets/bigtext.dart';
 import '../../widgets/smalltext.dart';
@@ -16,99 +19,102 @@ import '../../widgets/smalltext.dart';
 class ProductHistory extends StatelessWidget {
   final ProductModel product;
 
-  ProductHistory({Key? key, required this.product}) : super(key: key);
+  ProductHistory({Key? key, required this.product}) : super(key: key) {
+    productHistoryController.product.clear();
+    salesController.getSalesBySaleId(productId: product.id);
+  }
+
   ProductHistoryController productHistoryController =
       Get.find<ProductHistoryController>();
+  PurchaseController purchaseController = Get.find<PurchaseController>();
   ShopController shopController = Get.find<ShopController>();
+  SalesController salesController = Get.find<SalesController>();
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          elevation: 0.0,
-          titleSpacing: 0.0,
-          centerTitle: false,
-          backgroundColor: Colors.white,
-          leading: IconButton(
-              onPressed: () {
-                if (MediaQuery.of(context).size.width > 600) {
-                  Get.find<HomeController>().selectedWidget.value =
-                      ProductPage();
-                } else {
-                  Get.back();
-                }
-              },
-              icon: Icon(Icons.arrow_back_ios, color: Colors.black)),
-          title: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              majorTitle(
-                  title: "${product.name!}", color: Colors.black, size: 16.0),
-              minorTitle(title: "History", color: Colors.grey),
-            ],
-          ),
-        ),
-        body: Column(children: [
-          Container(
-            color: Colors.white,
-            height: kToolbarHeight,
-            child: TabBar(
-              indicatorColor: AppColors.mainColor,
-              indicatorWeight: 3,
-              controller: productHistoryController.tabController,
-              labelColor: AppColors.mainColor,
-              unselectedLabelColor: Colors.black,
-              onTap: (index) {
-                if (index == 0) {
-                  productHistoryController.getProductHistory(
-                      productId: product.id, type: "sold");
-                }
-                if (index == 1) {
-                  productHistoryController.getProductHistory(
-                      productId: product.id, type: "purchase");
-                }
-                if (index == 2) {
-                  productHistoryController.getProductHistory(
-                      productId: product.id, type: "transfer");
-                }
-                if (index == 3) {
-                  productHistoryController.getProductHistory(
-                      productId: product.id, type: "badstock");
-                }
-                productHistoryController.changeTabIndex(index);
-              },
-              tabs: productHistoryController.tabs,
-            ),
-          ),
-          Expanded(
-            child: Container(
-              color: MediaQuery.of(context).size.width > 600
-                  ? Colors.white
-                  : Colors.grey.withOpacity(0.3),
-              child: TabBarView(
-                  controller: productHistoryController.tabController,
+    return Obx(() => DefaultTabController(
+          length: productHistoryController.tabs.length,
+          initialIndex: productHistoryController.tabIndex.value,
+          child: Scaffold(
+              appBar: AppBar(
+                elevation: 0.0,
+                titleSpacing: 0.0,
+                centerTitle: false,
+                backgroundColor: Colors.white,
+                leading: IconButton(
+                    onPressed: () {
+                      if (MediaQuery.of(context).size.width > 600) {
+                        Get.find<HomeController>().selectedWidget.value =
+                            ProductPage();
+                      } else {
+                        Get.back();
+                      }
+                    },
+                    icon: Icon(Icons.arrow_back_ios, color: Colors.black)),
+                title: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SalesPages(
-                        productHistoryController: productHistoryController,
-                        productId: product.id,
-                        type: "cash"),
-                    HistoryPages(
-                        productHistoryController: productHistoryController,
-                        productId: product.id,
-                        type: "purchase"),
-                    HistoryPages(
-                        productHistoryController: productHistoryController,
-                        productId: product.id,
-                        type: "transfer"),
-                    HistoryPages(
-                      productHistoryController: productHistoryController,
-                      productId: product.id,
-                      type: "badstock",
-                    ),
-                  ]),
-            ),
-          )
-        ]));
+                    majorTitle(
+                        title: "${product.name!}",
+                        color: Colors.black,
+                        size: 16.0),
+                    minorTitle(title: "History", color: Colors.grey),
+                  ],
+                ),
+                bottom: TabBar(
+                  indicatorColor: AppColors.mainColor,
+                  indicatorWeight: 3,
+                  labelColor: AppColors.mainColor,
+                  controller: productHistoryController.tabController,
+                  unselectedLabelColor: Colors.black,
+                  onTap: (index) {
+                    productHistoryController.tabIndex.value = index;
+                    if (index == 0) {
+                      salesController.getSalesBySaleId(productId: product.id);
+                    }
+                    if (index == 1) {
+                      purchaseController.getPurchaseOrderItems(
+                          purchaseId: product.id);
+                    }
+                    if (index == 2) {
+                      productHistoryController.getProductHistory(
+                          productId: product.id, type: "transfer");
+                    }
+                    if (index == 3) {
+                      productHistoryController.getProductHistory(
+                          productId: product.id, type: "badstock");
+                    }
+                  },
+                  tabs: productHistoryController.tabs,
+                ),
+              ),
+              body: Column(children: [
+                Expanded(
+                  child: Container(
+                    color: Colors.white,
+                    child: TabBarView(
+                        controller: productHistoryController.tabController,
+                        physics: NeverScrollableScrollPhysics(),
+                        children: [
+                          SalesPages(
+                            productId: product.id,
+                          ),
+                          PurchasesPages(),
+                          HistoryPages(
+                              productHistoryController:
+                                  productHistoryController,
+                              productId: product.id,
+                              type: "transfer"),
+                          HistoryPages(
+                            productHistoryController: productHistoryController,
+                            productId: product.id,
+                            type: "badstock",
+                          ),
+                        ]),
+                  ),
+                )
+              ])),
+        ));
   }
 }
 
@@ -272,28 +278,176 @@ class HistoryPages extends StatelessWidget {
   }
 }
 
-class SalesPages extends StatelessWidget {
-  final type;
-  final ProductHistoryController productHistoryController;
-  final productId;
+class PurchasesPages extends StatelessWidget {
+  PurchaseController purchaseController = Get.find<PurchaseController>();
 
-  SalesPages(
-      {Key? key,
-      required this.productHistoryController,
-      required this.productId,
-      required this.type})
-      : super(key: key);
+  PurchasesPages({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    productHistoryController.getHistory(productId: productId);
-
     return Obx(() {
-      return productHistoryController.loadingSalesHistory.value
+      return purchaseController.getPurchaseOrderItemLoad.value
           ? Center(
               child: CircularProgressIndicator(),
             )
-          : productHistoryController.salesHistory.length == 0
+          : purchaseController.purchaseOrderItems.length == 0
+              ? Center(
+                  child: Text("There are no iems to display"),
+                )
+              : MediaQuery.of(context).size.width > 600
+                  ? SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(height: 10),
+                          Theme(
+                            data: Theme.of(context)
+                                .copyWith(dividerColor: Colors.grey),
+                            child: Container(
+                              width: double.infinity,
+                              margin: EdgeInsets.only(
+                                  right: 15, left: 15, bottom: 20),
+                              child: DataTable(
+                                decoration: BoxDecoration(
+                                    border: Border.all(
+                                  width: 1,
+                                  color: Colors.black,
+                                )),
+                                columnSpacing: 30.0,
+                                columns: [
+                                  DataColumn(
+                                      label: Text('Product',
+                                          textAlign: TextAlign.center)),
+                                  DataColumn(
+                                      label: Text('Quantity',
+                                          textAlign: TextAlign.center)),
+                                  DataColumn(
+                                      label: Text('Buying Price',
+                                          textAlign: TextAlign.center)),
+                                  DataColumn(
+                                      label: Text('Selling Price',
+                                          textAlign: TextAlign.center)),
+                                  DataColumn(
+                                      label: Text('Date',
+                                          textAlign: TextAlign.center)),
+                                ],
+                                rows: List.generate(
+                                    purchaseController.purchasedItems.length,
+                                    (index) {
+                                  ProductHistoryModel productBody =
+                                      ProductHistoryModel();
+                                  final y = productBody.product!.name;
+                                  final x = productBody.quantity;
+                                  final w = productBody.product!.buyingPrice;
+                                  final z =
+                                      productBody.product!.sellingPrice![0];
+                                  final a = productBody.createdAt;
+
+                                  return DataRow(cells: [
+                                    DataCell(
+                                        Container(width: 75, child: Text(y!))),
+                                    DataCell(Container(
+                                        width: 75, child: Text(x.toString()))),
+                                    DataCell(Container(
+                                        width: 75, child: Text(w.toString()))),
+                                    DataCell(Container(
+                                        width: 75, child: Text(z.toString()))),
+                                    DataCell(Container(
+                                        width: 75,
+                                        child: Text(DateFormat("dd-MM-yyyy")
+                                            .format(a!)))),
+                                  ]);
+                                }),
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 30)
+                        ],
+                      ),
+                    )
+                  : ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: purchaseController.purchaseOrderItems.length,
+                      // physics: NeverScrollableScrollPhysics(),
+                      itemBuilder: (context, index) {
+                        SupplyOrderModel productBody = purchaseController
+                            .purchaseOrderItems
+                            .elementAt(index);
+
+                        return productHistoryContainer(productBody);
+                      });
+    });
+  }
+
+  Widget productHistoryContainer(productBody) {
+    ShopController shopController = Get.find<ShopController>();
+    return Padding(
+      padding: const EdgeInsets.all(3.0),
+      child: Card(
+        color: Colors.white.withOpacity(0.9),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Container(
+              child: Row(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "${productBody.product!.name}".capitalize!,
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18),
+                      ),
+                      // Text(
+                      //   "${productBody.product!.category ?? ""}",
+                      //   style: TextStyle(color: Colors.grey, fontSize: 16),
+                      // ),
+                      Text('Qty ${productBody.quantity}'),
+                      Text(
+                          '${DateFormat("MMM dd,yyyy, hh:m a").format(productBody.createdAt!)} '),
+                    ],
+                  )
+                ],
+              ),
+              Spacer(),
+              Column(
+                children: [
+                  Text(
+                      'BP/=  ${shopController.currentShop.value?.currency}.${productBody.product!.buyingPrice}'),
+                  Text(
+                      'SP/=  ${shopController.currentShop.value?.currency}.${productBody.product!.sellingPrice![0]}')
+                ],
+              )
+            ],
+          )),
+        ),
+      ),
+    );
+  }
+}
+
+class SalesPages extends StatelessWidget {
+  final productId;
+  SalesController salesController = Get.find<SalesController>();
+
+  SalesPages({
+    Key? key,
+    required this.productId,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(() {
+      return salesController.salesOrderItemLoad.value
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : salesController.salesHistory.length == 0
               ? Center(
                   child: Text("There are no iems to display"),
                 )
@@ -334,13 +488,12 @@ class SalesPages extends StatelessWidget {
                                         textAlign: TextAlign.center)),
                               ],
                               rows: List.generate(
-                                  productHistoryController.salesHistory.length,
-                                  (index) {
-                                ProductSaleHistory productBody =
-                                    productHistoryController.salesHistory
-                                        .elementAt(index);
+                                  salesController.salesHistory.length, (index) {
+                                SaleOrderItemModel productBody = salesController
+                                    .salesHistory
+                                    .elementAt(index);
                                 final y = productBody.product!.name;
-                                final x = productBody.quantity;
+                                final x = productBody.itemCount;
                                 final w = productBody.product!.buyingPrice;
                                 final z = productBody.product!.sellingPrice![0];
                                 final a = productBody.createdAt;
@@ -369,18 +522,18 @@ class SalesPages extends StatelessWidget {
                     )
                   : ListView.builder(
                       shrinkWrap: true,
-                      itemCount: productHistoryController.salesHistory.length,
+                      itemCount: salesController.salesHistory.length,
                       itemBuilder: (context, index) {
-                        ProductSaleHistory productBody =
-                            productHistoryController.salesHistory
-                                .elementAt(index);
+                        SaleOrderItemModel saleOrderItemModel =
+                            salesController.salesHistory.elementAt(index);
+                        return productHistoryContainer(saleOrderItemModel);
 
-                        return productHistoryContainer(productBody);
+                        // return productHistoryContainer(productBody);
                       });
     });
   }
 
-  Widget productHistoryContainer(ProductSaleHistory productBody) {
+  Widget productHistoryContainer(productBody) {
     ShopController shopController = Get.find<ShopController>();
     return Padding(
       padding: const EdgeInsets.all(3.0),
@@ -405,7 +558,7 @@ class SalesPages extends StatelessWidget {
                             fontSize: 18),
                       ),
                       Text(
-                        "${productBody.product!.category}",
+                        "${productBody.product!.category.name}",
                         style: TextStyle(color: Colors.grey, fontSize: 16),
                       ),
                       Text('Qty ${productBody.itemCount}'),

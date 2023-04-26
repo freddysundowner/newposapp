@@ -42,6 +42,7 @@ class SalesController extends GetxController
   var selecteProduct = ProductModel().obs;
   RxBool saveSaleLoad = RxBool(false);
   RxBool getSalesByLoad = RxBool(false);
+  RxBool getPaymentHistoryLoad = RxBool(false);
 
   RxBool salesOrderItemLoad = RxBool(false);
   RxBool salesOnCreditLoad = RxBool(false);
@@ -238,10 +239,10 @@ class SalesController extends GetxController
         getSalesByShop(
             id: Get.find<ShopController>().currentShop.value?.id,
             attendantId: Get.find<AuthController>().usertype == "admin"
-                ?"": Get.find<AttendantController>().attendant.value!.id,
+                ? ""
+                : Get.find<AttendantController>().attendant.value!.id,
             onCredit: "",
-            startingDate:
-            "${DateFormat("yyyy-MM-dd").format(DateTime.now())}");
+            startingDate: "${DateFormat("yyyy-MM-dd").format(DateTime.now())}");
 
         if (size == "large") {
           if (screen == "allSales") {
@@ -381,11 +382,13 @@ class SalesController extends GetxController
         });
   }
 
-  getSalesBySaleId(uid) async {
+  getSalesBySaleId({String? uid, String? productId}) async {
     try {
       salesOrderItemLoad.value = true;
-      salesHistory.value = [];
-      var response = await Sales().getSalesBySaleId(uid);
+      salesHistory.clear();
+      var response = await Sales().getSalesBySaleId(
+          uid == null ? "" : uid, productId == null ? "" : productId);
+      print(response);
       if (response != null) {
         List fetchedProducts = response["body"];
         List<SaleOrderItemModel> singleProduct =
@@ -422,7 +425,7 @@ class SalesController extends GetxController
             data.map((e) => SalesModel.fromJson(e)).toList();
         sales.assignAll(saleData);
         if (startingDate != null) {
-          totalSalesByDate.value=0;
+          totalSalesByDate.value = 0;
           for (var i = 0; i < saleData.length; i++) {
             totalSalesByDate += int.parse("${saleData[i].grandTotal}");
           }
@@ -460,7 +463,7 @@ class SalesController extends GetxController
       salesOrderItemLoad.value = true;
       var response = await Sales().retunSale(id);
       if (response["status"] != false) {
-        getSalesBySaleId(salesId);
+        getSalesBySaleId(uid: salesId);
       } else {
         showSnackBar(
             message: response["message"], color: Colors.red, context: context);
@@ -493,6 +496,7 @@ class SalesController extends GetxController
       Map<String, dynamic> body = {
         "customerId": salesBody.customerId!.id,
         "amount": int.parse(amount),
+        "type": "sale"
       };
       var response =
           await Sales().createPayment(body: body, saleId: salesBody.id);
@@ -508,10 +512,11 @@ class SalesController extends GetxController
     }
   }
 
-  getPaymentHistory({required String id}) async {
+  getPaymentHistory({required String id, required type}) async {
     try {
-      getSalesByLoad.value = true;
-      var response = await Sales().getPaymentHistory(id: id);
+      getPaymentHistoryLoad.value = true;
+      var response = await Sales().getPaymentHistory(id: id, type: type);
+      print(response);
       if (response != null) {
         List rawData = response;
         List<PayHistory> pay =
@@ -520,9 +525,9 @@ class SalesController extends GetxController
       } else {
         paymenHistory.value = [];
       }
-      getSalesByLoad.value = false;
+      getPaymentHistoryLoad.value = false;
     } catch (e) {
-      getSalesByLoad.value = false;
+      getPaymentHistoryLoad.value = false;
       print(e);
     }
   }

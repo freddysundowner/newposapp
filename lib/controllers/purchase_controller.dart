@@ -14,6 +14,7 @@ import 'package:flutterpos/widgets/loading_dialog.dart';
 import 'package:get/get.dart';
 
 import '../widgets/snackBars.dart';
+import 'CustomerController.dart';
 
 class PurchaseController extends GetxController {
   final GlobalKey<State> _keyLoader = new GlobalKey<State>();
@@ -82,17 +83,21 @@ class PurchaseController extends GetxController {
       }
     }
   }
-  getPurchase(
-      {required shopId,
-      String? attendantId,
-      String? customer,}) async {
+
+  getPurchase({
+    required shopId,
+    String? attendantId,
+    String? customer,
+    String? onCredit,
+  }) async {
     try {
       getPurchaseLoad.value = true;
       var response = await Purchases().getPurchase(
           shopId: shopId,
           attendantId: attendantId,
           customer: customer == null ? "" : customer,
-         );
+          onCredit: onCredit == null ? "" : onCredit);
+      print(response);
       if (response["status"] == true) {
         List fetchedResponse = response["body"];
         List<PurchaseOrder> supply =
@@ -107,10 +112,11 @@ class PurchaseController extends GetxController {
     }
   }
 
-  getPurchaseOrderItems({required id}) async {
+  getPurchaseOrderItems({String? purchaseId, String? productId}) async {
     try {
       getPurchaseOrderItemLoad.value = true;
-      var response = await Purchases().getPurchaseOrderItems(id: id);
+      var response = await Purchases().getPurchaseOrderItems(id: purchaseId == null ? "" : purchaseId,productId:productId==null?"":productId);
+      print(response);
       if (response["status"] == true) {
         List fetchedResponse = response["body"];
         List<SupplyOrderModel> supply =
@@ -221,5 +227,27 @@ class PurchaseController extends GetxController {
       subTotal = subTotal + element.total!;
     });
     return subTotal;
+  }
+
+  paySupplierCredit(
+      {required String amount, required PurchaseOrder salesBody}) async {
+    try {
+      Map<String, dynamic> body = {
+        "supplier": salesBody.supplier,
+        "amount": int.parse(amount),
+      };
+      var response =
+          await Purchases().createPayment(body: body, saleId: salesBody.id);
+      if (response["status"] = true) {
+        int index =
+            purchasedItems.indexWhere((element) => element.id == salesBody.id);
+        purchasedItems[index].balance =
+            purchasedItems[index].balance! - int.parse(amount);
+        purchasedItems.refresh();
+        Get.find<CustomerController>().amountController.clear();
+      }
+    } catch (e) {
+      print(e);
+    }
   }
 }

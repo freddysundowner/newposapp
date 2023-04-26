@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutterpos/controllers/home_controller.dart';
+import 'package:flutterpos/controllers/purchase_controller.dart';
 import 'package:flutterpos/controllers/sales_controller.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
 import 'package:flutterpos/models/customer_model.dart';
@@ -19,8 +20,8 @@ import 'package:intl/intl.dart';
 import '../../controllers/AuthController.dart';
 import '../../controllers/CustomerController.dart';
 import '../../controllers/attendant_controller.dart';
-import '../../controllers/credit_controller.dart';
 import '../../controllers/supplierController.dart';
+import '../../models/purchase_order.dart';
 import '../../models/stock_in_credit.dart';
 import '../../models/supply_order_model.dart';
 import '../../utils/colors.dart';
@@ -37,16 +38,34 @@ class CustomerInfoPage extends StatelessWidget {
   final CustomerModel customerModel;
 
   CustomerInfoPage({Key? key, required this.user, required this.customerModel})
-      : super(key: key);
+      : super(key: key) {
+    customerController.initialPage.value = 0;
+    if (user == "supplier") {
+      Get.find<PurchaseController>().getPurchase(
+          shopId: createShopController.currentShop.value!.id,
+          onCredit: "true",
+          attendantId: authController.usertype == "admin"
+              ? ""
+              : attendantController.attendant.value!.id,
+          customer: customerModel.id);
+    } else {
+      Get.find<SalesController>().getSalesByShop(
+          id: shopController.currentShop.value?.id,
+          attendantId: authController.usertype == "admin"
+              ? ""
+              : attendantController.attendant.value!.id,
+          onCredit: true,
+          customer: customerModel.id,
+          startingDate: "");
+    }
+  }
 
   CustomerController customerController = Get.find<CustomerController>();
   SupplierController supplierController = Get.find<SupplierController>();
   ShopController shopController = Get.find<ShopController>();
-  CreditController creditController = Get.find<CreditController>();
   AttendantController attendantController = Get.find<AttendantController>();
   ShopController createShopController = Get.find<ShopController>();
   AuthController authController = Get.find<AuthController>();
-  SalesController salesControler = Get.find<SalesController>();
 
   launchWhatsApp({required number, required message}) async {
     // String url = "whatsapp://send?phone=+254${number}&text=$message";
@@ -67,68 +86,233 @@ class CustomerInfoPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        customerController.initialPage.value = 0;
-        return true;
-      },
-      child: ResponsiveWidget(
-        largeScreen: Scaffold(
+    return ResponsiveWidget(
+      largeScreen: Scaffold(
+        backgroundColor: Colors.white,
+        appBar: AppBar(
+          elevation: 0.0,
           backgroundColor: Colors.white,
-          appBar: AppBar(
-            elevation: 0.0,
-            backgroundColor: Colors.white,
-            title: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  minorTitle(
+                      title: customerModel.fullName,
+                      color: Colors.black,
+                      size: 18)
+                ],
+              ),
+              if (user != "supplier")
+                InkWell(
+                  onTap: () {
+                    Get.find<HomeController>().selectedWidget.value =
+                        WalletPage(
+                      customerModel: customerModel,
+                    );
+                  },
+                  child: Container(
+                    padding:
+                        EdgeInsets.only(top: 5, bottom: 5, left: 10, right: 15),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(50),
+                        color: Colors.white.withOpacity(0.2)),
+                    child: Row(
+                      children: [
+                        Icon(Icons.credit_card, color: Colors.black),
+                        SizedBox(width: 10),
+                        Text(
+                          "Wallet",
+                          style: TextStyle(color: Colors.black),
+                        )
+                      ],
+                    ),
+                  ),
+                )
+            ],
+          ),
+          leading: IconButton(
+              onPressed: () {
+                Get.find<HomeController>().selectedWidget.value = CustomersPage(
+                  type: user,
+                );
+              },
+              icon: Icon(
+                Icons.arrow_back_ios,
+                color: Colors.black,
+              )),
+          actions: [
+            IconButton(
+                onPressed: () {
+                  if (user == "supplier") {
+                    supplierController.assignTextFields(customerModel);
+                  } else {
+                    customerController.assignTextFields(customerModel);
+                  }
+                  showEditDialog(
+                      user: user,
+                      context: context,
+                      customerModel: customerModel);
+                },
+                icon: Icon(
+                  Icons.edit,
+                  color: Colors.black,
+                )),
+            IconButton(
+                onPressed: () {
+                  deleteDialog(
+                      context: context,
+                      onPressed: () {
+                        if (user == "supplier") {
+                          supplierController.deleteSuppler(
+                              context: context,
+                              id: customerModel.id,
+                              shopId: shopController.currentShop.value?.id);
+                        } else {
+                          customerController.deleteCustomer(
+                              context: context,
+                              id: customerModel.id,
+                              shopId: shopController.currentShop.value?.id);
+                        }
+                      });
+                },
+                icon: Icon(
+                  Icons.delete,
+                  color: Colors.red,
+                )),
+          ],
+        ),
+        body: customerInfoBody(context),
+      ),
+      smallScreen: Helper(
+          widget: SingleChildScrollView(
+            child: Column(
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    minorTitle(
-                        title: customerModel.fullName,
-                        color: Colors.black,
-                        size: 18)
-                  ],
-                ),
-                if (user != "supplier")
-                  InkWell(
-                    onTap: () {
-                      Get.find<HomeController>().selectedWidget.value =
-                          WalletPage(
-                        customerModel: customerModel,
-                      );
-                    },
-                    child: Container(
-                      padding: EdgeInsets.only(
-                          top: 5, bottom: 5, left: 10, right: 15),
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(50),
-                          color: Colors.white.withOpacity(0.2)),
-                      child: Row(
+                Container(
+                  height: MediaQuery.of(context).size.height * 0.3,
+                  color: AppColors.mainColor,
+                  child: Column(
+                    children: [
+                      SizedBox(height: 10),
+                      Center(
+                        child: Container(
+                          decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.white,
+                              border:
+                                  Border.all(color: Colors.white, width: 2)),
+                          child: Icon(
+                            Icons.person,
+                            color: Colors.grey,
+                            size: 50,
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                      Center(
+                          child: Text(
+                        customerModel.fullName!,
+                        style: TextStyle(
+                            color: Colors.white, fontWeight: FontWeight.bold),
+                      )),
+                      SizedBox(height: 5),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.credit_card, color: Colors.black),
-                          SizedBox(width: 10),
+                          Icon(
+                            Icons.phone,
+                            color: Colors.white,
+                            size: 14,
+                          ),
                           Text(
-                            "Wallet",
-                            style: TextStyle(color: Colors.black),
+                            customerModel.phoneNumber!,
+                            style: TextStyle(color: Colors.white),
                           )
                         ],
                       ),
-                    ),
-                  )
+                      SizedBox(height: 10),
+                      Container(
+                        width: double.infinity,
+                        padding:
+                            EdgeInsets.only(left: 20, right: 20, bottom: 10),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            IconButton(
+                                onPressed: () {
+                                  launchMessage(
+                                      number: customerModel.phoneNumber,
+                                      message: user == "supplier"
+                                          ? "we will be paying your debt very soon"
+                                          : "Aquick reminde that you owe our shop please pay your debt ");
+                                },
+                                icon: Icon(Icons.message),
+                                color: Colors.white),
+                            IconButton(
+                                onPressed: () {
+                                  launchWhatsApp(
+                                      number: customerModel.phoneNumber,
+                                      message: user == "supplier"
+                                          ? "we will be paying your debt very soon"
+                                          : "Aquick reminde that you owe our shop please pay your debt ");
+                                },
+                                icon: Icon(Icons.whatshot),
+                                color: Colors.white),
+                            IconButton(
+                                onPressed: () async {
+                                  // await launch(
+                                  //     "tel://${user == "suppliers" ? "${supplierController.supplier.value?.phoneNumber}" : "${customerController.customer.value?.phoneNumber}"}");
+                                },
+                                icon: Icon(Icons.phone),
+                                color: Colors.white),
+                            if (user != "supplier")
+                              InkWell(
+                                onTap: () {
+                                  Get.to(
+                                    () => WalletPage(
+                                      customerModel: customerModel,
+                                    ),
+                                  );
+                                },
+                                child: Container(
+                                  padding: EdgeInsets.only(
+                                      top: 5, bottom: 5, left: 10, right: 15),
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(50),
+                                      color: Colors.white.withOpacity(0.2)),
+                                  child: Row(
+                                    children: [
+                                      Icon(Icons.credit_card,
+                                          color: Colors.white),
+                                      SizedBox(width: 10),
+                                      Text(
+                                        "Wallet",
+                                        style: TextStyle(color: Colors.white),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                customerInfoBody(context)
               ],
             ),
+          ),
+          appBar: AppBar(
+            elevation: 0.0,
+            backgroundColor: AppColors.mainColor,
             leading: IconButton(
                 onPressed: () {
-                  Get.find<HomeController>().selectedWidget.value =
-                      CustomersPage(
-                    type: user,
-                  );
+                  customerController.initialPage.value = 0;
+                  Get.back();
                 },
-                icon: Icon(
-                  Icons.arrow_back_ios,
-                  color: Colors.black,
-                )),
+                icon: Icon(Icons.arrow_back_ios)),
             actions: [
               IconButton(
                   onPressed: () {
@@ -142,10 +326,7 @@ class CustomerInfoPage extends StatelessWidget {
                         context: context,
                         customerModel: customerModel);
                   },
-                  icon: Icon(
-                    Icons.edit,
-                    color: Colors.black,
-                  )),
+                  icon: Icon(Icons.edit)),
               IconButton(
                   onPressed: () {
                     deleteDialog(
@@ -154,188 +335,19 @@ class CustomerInfoPage extends StatelessWidget {
                           if (user == "supplier") {
                             supplierController.deleteSuppler(
                                 context: context,
-                                id: supplierController.supplier.value?.id,
+                                id: customerModel.id,
                                 shopId: shopController.currentShop.value?.id);
                           } else {
                             customerController.deleteCustomer(
                                 context: context,
-                                id: customerController.customer.value?.id,
+                                id: customerModel.id,
                                 shopId: shopController.currentShop.value?.id);
                           }
                         });
                   },
-                  icon: Icon(
-                    Icons.delete,
-                    color: Colors.red,
-                  )),
+                  icon: Icon(Icons.delete)),
             ],
-          ),
-          body: customerInfoBody(context),
-        ),
-        smallScreen: Helper(
-            widget: SingleChildScrollView(
-              child: Column(
-                children: [
-                  Container(
-                    height: MediaQuery.of(context).size.height * 0.3,
-                    color: AppColors.mainColor,
-                    child: Column(
-                      children: [
-                        SizedBox(height: 10),
-                        Center(
-                          child: Container(
-                            decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Colors.white,
-                                border:
-                                    Border.all(color: Colors.white, width: 2)),
-                            child: Icon(
-                              Icons.person,
-                              color: Colors.grey,
-                              size: 50,
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 10),
-                        Center(
-                            child: Text(
-                          customerModel.fullName!,
-                          style: TextStyle(
-                              color: Colors.white, fontWeight: FontWeight.bold),
-                        )),
-                        SizedBox(height: 5),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.phone,
-                              color: Colors.white,
-                              size: 14,
-                            ),
-                            Text(
-                              customerModel.phoneNumber!,
-                              style: TextStyle(color: Colors.white),
-                            )
-                          ],
-                        ),
-                        SizedBox(height: 10),
-                        Container(
-                          width: double.infinity,
-                          padding:
-                              EdgeInsets.only(left: 20, right: 20, bottom: 10),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              IconButton(
-                                  onPressed: () {
-                                    launchMessage(
-                                        number: customerModel.phoneNumber,
-                                        message: user == "supplier"
-                                            ? "we will be paying your debt very soon"
-                                            : "Aquick reminde that you owe our shop please pay your debt ");
-                                  },
-                                  icon: Icon(Icons.message),
-                                  color: Colors.white),
-                              IconButton(
-                                  onPressed: () {
-                                    launchWhatsApp(
-                                        number: customerModel.phoneNumber,
-                                        message: user == "supplier"
-                                            ? "we will be paying your debt very soon"
-                                            : "Aquick reminde that you owe our shop please pay your debt ");
-                                  },
-                                  icon: Icon(Icons.whatshot),
-                                  color: Colors.white),
-                              IconButton(
-                                  onPressed: () async {
-                                    // await launch(
-                                    //     "tel://${user == "suppliers" ? "${supplierController.supplier.value?.phoneNumber}" : "${customerController.customer.value?.phoneNumber}"}");
-                                  },
-                                  icon: Icon(Icons.phone),
-                                  color: Colors.white),
-                              if (user != "supplier")
-                                InkWell(
-                                  onTap: () {
-                                    Get.to(
-                                      () => WalletPage(
-                                        customerModel: customerModel,
-                                      ),
-                                    );
-                                  },
-                                  child: Container(
-                                    padding: EdgeInsets.only(
-                                        top: 5, bottom: 5, left: 10, right: 15),
-                                    decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(50),
-                                        color: Colors.white.withOpacity(0.2)),
-                                    child: Row(
-                                      children: [
-                                        Icon(Icons.credit_card,
-                                            color: Colors.white),
-                                        SizedBox(width: 10),
-                                        Text(
-                                          "Wallet",
-                                          style: TextStyle(color: Colors.white),
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  customerInfoBody(context)
-                ],
-              ),
-            ),
-            appBar: AppBar(
-              elevation: 0.0,
-              backgroundColor: AppColors.mainColor,
-              leading: IconButton(
-                  onPressed: () {
-                    customerController.initialPage.value = 0;
-                    Get.back();
-                  },
-                  icon: Icon(Icons.arrow_back_ios)),
-              actions: [
-                IconButton(
-                    onPressed: () {
-                      if (user == "supplier") {
-                        supplierController.assignTextFields(customerModel);
-                      } else {
-                        customerController.assignTextFields(customerModel);
-                      }
-                      showEditDialog(
-                          user: user,
-                          context: context,
-                          customerModel: customerModel);
-                    },
-                    icon: Icon(Icons.edit)),
-                IconButton(
-                    onPressed: () {
-                      deleteDialog(
-                          context: context,
-                          onPressed: () {
-                            if (user == "supplier") {
-                              supplierController.deleteSuppler(
-                                  context: context,
-                                  id: supplierController.supplier.value?.id,
-                                  shopId: shopController.currentShop.value?.id);
-                            } else {
-                              customerController.deleteCustomer(
-                                  context: context,
-                                  id: customerController.customer.value?.id,
-                                  shopId: shopController.currentShop.value?.id);
-                            }
-                          });
-                    },
-                    icon: Icon(Icons.delete)),
-              ],
-            )),
-      ),
+          )),
     );
   }
 
@@ -349,24 +361,29 @@ class CustomerInfoPage extends StatelessWidget {
             width: double.infinity,
             height: kToolbarHeight,
             child: Obx(() => DefaultTabController(
-                  length: 3,
+                  length: customerController.tabs.length,
                   initialIndex: customerController.initialPage.value,
                   child: TabBar(
+                      controller: customerController.tabController,
                       unselectedLabelColor: Colors.grey,
                       labelColor: Colors.purple,
                       physics: NeverScrollableScrollPhysics(),
                       indicatorColor: Colors.purple,
-                      controller: customerController.tabController,
                       indicatorWeight: 3,
                       onTap: (index) {
                         customerController.initialPage.value = index;
                         if (index == 0) {
                           if (user == "supplier") {
-                            supplierController.getSupplierCredit(
-                                "${shopController.currentShop.value!.id!}",
-                                customerModel.id);
+                            Get.find<PurchaseController>().getPurchase(
+                                shopId:
+                                    createShopController.currentShop.value!.id,
+                                onCredit: "true",
+                                attendantId: authController.usertype == "admin"
+                                    ? ""
+                                    : attendantController.attendant.value!.id,
+                                customer: customerModel.id);
                           } else {
-                            salesControler.getSalesByShop(
+                            Get.find<SalesController>().getSalesByShop(
                                 id: shopController.currentShop.value?.id,
                                 attendantId: authController.usertype == "admin"
                                     ? ""
@@ -628,13 +645,13 @@ class Purchase extends StatelessWidget {
 class CreditInfo extends StatelessWidget {
   final CustomerModel customerModel;
   final user;
-  CreditController creditController = Get.find<CreditController>();
   SupplierController supplierController = Get.find<SupplierController>();
   CustomerController customerController = Get.find<CustomerController>();
   AttendantController attendantController = Get.find<AttendantController>();
   ShopController createShopController = Get.find<ShopController>();
   AuthController authController = Get.find<AuthController>();
   SalesController salesController = Get.find<SalesController>();
+  PurchaseController purchaseController = Get.find<PurchaseController>();
 
   CreditInfo({Key? key, required this.customerModel, required this.user})
       : super(key: key);
@@ -643,11 +660,11 @@ class CreditInfo extends StatelessWidget {
   Widget build(BuildContext context) {
     return Obx(() {
       return user == "supplier"
-          ? supplierController.returningLoad.value
+          ? purchaseController.getPurchaseLoad.value
               ? Center(
                   child: CircularProgressIndicator(),
                 )
-              : supplierController.stockInCredit.length == 0
+              : purchaseController.purchasedItems.length == 0
                   ? Center(
                       child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -723,12 +740,12 @@ class CreditInfo extends StatelessWidget {
                           ),
                         )
                       : ListView.builder(
-                          itemCount: supplierController.stockInCredit.length,
+                          itemCount: purchaseController.purchasedItems.length,
                           shrinkWrap: true,
                           physics: NeverScrollableScrollPhysics(),
                           itemBuilder: (context, index) {
-                            StockInCredit salesBody = supplierController
-                                .stockInCredit
+                            PurchaseOrder salesBody = purchaseController
+                                .purchasedItems
                                 .elementAt(index);
 
                             return CreditPurchaseHistoryCard(

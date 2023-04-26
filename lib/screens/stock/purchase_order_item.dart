@@ -24,7 +24,7 @@ class PurchaseOrderItems extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    purchaseController.getPurchaseOrderItems(id: id);
+    purchaseController.getPurchaseOrderItems(purchaseId: id);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
