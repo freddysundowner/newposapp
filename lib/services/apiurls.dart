@@ -21,7 +21,7 @@ const supplierOnCredit = "${supplier}oncredit";
 
 //product
 const product = BASE_URL + "product/";
-const productHistory = BASE_URL + "producthistory/";
+const productHistory = BASE_URL + "producthistory";
 
 //transfer
 var stocktransfer = "${product}" + "stocktransfer";

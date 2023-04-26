@@ -235,8 +235,8 @@ class INWidget extends StatelessWidget {
                                               .selectedWidget
                                               .value =
                                           TransferHistoryView(
-                                              stockTransferHistory:
-                                                  stockTransferHistory);
+                                              id:
+                                                  stockTransferHistory.id!);
                                     },
                                     child: Align(
                                       child: Center(

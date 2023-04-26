@@ -24,7 +24,7 @@ class Purchases {
 
   getPurchaseOrderItems({required id, required productId}) async {
     var response = await DbBase().databaseRequest(
-        purchases + "purchaseditems/${id}", DbBase().getRequestType);
+        purchases + "purchaseditems?purchase=${id}&product=${productId}", DbBase().getRequestType);
     return jsonDecode(response);
   }
 

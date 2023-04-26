@@ -483,6 +483,7 @@ class ProductController extends GetxController {
         }
 
         getBadStock(
+          product: "",
             shopId: shop,
             attendant: Get.find<AuthController>().usertype == "admin"
                 ? ""
@@ -493,15 +494,15 @@ class ProductController extends GetxController {
       saveBadstockLoad.value = false;
       print(e);
     } finally {
-      getBadStock(shopId: shop);
+      getBadStock(shopId: shop,attendant: "",product: "");
     }
   }
 
-  getBadStock({required shopId, String? attendant}) async {
+  getBadStock({required shopId, String? attendant,String? product}) async {
     try {
       saveBadstockLoad.value = true;
       badstocks.clear();
-      var response = await Products().getBadStock(shopId, attendant);
+      var response = await Products().getBadStock(shopId, attendant,product);
       if (response["status"] == true) {
         List responseData = response["body"];
         List<BadStock> jsonData =

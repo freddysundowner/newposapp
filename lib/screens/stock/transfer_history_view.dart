@@ -1,23 +1,29 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 import 'package:flutter/material.dart';
 import 'package:flutterpos/controllers/home_controller.dart';
+import 'package:flutterpos/controllers/product_history_controller.dart';
 import 'package:flutterpos/controllers/stock_transfer_controller.dart';
-import 'package:flutterpos/models/product_model.dart';
-import 'package:flutterpos/models/stockTransferHistoryModel.dart';
 import 'package:flutterpos/responsive/responsiveness.dart';
 import 'package:flutterpos/screens/stock/transfer_history.dart';
-import 'package:flutterpos/widgets/no_items_found.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
 
 import '../../controllers/shop_controller.dart';
+import '../../models/productTransfer.dart';
+import '../../widgets/no_items_found.dart';
 
 class TransferHistoryView extends StatelessWidget {
-  final StockTransferHistory stockTransferHistory;
-  TransferHistoryView({Key? key, required this.stockTransferHistory}) : super(key: key);
+  final String id;
+
+  TransferHistoryView({Key? key, required this.id}) : super(key: key) {
+    productHistoryController.getProductHistory(
+        productId: "", type: "transfer", stockId: id);
+  }
 
   ShopController shopController = Get.find<ShopController>();
-  StockTransferController stockTransferController = Get.find<StockTransferController>();
+  ProductHistoryController productHistoryController =
+      Get.find<ProductHistoryController>();
+  StockTransferController stockTransferController =
+      Get.find<StockTransferController>();
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +63,7 @@ class TransferHistoryView extends StatelessWidget {
               ? Center(
                   child: CircularProgressIndicator(),
                 )
-              : stockTransferHistory.product!.length == 0
+              : productHistoryController.productTransferHistories!.length == 0
                   ? noItemsFound(context, true)
                   : SingleChildScrollView(
                       child: Container(
@@ -85,25 +91,27 @@ class TransferHistoryView extends StatelessWidget {
                                   label: Text('Date',
                                       textAlign: TextAlign.center)),
                             ],
-                            rows:[],
+                            rows: [],
                           ),
                         ),
                       ),
                     );
         }),
         smallScreen: Obx(() {
-          return stockTransferController.gettingTransferHistoryLoad.value
+          return productHistoryController.gettingHistoryLoad.value
               ? Center(
                   child: CircularProgressIndicator(),
                 )
-              : stockTransferHistory.product!.length == 0
+              : productHistoryController.productTransferHistories!.length == 0
                   ? noItemsFound(context, true)
                   : ListView.builder(
-                      itemCount: stockTransferHistory.product!.length,
+                      itemCount: productHistoryController
+                          .productTransferHistories!.length,
                       shrinkWrap: true,
                       itemBuilder: (context, index) {
-                        ProductModel productModel =
-                            stockTransferHistory.product!.elementAt(index);
+                        ProductTransferHistories productModel =
+                            productHistoryController.productTransferHistories!
+                                .elementAt(index);
                         return Container(
                           margin: EdgeInsets.all(5),
                           padding: EdgeInsets.all(8),
@@ -118,7 +126,8 @@ class TransferHistoryView extends StatelessWidget {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      "${productModel.name}".capitalize!,
+                                      "${productModel.product!.name!}"
+                                          .capitalize!,
                                       style: TextStyle(
                                           color: Colors.black,
                                           fontWeight: FontWeight.bold),

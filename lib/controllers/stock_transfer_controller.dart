@@ -50,8 +50,12 @@ class StockTransferController extends GetxController {
       Map<String, dynamic> body = {
         "from": from,
         "to": to,
-        "products": selectedProducts.map((element) => element.id).toList(),
+        "products": selectedProducts
+            .map((element) =>
+                {"id": element.id, "quantity": element.cartquantity,"name":element.name})
+            .toList(),
       };
+      print(body);
       var response = await Products().transferProducts(body: body);
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
       if (response["status"] == true) {
@@ -78,9 +82,10 @@ class StockTransferController extends GetxController {
       transferHistory.clear();
       gettingTransferHistoryLoad.value = true;
       var response = await Products().getTransHistory(shopId: shopId, type: type);
+     print(response);
       if (response["status"] == true) {
         List jsonData = response["body"];
-        print(jsonData[0]);
+
         List<StockTransferHistory> transfer =
             jsonData.map((e) => StockTransferHistory.fromJson(e)).toList();
         transferHistory.assignAll(transfer);
