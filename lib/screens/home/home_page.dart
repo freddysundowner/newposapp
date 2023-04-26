@@ -479,7 +479,7 @@ class HomePage extends StatelessWidget {
   showShopModalBottomSheet(context) {
     showModalBottomSheet(
       context: context,
-      shape: RoundedRectangleBorder(
+      shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
             topRight: Radius.circular(15), topLeft: Radius.circular(15)),
       ),
@@ -489,7 +489,7 @@ class HomePage extends StatelessWidget {
           child: ListView.builder(
               itemCount: shopController.AdminShops.length,
               shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
+              physics: const NeverScrollableScrollPhysics(),
               itemBuilder: (context, index) {
                 ShopModel shopBody = shopController.AdminShops.elementAt(index);
                 return InkWell(
@@ -498,20 +498,36 @@ class HomePage extends StatelessWidget {
                     shopController.currentShop.value = shopBody;
                     salesController.getSalesByShop(
                         id: shopController.currentShop.value?.id,
-                        attendantId: authController.usertype == "admin"
+                        attendantId: authController.usertype.value == "admin"
                             ? ""
                             : attendantController.attendant.value!.id,
                         onCredit: "",
                         startingDate:
-                            "${DateFormat("yyyy-MM-dd").format(DateTime.now())}");
+                            DateFormat("yyyy-MM-dd").format(DateTime.now()));
                     ;
                   },
                   child: Container(
-                    padding: EdgeInsets.all(10),
-                    child: majorTitle(
-                        title: "${shopBody.name}",
-                        color: Colors.black,
-                        size: 16.0),
+                    padding: const EdgeInsets.all(10),
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                Icon(Icons.shop),
+                                majorTitle(
+                                    title: "${shopBody.name}",
+                                    color: Colors.black,
+                                    size: 16.0),
+                              ],
+                            ),
+                            const Icon(Icons.arrow_forward_ios)
+                          ],
+                        ),
+                        Divider()
+                      ],
+                    ),
                   ),
                 );
               }),

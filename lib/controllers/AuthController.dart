@@ -11,6 +11,7 @@ import 'package:flutterpos/services/attendant.dart';
 import 'package:flutterpos/utils/colors.dart';
 import 'package:flutterpos/widgets/snackBars.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 // import 'package:shared_preferences/shared_preferences.dart';
 
@@ -64,10 +65,10 @@ class AuthController extends GetxController {
               context: context);
         } else {
           AdminModel adminModel = AdminModel.fromJson(response["body"]);
-          // SharedPreferences prefs = await SharedPreferences.getInstance();
-          // prefs.setString("userId", adminModel.id!);
-          // prefs.setString("token", response["token"]);
-          // prefs.setString("type", "admin");
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          prefs.setString("userId", adminModel.id!);
+          prefs.setString("token", response["token"]);
+          prefs.setString("type", "admin");
           currentUser.value = adminModel;
           clearDataFromTextFields();
           usertype.value = "admin";
@@ -107,10 +108,10 @@ class AuthController extends GetxController {
               context: context);
         } else {
           AdminModel adminModel = AdminModel.fromJson(response["body"]);
-          // SharedPreferences prefs = await SharedPreferences.getInstance();
-          // prefs.setString("userId", adminModel.id!);
-          // prefs.setString("token", response["token"]);
-          // prefs.setString("type", "admin");
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          prefs.setString("userId", adminModel.id!);
+          prefs.setString("token", response["token"]);
+          prefs.setString("type", "admin");
 
           currentUser.value = adminModel;
           clearDataFromTextFields();
@@ -155,16 +156,15 @@ class AuthController extends GetxController {
   }
 
   getUserId() async {
-    // SharedPreferences prefs = await SharedPreferences.getInstance();
-    // String? user = prefs.getString("userId");
-    // return user;
-    return "63f9efe3879e16801054a0b0";
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? user = prefs.getString("userId");
+    return user;
+    // return "63f9efe3879e16801054a0b0";
   }
 
   getUserType() async {
-    // SharedPreferences prefs = await SharedPreferences.getInstance();
-    // String? user = prefs.getString("type");/
-    String? user = "admin";
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? user = prefs.getString("type");
     if (user == "admin") {
       AdminModel adminModel = await getUserById();
       return ["admin", adminModel];
@@ -224,8 +224,8 @@ class AuthController extends GetxController {
   }
 
   logout() async {
-    // SharedPreferences prefs = await SharedPreferences.getInstance();
-    // await prefs.clear();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
     shopController.currentShop.value = null;
     usertype.value = "";
     clearDataFromTextFields();
