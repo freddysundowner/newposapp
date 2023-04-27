@@ -96,17 +96,18 @@ class ViewPurchases extends StatelessWidget {
           ),
         ),
         actions: [
-          InkWell(
-              onTap: () {
-                PurchasesPdf(
-                    shop: shopController.currentShop.value!.name!,
-                    sales: purchaseController.purchasedItems,
-                    type: "type");
-              },
-              child: Icon(
-                Icons.download,
-                color: Colors.black,
-              ))
+          if (authController.usertype.value == "admin")
+            InkWell(
+                onTap: () {
+                  PurchasesPdf(
+                      shop: shopController.currentShop.value!.name!,
+                      sales: purchaseController.purchasedItems,
+                      type: "type");
+                },
+                child: Icon(
+                  Icons.download,
+                  color: Colors.black,
+                ))
         ],
       ),
       body: ResponsiveWidget(

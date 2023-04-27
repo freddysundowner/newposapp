@@ -26,6 +26,7 @@ class WalletPage extends StatelessWidget {
   WalletPage({Key? key, required this.customerModel, this.page})
       : super(key: key) {
     walletController.initialPage.value = 0;
+    customersController.customer.value = null;
     customersController.getCustomerById(customerModel.id);
     walletController.getWallet(customerModel.id, "deposit");
   }
@@ -238,7 +239,7 @@ class WalletPage extends StatelessWidget {
                     child: InkWell(
                       onTap: () async {
                         Navigator.pop(context);
-                        walletController.initialPage.value=0;
+                        walletController.initialPage.value = 0;
                         WalletPdf(
                             shop: shopController.currentShop.value!.name!,
                             deposits: walletController.deposits,
@@ -263,7 +264,7 @@ class WalletPage extends StatelessWidget {
                     child: GestureDetector(
                       onTap: () async {
                         Navigator.pop(context);
-                        walletController.initialPage.value=1;
+                        walletController.initialPage.value = 1;
                         WalletPdf(
                             shop: shopController.currentShop.value!.name!,
                             deposits: walletController.deposits,

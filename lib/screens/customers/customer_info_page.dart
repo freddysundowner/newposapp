@@ -41,6 +41,7 @@ class CustomerInfoPage extends StatelessWidget {
       : super(key: key) {
     customerController.initialPage.value = 0;
     if (user == "supplier") {
+      print("supplier");
       Get.find<PurchaseController>().getPurchase(
           shopId: createShopController.currentShop.value!.id,
           onCredit: "true",
@@ -49,7 +50,7 @@ class CustomerInfoPage extends StatelessWidget {
               : attendantController.attendant.value!.id,
           customer: customerModel.id);
     } else {
-      Get.find<SalesController>().getSalesByShop(
+      salesController.getSalesByShop(
           id: shopController.currentShop.value?.id,
           attendantId: authController.usertype == "admin"
               ? ""
@@ -57,6 +58,7 @@ class CustomerInfoPage extends StatelessWidget {
           onCredit: true,
           customer: customerModel.id,
           startingDate: "");
+      print("customer");
     }
   }
 
@@ -66,6 +68,7 @@ class CustomerInfoPage extends StatelessWidget {
   AttendantController attendantController = Get.find<AttendantController>();
   ShopController createShopController = Get.find<ShopController>();
   AuthController authController = Get.find<AuthController>();
+  SalesController salesController = Get.find<SalesController>();
 
   launchWhatsApp({required number, required message}) async {
     // String url = "whatsapp://send?phone=+254${number}&text=$message";

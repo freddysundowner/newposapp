@@ -39,7 +39,6 @@ class Products {
     var response = await DbBase().databaseRequest(
         "${productHistory}?type=${type}&stockId=${stockId}&product=$productId", DbBase().getRequestType);
     var data = jsonDecode(response);
-    print(data);
     return data;
 
   }
@@ -56,7 +55,6 @@ class Products {
         product +
             "filter?shopid=${shopId}&type=${type}&startDate=${startDate}&endDate=${endDate}",
         DbBase().getRequestType);
-    print(response);
     var data = jsonDecode(response);
     return data;
   }

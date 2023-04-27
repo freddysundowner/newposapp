@@ -21,7 +21,18 @@ class CreateProduct extends StatelessWidget {
   final ProductModel productModel;
 
   CreateProduct({Key? key, required this.page, required this.productModel})
-      : super(key: key);
+      : super(key: key) {
+    if (page == "create") {
+      productController.clearControllers();
+      supplierController.getSuppliersInShop(
+          shopController.currentShop.value!.id!, "all");
+      productController.getProductCategory(
+          shopId: shopController.currentShop.value?.id);
+    } else {
+      productController.assignTextFields(productModel);
+    }
+  }
+
   ShopController shopController = Get.find<ShopController>();
   ProductController productController = Get.find<ProductController>();
   SupplierController supplierController = Get.find<SupplierController>();
@@ -36,15 +47,6 @@ class CreateProduct extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (page == "create") {
-      supplierController.getSuppliersInShop(
-          shopController.currentShop.value!.id!, "all");
-      productController.getProductCategory(
-          shopId: shopController.currentShop.value?.id);
-    } else {
-      productController.assignTextFields(productModel);
-    }
-
     return WillPopScope(
       onWillPop: () async {
         productController.selectedSupplier.clear();

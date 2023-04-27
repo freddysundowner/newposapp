@@ -383,7 +383,6 @@ class ProductController extends GetxController {
         DateFormat("yyyy-MM-dd").format(now),
         DateFormat("yyyy-MM-dd").format(tomm),
       );
-      print(response);
       products.clear();
       if (response != null) {
         List fetchedProducts = response["products"];
@@ -425,7 +424,6 @@ class ProductController extends GetxController {
         "product": product.id,
       };
       var res = await Products().updateProductCount(body);
-      print(res);
     } catch (e) {
       print(e);
     }

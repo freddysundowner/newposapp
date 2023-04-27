@@ -248,7 +248,6 @@ class SupplierController extends GetxController {
     try {
       returningLoad.value = true;
       var response = await Supplier().getCredit(shopId, uid);
-      print(response);
       if (response != null) {
         List fetchedCredit = response["body"];
         List<StockInCredit> credits =
@@ -259,17 +258,6 @@ class SupplierController extends GetxController {
       }
       returningLoad.value = false;
     } catch (e) {
-      // StockInCredit stockInCredits = StockInCredit(
-      //     id: "12345",
-      //     supplier: "12345",
-      //     shop: "123crffre4567",
-      //     attendant: "12356fser",
-      //     balance: 100,
-      //     total: 2000,
-      //     recietNumber: "23ijfnjnMM",
-      //     createdAt: DateTime.now(),
-      //     updatedAt: DateTime.now());
-      // stockInCredit.add(stockInCredits);
       returningLoad.value = false;
     }
   }
@@ -317,7 +305,6 @@ class SupplierController extends GetxController {
       gettingSupplierSuppliesLoad.value=true;
       var response = await Supplier().getSupplierSupplies(
           supplierId: supplierId, attendantId: attendantId, returned: returned);
-      print(response);
       if (response["status"] == true) {
         List rawData = response["body"];
         List<SupplyOrderModel> jsonData =

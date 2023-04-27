@@ -109,8 +109,6 @@ class CashflowController extends GetxController
         "category": selectedCashFlowCategories.value!.id,
       };
       var response = await Transactions().createTransaction(body: body);
-      print(response);
-
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
       if (response["status"] == true) {
         selectedBank.value = null;

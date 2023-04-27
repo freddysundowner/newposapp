@@ -11,16 +11,18 @@ import 'package:intl/intl.dart';
 
 class PaymentHistory extends StatelessWidget {
   final String id;
-  final String ?type;
+  final String? type;
   final CustomerModel? customerModel;
 
-  PaymentHistory({Key? key, required this.id, this.customerModel,this.type})
+  PaymentHistory({Key? key, required this.id, this.customerModel, this.type})
       : super(key: key);
   SalesController salesController = Get.find<SalesController>();
 
   @override
   Widget build(BuildContext context) {
-    salesController.getPaymentHistory(id: id,type:type);
+    print(type);
+
+    salesController.getPaymentHistory(id: id, type: type);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
