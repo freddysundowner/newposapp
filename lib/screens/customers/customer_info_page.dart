@@ -370,11 +370,11 @@ class CustomerInfoPage extends StatelessWidget {
                       controller: customerController.tabController,
                       unselectedLabelColor: Colors.grey,
                       labelColor: Colors.purple,
-                      physics: NeverScrollableScrollPhysics(),
                       indicatorColor: Colors.purple,
                       indicatorWeight: 3,
                       onTap: (index) {
                         customerController.initialPage.value = index;
+                        print(customerController.initialPage.value);
                         if (index == 0) {
                           if (user == "supplier") {
                             Get.find<PurchaseController>().getPurchase(
@@ -551,10 +551,11 @@ class Purchase extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(user);
     return Obx(() {
-      return customerController.customerPurchaseLoad.value ||
-              supplierController.gettingSupplierSuppliesLoad.value
+      return customerController.customerPurchaseLoad.value &&
+                  user != "supplier" ||
+              supplierController.gettingSupplierSuppliesLoad.value &&
+                  user == "supplier"
           ? Center(child: CircularProgressIndicator())
           : customerController.customerPurchases.length == 0 &&
                       user != "supplier" ||

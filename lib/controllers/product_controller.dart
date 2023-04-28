@@ -434,6 +434,7 @@ class ProductController extends GetxController {
       loadingCountHistory.value = true;
       countHistoryList.clear();
       var response = await Products().getProductCount(shopId);
+      print(response);
       if (response != null) {
         List history = response["body"];
         List<ProductCountModel> countHistory =
