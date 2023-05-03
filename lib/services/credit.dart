@@ -7,7 +7,7 @@ import 'apiurls.dart';
 class Credit {
   getCredit(attendantId, shopId, uid) async {
     var response = await DbBase().databaseRequest(
-        customer + "credit/" + attendantId + "/" + shopId + "/" + uid,
+        "${customer + "credit/" + attendantId + "/" + shopId}/" + uid,
         DbBase().getRequestType);
     return jsonDecode(response);
   }

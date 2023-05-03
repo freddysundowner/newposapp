@@ -126,7 +126,7 @@ class AttendantsPage extends StatelessWidget {
             smallScreen: SafeArea(
                 child: SingleChildScrollView(
               child: Container(
-                padding: EdgeInsets.all(10),
+                padding: const EdgeInsets.all(10),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -134,15 +134,14 @@ class AttendantsPage extends StatelessWidget {
                     SizedBox(height: 5),
                     Obx(() {
                       return attendantController.getAttendantsLoad.value
-                          ? Center(child: CircularProgressIndicator())
+                          ? const Center(child: CircularProgressIndicator())
                           : attendantController.attendants.length == 0
                               ? Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Center(
                                       child: minorTitle(
-                                        title:
-                                            "This shop doesn't have attendants yet",
+                                        title: "No attendants",
                                         color: Colors.black,
                                       ),
                                     ),
@@ -150,7 +149,7 @@ class AttendantsPage extends StatelessWidget {
                                 )
                               : ListView.builder(
                                   shrinkWrap: true,
-                                  physics: NeverScrollableScrollPhysics(),
+                                  physics: const NeverScrollableScrollPhysics(),
                                   itemCount:
                                       attendantController.attendants.length,
                                   itemBuilder: (context, index) {
