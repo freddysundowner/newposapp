@@ -24,7 +24,7 @@ class ProductCountModel {
 
   factory ProductCountModel.fromJson(Map<String, dynamic> json) => ProductCountModel(
     id: json["_id"],
-    product: Product.fromJson(json["product"]),
+    product: json["product"]==null||json["product"].toString().length<=40?null:Product.fromJson(json["product"]),
     attendantId: json["attendantId"]==null||json["attendantId"].toString().length<=40?AttendantModel(): AttendantModel.fromJson(json["attendantId"]),
     quantity: json["quantity"],
     shop: json["shop"],

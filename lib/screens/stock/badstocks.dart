@@ -25,7 +25,8 @@ class BadStockPage extends StatelessWidget {
         shopId: shopController.currentShop.value!.id,
         attendant: authController.usertype.value == "admin"
             ? ""
-            : attendantController.attendant.value?.id!);
+            : attendantController.attendant.value?.id!,
+     product: "");
   }
 
   ProductController productController = Get.find<ProductController>();

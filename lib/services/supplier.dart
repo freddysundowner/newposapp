@@ -58,7 +58,6 @@ class Supplier {
   getCredit(shopId, uid) async {
     var response = await DbBase().databaseRequest(
         supplier + "stockinhistory/${shopId}/${uid}", DbBase().getRequestType);
-    print(response);
     return jsonDecode(response);
 
   }

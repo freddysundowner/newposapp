@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutterpos/controllers/home_controller.dart';
 import 'package:flutterpos/models/customer_model.dart';
 import 'package:flutterpos/models/sales_model.dart';
+import 'package:flutterpos/widgets/pdf/payment_history_pdf.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 import '../controllers/CustomerController.dart';
 import '../controllers/sales_controller.dart';
+import '../controllers/shop_controller.dart';
 import '../screens/cash_flow/payment_history.dart';
 import '../screens/sales/sale_order_item.dart';
 
@@ -121,6 +123,13 @@ showBottomSheet(
                   leading: Icon(Icons.file_copy_outlined),
                   onTap: () async {
                     Navigator.pop(context);
+                    await salesController.getPaymentHistory(
+                        id: salesBody.id!, type: "");
+
+                    PaymentHistoryPdf(
+                        shop:
+                            Get.find<ShopController>().currentShop.value!.name,
+                        deposits: salesController.paymenHistory.value);
                   },
                   title: Text('Generate Report'),
                 ),

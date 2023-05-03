@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutterpos/controllers/AuthController.dart';
 import 'package:flutterpos/controllers/home_controller.dart';
 import 'package:flutterpos/controllers/product_controller.dart';
 import 'package:flutterpos/screens/stock/transfer_history.dart';
@@ -48,9 +49,13 @@ class StockTransferController extends GetxController {
       LoadingDialog.showLoadingDialog(
           context: context, title: "Transferring Product...", key: _keyLoader);
       Map<String, dynamic> body = {
+        "attendant":Get.find<AuthController>().currentUser.value!.id,
         "from": from,
         "to": to,
-        "products": selectedProducts.map((element) => element.id).toList(),
+        "products": selectedProducts
+            .map((element) =>
+                {"id": element.id, "quantity": element.cartquantity,"name":element.name})
+            .toList(),
       };
       var response = await Products().transferProducts(body: body);
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
@@ -80,7 +85,7 @@ class StockTransferController extends GetxController {
       var response = await Products().getTransHistory(shopId: shopId, type: type);
       if (response["status"] == true) {
         List jsonData = response["body"];
-        print(jsonData[0]);
+
         List<StockTransferHistory> transfer =
             jsonData.map((e) => StockTransferHistory.fromJson(e)).toList();
         transferHistory.assignAll(transfer);

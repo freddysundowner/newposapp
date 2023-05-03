@@ -6,26 +6,25 @@ import 'package:intl/intl.dart';
 import '../screens/stock/transfer_history_view.dart';
 import '../utils/colors.dart';
 
-Widget transferHistoryCard({required StockTransferHistory stockTransferHistory}){
+Widget transferHistoryCard(
+    {required StockTransferHistory stockTransferHistory}) {
   return InkWell(
-    onTap: (){
-      Get.to(()=>TransferHistoryView( stockTransferHistory: stockTransferHistory));
+    onTap: () {
+      Get.to(() => TransferHistoryView(id: stockTransferHistory.id!));
     },
     child: Container(
       width: double.infinity,
-      margin: EdgeInsets.only(left: 8, right: 8,top: 5),
+      margin: EdgeInsets.only(left: 8, right: 8, top: 5),
       padding: EdgeInsets.all(10),
       decoration: BoxDecoration(
-          color: AppColors.mainColor,
-          borderRadius: BorderRadius.circular(10)),
+          color: AppColors.mainColor, borderRadius: BorderRadius.circular(10)),
       child: Column(
         children: [
           Text(
-            "${stockTransferHistory.from!.name} to ${stockTransferHistory.to!.name}".capitalize!,
+            "${stockTransferHistory.from!.name} to ${stockTransferHistory.to!.name}"
+                .capitalize!,
             style: TextStyle(
-                color: Colors.white,
-                fontSize: 17,
-                fontWeight: FontWeight.w500),
+                color: Colors.white, fontSize: 17, fontWeight: FontWeight.w500),
           ),
           Text(
             "Variance Transferred:${stockTransferHistory.product!.length}",
@@ -34,13 +33,6 @@ Widget transferHistoryCard({required StockTransferHistory stockTransferHistory})
               fontSize: 14,
             ),
           ),
-          // Text(
-          //   "Transfered by: ${stockTransferHistory.}",
-          //   style: TextStyle(
-          //     color: Colors.white,
-          //     fontSize: 14,
-          //   ),
-          // ),
           Text(
             "${DateFormat("dd/MM/yyyy").format(stockTransferHistory.createdAt!)}",
             style: TextStyle(

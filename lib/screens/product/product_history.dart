@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutterpos/controllers/home_controller.dart';
+import 'package:flutterpos/controllers/product_controller.dart';
 import 'package:flutterpos/controllers/purchase_controller.dart';
 import 'package:flutterpos/controllers/sales_controller.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
@@ -9,12 +10,15 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 import '../../controllers/product_history_controller.dart';
+import '../../models/badstock.dart';
+import '../../models/productTransfer.dart';
 import '../../models/product_history_model.dart';
 import '../../models/sales_order_item_model.dart';
 import '../../models/supply_order_model.dart';
 import '../../utils/colors.dart';
 import '../../widgets/bigtext.dart';
 import '../../widgets/smalltext.dart';
+import 'components/product_history_card.dart';
 
 class ProductHistory extends StatelessWidget {
   final ProductModel product;
@@ -74,15 +78,17 @@ class ProductHistory extends StatelessWidget {
                     }
                     if (index == 1) {
                       purchaseController.getPurchaseOrderItems(
-                          purchaseId: product.id);
+                          productId: product.id);
                     }
                     if (index == 2) {
-                      productHistoryController.getProductHistory(
-                          productId: product.id, type: "transfer");
+                      Get.find<ProductHistoryController>().getProductHistory(
+                          stockId: "", type: "transfer", productId: product.id);
                     }
                     if (index == 3) {
-                      productHistoryController.getProductHistory(
-                          productId: product.id, type: "badstock");
+                      Get.find<ProductController>().getBadStock(
+                          shopId: shopController.currentShop.value!.id,
+                          attendant: "",
+                          product: product.id);
                     }
                   },
                   tabs: productHistoryController.tabs,
@@ -100,16 +106,8 @@ class ProductHistory extends StatelessWidget {
                             productId: product.id,
                           ),
                           PurchasesPages(),
-                          HistoryPages(
-                              productHistoryController:
-                                  productHistoryController,
-                              productId: product.id,
-                              type: "transfer"),
-                          HistoryPages(
-                            productHistoryController: productHistoryController,
-                            productId: product.id,
-                            type: "badstock",
-                          ),
+                          HistoryPages(),
+                          BadStockPage(),
                         ]),
                   ),
                 )
@@ -119,16 +117,9 @@ class ProductHistory extends StatelessWidget {
 }
 
 class HistoryPages extends StatelessWidget {
-  final type;
-  final ProductHistoryController productHistoryController;
-  final productId;
-
-  HistoryPages(
-      {Key? key,
-      required this.productHistoryController,
-      required this.productId,
-      required this.type})
-      : super(key: key);
+  HistoryPages({Key? key}) : super(key: key);
+  ProductHistoryController productHistoryController =
+      Get.find<ProductHistoryController>();
 
   @override
   Widget build(BuildContext context) {
@@ -137,7 +128,7 @@ class HistoryPages extends StatelessWidget {
           ? Center(
               child: CircularProgressIndicator(),
             )
-          : productHistoryController.product.length == 0
+          : productHistoryController.productTransferHistories.length == 0
               ? Center(
                   child: Text("There are no iems to display"),
                 )
@@ -215,66 +206,15 @@ class HistoryPages extends StatelessWidget {
                     )
                   : ListView.builder(
                       shrinkWrap: true,
-                      itemCount: productHistoryController.product.length,
-                      // physics: NeverScrollableScrollPhysics(),
+                      itemCount: productHistoryController
+                          .productTransferHistories.length,
                       itemBuilder: (context, index) {
-                        ProductHistoryModel productBody =
-                            productHistoryController.product.elementAt(index);
-
-                        return productHistoryContainer(productBody);
+                        ProductTransferHistories productModel =
+                            productHistoryController.productTransferHistories
+                                .elementAt(index);
+                        return productHistoryContainer(productModel);
                       });
     });
-  }
-
-  Widget productHistoryContainer(ProductHistoryModel productBody) {
-    ShopController shopController = Get.find<ShopController>();
-    return Padding(
-      padding: const EdgeInsets.all(3.0),
-      child: Card(
-        color: Colors.white.withOpacity(0.9),
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Container(
-              child: Row(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "${productBody.product!.name}".capitalize!,
-                        style: TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18),
-                      ),
-                      // Text(
-                      //   "${productBody.product!.category ?? ""}",
-                      //   style: TextStyle(color: Colors.grey, fontSize: 16),
-                      // ),
-                      Text('Qty ${productBody.quantity}'),
-                      Text(
-                          '${DateFormat("MMM dd,yyyy, hh:m a").format(productBody.createdAt!)} '),
-                    ],
-                  )
-                ],
-              ),
-              Spacer(),
-              Column(
-                children: [
-                  Text(
-                      'BP/=  ${shopController.currentShop.value?.currency}.${productBody.product!.buyingPrice}'),
-                  Text(
-                      'SP/=  ${shopController.currentShop.value?.currency}.${productBody.product!.sellingPrice![0]}')
-                ],
-              )
-            ],
-          )),
-        ),
-      ),
-    );
   }
 }
 
@@ -378,56 +318,106 @@ class PurchasesPages extends StatelessWidget {
                       });
     });
   }
+}
 
-  Widget productHistoryContainer(productBody) {
-    ShopController shopController = Get.find<ShopController>();
-    return Padding(
-      padding: const EdgeInsets.all(3.0),
-      child: Card(
-        color: Colors.white.withOpacity(0.9),
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Container(
-              child: Row(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "${productBody.product!.name}".capitalize!,
-                        style: TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18),
+class BadStockPage extends StatelessWidget {
+  ProductController productController = Get.find<ProductController>();
+
+  BadStockPage({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(() {
+      return productController.saveBadstockLoad.value
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : productController.badstocks.length == 0
+              ? Center(
+                  child: Text("There are no iems to display"),
+                )
+              : MediaQuery.of(context).size.width > 600
+                  ? SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(height: 10),
+                          Theme(
+                            data: Theme.of(context)
+                                .copyWith(dividerColor: Colors.grey),
+                            child: Container(
+                              width: double.infinity,
+                              margin: EdgeInsets.only(
+                                  right: 15, left: 15, bottom: 20),
+                              child: DataTable(
+                                decoration: BoxDecoration(
+                                    border: Border.all(
+                                  width: 1,
+                                  color: Colors.black,
+                                )),
+                                columnSpacing: 30.0,
+                                columns: [
+                                  DataColumn(
+                                      label: Text('Product',
+                                          textAlign: TextAlign.center)),
+                                  DataColumn(
+                                      label: Text('Quantity',
+                                          textAlign: TextAlign.center)),
+                                  DataColumn(
+                                      label: Text('Buying Price',
+                                          textAlign: TextAlign.center)),
+                                  DataColumn(
+                                      label: Text('Selling Price',
+                                          textAlign: TextAlign.center)),
+                                  DataColumn(
+                                      label: Text('Date',
+                                          textAlign: TextAlign.center)),
+                                ],
+                                rows: List.generate(
+                                    productController.badstocks.length,
+                                    (index) {
+                                  ProductHistoryModel productBody =
+                                      ProductHistoryModel();
+                                  final y = productBody.product!.name;
+                                  final x = productBody.quantity;
+                                  final w = productBody.product!.buyingPrice;
+                                  final z =
+                                      productBody.product!.sellingPrice![0];
+                                  final a = productBody.createdAt;
+
+                                  return DataRow(cells: [
+                                    DataCell(
+                                        Container(width: 75, child: Text(y!))),
+                                    DataCell(Container(
+                                        width: 75, child: Text(x.toString()))),
+                                    DataCell(Container(
+                                        width: 75, child: Text(w.toString()))),
+                                    DataCell(Container(
+                                        width: 75, child: Text(z.toString()))),
+                                    DataCell(Container(
+                                        width: 75,
+                                        child: Text(DateFormat("dd-MM-yyyy")
+                                            .format(a!)))),
+                                  ]);
+                                }),
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 30)
+                        ],
                       ),
-                      // Text(
-                      //   "${productBody.product!.category ?? ""}",
-                      //   style: TextStyle(color: Colors.grey, fontSize: 16),
-                      // ),
-                      Text('Qty ${productBody.quantity}'),
-                      Text(
-                          '${DateFormat("MMM dd,yyyy, hh:m a").format(productBody.createdAt!)} '),
-                    ],
-                  )
-                ],
-              ),
-              Spacer(),
-              Column(
-                children: [
-                  Text(
-                      'BP/=  ${shopController.currentShop.value?.currency}.${productBody.product!.buyingPrice}'),
-                  Text(
-                      'SP/=  ${shopController.currentShop.value?.currency}.${productBody.product!.sellingPrice![0]}')
-                ],
-              )
-            ],
-          )),
-        ),
-      ),
-    );
+                    )
+                  : ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: productController.badstocks.length,
+                      // physics: NeverScrollableScrollPhysics(),
+                      itemBuilder: (context, index) {
+                        BadStock badStock =
+                            productController.badstocks.elementAt(index);
+
+                        return productHistoryContainer(badStock);
+                      });
+    });
   }
 }
 

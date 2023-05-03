@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutterpos/controllers/sales_controller.dart';
+import 'package:flutterpos/controllers/shop_controller.dart';
 import 'package:flutterpos/screens/stock/purchase_order_item.dart';
+import 'package:flutterpos/widgets/pdf/payment_history_pdf.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
@@ -50,6 +53,7 @@ Widget CreditPurchaseHistoryCard(context, PurchaseOrder salesBody) {
 }
 
 showBottomSheet(BuildContext context, PurchaseOrder salesBody) {
+  SalesController salesController = Get.find<SalesController>();
   return showModalBottomSheet<void>(
       context: context,
       builder: (BuildContext context) {
@@ -71,7 +75,6 @@ showBottomSheet(BuildContext context, PurchaseOrder salesBody) {
                     Get.to(() => PurchaseOrderItems(
                           id: salesBody.id,
                           page: "customer_info",
-
                         ));
                   },
                   title: Text('View Purchases'),
@@ -96,10 +99,8 @@ showBottomSheet(BuildContext context, PurchaseOrder salesBody) {
                         id: salesBody.id!,
                       );
                     } else {
-                      Get.to(() => PaymentHistory(
-                            id: salesBody.id!,
-                          type:"purchase"
-                          ));
+                      Get.to(() =>
+                          PaymentHistory(id: salesBody.id!, type: "purchase"));
                     }
                   },
                   title: Text('Payment History'),
@@ -108,6 +109,13 @@ showBottomSheet(BuildContext context, PurchaseOrder salesBody) {
                   leading: Icon(Icons.file_copy_outlined),
                   onTap: () async {
                     Navigator.pop(context);
+                    await salesController.getPaymentHistory(
+                        id: salesBody.id!, type: "purchase");
+
+                    PaymentHistoryPdf(
+                        shop:
+                            Get.find<ShopController>().currentShop.value!.name,
+                        deposits: salesController.paymenHistory.value);
                   },
                   title: Text('Generate Report'),
                 ),
@@ -165,7 +173,8 @@ showAmountDialog(context, PurchaseOrder salesBody) {
             TextButton(
               onPressed: () {
                 Get.back();
-                if (salesBody.balance! < int.parse(customerController.amountController.text)) {
+                if (salesBody.balance! <
+                    int.parse(customerController.amountController.text)) {
                 } else {
                   Get.find<PurchaseController>().paySupplierCredit(
                     amount: customerController.amountController.text,

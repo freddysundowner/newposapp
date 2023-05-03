@@ -388,7 +388,6 @@ class SalesController extends GetxController
       salesHistory.clear();
       var response = await Sales().getSalesBySaleId(
           uid == null ? "" : uid, productId == null ? "" : productId);
-      print(response);
       if (response != null) {
         List fetchedProducts = response["body"];
         List<SaleOrderItemModel> singleProduct =
@@ -410,7 +409,8 @@ class SalesController extends GetxController
       String? startingDate,
       String? customer}) async {
     try {
-      sales.clear();
+      print("data called");
+
       salesByShopLoad.value = true;
       var response = await Sales().getShopSales(
           shopId: id,
@@ -435,6 +435,7 @@ class SalesController extends GetxController
       }
       salesByShopLoad.value = false;
     } catch (e) {
+      sales.clear();
       salesByShopLoad.value = false;
     }
   }
@@ -516,7 +517,6 @@ class SalesController extends GetxController
     try {
       getPaymentHistoryLoad.value = true;
       var response = await Sales().getPaymentHistory(id: id, type: type);
-      print(response);
       if (response != null) {
         List rawData = response;
         List<PayHistory> pay =

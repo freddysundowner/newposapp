@@ -110,7 +110,6 @@ class CashflowController extends GetxController
       };
       var response = await Transactions().createTransaction(body: body);
       print(response);
-
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
       if (response["status"] == true) {
         selectedBank.value = null;
@@ -281,8 +280,8 @@ class CashflowController extends GetxController
   getSalesSummary({required shopId, required date}) async {
     try {
       loadingCashflowSummry.value = true;
-      var response =
-          await Transactions().getCashFlowSummary(id: shopId, date: date);
+      var response = await Transactions().getCashFlowSummary(id: shopId, date: date);
+      print(response);
       if (response != null) {
         cashflowSummary.value = CashflowSummary.fromJson(response);
       } else {

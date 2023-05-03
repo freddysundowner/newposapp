@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../models/productTransfer.dart';
 import '../models/product_history_model.dart';
 import '../models/product_sales_history.dart';
 import '../services/product.dart';
@@ -11,18 +12,21 @@ class ProductHistoryController extends GetxController
   RxBool gettingHistoryLoad = RxBool(false);
   RxBool loadingSalesHistory = RxBool(false);
   RxList<ProductHistoryModel> product = RxList([]);
+  RxList<ProductTransferHistories> productTransferHistories = RxList([]);
   RxList<ProductSaleHistory> salesHistory = RxList([]);
 
-  getProductHistory({required productId, required String type}) async {
+  getProductHistory(
+      {required productId,
+      required String type,
+      required String stockId}) async {
     try {
       gettingHistoryLoad.value = true;
-      var response = await Products().getProductHistory(productId, type);
-      // product.clear();
+      var response = await Products().getProductHistory(
+          productId: productId, type: type, stockId: stockId);
       if (response["status"] == true) {
         List fetchedHistory = response["body"];
-        List<ProductHistoryModel> fetchedProductHistory =
-            fetchedHistory.map((e) => ProductHistoryModel.fromJson(e)).toList();
-        product.assignAll(fetchedProductHistory);
+        List<ProductTransferHistories> fetchedProductHistory = fetchedHistory.map((e) => ProductTransferHistories.fromJson(e)).toList();
+        productTransferHistories.assignAll(fetchedProductHistory);
       } else {
         product.value = [];
       }

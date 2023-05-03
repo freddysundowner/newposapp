@@ -35,13 +35,10 @@ class Products {
     return jsonDecode(response);
   }
 
-  getProductHistory(productId, String type) async {
+  getProductHistory({required productId, required String type, required stockId}) async {
     var response = await DbBase().databaseRequest(
-
-
-        productHistory+"type/${productId}/${type}", DbBase().getRequestType);
+        "${productHistory}?type=${type}&stockId=${stockId}&product=$productId", DbBase().getRequestType);
     var data = jsonDecode(response);
-    print(data);
     return data;
 
   }
@@ -58,7 +55,6 @@ class Products {
         product +
             "filter?shopid=${shopId}&type=${type}&startDate=${startDate}&endDate=${endDate}",
         DbBase().getRequestType);
-    print(response);
     var data = jsonDecode(response);
     return data;
   }
@@ -88,7 +84,13 @@ class Products {
 
   getTransHistory({required shopId, required type}) async {
     var response = await DbBase().databaseRequest(
-        "${stocktransfer}/$shopId/$type", DbBase().getRequestType);
+        "${stocktransfer}?shop=$shopId&type=$type", DbBase().getRequestType);
+    var data = jsonDecode(response);
+    return data;
+  }
+  getTransHistoryItems({required shopId, required type}) async {
+    var response = await DbBase().databaseRequest(
+        "${stocktransfer}?shop=$shopId&type=$type", DbBase().getRequestType);
     var data = jsonDecode(response);
     return data;
   }
@@ -102,9 +104,9 @@ class Products {
     return data;
   }
 
-  getBadStock(shopId, attendant) async {
+  getBadStock(shopId, attendant,product) async {
     var response = await DbBase().databaseRequest(
-      "${badstock}shop?shop=$shopId&attendant=$attendant",
+      "${badstock}shop?shop=$shopId&attendant=$attendant&product=$product",
       DbBase().getRequestType,
     );
     var data = jsonDecode(response);

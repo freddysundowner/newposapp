@@ -200,6 +200,7 @@ class ProductController extends GetxController {
     try {
       getProductLoad.value = true;
       var response = await Products().getProductsBySort(shopId, type);
+      print(response);
       products.clear();
       if (response != null) {
         totalSale.value = 0;
@@ -383,7 +384,6 @@ class ProductController extends GetxController {
         DateFormat("yyyy-MM-dd").format(now),
         DateFormat("yyyy-MM-dd").format(tomm),
       );
-      print(response);
       products.clear();
       if (response != null) {
         List fetchedProducts = response["products"];
@@ -425,7 +425,6 @@ class ProductController extends GetxController {
         "product": product.id,
       };
       var res = await Products().updateProductCount(body);
-      print(res);
     } catch (e) {
       print(e);
     }
@@ -436,6 +435,7 @@ class ProductController extends GetxController {
       loadingCountHistory.value = true;
       countHistoryList.clear();
       var response = await Products().getProductCount(shopId);
+      print(response);
       if (response != null) {
         List history = response["body"];
         List<ProductCountModel> countHistory =
@@ -483,6 +483,7 @@ class ProductController extends GetxController {
         }
 
         getBadStock(
+          product: "",
             shopId: shop,
             attendant: Get.find<AuthController>().usertype == "admin"
                 ? ""
@@ -493,15 +494,15 @@ class ProductController extends GetxController {
       saveBadstockLoad.value = false;
       print(e);
     } finally {
-      getBadStock(shopId: shop);
+      getBadStock(shopId: shop,attendant: "",product: "");
     }
   }
 
-  getBadStock({required shopId, String? attendant}) async {
+  getBadStock({required shopId, String? attendant,String? product}) async {
     try {
       saveBadstockLoad.value = true;
       badstocks.clear();
-      var response = await Products().getBadStock(shopId, attendant);
+      var response = await Products().getBadStock(shopId, attendant,product);
       if (response["status"] == true) {
         List responseData = response["body"];
         List<BadStock> jsonData =
