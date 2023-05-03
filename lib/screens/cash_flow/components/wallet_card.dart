@@ -216,45 +216,45 @@ Widget WalletCard(
     {required DepositModel depositBody,
     required context,
     required uid,
-    required type,
+
     customer}) {
-  return InkWell(
-    onTap: () {
-      print(type);
-      if (type == "deposit") {
-        showDepositDialog(
-            context: context,
-            uid: uid,
-            title: "edit",
-            depositModel: depositBody,
-            page: '');
-      }
-    },
-    child: Container(
-      margin: EdgeInsets.all(5),
-      padding: EdgeInsets.all(10),
-      decoration: BoxDecoration(
-          color: Colors.white, borderRadius: BorderRadius.circular(8)),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(
-            type == "usage" ? Icons.arrow_upward : Icons.arrow_downward,
-            color: type == "usage" ? Colors.red : Colors.green,
-          ),
-          Spacer(),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(DateFormat().format(depositBody.updatedAt!)),
-              SizedBox(height: 10),
-              Text(depositBody.recieptNumber.toString()),
-            ],
-          ),
-          Spacer(),
-          Text("KES \n${depositBody.amount}"),
-        ],
-      ),
+  return Container(
+    margin: EdgeInsets.all(5),
+    padding: EdgeInsets.all(10),
+    decoration: BoxDecoration(
+        color: Colors.white, borderRadius: BorderRadius.circular(8)),
+    child: Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(
+          depositBody.type == "usage"
+              ? Icons.arrow_upward
+              : Icons.arrow_downward,
+          color: depositBody.type == "usage" ? Colors.red : Colors.green,
+        ),
+        Spacer(),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(DateFormat().format(depositBody.updatedAt!)),
+            SizedBox(height: 10),
+            Text(depositBody.recieptNumber.toString()),
+          ],
+        ),
+        Spacer(),
+        Row(
+          children: [
+            Text("KES:"),
+            Text(
+              " ${depositBody.amount}",
+              style: TextStyle(
+                color:
+                    depositBody.type == "usage" ? Colors.red : Colors.green,
+              ),
+            ),
+          ],
+        ),
+      ],
     ),
   );
 }

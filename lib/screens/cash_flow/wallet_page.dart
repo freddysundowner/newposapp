@@ -393,7 +393,6 @@ class DepositHistory extends StatelessWidget {
                         return WalletCard(
                             context: context,
                             uid: uid,
-                            type: type,
                             depositBody: depositModel);
                       });
     });

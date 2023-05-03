@@ -28,7 +28,7 @@ class TransferHistoryView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white.withOpacity(0.9),
+      backgroundColor: Colors.white,
       appBar: AppBar(
           backgroundColor: Colors.white,
           elevation: 0.0,
@@ -50,8 +50,8 @@ class TransferHistoryView extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Transfer History View',
-                    style: TextStyle(color: Colors.white),
+                    'Products Transferred',
+                    style: TextStyle(color: Colors.black),
                   ),
                 ],
               ),
@@ -117,7 +117,14 @@ class TransferHistoryView extends StatelessWidget {
                           padding: EdgeInsets.all(8),
                           decoration: BoxDecoration(
                               color: Colors.white,
-                              borderRadius: BorderRadius.circular(5)),
+                              borderRadius: BorderRadius.circular(5),
+                              boxShadow: [
+                                BoxShadow(
+                                    color: Colors.grey.withOpacity(0.3),
+                                    offset: Offset(1, 1),
+                                    blurRadius: 2,
+                                    spreadRadius: 2)
+                              ]),
                           child: Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -143,12 +150,6 @@ class TransferHistoryView extends StatelessWidget {
                                     )
                                   ],
                                 ),
-                                IconButton(
-                                    onPressed: () {},
-                                    icon: Icon(
-                                      Icons.clear,
-                                      color: Colors.purple,
-                                    ))
                               ]),
                         );
                       });
@@ -157,3 +158,4 @@ class TransferHistoryView extends StatelessWidget {
     );
   }
 }
+

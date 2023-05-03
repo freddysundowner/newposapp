@@ -101,12 +101,11 @@ class CashOutLayout extends StatelessWidget {
               Row(
                 children: [
                   Expanded(
-                    flex: 3,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text("Category", style: TextStyle(color: Colors.grey)),
-                        SizedBox(height: 2),
+                        SizedBox(height: 10),
                         InkWell(
                           onTap: () {
                             if (cashFlowController.cashFlowCategories.isEmpty) {
@@ -205,85 +204,82 @@ class CashOutLayout extends StatelessWidget {
                     ),
                   ),
                   SizedBox(width: 10),
-                  Expanded(
-                    flex: 2,
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 10.0),
-                      child: TextButton(
-                        onPressed: () {
-                          showDialog(
-                              context: context,
-                              builder: (context) {
-                                return AlertDialog(
-                                  title: Text("Add Category"),
-                                  content: Padding(
-                                    padding: const EdgeInsets.all(5.0),
-                                    child: TextFormField(
-                                        controller: cashFlowController
-                                            .textEditingControllerCategory,
-                                        decoration: InputDecoration(
-                                            hintText: "eg.Personaal use etc",
-                                            border: OutlineInputBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(10),
-                                            ))),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10.0),
+                    child: TextButton(
+                      onPressed: () {
+                        showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                title: Text("Add Category"),
+                                content: Padding(
+                                  padding: const EdgeInsets.all(5.0),
+                                  child: TextFormField(
+                                      controller: cashFlowController
+                                          .textEditingControllerCategory,
+                                      decoration: InputDecoration(
+                                          hintText: "eg.Personal use etc",
+                                          border: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                          ))),
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: Text(
+                                      "Cancel".toUpperCase(),
+                                      style: TextStyle(color: Colors.blue),
+                                    ),
                                   ),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.pop(context);
-                                      },
-                                      child: Text(
-                                        "Cancel".toUpperCase(),
-                                        style: TextStyle(color: Colors.blue),
-                                      ),
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                      if (cashFlowController
+                                          .textEditingControllerCategory
+                                          .text
+                                          .isEmpty) {
+                                        showSnackBar(
+                                            message:
+                                                "Please enter category name",
+                                            color: Colors.black,
+                                            context: context);
+                                      } else {
+                                        cashFlowController.createCategory(
+                                            "cash-out",
+                                            createShopController
+                                                .currentShop.value!.id!,
+                                            context);
+                                      }
+                                    },
+                                    child: Text(
+                                      "Save now".toUpperCase(),
+                                      style: TextStyle(color: Colors.blue),
                                     ),
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.pop(context);
-                                        if (cashFlowController
-                                            .textEditingControllerCategory
-                                            .text
-                                            .isEmpty) {
-                                          showSnackBar(
-                                              message:
-                                                  "Please enter category name",
-                                              color: Colors.black,
-                                              context: context);
-                                        } else {
-                                          cashFlowController.createCategory(
-                                              "cash-out",
-                                              createShopController
-                                                  .currentShop.value!.id!,
-                                              context);
-                                        }
-                                      },
-                                      child: Text(
-                                        "Save now".toUpperCase(),
-                                        style: TextStyle(color: Colors.blue),
-                                      ),
-                                    ),
-                                  ],
-                                );
-                              });
-                        },
-                        child: Container(
-                            padding: EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                                color: Colors.grey.withOpacity(0.2),
-                                borderRadius: BorderRadius.only(
-                                    topRight: Radius.circular(10),
-                                    bottomRight: Radius.circular(10))),
-                            child: Text(
-                              "+ Add",
-                              style: TextStyle(color: Colors.green),
-                            )),
-                      ),
+                                  ),
+                                ],
+                              );
+                            });
+                      },
+                      child: Container(
+                          padding: EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                              color: Colors.grey.withOpacity(0.2),
+                              borderRadius: BorderRadius.only(
+                                  topRight: Radius.circular(10),
+                                  bottomRight: Radius.circular(10))),
+                          child: Text(
+                            "+ Add",
+                            style: TextStyle(color: Colors.green),
+                          )),
                     ),
                   ),
                 ],
               ),
-              SizedBox(height: 5),
+              SizedBox(height: 20),
               Obx(() {
                 return cashFlowController.selectedCashFlowCategories.value !=
                             null &&
@@ -293,82 +289,85 @@ class CashOutLayout extends StatelessWidget {
                             "bank"
                     ? Row(
                         children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text("Select Bank",
-                                  style: TextStyle(color: Colors.grey)),
-                              InkWell(
-                                onTap: () {
-                                  if (cashFlowController.cashAtBanks.isEmpty) {
-                                    showDialog(
-                                        context: context,
-                                        builder: (BuildContext context) {
-                                          return AlertDialog(
-                                            content:
-                                                Text("Add bank to continue."),
-                                            actions: [
-                                              TextButton(
-                                                child: Text("OK"),
-                                                onPressed: () {
-                                                  Get.back();
-                                                },
-                                              )
-                                            ],
-                                          );
-                                        });
-                                  } else {
-                                    showDialog(
-                                        context: context,
-                                        builder: (context) {
-                                          return SimpleDialog(
-                                            children: List.generate(
-                                                cashFlowController
-                                                    .cashAtBanks.length,
-                                                (index) => SimpleDialogOption(
-                                                      onPressed: () {
-                                                        cashFlowController
-                                                                .selectedBank
-                                                                .value =
-                                                            cashFlowController
-                                                                .cashAtBanks
-                                                                .elementAt(
-                                                                    index);
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text("Select Bank",
+                                    style: TextStyle(color: Colors.grey)),
+                                SizedBox(height: 10),
+                                InkWell(
+                                  onTap: () {
+                                    if (cashFlowController.cashAtBanks.isEmpty) {
+                                      showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return AlertDialog(
+                                              content:
+                                                  Text("Add bank to continue."),
+                                              actions: [
+                                                TextButton(
+                                                  child: Text("OK"),
+                                                  onPressed: () {
+                                                    Get.back();
+                                                  },
+                                                )
+                                              ],
+                                            );
+                                          });
+                                    } else {
+                                      showDialog(
+                                          context: context,
+                                          builder: (context) {
+                                            return SimpleDialog(
+                                              children: List.generate(
+                                                  cashFlowController
+                                                      .cashAtBanks.length,
+                                                  (index) => SimpleDialogOption(
+                                                        onPressed: () {
+                                                          cashFlowController
+                                                                  .selectedBank
+                                                                  .value =
+                                                              cashFlowController
+                                                                  .cashAtBanks
+                                                                  .elementAt(
+                                                                      index);
 
-                                                        Navigator.pop(
-                                                            context);
-                                                      },
-                                                      child: Text(
-                                                          "${cashFlowController.cashAtBanks.elementAt(index).name}"),
-                                                    )),
-                                          );
-                                        });
-                                  }
-                                },
-                                child: Container(
-                                  padding: EdgeInsets.all(8),
-                                  decoration: BoxDecoration(
-                                      border: Border.all(
-                                        color: Colors.grey,
-                                      ),
-                                      borderRadius:
-                                          BorderRadius.circular(10)),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Obx(() {
-                                        return Text(cashFlowController
-                                                .selectedBank.value?.name ??
-                                            "");
-                                      }),
-                                      Icon(Icons.arrow_drop_down,
-                                          color: Colors.grey)
-                                    ],
+                                                          Navigator.pop(
+                                                              context);
+                                                        },
+                                                        child: Text(
+                                                            "${cashFlowController.cashAtBanks.elementAt(index).name}"),
+                                                      )),
+                                            );
+                                          });
+                                    }
+                                  },
+                                  child: Container(
+                                    padding: EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                        border: Border.all(
+                                          color: Colors.grey,
+                                        ),
+                                        borderRadius:
+                                            BorderRadius.circular(10)),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Obx(() {
+                                          return Text(cashFlowController
+                                                  .selectedBank.value?.name ??
+                                              "");
+                                        }),
+                                        Icon(Icons.arrow_drop_down,
+                                            color: Colors.grey)
+                                      ],
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                           SizedBox(width: 10),
                           Padding(
@@ -480,14 +479,17 @@ class CashOutLayout extends StatelessWidget {
                           SizedBox(height: 5)
                         ]);
               }),
+              SizedBox(height: 20),
 
               Text("Amount",
                   style: TextStyle(color: Colors.grey)),
+              SizedBox(height: 10),
               TextField(
                 controller: cashFlowController
                     .textEditingControllerAmount,
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
+                  contentPadding: EdgeInsets.symmetric(vertical: 4),
                   border: OutlineInputBorder(
                     borderSide:
                     BorderSide(color: Colors.grey),

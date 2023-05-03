@@ -48,19 +48,22 @@ class PurchaseController extends GetxController {
             title: "adding purchase please wait...",
             key: _keyLoader);
         var products = selectedList.map((element) => element).toList();
+        print(products.map((e) => e.buyingPrice));
         var supplier = {
           if (selectedSupplier.value != null)
             "supplier": selectedSupplier.value!.id,
           "balance": balance.value,
           "total": grandTotal.value,
+          "itemstotal": grandTotal.value,
           "attendant": attendantid,
           "shop": shopId,
         };
+
+
         var response = await Purchases().createPurchase(shopId: shopId, body: {
           "supplier": supplier,
           "products": products,
-          "date":
-              DateTime.parse(DateTime.now().toString()).millisecondsSinceEpoch,
+          "date": DateTime.parse(DateTime.now().toString()).millisecondsSinceEpoch,
         });
         Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
         if (response["status"] == true) {
@@ -97,6 +100,7 @@ class PurchaseController extends GetxController {
           attendantId: attendantId,
           customer: customer == null ? "" : customer,
           onCredit: onCredit == null ? "" : onCredit);
+      print(response);
       if (response["status"] == true) {
         List fetchedResponse = response["body"];
         List<PurchaseOrder> supply =
@@ -115,6 +119,7 @@ class PurchaseController extends GetxController {
     try {
       getPurchaseOrderItemLoad.value = true;
       var response = await Purchases().getPurchaseOrderItems(id: purchaseId == null ? "" : purchaseId,productId:productId==null?"":productId);
+      print(response);
       if (response["status"] == true) {
         List fetchedResponse = response["body"];
         List<SupplyOrderModel> supply =

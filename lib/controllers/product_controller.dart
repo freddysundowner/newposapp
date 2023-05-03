@@ -200,6 +200,7 @@ class ProductController extends GetxController {
     try {
       getProductLoad.value = true;
       var response = await Products().getProductsBySort(shopId, type);
+      print(response);
       products.clear();
       if (response != null) {
         totalSale.value = 0;

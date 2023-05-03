@@ -71,10 +71,10 @@ Widget stockCard(
                       Text("${supplyOrderModel.product!.name}"),
                       SizedBox(height: 5),
                       Text(
-                          'Qty ${supplyOrderModel.quantity} @${shopController.currentShop.value?.currency}.${supplyOrderModel.product!.sellingPrice![0]}'),
+                          'Qty ${supplyOrderModel.quantity} @${shopController.currentShop.value?.currency}.${supplyOrderModel.product!.buyingPrice}'),
                       SizedBox(height: 5),
                       Text(
-                        "Total :${shopController.currentShop.value?.currency}.${supplyOrderModel.quantity! * int.parse(supplyOrderModel.product!.sellingPrice![0])}",
+                        "Total :${shopController.currentShop.value?.currency}.${supplyOrderModel.quantity! * supplyOrderModel.product!.buyingPrice!}",
                         style: TextStyle(
                             color: Colors.black, fontWeight: FontWeight.bold),
                       ),

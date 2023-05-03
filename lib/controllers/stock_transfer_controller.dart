@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutterpos/controllers/AuthController.dart';
 import 'package:flutterpos/controllers/home_controller.dart';
 import 'package:flutterpos/controllers/product_controller.dart';
 import 'package:flutterpos/screens/stock/transfer_history.dart';
@@ -48,6 +49,7 @@ class StockTransferController extends GetxController {
       LoadingDialog.showLoadingDialog(
           context: context, title: "Transferring Product...", key: _keyLoader);
       Map<String, dynamic> body = {
+        "attendant":Get.find<AuthController>().currentUser.value!.id,
         "from": from,
         "to": to,
         "products": selectedProducts
