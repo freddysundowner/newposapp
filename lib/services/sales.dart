@@ -20,9 +20,10 @@ class Sales {
     return data;
   }
 
-  getSalesBySaleId(uid,productId) async {
-    var response = await DbBase()
-        .databaseRequest("${singleSaleItems}?sale=${uid}&product=${productId}", DbBase().getRequestType);
+  getSalesBySaleId(uid, productId) async {
+    var response = await DbBase().databaseRequest(
+        "${singleSaleItems}?sale=${uid}&product=${productId}",
+        DbBase().getRequestType);
 
     var data = jsonDecode(response);
     return data;
@@ -35,8 +36,7 @@ class Sales {
       required date,
       required customer}) async {
     var response = await DbBase().databaseRequest(
-        sales +
-            "allsales/$shopId?attendant=$attendantId&oncredit=$onCredit&startdate=$date&customer=$customer",
+        "${sales}allsales/$shopId?attendant=$attendantId&oncredit=$onCredit&startdate=$date&customer=$customer",
         DbBase().getRequestType);
     var data = jsonDecode(response);
     return data;

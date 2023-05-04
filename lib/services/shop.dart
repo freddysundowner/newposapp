@@ -13,9 +13,7 @@ class Shop {
 
   getShopsByAdminId({required adminId, String? name}) async {
     var response = await DbBase().databaseRequest(
-        name == null || name == ""
-            ? adminShop + adminId
-            : "${searchShop}/$name/",
+        name == null || name == "" ? adminShop + adminId : "$searchShop/$name/",
         DbBase().getRequestType,
         body: {"id": adminId});
     return jsonDecode(response);
@@ -25,6 +23,13 @@ class Shop {
     var response = await DbBase().databaseRequest(
         updateShop + id, DbBase().patchRequestType,
         body: body);
+
+    return jsonDecode(response);
+  }
+
+  getShopById({required id}) async {
+    var response =
+        await DbBase().databaseRequest(shop + id, DbBase().getRequestType);
 
     return jsonDecode(response);
   }

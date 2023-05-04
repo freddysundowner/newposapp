@@ -410,15 +410,13 @@ class SalesController extends GetxController
       String? startingDate,
       String? customer}) async {
     try {
-      print("data called");
-
       salesByShopLoad.value = true;
       var response = await Sales().getShopSales(
           shopId: id,
           attendantId: attendantId,
           onCredit: onCredit,
           date: startingDate,
-          customer: customer == null ? "" : customer);
+          customer: customer ?? "");
       if (response["status"] == true) {
         List data = response["body"];
 
