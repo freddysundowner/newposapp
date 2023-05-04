@@ -16,13 +16,15 @@ import '../../widgets/shop_widget.dart';
 class ShopDetails extends StatelessWidget {
   final ShopModel shopModel;
 
-  ShopDetails({Key? key, required this.shopModel}) : super(key: key);
+  ShopDetails({Key? key, required this.shopModel}) : super(key: key){
+    shopController.initializeControllers(shopModel: shopModel);
+  }
   ShopController shopController = Get.find<ShopController>();
   AuthController authController = Get.find<AuthController>();
 
   @override
   Widget build(BuildContext context) {
-    shopController.initializeControllers(shopModel: shopModel);
+
     return ResponsiveWidget(
         largeScreen: Container(
           padding: EdgeInsets.all(20),

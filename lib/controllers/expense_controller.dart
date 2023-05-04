@@ -58,7 +58,7 @@ class ExpenseController extends GetxController {
               shopId: "${shopId}",
               startingDate: startdate.value,
               endingDate: enddate.value,
-              attendant: Get.find<AuthController>().usertype == "admin"
+              attendant: Get.find<AuthController>().usertype.value == "admin"
                   ? ""
                   : Get.find<AttendantController>().attendant.value!.id);
 

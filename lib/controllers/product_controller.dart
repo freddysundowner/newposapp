@@ -419,7 +419,7 @@ class ProductController extends GetxController {
       Map<String, dynamic> body = {
         "quantity": product.quantity,
         "shop": Get.find<ShopController>().currentShop.value!.id,
-        "attendantId": Get.find<AuthController>().usertype == "admin"
+        "attendantId": Get.find<AuthController>().usertype.value == "admin"
             ? Get.find<AuthController>().currentUser.value?.id
             : Get.find<AttendantController>().attendant.value?.id,
         "product": product.id,

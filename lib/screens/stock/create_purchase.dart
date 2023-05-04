@@ -555,7 +555,7 @@ class CreatePurchase extends StatelessWidget {
                                                 Get.back();
                                                 Get.to(() => CreateCustomer(
                                                     page: "createPurchase",
-                                                    type: "suppliers"));
+                                                    type: "supplier"));
                                               },
                                             )
                                           ],

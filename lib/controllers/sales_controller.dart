@@ -212,7 +212,7 @@ class SalesController extends GetxController
       });
       var sale = {
         "quantity": selectedList.length,
-        "total": grandTotal.value,
+        "total": grandTotal.value+totaldiscount,
         "attendantId": attendantId,
         "paymentMethod": selectedPaymentMethod.value,
         "totaldiscount": totaldiscount,
@@ -222,6 +222,7 @@ class SalesController extends GetxController
           "customerId": selectedCustomer.value!.id,
         "duedate": type == "noncredit" ? "" : dueDate.value
       };
+      print(sale);
       var products = selectedList.map((element) => element).toList();
       var response = await Sales().createSales({
         "sale": sale,

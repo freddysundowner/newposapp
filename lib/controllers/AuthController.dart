@@ -145,8 +145,7 @@ class AuthController extends GetxController {
 
       getUserByIdLoad.value = false;
       AdminModel userModel = AdminModel.fromJson(user["body"]);
-      shopController.currentShop.value =
-          userModel.shops!.isNotEmpty ? userModel.shops![0] : null;
+      shopController.currentShop.value = userModel.shops!.isNotEmpty ? userModel.shops![0] : null;
       currentUser.value = userModel;
       return userModel;
     } catch (e) {

@@ -423,7 +423,11 @@ class CreateSale extends StatelessWidget {
         builder: (_) {
           return AlertDialog(
             contentPadding: EdgeInsets.only(bottom: 0.0, left: 20, right: 20),
-            title: Center(child: Text("Confirm Payment")),
+            title: Center(
+                child: Padding(
+              padding: const EdgeInsets.only(bottom: 10.0),
+              child: Text("Confirm Payment"),
+            )),
             content: Obx(() {
               return SingleChildScrollView(
                 child: Container(
@@ -433,7 +437,7 @@ class CreateSale extends StatelessWidget {
                           : MediaQuery.of(context).size.height * 0.5,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.max,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -472,65 +476,76 @@ class CreateSale extends StatelessWidget {
                       majorTitle(
                           title: "Paywith", color: Colors.black, size: 16.0),
                       Obx(() {
-                        return ListTile(
-                          title: const Text('Cash'),
+                        return RadioListTile(
+                          contentPadding: EdgeInsets.zero,
                           dense: true,
-                          contentPadding: EdgeInsets.symmetric(
-                              horizontal: 0.0, vertical: 0.0),
-                          visualDensity:
-                              VisualDensity(horizontal: 0, vertical: -4),
-                          leading: Radio(
-                            value: "Cash",
-                            groupValue:
-                                salesController.selectedPaymentMethod.value,
-                            onChanged: (value) {
-                              salesController.selectedPaymentMethod.value =
-                                  value.toString();
-                            },
+                          title:Transform.translate(
+                            offset: Offset(-15, 0),
+                            child: Text(
+                              "Cash",
+                              style: TextStyle(fontSize: 12),
+                            ),
                           ),
+
+                          // title: Text('Cash'),
+                          value: "Cash",
+                          groupValue:
+                              salesController.selectedPaymentMethod.value,
+                          onChanged: (value) {
+                            salesController.selectedPaymentMethod.value =
+                                value.toString();
+                          },
+                        );
+                      }),
+
+                      Obx(() {
+                        return RadioListTile(
+                          contentPadding: EdgeInsets.zero,
+                          dense: true,
+                          title:Transform.translate(
+                            offset: Offset(-15, 0),
+                            child: Text(
+                              "Credit",
+                              style: TextStyle(fontSize: 12),
+                            ),
+                          ),
+
+                          // title: Text('Cash'),
+                          value: "Credit",
+                          groupValue:
+                          salesController.selectedPaymentMethod.value,
+                          onChanged: (value) {
+                            salesController.selectedPaymentMethod.value =
+                                value.toString();
+                            salesController.textEditingCredit.text = "0";
+                            salesController.balance.value =
+                                salesController.grandTotal.value;
+                          },
                         );
                       }),
                       Obx(() {
-                        return ListTile(
-                          title: const Text('Credit'),
+                        return RadioListTile(
+                          contentPadding: EdgeInsets.zero,
                           dense: true,
-                          contentPadding: EdgeInsets.symmetric(
-                              horizontal: 0.0, vertical: 0.0),
-                          visualDensity:
-                              VisualDensity(horizontal: 0, vertical: -4),
-                          leading: Radio(
-                            value: "Credit",
-                            groupValue:
-                                salesController.selectedPaymentMethod.value,
-                            onChanged: (value) {
-                              salesController.selectedPaymentMethod.value =
-                                  value.toString();
-                              salesController.textEditingCredit.text = "0";
-                              salesController.balance.value =
-                                  salesController.grandTotal.value;
-                            },
+                          title:Transform.translate(
+                            offset: Offset(-15, 0),
+                            child: Text(
+                              "Wallet",
+                              style: TextStyle(fontSize: 12),
+                            ),
                           ),
+
+                          // title: Text('Cash'),
+                          value: "Wallet",
+                          groupValue:
+                          salesController.selectedPaymentMethod.value,
+                          onChanged: (value) {
+                            salesController.selectedPaymentMethod.value =
+                                value.toString();
+                          },
                         );
                       }),
-                      Obx(() {
-                        return ListTile(
-                          title: const Text('Wallet'),
-                          dense: true,
-                          contentPadding: EdgeInsets.symmetric(
-                              horizontal: 0.0, vertical: 0.0),
-                          visualDensity:
-                              VisualDensity(horizontal: 0, vertical: -4),
-                          leading: Radio(
-                            value: "Wallet",
-                            groupValue:
-                                salesController.selectedPaymentMethod.value,
-                            onChanged: (value) {
-                              salesController.selectedPaymentMethod.value =
-                                  value.toString();
-                            },
-                          ),
-                        );
-                      }),
+
                       SizedBox(
                         height: 10,
                       ),

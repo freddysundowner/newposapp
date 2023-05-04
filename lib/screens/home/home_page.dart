@@ -31,9 +31,7 @@ class HomePage extends StatelessWidget {
   HomePage({Key? key}) : super(key: key) {
     salesController.getSalesByShop(
         id: shopController.currentShop.value?.id,
-        attendantId: authController.usertype == "admin"
-            ? ""
-            : attendantController.attendant.value!.id,
+        attendantId: authController.usertype == "admin" ? "" : attendantController.attendant.value!.id,
         onCredit: "",
         startingDate: "${DateFormat("yyyy-MM-dd").format(DateTime.now())}");
   }

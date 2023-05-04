@@ -122,6 +122,7 @@ class SupplierController extends GetxController {
       productController.selectedSupplier.clear();
       getsupplierLoad.value = true;
       var response = await Supplier().getSuppliersByShopId(shopId, type);
+      print("suppliers$response}");
       if (response != null) {
         suppliers.clear();
         List fetchedData = response["body"];

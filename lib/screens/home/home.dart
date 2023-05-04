@@ -19,32 +19,33 @@ class Home extends StatelessWidget {
   SalesController salesController = Get.put(SalesController());
   ShopController shopController = Get.put(ShopController());
   AttendantController attendantController = Get.find<AttendantController>();
+  AuthController authController = Get.find<AuthController>();
 
   @override
   Widget build(BuildContext context) {
     attendantController.getAttendantRoles();
 
     return ResponsiveWidget(
-        largeScreen: Obx(()=>Scaffold(
-          backgroundColor: Colors.white,
-          appBar: top_appbar(),
-          body: Row(
-            children: [
-              Expanded(
-                flex: 1,
-                child: SideMenu(),
+        largeScreen: Obx(() => Scaffold(
+              backgroundColor: Colors.white,
+              appBar: top_appbar(),
+              body: Row(
+                children: [
+                  Expanded(
+                    flex: 1,
+                    child: SideMenu(),
+                  ),
+                  Expanded(flex: 4, child: homeControler.selectedWidget.value!)
+                ],
               ),
-              Expanded(flex: 4, child: homeControler.selectedWidget.value!)
-            ],
-          ),
-        )),
+            )),
         smallScreen: Helper(
           widget: Obx(() {
             return homeControler.pages[homeControler.selectedIndex.value];
           }),
           appBar: top_appbar(),
           bottomNavigationBar: BottomAppBar(
-            child: Container(
+            child:Obx(()=> Container(
               decoration: BoxDecoration(
                   color: AppColors.lightDeepPurple,
                   borderRadius: BorderRadius.only(
@@ -60,8 +61,15 @@ class Home extends StatelessWidget {
                   gap: 8,
                   onTabChange: (value) {
                     homeControler.selectedIndex.value = value;
-                    print("value${value}");
-               },
+                    if (value == 1) {
+                      shopController.getShopsByAdminId(
+                          adminId: authController.currentUser.value?.id);
+                    }
+                    if (value == 2) {
+                      attendantController.getAttendantsByShopId(
+                          shopId: shopController.currentShop.value?.id);
+                    }
+                  },
                   padding: EdgeInsets.all(16),
                   backgroundColor: Colors.transparent,
                   tabs: [
@@ -84,7 +92,7 @@ class Home extends StatelessWidget {
                   ],
                 ),
               ),
-            ),
+            )),
           ),
         ));
   }

@@ -24,10 +24,8 @@ class CreateProduct extends StatelessWidget {
       : super(key: key) {
     if (page == "create") {
       productController.clearControllers();
-      supplierController.getSuppliersInShop(
-          shopController.currentShop.value!.id!, "all");
-      productController.getProductCategory(
-          shopId: shopController.currentShop.value?.id);
+      supplierController.getSuppliersInShop(shopController.currentShop.value!.id!, "all");
+      productController.getProductCategory(shopId: shopController.currentShop.value?.id);
     } else {
       productController.assignTextFields(productModel);
     }
@@ -652,12 +650,12 @@ class CreateProduct extends StatelessWidget {
                         Get.find<HomeController>().selectedWidget.value =
                             CreateCustomer(
                           page: "createProduct",
-                          type: "suppliers",
+                          type: "supplier",
                         );
                       } else {
                         Get.to(() => CreateCustomer(
                               page: "createProduct",
-                              type: "suppliers",
+                              type: "supplier",
                             ));
                       }
                     },

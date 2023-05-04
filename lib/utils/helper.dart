@@ -120,6 +120,7 @@ class Helper extends StatelessWidget {
                                     {
                                       if (page == null) {
                                         Get.off(() => Home());
+
                                       } else {
                                         Get.find<HomeController>()
                                             .selectedIndex
@@ -160,9 +161,7 @@ class Helper extends StatelessWidget {
                                   if (page != null) {
                                     Get.off(() => Home());
                                   } else {
-                                    Get.find<HomeController>()
-                                        .selectedIndex
-                                        .value = 0;
+                                    Get.find<HomeController>().selectedIndex.value = 0;
                                   }
                                 }
                               },

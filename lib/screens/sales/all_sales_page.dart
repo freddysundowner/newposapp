@@ -242,7 +242,7 @@ class AllSales extends StatelessWidget {
           : salesController.sales.length == 0
               ? Center(
                   child: normalText(
-                      title: "No entries found${salesController.sales.length}",
+                      title: "No entries found",
                       color: Colors.black,
                       size: 14.0),
                 )
