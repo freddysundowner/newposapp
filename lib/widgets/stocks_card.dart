@@ -12,7 +12,6 @@ import 'package:intl/intl.dart';
 
 import '../controllers/supplierController.dart';
 import '../utils/colors.dart';
-import 'delete_dialog.dart';
 
 Widget stockCard(
     {required context,
@@ -123,14 +122,10 @@ showProductModal(context, SupplyOrderModel supplyOrderModel, type) {
       context: context,
       builder: (BuildContext context) {
         return Container(
-            height: MediaQuery.of(context).size.height * 0.3,
+            height: MediaQuery.of(context).size.height * 0.1,
+            padding: EdgeInsets.only(top: 10),
             child: Column(
               children: [
-                Container(
-                    padding: EdgeInsets.all(8.0),
-                    width: double.infinity,
-                    color: Colors.white,
-                    child: Text('Manage ${supplyOrderModel.product!.name}')),
                 ListTile(
                   title: Text("Return to supplier"),
                   leading: Icon(Icons.recycling),
@@ -142,23 +137,11 @@ showProductModal(context, SupplyOrderModel supplyOrderModel, type) {
                           color: Colors.red,
                           context: context);
                     } else {
-                      Get.find<SupplierController>().returnOrderToSupplier(uid:supplyOrderModel.id,context:context);
+                      Get.find<SupplierController>().returnOrderToSupplier(
+                          uid: supplyOrderModel.id, context: context);
                     }
                   },
                 ),
-
-
-                if (authController.usertype == "admin" ||
-                    (authController.usertype == "attendant" &&
-                        attendantController.checkRole("edit_entries")))
-                  ListTile(
-                    title: Text("Delete"),
-                    leading: Icon(Icons.delete, color: Colors.red),
-                    onTap: () {
-                      Get.back();
-                      deleteDialog(context: context, onPressed: () {});
-                    },
-                  ),
               ],
             ));
       });
@@ -204,16 +187,16 @@ showQuantityDialog(context, SupplyOrderModel supplyOrderModel) {
                     TextButton(
                       onPressed: () {
                         Navigator.pop(context);
-                        if (purchaseController.textEditingControllerAmount.text.isEmpty ||
+                        if (purchaseController
+                                .textEditingControllerAmount.text.isEmpty ||
                             int.parse(purchaseController
-                                    .textEditingControllerAmount.text) > supplyOrderModel.quantity!) {
+                                    .textEditingControllerAmount.text) >
+                                supplyOrderModel.quantity!) {
                           showSnackBar(
                               message: "Enter a valid amount",
                               color: Colors.redAccent,
                               context: context);
-                        } else {
-
-                        }
+                        } else {}
                       },
                       child: Text(
                         "Save Now".toUpperCase(),

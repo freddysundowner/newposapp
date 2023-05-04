@@ -138,7 +138,6 @@ class AuthController extends GetxController {
       getUserByIdLoad.value = true;
       String id = await getUserId();
       var user = await Admin().getUserById(id);
-
       if (user["status"] == false) {
         getUserByIdLoad.value = false;
         logout();
@@ -170,8 +169,7 @@ class AuthController extends GetxController {
       return ["admin", adminModel];
     } else {
       String id = await getUserId();
-      AttendantModel attendantModel =
-          await Get.find<AttendantController>().getAttendantsById(id);
+      AttendantModel attendantModel = await Get.find<AttendantController>().getAttendantsById(id);
       return ["attendant", attendantModel];
     }
   }
@@ -184,8 +182,8 @@ class AuthController extends GetxController {
         if (phoneController.text != "") "phonenumber": phoneController.text,
         if (nameController.text != "") "name": nameController.text,
       };
-      var response =
-          await Admin().updateAdmin(body: body, id: currentUser.value?.id);
+      var response = await Admin().updateAdmin(body: body, id: currentUser.value?.id);
+      print("updated response is${response}");
 
       if (response["status"] == true) {
         clearDataFromTextFields();
@@ -297,14 +295,13 @@ class AuthController extends GetxController {
           Get.snackbar("", message,
               backgroundColor: Colors.red, colorText: Colors.white);
         } else {
-          AttendantModel attendantModel =
-              AttendantModel.fromJson(response["body"]);
+          AttendantModel attendantModel = AttendantModel.fromJson(response["body"]);
           Get.find<AttendantController>().attendant.value = attendantModel;
           Get.find<ShopController>().currentShop.value = attendantModel.shop;
-          // SharedPreferences prefs = await SharedPreferences.getInstance();
-          // prefs.setString("userId", attendantModel.id!);
-          // prefs.setString("token", response["token"]);
-          // prefs.setString("type", "attendant");
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          prefs.setString("userId", attendantModel.id!);
+          prefs.setString("token", response["token"]);
+          prefs.setString("type", "attendant");
           attendantUidController.text = "";
           attendantPasswordController.text = "";
           usertype.value = "attendant";

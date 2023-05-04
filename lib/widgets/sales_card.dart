@@ -61,40 +61,37 @@ Widget SalesContainer(
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      majorTitle(
-                          title: "Unit S.Price",
-                          color: Colors.black54,
-                          size: 13.0),
-                    ],
-                  ),
+                  majorTitle(title: "Price", color: Colors.black54, size: 13.0),
                   SizedBox(height: 5),
-                  Row(
-                    children: [
-                      minorTitle(
-                          title: "${productModel.selling}", color: Colors.grey),
-                      SizedBox(width: 10),
-                      if (authController.usertype == "admin" ||
-                          (authController.usertype == "attendant" &&
-                              attendantController.checkRole("edit_entries")))
-                        InkWell(
-                            onTap: () {
-                              salesController.textEditingSellingPrice.text =
-                                  "${productModel.minPrice}";
-                              showEditDialogPrice(
-                                  context: context,
-                                  productModel: productModel,
-                                  index: index);
-                            },
-                            child: Text(
-                              "Edit",
-                              style: TextStyle(color: Colors.red),
-                            )),
-                    ],
-                  ),
+                  minorTitle(
+                      title: "${productModel.selling}", color: Colors.grey),
                 ],
               ),
+              SizedBox(width: 15),
+              if (authController.usertype == "admin" ||
+                  (authController.usertype == "attendant" &&
+                      attendantController.checkRole("edit_entries")))
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    majorTitle(
+                        title: "Action", color: Colors.black54, size: 13.0),
+                    SizedBox(height: 10),
+                    InkWell(
+                        onTap: () {
+                          salesController.textEditingSellingPrice.text =
+                              "${productModel.minPrice}";
+                          showEditDialogPrice(
+                              context: context,
+                              productModel: productModel,
+                              index: index);
+                        },
+                        child: Text(
+                          "Edit",
+                          style: TextStyle(color: Colors.red),
+                        )),
+                  ],
+                ),
             ],
           ),
           SizedBox(height: 10),
