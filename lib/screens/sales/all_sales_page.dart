@@ -49,10 +49,10 @@ class AllSalesPage extends StatelessWidget {
         salesController.getSalesByShop(
             id: shopController.currentShop.value?.id,
             attendantId: authController.usertype == "admin"
-                ?"": attendantController.attendant.value!.id,
+                ? ""
+                : attendantController.attendant.value!.id,
             onCredit: "",
-            startingDate:
-            "${DateFormat("yyyy-MM-dd").format(DateTime.now())}");
+            startingDate: "${DateFormat("yyyy-MM-dd").format(DateTime.now())}");
 
         return true;
       },
@@ -64,6 +64,7 @@ class AllSalesPage extends StatelessWidget {
   }
 
   Widget _body(context) {
+    print("user type ${authController.usertype.value}");
     return Obx(() => DefaultTabController(
           length: salesController.tabController.length,
           initialIndex: salesController.salesInitialIndex.value,
@@ -74,10 +75,10 @@ class AllSalesPage extends StatelessWidget {
               centerTitle: false,
               title: Row(
                 children: [
-                  if (authController.usertype == "admin")
+                  if (authController.usertype.value == "admin")
                     majorTitle(title: "Sales", color: Colors.black, size: 18.0),
-                  Spacer(),
-                  if (authController.usertype == "attendant")
+                  const Spacer(),
+                  if (authController.usertype.value == "attendant")
                     PopupMenuButton(
                       itemBuilder: (ctx) => [
                         PopupMenuItem(
@@ -93,7 +94,7 @@ class AllSalesPage extends StatelessWidget {
                                 Get.to(() => CreateSale(page: "allSales"));
                               }
                             },
-                            title: Text("Create Sale"),
+                            title: const Text("Create Sale"),
                           ),
                         ),
                         PopupMenuItem(
@@ -193,7 +194,8 @@ class AllSalesPage extends StatelessWidget {
                     salesController.getSalesByShop(
                         id: shopController.currentShop.value?.id,
                         attendantId: authController.usertype == "admin"
-                            ?"": attendantController.attendant.value!.id,
+                            ? ""
+                            : attendantController.attendant.value!.id,
                         onCredit: "",
                         startingDate:
                             "${DateFormat("yyyy-MM-dd").format(DateTime.now())}");
@@ -294,4 +296,3 @@ class AllSales extends StatelessWidget {
     });
   }
 }
-

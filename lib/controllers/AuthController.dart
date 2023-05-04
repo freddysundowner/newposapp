@@ -158,13 +158,11 @@ class AuthController extends GetxController {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? user = prefs.getString("userId");
     return user;
-    // return "63f9efe3879e16801054a0b0";
   }
 
   getUserType() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? user = prefs.getString("type");
-    if (user == "admin") {
+    String? userType = await _getUserType();
+    if (userType == "admin") {
       AdminModel adminModel = await getUserById();
       return ["admin", adminModel];
     } else {
@@ -177,6 +175,13 @@ class AuthController extends GetxController {
     }
   }
 
+  Future<String?> _getUserType() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? userType = prefs.getString("type");
+    usertype.value = userType!;
+    return userType;
+  }
+
   updateAdmin(context) async {
     try {
       updateAdminLoad.value = true;
@@ -187,7 +192,6 @@ class AuthController extends GetxController {
       };
       var response =
           await Admin().updateAdmin(body: body, id: currentUser.value?.id);
-      print("updated response is${response}");
 
       if (response["status"] == true) {
         clearDataFromTextFields();

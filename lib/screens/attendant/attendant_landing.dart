@@ -44,7 +44,8 @@ class AttendantLanding extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    homeController.selectedWidget.value = Container(child: noItemsFound(context, true));
+    homeController.selectedWidget.value =
+        Container(child: noItemsFound(context, true));
     return ResponsiveWidget(
         largeScreen: Obx(() => Scaffold(
             backgroundColor: Colors.white,
@@ -115,7 +116,9 @@ class AttendantLanding extends StatelessWidget {
                         ? ""
                         : "${attendantController.attendant.value?.shop!.name}"
                             .capitalize!,
-                    style: TextStyle(color:AppColors.mainColor,),
+                    style: TextStyle(
+                      color: AppColors.mainColor,
+                    ),
                   );
                 }),
                 actions: [
@@ -178,11 +181,9 @@ class AttendantLanding extends StatelessWidget {
                                         } else if (e.key == "add_products") {
                                           Get.to(() => ProductPage());
                                         } else if (e.key == "sales") {
-
                                           Get.to(() => AllSalesPage(
                                               page: "AtedantLanding"));
                                         } else if (e.key == "stockin") {
-
                                           Get.to(() => ViewPurchases());
                                         } else if (e.key == "customers") {
                                           Get.to(
@@ -215,8 +216,6 @@ class AttendantLanding extends StatelessWidget {
                                               mainAxisAlignment:
                                                   MainAxisAlignment.center,
                                               children: [
-                                                // Icon(Icons.production_quantity_limits,
-                                                //     color: Colors.white),
                                                 SizedBox(width: 5),
                                                 Text(
                                                   e.name,
