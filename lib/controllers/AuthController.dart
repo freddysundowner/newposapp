@@ -169,10 +169,12 @@ class AuthController extends GetxController {
       AdminModel adminModel = await getUserById();
       return ["admin", adminModel];
     } else {
-      String id = await getUserId();
-      AttendantModel attendantModel =
-          await Get.find<AttendantController>().getAttendantsById(id);
-      return ["attendant", attendantModel];
+      String? id = await getUserId();
+      if (id != null) {
+        AttendantModel attendantModel =
+            await Get.find<AttendantController>().getAttendantsById(id);
+        return ["attendant", attendantModel];
+      }
     }
   }
 

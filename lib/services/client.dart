@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-// import 'package:shared_preferences/shared_preferences.dart';
 
 class DbBase {
   final postRequestType = "POST";
@@ -20,6 +19,7 @@ class DbBase {
         "Content-Type": "application/json",
         "Authorization": "Bearer ${token ?? ""}",
       };
+      print(link);
       var request = http.Request(type, Uri.parse(link));
       if (body != null) {
         request.body = json.encode(body);
