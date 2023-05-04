@@ -185,7 +185,8 @@ class AuthController extends GetxController {
         if (phoneController.text != "") "phonenumber": phoneController.text,
         if (nameController.text != "") "name": nameController.text,
       };
-      var response = await Admin().updateAdmin(body: body, id: currentUser.value?.id);
+      var response =
+          await Admin().updateAdmin(body: body, id: currentUser.value?.id);
       print("updated response is${response}");
 
       if (response["status"] == true) {
@@ -298,7 +299,8 @@ class AuthController extends GetxController {
           Get.snackbar("", message,
               backgroundColor: Colors.red, colorText: Colors.white);
         } else {
-          AttendantModel attendantModel = AttendantModel.fromJson(response["body"]);
+          AttendantModel attendantModel =
+              AttendantModel.fromJson(response["body"]);
           Get.find<AttendantController>().attendant.value = attendantModel;
           Get.find<ShopController>().currentShop.value = attendantModel.shop;
           SharedPreferences prefs = await SharedPreferences.getInstance();
