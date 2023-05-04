@@ -234,7 +234,7 @@ class HomePage extends StatelessWidget {
                     children: [
                       majorTitle(
                           title: "Sales", color: Colors.black, size: 20.0),
-                      salesController.sales.length == 0
+                      salesController.sales.isEmpty
                           ? Container()
                           : InkWell(
                               onTap: () {
@@ -432,7 +432,7 @@ class HomePage extends StatelessWidget {
                   const SizedBox(height: 10),
                   Obx(() {
                     return salesController.getSalesByLoad.value
-                        ? Center(
+                        ? const Center(
                             child: CircularProgressIndicator(),
                           )
                         : salesListView();
@@ -601,8 +601,8 @@ class HomePage extends StatelessWidget {
 
   Widget salesListView() {
     return ListView.builder(
-        physics: NeverScrollableScrollPhysics(),
-        itemCount: salesController.sales.length == 0
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: salesController.sales.isEmpty
             ? 0
             : salesController.sales.length > 4
                 ? 4

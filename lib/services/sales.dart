@@ -36,7 +36,7 @@ class Sales {
       required date,
       required customer}) async {
     var response = await DbBase().databaseRequest(
-        "${sales}allsales/$shopId?attendant=$attendantId&oncredit=$onCredit&startdate=$date&customer=$customer",
+        "${sales}allsales/$shopId?attendant=$attendantId&oncredit=$onCredit&startdate=${date ?? ""}&customer=$customer",
         DbBase().getRequestType);
     var data = jsonDecode(response);
     return data;
