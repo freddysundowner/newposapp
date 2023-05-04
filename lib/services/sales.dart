@@ -14,7 +14,7 @@ class Sales {
 
   getSalesByDate(shopId, startDate, endDate) async {
     var response = await DbBase().databaseRequest(
-        sales + "todaysales/" + shopId + "/" + startDate + "/" + endDate,
+        "${sales + "gettime/" + shopId + "/" + startDate}/" + endDate,
         DbBase().getRequestType);
     var data = jsonDecode(response);
     return data;
@@ -44,14 +44,14 @@ class Sales {
 
   retunSale(id) async {
     var response = await DbBase().databaseRequest(
-        sales + "returnproduct/${id}", DbBase().postRequestType);
+        "${sales}returnproduct/${id}", DbBase().postRequestType);
     var data = jsonDecode(response);
     return data;
   }
 
   createPayment({required Map<String, dynamic> body, required saleId}) async {
     var response = await DbBase().databaseRequest(
-        sales + "pay/credit/$saleId", DbBase().postRequestType,
+        "${sales}pay/credit/$saleId", DbBase().postRequestType,
         body: body);
     return jsonDecode(response);
   }
@@ -59,8 +59,8 @@ class Sales {
   getPaymentHistory({required String id, required String type}) async {
     var response = await DbBase().databaseRequest(
         type == "purchase"
-            ? purchases + "paymenthistory/$id"
-            : sales + "paymenthistory/$id",
+            ? "${purchases}paymenthistory/$id"
+            : "${sales}paymenthistory/$id",
         DbBase().getRequestType);
     return jsonDecode(response);
   }

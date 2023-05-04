@@ -12,6 +12,7 @@ import 'package:flutterpos/services/attendant.dart';
 import 'package:flutterpos/utils/colors.dart';
 import 'package:flutterpos/widgets/snackBars.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 // import 'package:shared_preferences/shared_preferences.dart';
@@ -169,6 +170,11 @@ class AuthController extends GetxController {
             ? ""
             : Get.find<AttendantController>().attendant.value!.id,
         onCredit: "");
+    Get.find<SalesController>().getSalesByDate(
+        shopController.currentShop.value?.id,
+        "${DateFormat("yyyy-MM-dd").format(DateTime.now())}",
+        "${DateFormat("yyyy-MM-dd").format(DateTime.now())}");
+
     if (userType == "admin") {
       AdminModel adminModel = await getUserById();
       return ["admin", adminModel];

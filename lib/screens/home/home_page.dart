@@ -288,8 +288,7 @@ class HomePage extends StatelessWidget {
                     ? ""
                     : attendantController.attendant.value!.id,
                 onCredit: "",
-                startingDate:
-                    "${DateFormat("yyyy-MM-dd").format(DateTime.now())}");
+                startingDate: DateFormat("yyyy-MM-dd").format(DateTime.now()));
             ;
             await Get.find<AttendantController>().getAttendantRoles();
           },
@@ -323,7 +322,7 @@ class HomePage extends StatelessWidget {
                           showShopModalBottomSheet(context);
                         },
                         child: Container(
-                          padding: EdgeInsets.all(5),
+                          padding: const EdgeInsets.all(5),
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(50),
@@ -549,7 +548,7 @@ class HomePage extends StatelessWidget {
             children: [
               majorTitle(
                   title: "Today's Sale", color: Colors.white, size: 18.0),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Obx(() {
                 return salesController.getSalesByLoad.value
                     ? minorTitle(title: "Calculating...", color: Colors.white)

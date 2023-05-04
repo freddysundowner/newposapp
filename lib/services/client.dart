@@ -20,13 +20,11 @@ class DbBase {
         "Authorization": "Bearer ${token ?? ""}",
       };
       print(link);
+      print(type);
       var request = http.Request(type, Uri.parse(link));
       if (body != null) {
         request.body = json.encode(body);
       }
-
-      print(type);
-      print(link);
       request.headers.addAll(headers);
       http.StreamedResponse response = await request.send();
       return response.stream.bytesToString();

@@ -212,7 +212,7 @@ class SalesController extends GetxController
       });
       var sale = {
         "quantity": selectedList.length,
-        "total": grandTotal.value+totaldiscount,
+        "total": grandTotal.value + totaldiscount,
         "attendantId": attendantId,
         "paymentMethod": selectedPaymentMethod.value,
         "totaldiscount": totaldiscount,
@@ -423,12 +423,6 @@ class SalesController extends GetxController
         List<SalesModel> saleData =
             data.map((e) => SalesModel.fromJson(e)).toList();
         sales.assignAll(saleData);
-        if (startingDate != null) {
-          totalSalesByDate.value = 0;
-          for (var i = 0; i < saleData.length; i++) {
-            totalSalesByDate += int.parse("${saleData[i].grandTotal}");
-          }
-        }
       } else {
         sales.value = [];
       }
@@ -529,5 +523,12 @@ class SalesController extends GetxController
       getPaymentHistoryLoad.value = false;
       print(e);
     }
+  }
+
+  void getSalesByDate(shopId, startDate, endDate) async {
+    var response = await Sales().getSalesByDate(shopId, startDate, endDate);
+    totalSalesByDate.value = response["totalSales"];
+    totalSalesByDate.refresh();
+    return response;
   }
 }
