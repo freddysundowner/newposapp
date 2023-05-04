@@ -28,16 +28,6 @@ class HomePage extends StatelessWidget {
   SalesController salesController = Get.put(SalesController());
   AttendantController attendantController = Get.put(AttendantController());
 
-  HomePage({Key? key}) : super(key: key) {
-    salesController.getSalesByShop(
-        id: shopController.currentShop.value?.id,
-        attendantId: authController.usertype == "admin"
-            ? ""
-            : attendantController.attendant.value!.id,
-        onCredit: "",
-        startingDate: "${DateFormat("yyyy-MM-dd").format(DateTime.now())}");
-  }
-
   AuthController authController = Get.find<AuthController>();
 
   @override
@@ -70,27 +60,8 @@ class HomePage extends StatelessWidget {
                         }),
                       ],
                     ),
-                    // InkWell(
-                    //   onTap: () async {
-                    //     await shopController.getShopsByAdminId(
-                    //       adminId: authController.currentUser.value?.id,
-                    //     );
-                    //     showShopModalBottomSheet(context);
-                    //   },
-                    //   child: Container(
-                    //     padding: EdgeInsets.all(5),
-                    //     decoration: BoxDecoration(
-                    //       color: Colors.white,
-                    //       borderRadius: BorderRadius.circular(50),
-                    //       border:
-                    //           Border.all(color: AppColors.mainColor, width: 2),
-                    //     ),
-                    //     child: minorTitle(
-                    //         title: "Change Shop", color: AppColors.mainColor),
-                    //   ),
-                    // ),
                     Container(
-                      padding: EdgeInsets.symmetric(horizontal: 10),
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(50),
@@ -103,35 +74,32 @@ class HomePage extends StatelessWidget {
                         children: [
                           minorTitle(
                               title: "Change Shop", color: AppColors.mainColor),
-                          SizedBox(width: 10),
+                          const SizedBox(width: 10),
                           PopupMenuButton(
-                            itemBuilder: (ctx) => shopController.AdminShops!
-                                .map(
-                                  (element) => PopupMenuItem(
-                                    child: ListTile(
-                                      onTap: () {
-                                        shopController.currentShop.value =
-                                            element;
-                                        Get.back();
-                                        salesController.getSalesByShop(
-                                            id: shopController
-                                                .currentShop.value?.id,
-                                            attendantId:
-                                                authController.usertype ==
-                                                        "admin"
-                                                    ? ""
-                                                    : attendantController
-                                                        .attendant.value!.id,
-                                            onCredit: "",
-                                            startingDate:
-                                                "${DateFormat("yyyy-MM-dd").format(DateTime.now())}");
-                                      },
-                                      title: Text(element.name!),
-                                    ),
-                                  ),
-                                )
-                                .toList(),
-                            icon: Icon(
+                            itemBuilder: (ctx) => shopController.AdminShops.map(
+                              (element) => PopupMenuItem(
+                                child: ListTile(
+                                  onTap: () {
+                                    shopController.currentShop.value = element;
+                                    Get.back();
+                                    salesController.getSalesByShop(
+                                        id: shopController
+                                            .currentShop.value?.id,
+                                        attendantId:
+                                            authController.usertype.value ==
+                                                    "admin"
+                                                ? ""
+                                                : attendantController
+                                                    .attendant.value!.id,
+                                        onCredit: "",
+                                        startingDate: DateFormat("yyyy-MM-dd")
+                                            .format(DateTime.now()));
+                                  },
+                                  title: Text(element.name!),
+                                ),
+                              ),
+                            ).toList(),
+                            icon: const Icon(
                               Icons.arrow_drop_down,
                               color: Colors.black,
                             ),
@@ -154,7 +122,7 @@ class HomePage extends StatelessWidget {
                 Container(
                     width: MediaQuery.of(context).size.width * 0.8,
                     height: MediaQuery.of(context).size.height * 0.2,
-                    padding: EdgeInsets.only(top: 10),
+                    padding: const EdgeInsets.only(top: 10),
                     child: ListView(
                       shrinkWrap: true,
                       scrollDirection: Axis.horizontal,
@@ -461,7 +429,7 @@ class HomePage extends StatelessWidget {
                               color: AppColors.lightDeepPurple))
                     ],
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   Obx(() {
                     return salesController.getSalesByLoad.value
                         ? Center(
@@ -495,16 +463,7 @@ class HomePage extends StatelessWidget {
                 return InkWell(
                   onTap: () {
                     Get.back();
-                    shopController.currentShop.value = shopBody;
-                    salesController.getSalesByShop(
-                        id: shopController.currentShop.value?.id,
-                        attendantId: authController.usertype.value == "admin"
-                            ? ""
-                            : attendantController.attendant.value!.id,
-                        onCredit: "",
-                        startingDate:
-                            DateFormat("yyyy-MM-dd").format(DateTime.now()));
-                    ;
+                    shopController.setDefaulShop(shopBody);
                   },
                   child: Container(
                     padding: const EdgeInsets.all(10),

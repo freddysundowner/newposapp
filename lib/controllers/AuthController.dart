@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterpos/controllers/attendant_controller.dart';
 import 'package:flutterpos/controllers/home_controller.dart';
+import 'package:flutterpos/controllers/sales_controller.dart';
 import 'package:flutterpos/controllers/shop_controller.dart';
 import 'package:flutterpos/models/attendant_model.dart';
 import 'package:flutterpos/screens/home/profile_page.dart';
@@ -145,8 +146,6 @@ class AuthController extends GetxController {
 
       getUserByIdLoad.value = false;
       AdminModel userModel = AdminModel.fromJson(user["body"]);
-      shopController.currentShop.value =
-          userModel.shops!.isNotEmpty ? userModel.shops![0] : null;
       currentUser.value = userModel;
       return userModel;
     } catch (e) {
@@ -162,6 +161,14 @@ class AuthController extends GetxController {
 
   getUserType() async {
     String? userType = await _getUserType();
+    await shopController.getDefaultShop();
+
+    Get.find<SalesController>().getSalesByShop(
+        id: shopController.currentShop.value?.id,
+        attendantId: userType == "admin"
+            ? ""
+            : Get.find<AttendantController>().attendant.value!.id,
+        onCredit: "");
     if (userType == "admin") {
       AdminModel adminModel = await getUserById();
       return ["admin", adminModel];

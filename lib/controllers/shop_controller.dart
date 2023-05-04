@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterpos/controllers/attendant_controller.dart';
 import 'package:flutterpos/controllers/home_controller.dart';
+import 'package:flutterpos/controllers/sales_controller.dart';
 import 'package:flutterpos/models/shop_model.dart';
 import 'package:flutterpos/screens/home/home_page.dart';
 import 'package:flutterpos/screens/home/shops_page.dart';
@@ -8,6 +10,8 @@ import 'package:flutterpos/utils/colors.dart';
 import 'package:flutterpos/utils/constants.dart';
 import 'package:flutterpos/widgets/snackBars.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../screens/home/home.dart';
 import '../services/shop.dart';
@@ -56,6 +60,7 @@ class ShopController extends GetxController {
         };
 
         var response = await Shop().createShop(body: body);
+        setDefaulShop(ShopModel.fromJson(response));
         if (response["status"] == false) {
           showSnackBar(
               message: response["message"],
@@ -89,7 +94,8 @@ class ShopController extends GetxController {
     try {
       gettingShopsLoad.value = true;
 
-      var response = await Shop().getShopsByAdminId(adminId: adminId, name: name);
+      var response =
+          await Shop().getShopsByAdminId(adminId: adminId, name: name);
       if (response != null) {
         List shops = response["body"];
         List<ShopModel> shopsData =
@@ -117,6 +123,31 @@ class ShopController extends GetxController {
     businessController.text = shopModel.type.toString();
     reqionController.text = shopModel.location.toString();
     currency.value = shopModel.currency!;
+  }
+
+  Future<String?> setDefaulShop(ShopModel shopBody) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString("current_shop", shopBody.id!);
+    currentShop.value = shopBody;
+    Get.find<SalesController>().getSalesByShop(
+        id: currentShop.value?.id,
+        attendantId: Get.find<AuthController>().usertype.value == "admin"
+            ? ""
+            : Get.find<AttendantController>().attendant.value!.id,
+        onCredit: "",
+        startingDate: DateFormat("yyyy-MM-dd").format(DateTime.now()));
+    ;
+  }
+
+  getDefaultShop() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var shop = prefs.getString("current_shop");
+    if (shop != null) {
+      var response = await Shop().getShopById(id: shop);
+      print(response["body"]);
+      currentShop.value = ShopModel.fromJson(response["body"]);
+      currentShop.refresh();
+    }
   }
 
   updateShop({required id, required adminId, required context}) async {

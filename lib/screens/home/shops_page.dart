@@ -14,11 +14,6 @@ import '../../widgets/smalltext.dart';
 import '../shop/shop_details.dart';
 
 class ShopsPage extends StatelessWidget {
-  ShopsPage({Key? key}) : super(key: key) {
-    shopController.getShopsByAdminId(
-        adminId: authController.currentUser.value?.id);
-  }
-
   ShopController shopController = Get.find<ShopController>();
   AuthController authController = Get.find<AuthController>();
 

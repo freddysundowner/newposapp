@@ -116,7 +116,6 @@ class AttendantController extends GetxController {
       }
       AttendantModel userModel = AttendantModel.fromJson(response["body"]);
       attendant.value = userModel;
-      Get.find<ShopController>().currentShop.value = userModel.shop;
       return userModel;
     } catch (e) {
       getAttendantByIdLoad.value = false;

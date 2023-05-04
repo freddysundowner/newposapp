@@ -14,11 +14,6 @@ import '../../widgets/smalltext.dart';
 import '../attendant/attendant_details.dart';
 
 class AttendantsPage extends StatelessWidget {
-  AttendantsPage({Key? key}) : super(key: key) {
-    attendantController.getAttendantsByShopId(
-        shopId: shopController.currentShop.value?.id);
-  }
-
   AttendantController attendantController = Get.find<AttendantController>();
   ShopController shopController = Get.find<ShopController>();
 

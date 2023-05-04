@@ -25,15 +25,7 @@ import 'components/sales_table.dart';
 class AllSalesPage extends StatelessWidget {
   final page;
 
-  AllSalesPage({Key? key, required this.page}) : super(key: key) {
-    salesController.getSalesByShop(
-        id: shopController.currentShop.value?.id,
-        attendantId: page == "AtedantLanding"
-            ? attendantController.attendant.value!.id
-            : "",
-        onCredit: "",
-        startingDate: "");
-  }
+  AllSalesPage({Key? key, required this.page}) : super(key: key) {}
 
   SalesController salesController = Get.find<SalesController>();
   ShopController shopController = Get.find<ShopController>();
@@ -48,11 +40,11 @@ class AllSalesPage extends StatelessWidget {
       onWillPop: () async {
         salesController.getSalesByShop(
             id: shopController.currentShop.value?.id,
-            attendantId: authController.usertype == "admin"
+            attendantId: authController.usertype.value == "admin"
                 ? ""
                 : attendantController.attendant.value!.id,
             onCredit: "",
-            startingDate: "${DateFormat("yyyy-MM-dd").format(DateTime.now())}");
+            startingDate: DateFormat("yyyy-MM-dd").format(DateTime.now()));
 
         return true;
       },
@@ -122,7 +114,8 @@ class AllSalesPage extends StatelessWidget {
                     ),
                 ],
               ),
-              leading: Get.find<AuthController>().usertype == "attendant" &&
+              leading: Get.find<AuthController>().usertype.value ==
+                          "attendant" &&
                       MediaQuery.of(context).size.width > 600
                   ? null
                   : IconButton(
