@@ -134,8 +134,7 @@ class ShopController extends GetxController {
         attendantId: Get.find<AuthController>().usertype.value == "admin"
             ? ""
             : Get.find<AttendantController>().attendant.value!.id,
-        onCredit: "",
-        startingDate: DateFormat("yyyy-MM-dd").format(DateTime.now()));
+        onCredit: "");
     ;
   }
 
