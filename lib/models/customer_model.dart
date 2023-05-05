@@ -35,5 +35,5 @@ class CustomerModel {
       address: json["address"] ?? "",
       walletBalance: json["walletBalance"],
       onCredit: json["onCredit"],
-      credit: json["credit"]);
+      credit:json["credit"]==null?0: json["credit"]);
 }

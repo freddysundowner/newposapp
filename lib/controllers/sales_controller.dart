@@ -229,6 +229,7 @@ class SalesController extends GetxController
         "products": products,
         "date": DateFormat("yyyy-MM-dd").format(DateTime.now()),
       });
+      print(response);
 
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
       if (response["status"] == true) {

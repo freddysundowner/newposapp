@@ -5,7 +5,11 @@ import 'package:get/get.dart';
 
 import '../../../widgets/snackBars.dart';
 
-discountDialog({required context,required controller, required ProductModel productModel,required index}) {
+discountDialog(
+    {required context,
+    required controller,
+    required ProductModel productModel,
+    required index}) {
   SalesController salesController = Get.find<SalesController>();
   return showDialog(
       context: context,
@@ -36,13 +40,10 @@ discountDialog({required context,required controller, required ProductModel prod
             TextButton(
               onPressed: () {
                 Navigator.pop(context);
-                if (int.parse(controller.text) >
-                    (productModel.discount! *
-                        productModel.cartquantity!)) {
+                if (int.parse(controller.text) > productModel.discount!) {
                   showSnackBar(
                       message:
-                      "discount cannot be greater than ${productModel
-                          .discount! * productModel.cartquantity!}",
+                          "discount cannot be greater than ${productModel.discount}",
                       color: Colors.red,
                       context: context);
                 } else {

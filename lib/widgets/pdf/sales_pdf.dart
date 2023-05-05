@@ -1,6 +1,8 @@
 import 'dart:io';
 
+import 'package:flutterpos/controllers/shop_controller.dart';
 import 'package:flutterpos/models/sales_model.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
@@ -42,8 +44,8 @@ SalesPdf(
                         border: pw.TableBorder.all(width: 1), //table border
                         headers: [
                           "Receipt Number",
-                          "Amount",
-                          "Payment Meethod",
+                          "Amount ${Get.find<ShopController>().currentShop.value!.currency}",
+                          "Payment Method",
                           "Date"
                         ],
                         data: sales
@@ -79,9 +81,10 @@ SalesPdf(
         pageFormat: PdfPageFormat.a4),
   );
 
-  final bytes = await pdf.save();
+
   final dir = await getApplicationDocumentsDirectory();
   final file = File('${dir.path}/$type-Sales.pdf');
+  final bytes = await pdf.save();
   await file.writeAsBytes(bytes);
   await OpenFile.open(file.path);
 }

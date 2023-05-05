@@ -27,7 +27,7 @@ dependencies:
 #  datepicker: ^20.2.44
   intl: ^0.17.0
   date_time_picker: ^2.1.0
-  pdf: ^3.8.1
+  pdf: ^3.10.1
   path_provider: ^2.0.11
   syncfusion_flutter_pdf: ^20.2.39
   shimmer: ^2.0.0

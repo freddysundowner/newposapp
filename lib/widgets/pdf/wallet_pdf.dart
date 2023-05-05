@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:flutterpos/controllers/shop_controller.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
@@ -43,8 +45,7 @@ WalletPdf(
                         border: pw.TableBorder.all(width: 1), //table border
                         headers: [
                           "Receipt",
-                          "Amount",
-
+                          "Amount${Get.find<ShopController>().currentShop.value!.currency}",
                           "Date"
                         ],
                         data: deposits

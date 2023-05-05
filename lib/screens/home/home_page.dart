@@ -280,17 +280,15 @@ class HomePage extends StatelessWidget {
         ),
         smallScreen: RefreshIndicator(
           onRefresh: () async {
-            await shopController.getShopsByAdminId(
-                adminId: authController.currentUser.value!.id);
+            await shopController.getShopsByAdminId(adminId: authController.currentUser.value!.id);
             await salesController.getSalesByShop(
                 id: shopController.currentShop.value?.id,
                 attendantId: authController.usertype == "admin"
                     ? ""
                     : attendantController.attendant.value!.id,
                 onCredit: "",
-                startingDate:
-                    "${DateFormat("yyyy-MM-dd").format(DateTime.now())}");
-            ;
+                startingDate: "${DateFormat("yyyy-MM-dd").format(DateTime.now())}");
+
             await Get.find<AttendantController>().getAttendantRoles();
           },
           child: Scaffold(

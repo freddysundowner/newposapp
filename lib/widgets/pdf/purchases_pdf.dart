@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:flutterpos/controllers/shop_controller.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
@@ -34,7 +36,7 @@ PurchasesPdf(
                 pw.SizedBox(height: 10),
                 pw.Center(
                   child: pw.Text(
-                    "${type} Sales",
+                    "${type} Purchase",
                     style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
                   ),
                 ),
@@ -45,7 +47,7 @@ PurchasesPdf(
                         border: pw.TableBorder.all(width: 1), //table border
                         headers: [
                           "Receipt Number",
-                          "Amount",
+                          "Amount${Get.find<ShopController>().currentShop.value!.currency}",
                           "Products",
                           "Date"
                         ],

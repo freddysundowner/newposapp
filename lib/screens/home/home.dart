@@ -9,6 +9,7 @@ import 'package:flutterpos/widgets/bigtext.dart';
 import 'package:flutterpos/widgets/side_menu.dart';
 import 'package:get/get.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
+import 'package:intl/intl.dart';
 
 import '../../controllers/home_controller.dart';
 import '../../utils/colors.dart';
@@ -61,11 +62,20 @@ class Home extends StatelessWidget {
                   gap: 8,
                   onTabChange: (value) {
                     homeControler.selectedIndex.value = value;
-                    if (value == 1) {
+                    if (value==0) {
+                      Get.find<SalesController>().getSalesByShop(
+                          id: shopController.currentShop.value?.id,
+                          attendantId: authController.usertype.value == "admin"
+                              ? ""
+                              : Get.find<AttendantController>().attendant.value!.id,
+                          onCredit: "",
+                          startingDate: "${DateFormat("yyyy-MM-dd").format(DateTime.now())}");
+                    }
+                    else if (value == 1) {
                       shopController.getShopsByAdminId(
                           adminId: authController.currentUser.value?.id);
                     }
-                    if (value == 2) {
+                    else if (value == 2) {
                       attendantController.getAttendantsByShopId(
                           shopId: shopController.currentShop.value?.id);
                     }

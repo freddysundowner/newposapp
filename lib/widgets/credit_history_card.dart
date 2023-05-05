@@ -112,8 +112,10 @@ showBottomSheet(
                         id: salesBody.id!,
                       );
                     } else {
+                      print( salesBody.id!);
                       Get.to(() => PaymentHistory(
                             id: salesBody.id!,
+                        type: "sales",
                           ));
                     }
                   },

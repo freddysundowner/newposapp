@@ -162,7 +162,6 @@ class AuthController extends GetxController {
   getUserType() async {
     String? userType = await _getUserType();
     await shopController.getDefaultShop();
-
     Get.find<SalesController>().getSalesByShop(
         id: shopController.currentShop.value?.id,
         attendantId: userType == "admin"

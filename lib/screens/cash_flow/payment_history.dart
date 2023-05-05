@@ -21,7 +21,6 @@ class PaymentHistory extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     print(type);
-
     salesController.getPaymentHistory(id: id, type: type);
     return Scaffold(
       backgroundColor: Colors.white,
