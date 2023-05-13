@@ -1,16 +1,31 @@
 import 'package:flutter/material.dart';
-import 'package:flutterpos/controllers/sales_controller.dart';
+import 'package:pointify/controllers/purchase_controller.dart';
+import 'package:pointify/controllers/sales_controller.dart';
 import 'package:get/get.dart';
+import 'package:pointify/models/invoice.dart';
+import 'package:pointify/utils/themer.dart';
+import 'package:pointify/widgets/alert.dart';
 
+import '../../../models/invoice_items.dart';
 import '../../../utils/colors.dart';
 
- returnStockDialog({required context, required id, required saleId}){
-   SalesController salesController=Get.find<SalesController>();
-  return   showDialog(
-      context: context,
+returnInvoiceItem({required InvoiceItem invoiceItem, Invoice? invoice}) {
+  PurchaseController purchaseController = Get.find<PurchaseController>();
+  TextEditingController textEditingController = TextEditingController();
+  textEditingController.text = invoiceItem.itemCount.toString();
+  return showDialog(
+      context: Get.context!,
       builder: (_) {
         return AlertDialog(
-          title: Text("Return Product"),
+          title: const Text("Return Product?"),
+          content: Container(
+            decoration: ThemeHelper().inputBoxDecorationShaddow(),
+            child: TextFormField(
+              controller: textEditingController,
+              decoration: ThemeHelper()
+                  .textInputDecorationDesktop('Quantity', 'Enter quantity'),
+            ),
+          ),
           actions: [
             TextButton(
                 onPressed: () {
@@ -18,20 +33,29 @@ import '../../../utils/colors.dart';
                 },
                 child: Text(
                   "Cancel".toUpperCase(),
-                  style: TextStyle(
-                      color: AppColors
-                          .mainColor),
+                  style: TextStyle(color: AppColors.mainColor),
                 )),
             TextButton(
                 onPressed: () {
-                  Get.back();
-                  salesController.returnSale(id,saleId,context);
+                  if (invoiceItem.itemCount! <
+                      int.parse(textEditingController.text)) {
+                    generalAlert(
+                        title: "Error",
+                        message:
+                            "You cannot return more than ${invoiceItem.itemCount}");
+                  } else if (int.parse(textEditingController.text) <= 0) {
+                    generalAlert(
+                        title: "Error",
+                        message: "You must atleast return 1 item");
+                  } else {
+                    Get.back();
+                    purchaseController.returnInvoiceItem(invoiceItem,
+                        int.parse(textEditingController.text), invoice!);
+                  }
                 },
                 child: Text(
                   "Okay".toUpperCase(),
-                  style: TextStyle(
-                      color: AppColors
-                          .mainColor),
+                  style: TextStyle(color: AppColors.mainColor),
                 ))
           ],
         );

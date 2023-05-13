@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutterpos/models/shop_model.dart';
-import 'package:flutterpos/screens/shop/shop_details.dart';
-import 'package:flutterpos/widgets/smalltext.dart';
+import 'package:pointify/models/shop_model.dart';
+import 'package:pointify/screens/shop/shop_details.dart';
+import 'package:pointify/widgets/smalltext.dart';
 import 'package:get/get.dart';
 
 import '../screens/stock/products_selection.dart';
@@ -43,7 +43,8 @@ Widget shopCard(
           minorTitle(
               title: "Location- ${shopModel.location}", color: Colors.white),
           SizedBox(height: 10),
-          minorTitle(title: "Type- ${shopModel.type}", color: Colors.white)
+          minorTitle(
+              title: "Type- ${shopModel.category?.title}", color: Colors.white)
         ],
       ),
     ),

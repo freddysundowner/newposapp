@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutterpos/controllers/expense_controller.dart';
-import 'package:flutterpos/controllers/home_controller.dart';
-import 'package:flutterpos/controllers/shop_controller.dart';
-import 'package:flutterpos/responsive/responsiveness.dart';
-import 'package:flutterpos/screens/cash_flow/cash_flow_manager.dart';
-import 'package:flutterpos/screens/finance/components/date_picker.dart';
-import 'package:flutterpos/screens/finance/profit_page.dart';
-import 'package:flutterpos/utils/helper.dart';
+import 'package:pointify/controllers/expense_controller.dart';
+import 'package:pointify/controllers/home_controller.dart';
+import 'package:pointify/controllers/shop_controller.dart';
+import 'package:pointify/responsive/responsiveness.dart';
+import 'package:pointify/screens/cash_flow/cash_flow_manager.dart';
+import 'package:pointify/screens/finance/components/date_picker.dart';
+import 'package:pointify/screens/finance/profit_page.dart';
+import 'package:pointify/utils/helper.dart';
 import 'package:get/get.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
@@ -117,9 +117,7 @@ class FinancePage extends StatelessWidget {
                                   AllSalesPage(
                                 page: "financePage",
                               );
-                              salesController.getSalesByShop(
-                                  id: shopController.currentShop.value?.id,
-                                  onCredit: "");
+                              salesController.getSales(onCredit: "");
                             },
                             color: Colors.blue.shade100,
                             icon: Icons.sell_rounded,
@@ -239,11 +237,7 @@ class FinancePage extends StatelessWidget {
                     subtitle: "sales",
                     onPresssed: () {
                       salesController.salesInitialIndex.value = 0;
-                      salesController.getSalesByShop(
-                          id: shopController.currentShop.value?.id,
-                          attendantId: "",
-                          onCredit: "",
-                          startingDate: "");
+                      salesController.getSales(onCredit: "", startingDate: "");
 
                       Get.to(() => AllSalesPage(
                             page: "financePage",
@@ -262,7 +256,7 @@ class FinancePage extends StatelessWidget {
                   },
                   child: Container(
                     width: double.infinity,
-                    margin: EdgeInsets.only(top: 10),
+                    margin: const EdgeInsets.only(top: 10),
                     padding: EdgeInsets.all(10),
                     decoration: BoxDecoration(
                         color: Colors.deepPurple.withOpacity(0.1),
@@ -333,34 +327,39 @@ class FinancePage extends StatelessWidget {
       title: majorTitle(title: "Financial", color: Colors.black, size: 16.0),
       actions: [
         InkWell(
-            onTap: () {
-              showDatePickers(
-                  context: context,
-                  function: () {
-                    salesController.getProfitTransaction(
-                        start: expenseController.startdate.value,
-                        end: expenseController.enddate.value,
-                        type: "finance",
-                        shopId: shopController.currentShop.value?.id);
-                  });
+            onTap: () async {
+              final picked = await showDateRangePicker(
+                context: context,
+                lastDate: DateTime(2079),
+                firstDate: DateTime(2019),
+              );
+              expenseController.startdate.value = picked!.start;
+              expenseController.enddate.value = picked.end;
+
+              salesController.getProfitTransaction(
+                  start: expenseController.startdate.value,
+                  end: expenseController.enddate.value,
+                  type: "finance",
+                  shopId: shopController.currentShop.value?.id);
             },
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      "Choose Date Range",
-                      style: TextStyle(color: Colors.black),
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: Center(
+                child: Row(
+                  children: [
+                    Text(
+                      "Filter",
+                      style: TextStyle(
+                          color: AppColors.mainColor,
+                          fontWeight: FontWeight.bold),
                     ),
-                  ),
-                  Icon(
-                    Icons.arrow_drop_down,
-                    color: Colors.black,
-                  ),
-                ],
+                    Icon(
+                      Icons.filter_list_alt,
+                      color: AppColors.mainColor,
+                      size: 20,
+                    )
+                  ],
+                ),
               ),
             ))
       ],
@@ -415,7 +414,7 @@ class FinancePage extends StatelessWidget {
             ),
             normalText(
                 title:
-                    " This month ${title} is ${shopController.currentShop.value?.currency}.${amount} ",
+                    " ${title} summary: ${shopController.currentShop.value?.currency}.${amount} ",
                 color: Colors.black,
                 size: 14.0)
           ],

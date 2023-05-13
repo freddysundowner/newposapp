@@ -1,8 +1,11 @@
 import 'dart:convert';
 
-import 'package:flutterpos/models/stock_in_credit.dart';
-import 'package:flutterpos/services/apiurls.dart';
-import 'package:flutterpos/services/client.dart';
+import 'package:get/get.dart';
+import 'package:pointify/controllers/AuthController.dart';
+import 'package:pointify/controllers/attendant_controller.dart';
+import 'package:pointify/models/stock_in_credit.dart';
+import 'package:pointify/services/apiurls.dart';
+import 'package:pointify/services/client.dart';
 
 class Supplier {
   createSupplier(Map<String, dynamic> body) async {
@@ -14,8 +17,8 @@ class Supplier {
   getSuppliersByShopId(shopId, type) async {
     var response = await DbBase().databaseRequest(
         type == "all"
-            ? supplier + "shop/${shopId}"
-            : "${supplierOnCredit}/${shopId}",
+            ? "${supplier}shop/${shopId}"
+            : "$supplierOnCredit/${shopId}",
         DbBase().getRequestType);
     return jsonDecode(response);
   }
@@ -52,23 +55,22 @@ class Supplier {
         supplier + "pay/${stockInCredit.id}", DbBase().patchRequestType,
         body: body);
     return jsonDecode(response);
-
   }
 
   getCredit(shopId, uid) async {
     var response = await DbBase().databaseRequest(
         supplier + "stockinhistory/${shopId}/${uid}", DbBase().getRequestType);
     return jsonDecode(response);
-
   }
 
-  getSupplierSupplies(
-      {required supplierId, required attendantId, required returned}) async {
+  getSupplierSupplies({required supplierId, required returned}) async {
+    var attendantId = Get.find<AuthController>().usertype.value == "admin"
+        ? ""
+        : Get.find<AttendantController>().attendant.value!.id;
+
     var response = await DbBase().databaseRequest(
-        supplier +
-            "supplier/returns?supplier=$supplierId&attendant=$attendantId&returned=$returned",
+        "${supplier}supplier/returns?supplier=$supplierId&attendant=$attendantId&returned=$returned",
         DbBase().getRequestType);
     return jsonDecode(response);
-
   }
 }

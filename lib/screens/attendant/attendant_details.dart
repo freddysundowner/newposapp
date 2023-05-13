@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutterpos/controllers/shop_controller.dart';
-import 'package:flutterpos/models/roles_model.dart';
-import 'package:flutterpos/responsive/responsiveness.dart';
-import 'package:flutterpos/utils/helper.dart';
+import 'package:pointify/controllers/shop_controller.dart';
+import 'package:pointify/models/roles_model.dart';
+import 'package:pointify/responsive/responsiveness.dart';
+import 'package:pointify/utils/helper.dart';
 import 'package:get/get.dart';
 
 import '../../../../utils/colors.dart';
@@ -104,7 +104,7 @@ class AttendantDetails extends StatelessWidget {
                   decoration: BoxDecoration(
                       border: Border.all(width: 1, color: Colors.grey)),
                   child: attendantController.creatingAttendantsLoad.value
-                      ? Center(
+                      ? const Center(
                           child: CircularProgressIndicator(),
                         )
                       : updateAttendantButton(context),
@@ -151,11 +151,11 @@ class AttendantDetails extends StatelessWidget {
                         onTap: () {
                           attendantController.updateAttedant(
                               id: attendantModel.id,
-                              rolesData: attendantModel.roles,
+                              rolesData: attendantModel.roles!,
                               context: context);
                         },
                         child: Container(
-                          padding: EdgeInsets.fromLTRB(10, 5, 10, 5),
+                          padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(10),
@@ -181,7 +181,7 @@ class AttendantDetails extends StatelessWidget {
       onTap: () {
         attendantController.updateAttedant(
             id: attendantModel.id,
-            rolesData: attendantModel.roles,
+            rolesData: attendantModel.roles!,
             context: context);
       },
       child: Container(

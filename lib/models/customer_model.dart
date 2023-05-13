@@ -1,4 +1,4 @@
-import 'package:flutterpos/models/shop_model.dart';
+import 'package:pointify/models/shop_model.dart';
 
 class CustomerModel {
   CustomerModel(
@@ -28,12 +28,13 @@ class CustomerModel {
       id: json["_id"],
       fullName: json["fullName"],
       phoneNumber: json["phoneNumber"],
-      shopId:
-          json["shopId"] == null|| json["shopId"].toString().length<=40 ? ShopModel() : ShopModel.fromJson(json["shopId"]),
+      shopId: json["shopId"] == null || json["shopId"].toString().length <= 40
+          ? ShopModel()
+          : ShopModel.fromJson(json["shopId"]),
       gender: json["gender"] ?? "",
       email: json["email"] ?? "",
       address: json["address"] ?? "",
       walletBalance: json["walletBalance"],
       onCredit: json["onCredit"],
-      credit:json["credit"]==null?0: json["credit"]);
+      credit: json["credit"] == null ? 0 : json["credit"]);
 }

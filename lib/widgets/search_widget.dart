@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutterpos/controllers/product_controller.dart';
-import 'package:flutterpos/controllers/purchase_controller.dart';
-import 'package:flutterpos/controllers/sales_controller.dart';
-import 'package:flutterpos/models/product_model.dart';
-import 'package:flutterpos/widgets/snackBars.dart';
+import 'package:pointify/controllers/product_controller.dart';
+import 'package:pointify/controllers/purchase_controller.dart';
+import 'package:pointify/controllers/sales_controller.dart';
+import 'package:pointify/models/product_model.dart';
+import 'package:pointify/widgets/snackBars.dart';
 import 'package:get/get.dart';
 
 Widget searchWidget(
@@ -55,21 +55,20 @@ Widget searchWidget(
                   return InkWell(
                       onTap: () {
                         if (page == "purchase") {
-                          purchaseController.changeSelectedList(opt);
+                          purchaseController.changesaleItem(opt);
                           onSelected(opt);
                           productController.searchProductController.text = "";
                         } else {
                           onSelected(opt);
-                          if (opt.quantity!<= 0) {
-                            showSnackBar(message: "Product out of stock", color: Colors.red, context: context);
+                          if (opt.quantity! <= 0) {
+                            showSnackBar(
+                                message: "Product out of stock",
+                                color: Colors.red);
                             productController.searchProductController.text = "";
-                          } else{
-                            salesController.changeSelectedList(opt);
+                          } else {
+                            // salesController.changesaleItem(opt);
                             productController.searchProductController.text = "";
-
                           }
-
-
                         }
                       },
                       child: Container(

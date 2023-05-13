@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutterpos/controllers/home_controller.dart';
-import 'package:flutterpos/controllers/product_controller.dart';
-import 'package:flutterpos/controllers/shop_controller.dart';
-import 'package:flutterpos/controllers/stock_transfer_controller.dart';
-import 'package:flutterpos/models/product_model.dart';
-import 'package:flutterpos/models/shop_model.dart';
-import 'package:flutterpos/responsive/responsiveness.dart';
-import 'package:flutterpos/screens/stock/products_selection.dart';
-import 'package:flutterpos/utils/colors.dart';
+import 'package:pointify/controllers/home_controller.dart';
+import 'package:pointify/controllers/product_controller.dart';
+import 'package:pointify/controllers/shop_controller.dart';
+import 'package:pointify/controllers/stock_transfer_controller.dart';
+import 'package:pointify/models/product_model.dart';
+import 'package:pointify/models/shop_model.dart';
+import 'package:pointify/responsive/responsiveness.dart';
+import 'package:pointify/screens/stock/products_selection.dart';
+import 'package:pointify/utils/colors.dart';
 import 'package:get/get.dart';
 
 class StockSubmit extends StatelessWidget {

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutterpos/controllers/home_controller.dart';
-import 'package:flutterpos/models/stockTransferHistoryModel.dart';
-import 'package:flutterpos/responsive/responsiveness.dart';
-import 'package:flutterpos/screens/stock/stock_transfer.dart';
-import 'package:flutterpos/screens/stock/transfer_history_view.dart';
-import 'package:flutterpos/utils/colors.dart';
-import 'package:flutterpos/widgets/no_items_found.dart';
-import 'package:flutterpos/widgets/transfer_history_card.dart';
+import 'package:pointify/controllers/home_controller.dart';
+import 'package:pointify/models/stockTransferHistoryModel.dart';
+import 'package:pointify/responsive/responsiveness.dart';
+import 'package:pointify/screens/stock/stock_transfer.dart';
+import 'package:pointify/screens/stock/transfer_history_view.dart';
+import 'package:pointify/utils/colors.dart';
+import 'package:pointify/widgets/no_items_found.dart';
+import 'package:pointify/widgets/transfer_history_card.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
@@ -235,8 +235,7 @@ class INWidget extends StatelessWidget {
                                               .selectedWidget
                                               .value =
                                           TransferHistoryView(
-                                              id:
-                                                  stockTransferHistory.id!);
+                                              id: stockTransferHistory.id!);
                                     },
                                     child: Align(
                                       child: Center(
@@ -278,4 +277,3 @@ class INWidget extends StatelessWidget {
     });
   }
 }
-

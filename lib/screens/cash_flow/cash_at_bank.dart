@@ -1,21 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:flutterpos/controllers/cashflow_controller.dart';
-import 'package:flutterpos/models/bank_model.dart';
-import 'package:flutterpos/responsive/responsiveness.dart';
-import 'package:flutterpos/screens/cash_flow/cash_flow_manager.dart';
-import 'package:flutterpos/utils/helper.dart';
-import 'package:flutterpos/widgets/no_items_found.dart';
+import 'package:pointify/controllers/cashflow_controller.dart';
+import 'package:pointify/models/bank_model.dart';
+import 'package:pointify/responsive/responsiveness.dart';
+import 'package:pointify/screens/cash_flow/cash_flow_manager.dart';
+import 'package:pointify/screens/cash_flow/cashflow_category_history.dart';
+import 'package:pointify/utils/helper.dart';
+import 'package:pointify/widgets/no_items_found.dart';
 import 'package:get/get.dart';
 
 import '../../controllers/home_controller.dart';
 import '../../controllers/shop_controller.dart';
 import '../../utils/colors.dart';
 import '../../widgets/delete_dialog.dart';
-import 'bank_history.dart';
 
 class CashAtBank extends StatelessWidget {
   CashAtBank({Key? key}) : super(key: key) {
-    cashflowController.fetchCashAtBank(createShopController.currentShop.value?.id);
+    cashflowController
+        .fetchCashAtBank(createShopController.currentShop.value?.id);
   }
 
   ShopController createShopController = Get.find<ShopController>();
@@ -37,8 +38,8 @@ class CashAtBank extends StatelessWidget {
                   : SingleChildScrollView(
                       child: Container(
                         width: double.infinity,
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 5, vertical: 10),
                         child: Theme(
                           data: Theme.of(context)
                               .copyWith(dividerColor: Colors.grey),
@@ -216,7 +217,7 @@ class CashAtBank extends StatelessWidget {
           Icons.arrow_back_ios,
         ),
       ),
-      title: Text("Cash At Bank",
+      title: const Text("Cash At Bank",
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
@@ -275,7 +276,7 @@ class CashAtBank extends StatelessWidget {
               children: [
                 InkWell(
                   onTap: () {
-                    Get.to(() => CashHistory(
+                    Get.to(() => CashCategoryHistory(
                           title: bankModel.name,
                           subtitle: "All records",
                           id: bankModel.id,
@@ -419,7 +420,8 @@ class CashAtBank extends StatelessWidget {
             leading: Icon(Icons.list),
             onTap: () {
               Get.back();
-              Get.find<HomeController>().selectedWidget.value = CashHistory(
+              Get.find<HomeController>().selectedWidget.value =
+                  CashCategoryHistory(
                 title: "Faulu",
                 subtitle: "All records",
                 id: "1230",

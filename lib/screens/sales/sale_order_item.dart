@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:flutterpos/controllers/home_controller.dart';
-import 'package:flutterpos/controllers/sales_controller.dart';
-import 'package:flutterpos/controllers/shop_controller.dart';
-import 'package:flutterpos/responsive/responsiveness.dart';
-import 'package:flutterpos/screens/home/home_page.dart';
-import 'package:flutterpos/screens/sales/all_sales_page.dart';
-import 'package:flutterpos/screens/sales/components/return_stock.dart';
-import 'package:flutterpos/utils/colors.dart';
-import 'package:flutterpos/widgets/no_items_found.dart';
+import 'package:pointify/controllers/home_controller.dart';
+import 'package:pointify/controllers/sales_controller.dart';
+import 'package:pointify/controllers/shop_controller.dart';
+import 'package:pointify/responsive/responsiveness.dart';
+import 'package:pointify/screens/home/home_page.dart';
+import 'package:pointify/screens/sales/all_sales_page.dart';
+import 'package:pointify/utils/colors.dart';
+import 'package:pointify/widgets/no_items_found.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
-import '../../models/sales_order_item_model.dart';
+import '../../models/invoice_items.dart';
 import '../../widgets/bigtext.dart';
 import '../../widgets/sales_history_card.dart';
 
@@ -67,7 +66,7 @@ class SaleOrderItem extends StatelessWidget {
                         Center(child: CircularProgressIndicator()),
                       ],
                     )
-                  : salesController.salesHistory.length == 0
+                  : salesController.salesHistory.isEmpty
                       ? noItemsFound(context, true)
                       : Container(
                           width: double.infinity,
@@ -103,9 +102,9 @@ class SaleOrderItem extends StatelessWidget {
                               ],
                               rows: List.generate(
                                   salesController.salesHistory.length, (index) {
-                                SaleOrderItemModel saleOrderItemModel =
-                                    salesController.salesHistory
-                                        .elementAt(index);
+                                InvoiceItem saleOrderItemModel = salesController
+                                    .salesHistory
+                                    .elementAt(index);
                                 final y =
                                     saleOrderItemModel.product!.name.toString();
                                 final x = saleOrderItemModel.total.toString();
@@ -125,24 +124,17 @@ class SaleOrderItem extends StatelessWidget {
                                           .format(w!)))),
                                   DataCell(InkWell(
                                     onTap: () {
-                                      if (saleOrderItemModel.returned ==
-                                          false) {
-                                        returnStockDialog(
-                                            context: context,
-                                            id: saleOrderItemModel.id,
-                                            saleId: id);
-                                      }
+                                      // if (saleOrderItemModel.returned ==
+                                      //     false) {
+                                      //   returnStockDialog(
+                                      //       saleItem: saleOrderItemModel);
+                                      // }
                                     },
                                     child: Container(
                                         child: Text(
-                                      saleOrderItemModel.returned == true
-                                          ? "Returned"
-                                          : "Return to stock",
-                                      style: TextStyle(
-                                          color: saleOrderItemModel.returned ==
-                                                  true
-                                              ? Colors.red
-                                              : AppColors.mainColor),
+                                      "Return to stock",
+                                      style:
+                                          TextStyle(color: AppColors.mainColor),
                                     )),
                                   )),
                                 ]);
@@ -167,10 +159,9 @@ class SaleOrderItem extends StatelessWidget {
                         shrinkWrap: true,
                         itemCount: salesController.salesHistory.length,
                         itemBuilder: (context, index) {
-                          SaleOrderItemModel saleOrderItemModel =
+                          InvoiceItem saleOrderItemModel =
                               salesController.salesHistory.elementAt(index);
-                          return salesHistoryCard(
-                              saleOrderItemModel, context, id, "page");
+                          return SaleOrderItemCard(saleOrderItemModel, "page");
                         });
           },
         ),

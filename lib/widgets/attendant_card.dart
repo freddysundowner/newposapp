@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutterpos/models/attendant_model.dart';
-import 'package:flutterpos/widgets/smalltext.dart';
+import 'package:pointify/models/attendant_model.dart';
+import 'package:pointify/widgets/smalltext.dart';
 import 'package:get/get.dart';
 
 import '../screens/attendant/attendant_details.dart';

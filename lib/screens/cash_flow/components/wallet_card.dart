@@ -207,7 +207,9 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:flutter/material.dart';
-import 'package:flutterpos/models/deposit_model.dart';
+import 'package:get/get.dart';
+import 'package:pointify/controllers/shop_controller.dart';
+import 'package:pointify/models/deposit_model.dart';
 import 'package:intl/intl.dart';
 
 import 'deposit_dialog.dart';
@@ -216,7 +218,6 @@ Widget WalletCard(
     {required DepositModel depositBody,
     required context,
     required uid,
-
     customer}) {
   return Container(
     margin: EdgeInsets.all(5),
@@ -238,20 +239,39 @@ Widget WalletCard(
           children: [
             Text(DateFormat().format(depositBody.updatedAt!)),
             SizedBox(height: 10),
-            Text(depositBody.recieptNumber.toString()),
+            Text("Receipt:#${depositBody.recieptNumber.toString()}"),
           ],
         ),
         Spacer(),
-        Row(
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("KES:"),
-            Text(
-              " ${depositBody.amount}",
-              style: TextStyle(
-                color:
-                    depositBody.type == "usage" ? Colors.red : Colors.green,
-              ),
+            Row(
+              children: [
+                Text(Get.find<ShopController>().currentShop.value!.currency!),
+                Text(
+                  " ${depositBody.amount}",
+                  style: TextStyle(
+                    color:
+                        depositBody.type == "usage" ? Colors.red : Colors.green,
+                  ),
+                ),
+              ],
             ),
+            if (depositBody.attendant != null)
+              Row(
+                children: [
+                  Text("By"),
+                  Text(
+                    " ${depositBody.attendant?.fullnames}",
+                    style: TextStyle(
+                      color: depositBody.type == "usage"
+                          ? Colors.red
+                          : Colors.green,
+                    ),
+                  ),
+                ],
+              ),
           ],
         ),
       ],

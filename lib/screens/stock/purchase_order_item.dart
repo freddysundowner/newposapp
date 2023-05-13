@@ -1,24 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:flutterpos/controllers/home_controller.dart';
-import 'package:flutterpos/controllers/purchase_controller.dart';
-import 'package:flutterpos/controllers/shop_controller.dart';
-import 'package:flutterpos/models/supply_order_model.dart';
-import 'package:flutterpos/responsive/responsiveness.dart';
-import 'package:flutterpos/screens/stock/view_purchases.dart';
-import 'package:flutterpos/widgets/no_items_found.dart';
+import 'package:pointify/controllers/home_controller.dart';
+import 'package:pointify/controllers/purchase_controller.dart';
+import 'package:pointify/controllers/shop_controller.dart';
+import 'package:pointify/models/invoice_items.dart';
+import 'package:pointify/responsive/responsiveness.dart';
+import 'package:pointify/screens/stock/view_purchases.dart';
+import 'package:pointify/widgets/no_items_found.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 import '../../widgets/bigtext.dart';
 import '../../widgets/smalltext.dart';
-import '../../widgets/snackBars.dart';
 import '../../widgets/stocks_card.dart';
 
 class PurchaseOrderItems extends StatelessWidget {
   final id;
   final String? page;
 
-  PurchaseOrderItems({Key? key, required this.id,this.page}) : super(key: key);
+  PurchaseOrderItems({Key? key, required this.id, this.page}) : super(key: key);
   ShopController createShopController = Get.find<ShopController>();
   PurchaseController purchaseController = Get.find<PurchaseController>();
 
@@ -34,12 +33,11 @@ class PurchaseOrderItems extends StatelessWidget {
         leading: IconButton(
           onPressed: () {
             if (MediaQuery.of(context).size.width > 600) {
-              if (page!=null&&page=="customerInfoPage") {
-
-              }  else{
-                Get.find<HomeController>().selectedWidget.value = ViewPurchases();
+              if (page != null && page == "customerInfoPage") {
+              } else {
+                Get.find<HomeController>().selectedWidget.value =
+                    ViewPurchases();
               }
-
             } else {
               Get.back();
             }
@@ -59,8 +57,7 @@ class PurchaseOrderItems extends StatelessWidget {
           ],
         ),
       ),
-      body: ResponsiveWidget(
-          largeScreen: Obx(() {
+      body: ResponsiveWidget(largeScreen: Obx(() {
         return purchaseController.getPurchaseOrderItemLoad.value
             ? Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -70,7 +67,7 @@ class PurchaseOrderItems extends StatelessWidget {
                   ),
                 ],
               )
-            : purchaseController.purchaseOrderItems.length == 0
+            : purchaseController.invoicesItems.isEmpty
                 ? noItemsFound(context, true)
                 : SingleChildScrollView(
                     child: Column(
@@ -78,8 +75,8 @@ class PurchaseOrderItems extends StatelessWidget {
                       children: [
                         Container(
                           width: double.infinity,
-                          padding:
-                              EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 5, vertical: 10),
                           child: Theme(
                             data: Theme.of(context)
                                 .copyWith(dividerColor: Colors.grey),
@@ -101,7 +98,7 @@ class PurchaseOrderItems extends StatelessWidget {
                                 DataColumn(
                                     label: Text('Quantity',
                                         textAlign: TextAlign.center)),
-                                DataColumn(
+                                const DataColumn(
                                     label: Text('Date',
                                         textAlign: TextAlign.center)),
                                 DataColumn(
@@ -109,16 +106,16 @@ class PurchaseOrderItems extends StatelessWidget {
                                         Text('', textAlign: TextAlign.center)),
                               ],
                               rows: List.generate(
-                                  purchaseController.purchaseOrderItems.length,
+                                  purchaseController.invoicesItems.length,
                                   (index) {
-                                SupplyOrderModel saleOrderItemModel =
-                                    purchaseController.purchaseOrderItems
+                                InvoiceItem saleOrderItemModel =
+                                    purchaseController.invoicesItems
                                         .elementAt(index);
                                 final y =
                                     saleOrderItemModel.product!.name.toString();
                                 final x = saleOrderItemModel.total.toString();
                                 final z =
-                                    saleOrderItemModel.quantity.toString();
+                                    saleOrderItemModel.itemCount.toString();
                                 final w = saleOrderItemModel.createdAt;
 
                                 return DataRow(cells: [
@@ -139,18 +136,17 @@ class PurchaseOrderItems extends StatelessWidget {
                                             child: ListTile(
                                               onTap: () {
                                                 Get.back();
-                                                if (saleOrderItemModel
-                                                        .supplier ==
-                                                    null) {
-                                                  showSnackBar(
-                                                      message:
-                                                          "please select customer to sell to",
-                                                      color: Colors.red,
-                                                      context: context);
-                                                } else {
-                                                  showQuantityDialog(context,
-                                                      saleOrderItemModel);
-                                                }
+                                                // if (saleOrderItemModel
+                                                //         .sale ==
+                                                //     null) {
+                                                //   showSnackBar(
+                                                //       message:
+                                                //           "please select customer to sell to",
+                                                //       color: Colors.red);
+                                                // } else {
+                                                //   showQuantityDialog(context,
+                                                //       saleOrderItemModel);
+                                                // }
                                               },
                                               title: Text("Return to Supplier"),
                                             ),
@@ -183,26 +179,26 @@ class PurchaseOrderItems extends StatelessWidget {
                   );
       }), smallScreen: Obx(() {
         return purchaseController.getPurchaseOrderItemLoad.value
-            ? Center(
+            ? const Center(
                 child: CircularProgressIndicator(),
               )
-            : purchaseController.purchaseOrderItems.length == 0
-                ? Center(
+            : purchaseController.invoicesItems.length == 0
+                ? const Center(
                     child: Text("No stock Entries Found"),
                   )
                 : ListView.builder(
-                    itemCount: purchaseController.purchaseOrderItems.length,
-                    physics: NeverScrollableScrollPhysics(),
+                    itemCount: purchaseController.invoicesItems.length,
+                    physics: const NeverScrollableScrollPhysics(),
                     shrinkWrap: true,
                     itemBuilder: (context, index) {
-                      SupplyOrderModel supplyOrderModel = purchaseController
-                          .purchaseOrderItems
-                          .elementAt(index);
+                      InvoiceItem supplyOrderModel =
+                          purchaseController.invoicesItems.elementAt(index);
 
                       return stockCard(
                           context: context,
                           supplyOrderModel: supplyOrderModel,
-                          type: "today");
+                          type: "today",
+                          purchaseId: id);
                     });
       })),
     );

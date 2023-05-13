@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutterpos/controllers/cashflow_controller.dart';
-import 'package:flutterpos/models/cashflow_category.dart';
+import 'package:pointify/controllers/cashflow_controller.dart';
+import 'package:pointify/models/cashflow_category.dart';
 import 'package:get/get.dart';
+import 'package:pointify/screens/cash_flow/cashflow_category_history.dart';
 
 import '../../../controllers/home_controller.dart';
 import '../../../utils/colors.dart';
 import '../../../widgets/delete_dialog.dart';
-import '../bank_history.dart';
 
 cashFlowCategoryDialog(context, {required CashFlowCategory cashflowCategory}) {
   CashflowController cashflowController = Get.find<CashflowController>();
@@ -17,7 +17,8 @@ cashFlowCategoryDialog(context, {required CashFlowCategory cashflowCategory}) {
           leading: Icon(Icons.list),
           onTap: () {
             Get.back();
-            Get.find<HomeController>().selectedWidget.value = CashHistory(
+            Get.find<HomeController>().selectedWidget.value =
+                CashCategoryHistory(
               title: cashflowCategory.name,
               subtitle: "All records",
               id: cashflowCategory.id,

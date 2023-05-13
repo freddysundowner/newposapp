@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutterpos/controllers/AuthController.dart';
-import 'package:flutterpos/controllers/attendant_controller.dart';
-import 'package:flutterpos/controllers/home_controller.dart';
-import 'package:flutterpos/screens/finance/expense_page.dart';
-import 'package:flutterpos/widgets/loading_dialog.dart';
+import 'package:pointify/controllers/AuthController.dart';
+import 'package:pointify/controllers/attendant_controller.dart';
+import 'package:pointify/controllers/home_controller.dart';
+import 'package:pointify/screens/finance/expense_page.dart';
+import 'package:pointify/widgets/loading_dialog.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
@@ -29,11 +29,9 @@ class ExpenseController extends GetxController {
 
   saveExpense({required shopId, required attendantId, required context}) async {
     if (textEditingControllerName.text == "") {
-      showSnackBar(
-          message: "Enter expense name", color: Colors.red, context: context);
+      showSnackBar(message: "Enter expense name", color: Colors.red);
     } else if (textEditingControllerAmount.text == "") {
-      showSnackBar(
-          message: "Enter expense amount", color: Colors.red, context: context);
+      showSnackBar(message: "Enter expense amount", color: Colors.red);
     } else {
       try {
         LoadingDialog.showLoadingDialog(
@@ -69,9 +67,7 @@ class ExpenseController extends GetxController {
           }
         } else {
           showSnackBar(
-              message: response["message"],
-              color: AppColors.mainColor,
-              context: context);
+              message: response["message"], color: AppColors.mainColor);
         }
       } catch (e) {
         Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();

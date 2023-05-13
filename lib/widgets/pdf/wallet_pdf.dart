@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:flutterpos/controllers/shop_controller.dart';
+import 'package:pointify/controllers/shop_controller.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:open_file/open_file.dart';
@@ -12,10 +12,12 @@ import '../../models/deposit_model.dart';
 
 WalletPdf(
     {required final shop,
-      required List<DepositModel> deposits,
-      required type}) async {
-  int sum=0;
-  deposits.forEach((element) {sum+=element.amount!;});
+    required List<DepositModel> deposits,
+    required type}) async {
+  int sum = 0;
+  deposits.forEach((element) {
+    sum += element.amount!;
+  });
   final pdf = pw.Document();
   pdf.addPage(
     pw.Page(
@@ -50,10 +52,10 @@ WalletPdf(
                         ],
                         data: deposits
                             .map((e) => [
-                          e.recieptNumber,
-                          e.amount,
-                          DateFormat("dd/MM/yyyy").format (e.createdAt!)
-                        ])
+                                  e.recieptNumber,
+                                  e.amount,
+                                  DateFormat("dd/MM/yyyy").format(e.createdAt!)
+                                ])
                             .toList())),
                 pw.SizedBox(height: 10),
                 pw.Align(
@@ -69,7 +71,8 @@ WalletPdf(
                                   fontWeight: pw.FontWeight.bold, fontSize: 16),
                             ),
                             pw.Divider(
-                                thickness: 1, color: PdfColor.fromInt(0xFF000000))
+                                thickness: 1,
+                                color: PdfColor.fromInt(0xFF000000))
                           ])),
                 ),
                 pw.SizedBox(height: 10),

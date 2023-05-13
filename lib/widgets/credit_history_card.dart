@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutterpos/controllers/home_controller.dart';
-import 'package:flutterpos/models/customer_model.dart';
-import 'package:flutterpos/models/sales_model.dart';
-import 'package:flutterpos/widgets/pdf/payment_history_pdf.dart';
+import 'package:pointify/controllers/home_controller.dart';
+import 'package:pointify/models/customer_model.dart';
+import 'package:pointify/models/receipt.dart';
+import 'package:pointify/widgets/pdf/payment_history_pdf.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
@@ -26,19 +26,34 @@ Widget CreditHistoryCard(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Center(
+            const Center(
               child: Icon(Icons.arrow_downward, color: Colors.red),
             ),
-            Spacer(),
+            SizedBox(
+              width: 30,
+            ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text("#${salesBody.receiptNumber}"),
                 Text("Date: ${DateFormat().format(salesBody.createdAt!)}"),
                 Text("Quantity: ${salesBody.quantity}"),
-                Text(
-                  "Due: ${salesBody.creditTotal}",
-                  style: TextStyle(color: Colors.red),
+                Row(
+                  children: [
+                    Text(
+                      "Due: ${salesBody.creditTotal! > 0 ? salesBody.creditTotal : "0"}",
+                      style: TextStyle(color: Colors.red),
+                    ),
+                    SizedBox(
+                      width: 50,
+                    ),
+                    if (salesBody.returnedItems != null &&
+                        salesBody.returnedItems!.isNotEmpty)
+                      Text(
+                        "returned items : ${salesBody.returnedItems}",
+                        style: TextStyle(color: Colors.red),
+                      ),
+                  ],
                 ),
               ],
             ),
@@ -59,7 +74,6 @@ showBottomSheet(
   CustomerModel customerModel,
 ) {
   SalesController salesController = Get.find<SalesController>();
-  CustomerController customersController = Get.find<CustomerController>();
   return showModalBottomSheet<void>(
       context: context,
       builder: (BuildContext context) {
@@ -112,10 +126,10 @@ showBottomSheet(
                         id: salesBody.id!,
                       );
                     } else {
-                      print( salesBody.id!);
+                      print(salesBody.id!);
                       Get.to(() => PaymentHistory(
                             id: salesBody.id!,
-                        type: "sales",
+                            type: "sales",
                           ));
                     }
                   },

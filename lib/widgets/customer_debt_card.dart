@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutterpos/widgets/smalltext.dart';
+import 'package:pointify/widgets/smalltext.dart';
 import 'package:get/get.dart';
 
 import '../../../../utils/colors.dart';
@@ -49,7 +49,6 @@ Widget customerDebtCard({required CustomerModel customerModel, required type}) {
                 onTap: () {
                   Get.to(() => CustomerInfoPage(
                         customerModel: customerModel,
-                        user: type,
                       ));
                 },
                 child: Container(

@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:flutterpos/services/apiurls.dart';
-import 'package:flutterpos/services/client.dart';
+import 'package:pointify/services/apiurls.dart';
+import 'package:pointify/services/client.dart';
 
 class Customer {
   createCustomer(Map<String, dynamic> body) async {
@@ -37,19 +37,22 @@ class Customer {
     return jsonDecode(response);
   }
 
-  getPurchases(
-      {required uid,
-      required type,
-      required operation,
-      required attendantId,}) async {
-    var response = await DbBase().databaseRequest(
-        operation == "returns"
-            ? "${customerReturns}/customer?customer=$uid&attendant=$attendantId"
-            : customerPurchase + uid,
-        DbBase().getRequestType);
+  getPurchases({
+    required uid,
+    required operation,
+    required attendantId,
+  }) async {
+    var response = await DbBase()
+        .databaseRequest(customerPurchase + uid, DbBase().getRequestType);
     var data = jsonDecode(response);
     return data;
   }
 
-
+  getReturns({String? uid, String? attendantId}) async {
+    var response = await DbBase().databaseRequest(
+        "$customerReturns?customer=$uid&attendant=$attendantId",
+        DbBase().getRequestType);
+    var data = jsonDecode(response);
+    return data;
+  }
 }

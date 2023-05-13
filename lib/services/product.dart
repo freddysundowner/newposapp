@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:flutterpos/services/apiurls.dart';
+import 'package:pointify/services/apiurls.dart';
 
 import 'client.dart';
 
@@ -35,12 +35,13 @@ class Products {
     return jsonDecode(response);
   }
 
-  getProductHistory({required productId, required String type, required stockId}) async {
+  getProductHistory(
+      {required productId, required String type, required stockId}) async {
     var response = await DbBase().databaseRequest(
-        "${productHistory}?type=${type}&stockId=${stockId}&product=$productId", DbBase().getRequestType);
+        "${productHistory}?type=${type}&stockId=${stockId}&product=$productId",
+        DbBase().getRequestType);
     var data = jsonDecode(response);
     return data;
-
   }
 
   updateProduct({required id, required Map<String, dynamic> body}) async {
@@ -88,6 +89,7 @@ class Products {
     var data = jsonDecode(response);
     return data;
   }
+
   getTransHistoryItems({required shopId, required type}) async {
     var response = await DbBase().databaseRequest(
         "${stocktransfer}?shop=$shopId&type=$type", DbBase().getRequestType);
@@ -104,7 +106,7 @@ class Products {
     return data;
   }
 
-  getBadStock(shopId, attendant,product) async {
+  getBadStock(shopId, attendant, product) async {
     var response = await DbBase().databaseRequest(
       "${badstock}shop?shop=$shopId&attendant=$attendant&product=$product",
       DbBase().getRequestType,

@@ -1,17 +1,19 @@
+import 'package:pointify/models/shop_category.dart';
+
 class ShopModel {
   ShopModel(
       {this.id,
       this.name,
       this.location,
       this.owner,
-      this.type,
-      this.currency});
+      this.category,
+      this.currency = "KES"});
 
   String? id;
   String? name;
   String? location;
   String? owner;
-  String? type;
+  ShopCategory? category;
   String? currency;
 
   factory ShopModel.fromJson(Map<String, dynamic> json) => ShopModel(
@@ -19,8 +21,11 @@ class ShopModel {
         name: json["name"],
         location: json["location"],
         owner: json["owner"],
-        type: json["type"],
-        currency: json["currency"],
+        category:
+            json["category"] == null || json["category"].toString().length <= 40
+                ? null
+                : ShopCategory.fromJson(json["category"]),
+        currency: json["currency"] ?? "KES",
       );
 
   Map<String, dynamic> toJson() => {
@@ -28,7 +33,7 @@ class ShopModel {
         "name": name,
         "location": location,
         "owner": owner,
-        "type": type,
+        "category": category,
         "currency": currency,
       };
 }

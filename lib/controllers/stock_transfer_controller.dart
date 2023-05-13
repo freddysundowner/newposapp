@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutterpos/controllers/AuthController.dart';
-import 'package:flutterpos/controllers/home_controller.dart';
-import 'package:flutterpos/controllers/product_controller.dart';
-import 'package:flutterpos/screens/stock/transfer_history.dart';
-import 'package:flutterpos/services/product.dart';
-import 'package:flutterpos/widgets/snackBars.dart';
+import 'package:pointify/controllers/AuthController.dart';
+import 'package:pointify/controllers/home_controller.dart';
+import 'package:pointify/controllers/product_controller.dart';
+import 'package:pointify/screens/stock/transfer_history.dart';
+import 'package:pointify/services/product.dart';
+import 'package:pointify/widgets/snackBars.dart';
 import 'package:get/get.dart';
 
 import '../models/product_model.dart';
@@ -49,12 +49,15 @@ class StockTransferController extends GetxController {
       LoadingDialog.showLoadingDialog(
           context: context, title: "Transferring Product...", key: _keyLoader);
       Map<String, dynamic> body = {
-        "attendant":Get.find<AuthController>().currentUser.value!.id,
+        "attendant": Get.find<AuthController>().currentUser.value!.id,
         "from": from,
         "to": to,
         "products": selectedProducts
-            .map((element) =>
-                {"id": element.id, "quantity": element.cartquantity,"name":element.name})
+            .map((element) => {
+                  "id": element.id,
+                  "quantity": element.cartquantity,
+                  "name": element.name
+                })
             .toList(),
       };
       var response = await Products().transferProducts(body: body);
@@ -70,8 +73,7 @@ class StockTransferController extends GetxController {
         selectedProducts.clear();
         gettingTransferHistory(shopId: from, type: "in");
       } else {
-        showSnackBar(
-            message: response["message"], color: Colors.red, context: context);
+        showSnackBar(message: response["message"], color: Colors.red);
       }
     } catch (e) {
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
@@ -82,7 +84,8 @@ class StockTransferController extends GetxController {
     try {
       transferHistory.clear();
       gettingTransferHistoryLoad.value = true;
-      var response = await Products().getTransHistory(shopId: shopId, type: type);
+      var response =
+          await Products().getTransHistory(shopId: shopId, type: type);
       if (response["status"] == true) {
         List jsonData = response["body"];
 

@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:flutterpos/controllers/sales_controller.dart';
-import 'package:flutterpos/controllers/shop_controller.dart';
-import 'package:flutterpos/screens/stock/purchase_order_item.dart';
-import 'package:flutterpos/widgets/pdf/payment_history_pdf.dart';
+import 'package:pointify/controllers/sales_controller.dart';
+import 'package:pointify/controllers/shop_controller.dart';
+import 'package:pointify/screens/stock/purchase_order_item.dart';
+import 'package:pointify/widgets/alert.dart';
+import 'package:pointify/widgets/pdf/payment_history_pdf.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 import '../controllers/CustomerController.dart';
 import '../controllers/home_controller.dart';
 import '../controllers/purchase_controller.dart';
-import '../models/purchase_order.dart';
+import '../models/invoice.dart';
 import '../screens/cash_flow/payment_history.dart';
 
-Widget CreditPurchaseHistoryCard(context, PurchaseOrder salesBody) {
+Widget CreditPurchaseHistoryCard(context, Invoice salesBody) {
   return InkWell(
     onTap: () {
       showBottomSheet(context, salesBody);
@@ -52,7 +53,7 @@ Widget CreditPurchaseHistoryCard(context, PurchaseOrder salesBody) {
   );
 }
 
-showBottomSheet(BuildContext context, PurchaseOrder salesBody) {
+showBottomSheet(BuildContext context, Invoice salesBody) {
   SalesController salesController = Get.find<SalesController>();
   return showModalBottomSheet<void>(
       context: context,
@@ -124,7 +125,7 @@ showBottomSheet(BuildContext context, PurchaseOrder salesBody) {
       });
 }
 
-showAmountDialog(context, PurchaseOrder salesBody) {
+showAmountDialog(context, Invoice salesBody) {
   CustomerController customerController = Get.find<CustomerController>();
   showDialog(
       context: context,
@@ -172,19 +173,23 @@ showAmountDialog(context, PurchaseOrder salesBody) {
             ),
             TextButton(
               onPressed: () {
+                print(salesBody.balance);
                 Get.back();
-                if (salesBody.balance! <
+                if (salesBody.balance! >=
                     int.parse(customerController.amountController.text)) {
-                } else {
                   Get.find<PurchaseController>().paySupplierCredit(
                     amount: customerController.amountController.text,
                     salesBody: salesBody,
                   );
+                } else {
+                  generalAlert(
+                      title: "Error",
+                      message: "You cannot pay more than you owe");
                 }
               },
               child: Text(
                 "Save".toUpperCase(),
-                style: TextStyle(
+                style: const TextStyle(
                   color: Colors.purple,
                   fontWeight: FontWeight.bold,
                 ),

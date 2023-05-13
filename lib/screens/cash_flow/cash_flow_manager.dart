@@ -3,13 +3,15 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:flutterpos/controllers/home_controller.dart';
-import 'package:flutterpos/responsive/responsiveness.dart';
-import 'package:flutterpos/screens/cash_flow/components/loading_shimmer.dart';
-import 'package:flutterpos/screens/finance/finance_page.dart';
-import 'package:flutterpos/utils/helper.dart';
-import 'package:flutterpos/widgets/pdf/cashflow_pdf.dart';
-import 'package:flutterpos/widgets/snackBars.dart';
+import 'package:pointify/controllers/home_controller.dart';
+import 'package:pointify/functions/functions.dart';
+import 'package:pointify/responsive/responsiveness.dart';
+import 'package:pointify/screens/cash_flow/components/loading_shimmer.dart';
+import 'package:pointify/screens/finance/finance_page.dart';
+import 'package:pointify/utils/colors.dart';
+import 'package:pointify/utils/helper.dart';
+import 'package:pointify/widgets/pdf/cashflow_pdf.dart';
+import 'package:pointify/widgets/snackBars.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
@@ -18,23 +20,26 @@ import '../../controllers/expense_controller.dart';
 import '../../controllers/product_controller.dart';
 import '../../controllers/sales_controller.dart';
 import '../../controllers/shop_controller.dart';
+import '../finance/components/date_picker.dart';
 import 'cash_at_bank.dart';
 import 'cash_in_layout.dart';
 import 'cashflow_categories.dart';
 import 'cashout_layout.dart';
 
 class CashFlowManager extends StatelessWidget {
-  ShopController createShopController = Get.find<ShopController>();
+  ShopController shopController = Get.find<ShopController>();
   CashflowController cashFlowController = Get.find<CashflowController>();
   ExpenseController expensesController = Get.find<ExpenseController>();
   SalesController salesController = Get.find<SalesController>();
   ProductController productController = Get.find<ProductController>();
 
   CashFlowManager({Key? key}) : super(key: key) {
+    cashFlowController.fromDate.value = DateTime.now();
     cashFlowController.getSalesSummary(
-        shopId: createShopController.currentShop.value!.id,
-        date: DateFormat("yyyy-MM-dd")
-            .format(cashFlowController.currentDate.value));
+        shopId: shopController.currentShop.value!.id,
+        from:
+            DateFormat("yyyy-MM-dd").format(cashFlowController.fromDate.value),
+        to: DateFormat("yyyy-MM-dd").format(cashFlowController.toDate.value));
   }
 
   Widget transactionWidget(
@@ -86,34 +91,26 @@ class CashFlowManager extends StatelessWidget {
             ),
           ),
         ),
-        smallScreen: RefreshIndicator(
-          onRefresh: () async {
-            cashFlowController.getSalesSummary(
-                shopId: createShopController.currentShop.value!.id,
-                date: DateFormat("yyyy-MM-dd")
-                    .format(cashFlowController.currentDate.value));
-          },
-          child: Helper(
-              widget: SingleChildScrollView(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    cashInHandWidget(context, "small"),
-                    cashFlowCategory(context),
-                    dataTable(),
-                  ],
-                ),
+        smallScreen: Helper(
+            widget: SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  cashInHandWidget(context, "small"),
+                  cashFlowCategory(context),
+                  dataTable(),
+                ],
               ),
-              appBar: appBar(context),
-              bottomNavigationBar: BottomAppBar(
-                child: Container(
-                  height: kToolbarHeight,
-                  padding: EdgeInsets.all(10),
-                  color: Colors.white,
-                  child: cashTotals("small"),
-                ),
-              )),
-        ));
+            ),
+            appBar: appBar(context),
+            bottomNavigationBar: BottomAppBar(
+              child: Container(
+                height: kToolbarHeight,
+                padding: EdgeInsets.all(10),
+                color: Colors.white,
+                child: cashTotals("small"),
+              ),
+            )));
   }
 
   Widget cashTotals(String size) {
@@ -130,7 +127,7 @@ class CashFlowManager extends StatelessWidget {
               return cashFlowController.loadingCashflowSummry.value
                   ? cashFlowloadingShimmer()
                   : Text(
-                      "KES ${cashFlowController.cashflowSummary.value?.totalcashin ?? 0}",
+                      "${shopController.currentShop.value?.currency} ${cashFlowController.cashflowSummary.value?.totalcashin ?? 0}",
                       style: TextStyle(
                           color: Colors.black,
                           fontWeight: FontWeight.bold,
@@ -146,7 +143,7 @@ class CashFlowManager extends StatelessWidget {
               return cashFlowController.loadingCashflowSummry.value
                   ? cashFlowloadingShimmer()
                   : Text(
-                      "KES ${cashFlowController.cashflowSummary.value?.totalcashout ?? 0}",
+                      "${shopController.currentShop.value?.currency} ${cashFlowController.cashflowSummary.value?.totalcashout ?? 0}",
                       style: TextStyle(
                           color: Colors.black,
                           fontWeight: FontWeight.bold,
@@ -168,6 +165,76 @@ class CashFlowManager extends StatelessWidget {
           borderRadius: BorderRadius.circular(10), color: Colors.white),
       child: Column(
         children: [
+          SizedBox(height: 5),
+          Column(
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Row(
+                    children: [
+                      Text(" From "),
+                      Row(
+                        children: [
+                          Obx(
+                            () => Text(cashFlowController.fromDate.value != null
+                                ? DateFormat("dd-MM-yyyy")
+                                    .format(cashFlowController.fromDate.value)
+                                : ""),
+                          ),
+                        ],
+                      ),
+                      Text(" to "),
+                      Row(
+                        children: [
+                          Obx(
+                            () => Text(cashFlowController.fromDate.value != null
+                                ? DateFormat("dd-MM-yyyy")
+                                    .format(cashFlowController.toDate.value)
+                                : ""),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  InkWell(
+                    onTap: () async {
+                      final picked = await showDateRangePicker(
+                        context: context,
+                        lastDate: DateTime(2079),
+                        firstDate: DateTime(2019),
+                      );
+                      cashFlowController.fromDate.value = picked!.start;
+                      cashFlowController.toDate.value = picked.end;
+                      cashFlowController.getSalesSummary(
+                        shopId:
+                            Get.find<ShopController>().currentShop.value!.id,
+                        from: DateFormat("yyyy-MM-dd")
+                            .format(cashFlowController.fromDate.value),
+                        to: DateFormat("yyyy-MM-dd")
+                            .format(cashFlowController.toDate.value),
+                      );
+                    },
+                    child: Container(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                      decoration: BoxDecoration(
+                          border: Border.all(color: AppColors.mainColor),
+                          borderRadius: BorderRadius.circular(5)),
+                      child: Text("Filter"),
+                    ),
+                  )
+                ],
+              ),
+              Divider(
+                color: AppColors.mainColor,
+              )
+            ],
+          ),
           SizedBox(height: 10),
           Center(child: Text("Cash In Hand")),
           SizedBox(height: 10),
@@ -179,7 +246,7 @@ class CashFlowManager extends StatelessWidget {
                   return cashFlowController.loadingCashflowSummry.value
                       ? cashFlowloadingShimmer()
                       : Text(
-                          "${createShopController.currentShop.value!.currency!}"
+                          "${shopController.currentShop.value!.currency!}"
                           "${cashFlowController.cashflowSummary.value?.cashinhand! ?? 0}",
                           style: TextStyle(
                               color: Colors.black, fontWeight: FontWeight.bold),
@@ -220,7 +287,7 @@ class CashFlowManager extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(
-                                  "${createShopController.currentShop.value!.currency!}",
+                                  shopController.currentShop.value!.currency!,
                                   style: TextStyle(color: Colors.black54),
                                 ),
                                 SizedBox(width: 3),
@@ -265,9 +332,10 @@ class CashFlowManager extends StatelessWidget {
                 onPressed: () {
                   if (MediaQuery.of(context).size.width > 600) {
                     Get.find<HomeController>().selectedWidget.value =
-                        CashOutLayout();
+                        CashOutLayout(date: cashFlowController.fromDate.value);
                   } else {
-                    Get.to(() => CashOutLayout());
+                    Get.to(() =>
+                        CashOutLayout(date: cashFlowController.fromDate.value));
                   }
                 },
                 child: Container(
@@ -332,6 +400,11 @@ class CashFlowManager extends StatelessWidget {
     );
   }
 
+  _displayDate() => Text(
+        "${DateFormat("MMM/dd").format(cashFlowController.fromDate.value)}-${DateFormat("MMM/dd").format(cashFlowController.toDate.value)}",
+        style: TextStyle(fontSize: 11),
+      );
+
   Widget dataTable() {
     return Obx(() {
       return DataTable(
@@ -347,63 +420,95 @@ class CashFlowManager extends StatelessWidget {
             DataColumn(
               label: Text('Total'),
             ),
-          ], rows: [
-        // Set the values to the columns
-        DataRow(cells: [
-          DataCell(Text("${DateFormat("MMM-yyyy").format(DateTime.now())}")),
-          DataCell(
-              Text("Sales",
-                  style: TextStyle(
-                      color: Colors.purple, fontWeight: FontWeight.bold)),
-              onTap: () {}),
-          DataCell(cashFlowController.loadingCashflowSummry.value
-              ? cashFlowloadingShimmer()
-              : Text(
-                  "${cashFlowController.cashflowSummary.value?.totalSales! ?? 0}")),
-        ]),
-        DataRow(cells: [
-          DataCell(Text("${DateFormat("MMM-yyyy").format(DateTime.now())}")),
-          DataCell(
-              Text(
-                "Stock Purchase",
-                style: TextStyle(
-                    color: Colors.purple, fontWeight: FontWeight.bold),
-              ),
-              onTap: () {}),
-          DataCell(cashFlowController.loadingCashflowSummry.value
-              ? cashFlowloadingShimmer()
-              : Text(
-                  "${cashFlowController.cashflowSummary.value?.totalpurchases! ?? 0}")),
-        ]),
-        DataRow(cells: [
-          DataCell(Text("${DateFormat("MMM-yyyy").format(DateTime.now())}")),
-          DataCell(
-              Text(
-                "Expenses",
-                style: TextStyle(
-                    color: Colors.purple, fontWeight: FontWeight.bold),
-              ),
-              onTap: () {}),
-          DataCell(cashFlowController.loadingCashflowSummry.value
-              ? cashFlowloadingShimmer()
-              : Text(
-                  "${cashFlowController.cashflowSummary.value?.totalExpenses! ?? 0}")),
-        ]),
-        DataRow(cells: [
-          DataCell(Text("${DateFormat("MMM-yyyy").format(DateTime.now())}")),
-          DataCell(
-              Text(
-                "Customer Wallet",
-                style: TextStyle(
-                    color: Colors.purple, fontWeight: FontWeight.bold),
-              ),
-              onTap: () {}),
-          DataCell(cashFlowController.loadingCashflowSummry.value
-              ? cashFlowloadingShimmer()
-              : Text(
-                  "${cashFlowController.cashflowSummary.value?.totalwallet! ?? 0}")),
-        ]),
-      ]);
+          ],
+          rows: [
+            // Set the values to the columns
+            DataRow(cells: [
+              DataCell(_displayDate()),
+              DataCell(
+                  Text("Sales",
+                      style: TextStyle(
+                          color: Colors.purple, fontWeight: FontWeight.bold)),
+                  onTap: () {}),
+              DataCell(cashFlowController.loadingCashflowSummry.value
+                  ? cashFlowloadingShimmer()
+                  : Text(
+                      "${shopController.currentShop.value?.currency} ${cashFlowController.cashflowSummary.value?.totalSales! ?? 0}")),
+            ]),
+            DataRow(cells: [
+              DataCell(_displayDate()),
+              DataCell(
+                  Text(
+                    "Stock Purchase",
+                    style: TextStyle(
+                        color: Colors.purple, fontWeight: FontWeight.bold),
+                  ),
+                  onTap: () {}),
+              DataCell(cashFlowController.loadingCashflowSummry.value
+                  ? cashFlowloadingShimmer()
+                  : Text(
+                      "${shopController.currentShop.value?.currency} ${cashFlowController.cashflowSummary.value?.totalpurchases! ?? 0}")),
+            ]),
+            DataRow(cells: [
+              DataCell(_displayDate()),
+              DataCell(
+                  Text(
+                    "Expenses",
+                    style: TextStyle(
+                        color: Colors.purple, fontWeight: FontWeight.bold),
+                  ),
+                  onTap: () {}),
+              DataCell(cashFlowController.loadingCashflowSummry.value
+                  ? cashFlowloadingShimmer()
+                  : Text(
+                      "${shopController.currentShop.value?.currency} ${cashFlowController.cashflowSummary.value?.totalExpenses! ?? 0}")),
+            ]),
+            DataRow(cells: [
+              DataCell(_displayDate()),
+              DataCell(
+                  Text(
+                    "Customer Wallets",
+                    style: TextStyle(
+                        color: Colors.purple, fontWeight: FontWeight.bold),
+                  ),
+                  onTap: () {}),
+              DataCell(cashFlowController.loadingCashflowSummry.value
+                  ? cashFlowloadingShimmer()
+                  : Text(htmlPrice(
+                      cashFlowController.cashflowSummary.value!.totalwallet! > 0
+                          ? cashFlowController
+                              .cashflowSummary.value!.totalwallet!
+                          : 0))),
+            ]),
+            DataRow(cells: [
+              DataCell(_displayDate()),
+              DataCell(
+                  Text(
+                    "Customer Debts",
+                    style: TextStyle(
+                        color: Colors.purple, fontWeight: FontWeight.bold),
+                  ),
+                  onTap: () {}),
+              DataCell(cashFlowController.loadingCashflowSummry.value
+                  ? cashFlowloadingShimmer()
+                  : Text(htmlPrice(
+                      cashFlowController.cashflowSummary.value!.creditTotal))),
+            ]),
+            DataRow(cells: [
+              DataCell(_displayDate()),
+              DataCell(
+                  Text(
+                    "Banked",
+                    style: TextStyle(
+                        color: Colors.purple, fontWeight: FontWeight.bold),
+                  ),
+                  onTap: () {}),
+              DataCell(cashFlowController.loadingCashflowSummry.value
+                  ? cashFlowloadingShimmer()
+                  : Text(htmlPrice(
+                      cashFlowController.cashflowSummary.value!.totalbanked))),
+            ]),
+          ]);
     });
   }
 
@@ -437,10 +542,9 @@ class CashFlowManager extends StatelessWidget {
               )),
           Obx(() {
             return Text(
-              createShopController.currentShop.value == null
+              shopController.currentShop.value == null
                   ? ""
-                  : "${createShopController.currentShop.value!.name!}"
-                      .capitalize!,
+                  : shopController.currentShop.value!.name!.capitalize!,
               style: TextStyle(
                 fontSize: 10,
               ),
@@ -449,34 +553,19 @@ class CashFlowManager extends StatelessWidget {
         ],
       ),
       actions: [
-        Obx(() => InkWell(
-              onTap: () {
-                cashFlowController.showDatePicker(context: context);
-              },
-              child: Row(
-                children: [
-                  Text(
-                      "${DateFormat("dd-MM-yyyy").format(cashFlowController.currentDate.value)}"),
-                  SizedBox(width: 3),
-                  Icon(Icons.arrow_drop_down)
-                ],
-              ),
-            )),
         IconButton(
             onPressed: () {
               if (cashFlowController.cashflowSummary.value == null) {
                 showSnackBar(
-                    message: "no data to display",
-                    color: Colors.black,
-                    context: context);
+                    message: "no data to display", color: Colors.black);
               } else {
                 CashFlowPdf(
-                    shop: createShopController.currentShop.value!.name,
+                    shop: shopController.currentShop.value!.name,
                     type: "type",
-                    currency: createShopController.currentShop.value!.currency,
+                    currency: shopController.currentShop.value!.currency,
                     cashflowSummary: cashFlowController.cashflowSummary.value!,
                     date: DateFormat("MM-dd-yyyy")
-                        .format(cashFlowController.currentDate.value));
+                        .format(cashFlowController.fromDate.value));
               }
             },
             icon: Icon(Icons.download))

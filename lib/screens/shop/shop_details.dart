@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:flutterpos/controllers/AuthController.dart';
-import 'package:flutterpos/controllers/home_controller.dart';
-import 'package:flutterpos/controllers/shop_controller.dart';
-import 'package:flutterpos/models/shop_model.dart';
-import 'package:flutterpos/responsive/responsiveness.dart';
-import 'package:flutterpos/screens/home/shops_page.dart';
-import 'package:flutterpos/utils/constants.dart';
-import 'package:flutterpos/widgets/shop_delete_dialog.dart';
+import 'package:pointify/controllers/AuthController.dart';
+import 'package:pointify/controllers/home_controller.dart';
+import 'package:pointify/controllers/shop_controller.dart';
+import 'package:pointify/models/shop_category.dart';
+import 'package:pointify/models/shop_model.dart';
+import 'package:pointify/responsive/responsiveness.dart';
+import 'package:pointify/screens/authentication/shop_cagories.dart';
+import 'package:pointify/screens/home/shops_page.dart';
+import 'package:pointify/services/shop.dart';
+import 'package:pointify/utils/constants.dart';
+import 'package:pointify/widgets/shop_delete_dialog.dart';
 import 'package:get/get.dart';
 
 import '../../utils/colors.dart';
@@ -16,7 +19,7 @@ import '../../widgets/shop_widget.dart';
 class ShopDetails extends StatelessWidget {
   final ShopModel shopModel;
 
-  ShopDetails({Key? key, required this.shopModel}) : super(key: key){
+  ShopDetails({Key? key, required this.shopModel}) : super(key: key) {
     shopController.initializeControllers(shopModel: shopModel);
   }
   ShopController shopController = Get.find<ShopController>();
@@ -24,7 +27,6 @@ class ShopDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return ResponsiveWidget(
         largeScreen: Container(
           padding: EdgeInsets.all(20),
@@ -56,9 +58,7 @@ class ShopDetails extends StatelessWidget {
                           color: Colors.black,
                         ),
                       ),
-                      SizedBox(
-                        width: 10
-                      ),
+                      SizedBox(width: 10),
                       majorTitle(
                           title: "${shopModel.name}",
                           color: Colors.black,
@@ -76,7 +76,6 @@ class ShopDetails extends StatelessWidget {
                     children: [
                       shopDetails(context),
                       SizedBox(height: 5),
-
                     ],
                   ),
                 )
@@ -93,7 +92,7 @@ class ShopDetails extends StatelessWidget {
               onPressed: () {
                 Get.back();
               },
-              icon: Icon(
+              icon: const Icon(
                 Icons.arrow_back_ios,
                 color: Colors.black,
               ),
@@ -133,12 +132,11 @@ class ShopDetails extends StatelessWidget {
               splashColor: Colors.transparent,
               onTap: () {
                 shopController.updateShop(
-                    id: shopModel.id,
                     adminId: authController.currentUser.value?.id,
-                    context: context);
+                    shopId: shopModel.id);
               },
               child: Container(
-                padding: EdgeInsets.all(10),
+                padding: const EdgeInsets.all(10),
                 width: MediaQuery.of(context).size.width < 700
                     ? double.infinity
                     : 150,
@@ -163,9 +161,52 @@ class ShopDetails extends StatelessWidget {
         shopWidget(
             controller: shopController.nameController, name: "Shop Name"),
         SizedBox(height: 10),
-        shopWidget(
-            controller: shopController.businessController,
-            name: "Business Type"),
+        Text(
+          "Business Type",
+          style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+        ),
+        SizedBox(height: 10),
+        InkWell(
+          onTap: () {
+            Get.to(() => ShopCategories(
+                  selectedItemsCallback: (ShopCategory s) async {
+                    Get.back();
+                    shopController.selectedCategory.value = s;
+                    shopController.selectedCategory.refresh();
+                    Map<String, dynamic> body = {
+                      "category": shopController.selectedCategory.value?.id,
+                    };
+                    print(body);
+                    await Shop().updateShops(shopId: shopModel.id, body: body);
+                  },
+                ));
+          },
+          child: Container(
+            padding: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: Colors.grey,
+              ), // Set border width
+              borderRadius: const BorderRadius.all(Radius.circular(
+                  10.0)), // Set rounded Make rounded corner of border
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Obx(
+                  () => Text(shopController.selectedCategory.value == null
+                      ? ""
+                      : shopController.selectedCategory.value!.title),
+                ),
+                const Icon(
+                  Icons.arrow_forward_ios_rounded,
+                  size: 20,
+                )
+              ],
+            ),
+          ),
+        ),
         SizedBox(height: 10),
         shopWidget(
             controller: shopController.reqionController, name: "Location"),

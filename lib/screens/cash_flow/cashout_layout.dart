@@ -1,8 +1,8 @@
 // ignore_for_file: prefer_const_constructors
 import 'package:flutter/material.dart';
-import 'package:flutterpos/controllers/cashflow_controller.dart';
-import 'package:flutterpos/responsive/responsiveness.dart';
-import 'package:flutterpos/widgets/snackBars.dart';
+import 'package:pointify/controllers/cashflow_controller.dart';
+import 'package:pointify/responsive/responsiveness.dart';
+import 'package:pointify/widgets/snackBars.dart';
 import 'package:get/get.dart';
 
 import '../../controllers/home_controller.dart';
@@ -12,7 +12,8 @@ import '../../widgets/bigtext.dart';
 import 'cash_flow_manager.dart';
 
 class CashOutLayout extends StatelessWidget {
-  CashOutLayout({Key? key}) : super(key: key) {
+  DateTime? date;
+  CashOutLayout({Key? key, this.date}) : super(key: key) {
     cashFlowController.selectedCashFlowCategories.value = null;
     cashFlowController.cashFlowCategories.clear();
     cashFlowController.getCategory(
@@ -24,7 +25,6 @@ class CashOutLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return WillPopScope(
       onWillPop: () async {
         cashFlowController.clearInputs();
@@ -62,7 +62,7 @@ class CashOutLayout extends StatelessWidget {
               children: [
                 inputFields(context),
                 SizedBox(height: 50),
-                Center(child: saveButton(context)),
+                Center(child: saveButton(context, date!)),
               ],
             ),
           ),
@@ -82,7 +82,7 @@ class CashOutLayout extends StatelessWidget {
               : kToolbarHeight * 1.5,
           decoration:
               BoxDecoration(border: Border.all(width: 1, color: Colors.grey)),
-          child: saveButton(context),
+          child: saveButton(context, date!),
         )),
       ),
     );
@@ -245,13 +245,12 @@ class CashOutLayout extends StatelessWidget {
                                         showSnackBar(
                                             message:
                                                 "Please enter category name",
-                                            color: Colors.black,
-                                            context: context);
+                                            color: Colors.black);
                                       } else {
                                         cashFlowController.createCategory(
                                             "cash-out",
                                             createShopController
-                                                .currentShop.value!.id!,
+                                                .currentShop.value,
                                             context);
                                       }
                                     },
@@ -298,7 +297,8 @@ class CashOutLayout extends StatelessWidget {
                                 SizedBox(height: 10),
                                 InkWell(
                                   onTap: () {
-                                    if (cashFlowController.cashAtBanks.isEmpty) {
+                                    if (cashFlowController
+                                        .cashAtBanks.isEmpty) {
                                       showDialog(
                                           context: context,
                                           builder: (BuildContext context) {
@@ -380,18 +380,16 @@ class CashOutLayout extends StatelessWidget {
                                       return AlertDialog(
                                         title: Text("Add Bank Name"),
                                         content: Padding(
-                                          padding:
-                                              const EdgeInsets.all(5.0),
+                                          padding: const EdgeInsets.all(5.0),
                                           child: TextFormField(
                                               controller: cashFlowController
                                                   .textEditingControllerBankName,
                                               decoration: InputDecoration(
                                                   hintText: "eg. Equity",
-                                                  border:
-                                                      OutlineInputBorder(
+                                                  border: OutlineInputBorder(
                                                     borderRadius:
-                                                        BorderRadius
-                                                            .circular(10),
+                                                        BorderRadius.circular(
+                                                            10),
                                                   ))),
                                         ),
                                         actions: [
@@ -401,8 +399,8 @@ class CashOutLayout extends StatelessWidget {
                                             },
                                             child: Text(
                                               "Cancel".toUpperCase(),
-                                              style: TextStyle(
-                                                  color: Colors.blue),
+                                              style:
+                                                  TextStyle(color: Colors.blue),
                                             ),
                                           ),
                                           TextButton(
@@ -415,8 +413,7 @@ class CashOutLayout extends StatelessWidget {
                                                 showSnackBar(
                                                     message:
                                                         "Please enter bank name",
-                                                    color: Colors.black,
-                                                    context: context);
+                                                    color: Colors.black);
                                               } else {
                                                 cashFlowController
                                                     .createBankNames(
@@ -430,8 +427,8 @@ class CashOutLayout extends StatelessWidget {
                                             },
                                             child: Text(
                                               "Save now".toUpperCase(),
-                                              style: TextStyle(
-                                                  color: Colors.blue),
+                                              style:
+                                                  TextStyle(color: Colors.blue),
                                             ),
                                           ),
                                         ],
@@ -444,8 +441,7 @@ class CashOutLayout extends StatelessWidget {
                                       color: Colors.grey.withOpacity(0.2),
                                       borderRadius: BorderRadius.only(
                                           topRight: Radius.circular(10),
-                                          bottomRight:
-                                              Radius.circular(10))),
+                                          bottomRight: Radius.circular(10))),
                                   child: Text(
                                     "+ Add",
                                     style: TextStyle(color: Colors.green),
@@ -457,47 +453,40 @@ class CashOutLayout extends StatelessWidget {
                     : Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text("Name",
-                              style: TextStyle(color: Colors.grey)),
-                          SizedBox(height: 2),
-                          TextField(
-                            controller: cashFlowController
-                                .textEditingControllerName,
-                            decoration: InputDecoration(
-                              border: OutlineInputBorder(
-                                borderSide:
-                                    BorderSide(color: Colors.grey),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide:
-                                    BorderSide(color: Colors.grey),
-                                borderRadius: BorderRadius.circular(10),
+                            Text("Name", style: TextStyle(color: Colors.grey)),
+                            SizedBox(height: 2),
+                            TextField(
+                              controller:
+                                  cashFlowController.textEditingControllerName,
+                              decoration: InputDecoration(
+                                border: OutlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.grey),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.grey),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
                               ),
                             ),
-                          ),
-                          SizedBox(height: 5)
-                        ]);
+                            SizedBox(height: 5)
+                          ]);
               }),
               SizedBox(height: 20),
-
-              Text("Amount",
-                  style: TextStyle(color: Colors.grey)),
+              Text("Amount", style: TextStyle(color: Colors.grey)),
               SizedBox(height: 10),
               TextField(
-                controller: cashFlowController
-                    .textEditingControllerAmount,
+                controller: cashFlowController.textEditingControllerAmount,
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
-                  contentPadding: EdgeInsets.symmetric(vertical: 4),
+                  contentPadding:
+                      EdgeInsets.symmetric(vertical: 4, horizontal: 10),
                   border: OutlineInputBorder(
-                    borderSide:
-                    BorderSide(color: Colors.grey),
+                    borderSide: BorderSide(color: Colors.grey),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide:
-                    BorderSide(color: Colors.grey),
+                    borderSide: BorderSide(color: Colors.grey),
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
@@ -507,7 +496,7 @@ class CashOutLayout extends StatelessWidget {
         ));
   }
 
-  Widget saveButton(context) {
+  Widget saveButton(context, date) {
     return InkWell(
       onTap: () {
         if (cashFlowController.textEditingControllerAmount.text.isEmpty ||
@@ -515,15 +504,13 @@ class CashOutLayout extends StatelessWidget {
                         .toLowerCase() !=
                     "bank" &&
                 cashFlowController.textEditingControllerName.text.isEmpty)) {
-          showSnackBar(
-              message: "please fill all fields",
-              color: Colors.black,
-              context: context);
+          showSnackBar(message: "please fill all fields", color: Colors.black);
         } else {
           cashFlowController.createTransaction(
               shopId: createShopController.currentShop.value!.id,
               context: context,
-              type: "cash-out");
+              type: "cash-out",
+              date: DateTime.now());
         }
       },
       child: Container(

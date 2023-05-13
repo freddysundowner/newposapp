@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:flutterpos/controllers/wallet_controller.dart';
-import 'package:flutterpos/models/deposit_model.dart';
+import 'package:pointify/controllers/CustomerController.dart';
+import 'package:pointify/controllers/wallet_controller.dart';
+import 'package:pointify/models/deposit_model.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:pointify/widgets/alert.dart';
 
 showDepositDialog(
     {required context,
     required uid,
     required title,
-    String? page  ,
-    String ?size,
+    String? page,
+    String? size,
     DepositModel? depositModel}) {
   WalletController walletController = Get.find<WalletController>();
   if (title == "edit") {
@@ -24,13 +26,13 @@ showDepositDialog(
             width: MediaQuery.of(context).size.width > 600
                 ? MediaQuery.of(context).size.width * 0.2
                 : MediaQuery.of(context).size.width * 0.5,
-            padding: EdgeInsets.fromLTRB(10, 20, 20, 5),
+            padding: const EdgeInsets.fromLTRB(10, 20, 20, 5),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   "${title}".capitalize!,
-                  style: TextStyle(
+                  style: const TextStyle(
                       color: Colors.black,
                       fontWeight: FontWeight.bold,
                       fontSize: 12),
@@ -50,7 +52,7 @@ showDepositDialog(
                   enabled: false,
                   decoration: InputDecoration(
                       hintText:
-                          "${DateFormat("MMMM/dd/yyyy").format(DateTime.now())}",
+                          DateFormat("MMMM/dd/yyyy").format(DateTime.now()),
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(5))),
                 ),
@@ -61,8 +63,9 @@ showDepositDialog(
                     TextButton(
                       onPressed: () {
                         Navigator.pop(context);
-                        if (title == "edit")
+                        if (title == "edit") {
                           walletController.amountController.text = "";
+                        }
                       },
                       child: Text(
                         "Cancel".toUpperCase(),
@@ -70,16 +73,23 @@ showDepositDialog(
                       ),
                     ),
                     TextButton(
-                      onPressed: () {
+                      onPressed: () async {
                         Navigator.pop(context);
                         if (title == "edit") {
-                          // walletController.amountController.text = "";
-                          walletController.updateWallet(
+                          var response = await walletController.updateWallet(
                               amount: walletController.amountController.text,
                               id: depositModel!.id,
                               uid: uid);
+                          print(response);
+                          if (response["status"] == false) {
+                            generalAlert(
+                                title: "Error", message: response["message"]);
+                          } else {
+                            await Get.find<CustomerController>()
+                                .getCustomerById(uid);
+                          }
                         } else {
-                          walletController.save(uid, context,page,size);
+                          walletController.save(uid, context, page, size);
                         }
                       },
                       child: Text(

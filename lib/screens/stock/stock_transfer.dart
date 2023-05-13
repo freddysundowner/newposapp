@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutterpos/controllers/home_controller.dart';
-import 'package:flutterpos/controllers/shop_controller.dart';
-import 'package:flutterpos/models/shop_model.dart';
-import 'package:flutterpos/responsive/responsiveness.dart';
-import 'package:flutterpos/screens/stock/products_selection.dart';
-import 'package:flutterpos/screens/stock/stock_page.dart';
-import 'package:flutterpos/screens/stock/transfer_history.dart';
-import 'package:flutterpos/widgets/shop_card.dart';
+import 'package:pointify/controllers/home_controller.dart';
+import 'package:pointify/controllers/shop_controller.dart';
+import 'package:pointify/models/shop_model.dart';
+import 'package:pointify/responsive/responsiveness.dart';
+import 'package:pointify/screens/stock/products_selection.dart';
+import 'package:pointify/screens/stock/stock_page.dart';
+import 'package:pointify/screens/stock/transfer_history.dart';
+import 'package:pointify/widgets/shop_card.dart';
 import 'package:get/get.dart';
 
 import '../../controllers/AuthController.dart';
@@ -16,8 +16,7 @@ import '../../widgets/smalltext.dart';
 
 class StockTransfer extends StatelessWidget {
   StockTransfer({Key? key}) : super(key: key) {
-    shopController.getShopsByAdminId(
-        adminId: authController.currentUser.value?.id);
+    shopController.getShops(adminId: authController.currentUser.value?.id);
   }
 
   ShopController shopController = Get.find<ShopController>();
@@ -100,7 +99,7 @@ class StockTransfer extends StatelessWidget {
                         ? Align(
                             alignment: Alignment.center,
                             child: CircularProgressIndicator())
-                        : shopController.AdminShops.length == 0
+                        : shopController.allShops.length == 0
                             ? Center(
                                 child: majorTitle(
                                     title: "You do not have shop yet",
@@ -136,14 +135,14 @@ class StockTransfer extends StatelessWidget {
                                               textAlign: TextAlign.center)),
                                     ],
                                     rows: List.generate(
-                                        shopController.AdminShops.length,
+                                        shopController.allShops.length,
                                         (index) {
-                                      ShopModel shopModel =
-                                          shopController.AdminShops.elementAt(
-                                              index);
+                                      ShopModel shopModel = shopController
+                                          .allShops
+                                          .elementAt(index);
                                       final y = shopModel.name;
                                       final x = shopModel.location;
-                                      final z = shopModel.type;
+                                      final z = shopModel.category!.title;
 
                                       return DataRow(cells: [
                                         DataCell(Container(
@@ -220,7 +219,7 @@ class StockTransfer extends StatelessWidget {
                             controller: shopController.searchController,
                             onChanged: (value) {
                               if (value != "") {
-                                shopController.getShopsByAdminId(
+                                shopController.getShops(
                                     adminId:
                                         authController.currentUser.value?.id,
                                     name: value);
@@ -247,7 +246,7 @@ class StockTransfer extends StatelessWidget {
                         ? Align(
                             alignment: Alignment.center,
                             child: CircularProgressIndicator())
-                        : shopController.AdminShops.length == 0
+                        : shopController.allShops.length == 0
                             ? Center(
                                 child: majorTitle(
                                     title: "You do not have shop yet",
@@ -257,11 +256,10 @@ class StockTransfer extends StatelessWidget {
                             : ListView.builder(
                                 shrinkWrap: true,
                                 physics: NeverScrollableScrollPhysics(),
-                                itemCount: shopController.AdminShops.length,
+                                itemCount: shopController.allShops.length,
                                 itemBuilder: (context, index) {
                                   ShopModel shopModel =
-                                      shopController.AdminShops.elementAt(
-                                          index);
+                                      shopController.allShops.elementAt(index);
                                   return shopCard(
                                       shopModel: shopModel,
                                       page: "stockTransfer",

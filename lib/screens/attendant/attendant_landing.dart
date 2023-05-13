@@ -1,14 +1,16 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:flutter/material.dart';
-import 'package:flutterpos/controllers/home_controller.dart';
-import 'package:flutterpos/responsive/responsiveness.dart';
-import 'package:flutterpos/screens/customers/customers_page.dart';
-import 'package:flutterpos/screens/product/counting_page.dart';
-import 'package:flutterpos/screens/product/products_page.dart';
-import 'package:flutterpos/screens/sales/all_sales_page.dart';
-import 'package:flutterpos/screens/shop/other_shop.dart';
-import 'package:flutterpos/widgets/no_items_found.dart';
+import 'package:pointify/controllers/home_controller.dart';
+import 'package:pointify/models/roles_model.dart';
+import 'package:pointify/responsive/responsiveness.dart';
+import 'package:pointify/screens/customers/customers_page.dart';
+import 'package:pointify/screens/product/counting_page.dart';
+import 'package:pointify/screens/product/products_page.dart';
+import 'package:pointify/screens/sales/all_sales_page.dart';
+import 'package:pointify/screens/shop/other_shop.dart';
+import 'package:pointify/screens/suppliers/suppliers_page.dart';
+import 'package:pointify/widgets/no_items_found.dart';
 import 'package:get/get.dart';
 
 import '../../controllers/AuthController.dart';
@@ -61,8 +63,8 @@ class AttendantLanding extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Container(
-                          width: 80,
-                          height: 80,
+                          width: 60,
+                          height: 60,
                           decoration: BoxDecoration(
                               color: Colors.white,
                               border: Border.all(color: Colors.white, width: 4),
@@ -76,16 +78,18 @@ class AttendantLanding extends StatelessWidget {
                         SizedBox(height: 15),
                         ListView(
                           shrinkWrap: true,
-                          children:
-                              attendantController.attendant.value?.roles == null
-                                  ? []
-                                  : attendantController.attendant.value!.roles!
-                                      .where((e) =>
-                                          roles.indexWhere(
-                                              (element) => element == e.key) !=
-                                          -1)
-                                      .map((e) => sideMenu(e.name))
-                                      .toList(),
+                          children: attendantController.attendant.value
+                                      ?.getDisplayRoles() ==
+                                  null
+                              ? []
+                              : attendantController.attendant.value!
+                                  .getDisplayRoles()!
+                                  .where((e) =>
+                                      roles.indexWhere(
+                                          (element) => element == e.key) !=
+                                      -1)
+                                  .map((e) => sideMenu(e.name))
+                                  .toList(),
                         ),
                         SizedBox(height: 10),
                         InkWell(
@@ -103,78 +107,83 @@ class AttendantLanding extends StatelessWidget {
               ],
             ))),
         smallScreen: RefreshIndicator(
-          onRefresh: _refreshUser,
-          child: Scaffold(
-            backgroundColor: Colors.grey.shade100,
-            appBar: AppBar(
-                elevation: 0.0,
-                automaticallyImplyLeading: false,
-                backgroundColor: Colors.white,
-                title: Obx(() {
-                  return Text(
-                    attendantController.attendant.value?.shop == null
-                        ? ""
-                        : "${attendantController.attendant.value?.shop!.name}"
-                            .capitalize!,
-                    style: TextStyle(
-                      color: AppColors.mainColor,
+            onRefresh: _refreshUser,
+            child: Scaffold(
+                backgroundColor: Colors.grey.shade100,
+                appBar: AppBar(
+                    elevation: 0.0,
+                    automaticallyImplyLeading: false,
+                    backgroundColor: Colors.white,
+                    title: Obx(() {
+                      return Text(
+                        attendantController.attendant.value?.shop == null
+                            ? ""
+                            : "${attendantController.attendant.value?.shop!.name}"
+                                .capitalize!,
+                        style: TextStyle(
+                          color: AppColors.mainColor,
+                        ),
+                      );
+                    }),
+                    actions: [
+                      IconButton(
+                        onPressed: () {
+                          _refreshUser();
+                        },
+                        icon: Icon(
+                          Icons.refresh_outlined,
+                          color: AppColors.mainColor,
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          authController.logout();
+                        },
+                        icon: Icon(
+                          Icons.logout_outlined,
+                          color: Colors.redAccent,
+                        ),
+                      ),
+                    ]),
+                body: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: 10),
+                    Center(
+                      child: Container(
+                        width: 60,
+                        height: 60,
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            border: Border.all(color: Colors.white, width: 4),
+                            borderRadius: BorderRadius.circular(50),
+                            image: DecorationImage(
+                                image: NetworkImage(
+                                    "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460__340.png"))),
+                      ),
                     ),
-                  );
-                }),
-                actions: [
-                  IconButton(
-                    onPressed: () {
-                      _refreshUser();
-                    },
-                    icon: Icon(
-                      Icons.refresh_outlined,
-                      color: AppColors.mainColor,
-                    ),
-                  ),
-                  IconButton(
-                    onPressed: () {
-                      authController.logout();
-                    },
-                    icon: Icon(
-                      Icons.logout_outlined,
-                      color: Colors.redAccent,
-                    ),
-                  ),
-                ]),
-            body: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(height: 10),
-                Center(
-                  child: Container(
-                    width: 100,
-                    height: 100,
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        border: Border.all(color: Colors.white, width: 4),
-                        borderRadius: BorderRadius.circular(50),
-                        image: DecorationImage(
-                            image: NetworkImage(
-                                "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460__340.png"))),
-                  ),
-                ),
-                SizedBox(height: 15),
-                attendantDetails(context),
-                SizedBox(height: 5),
-                Expanded(
-                  child: Obx(
-                    () => ListView(
-                      children: attendantController.attendant.value?.roles ==
-                              null
-                          ? []
-                          : attendantController.attendant.value!.roles!
-                              .where((e) =>
-                                  roles.indexWhere(
-                                      (element) => element == e.key) !=
-                                  -1)
-                              .map((e) => Container(
-                                    margin: EdgeInsets.only(bottom: 20),
-                                    child: InkWell(
+                    SizedBox(height: 15),
+                    attendantDetails(context),
+                    SizedBox(height: 5),
+                    Expanded(
+                        child: Obx(() => Container(
+                              margin: EdgeInsets.symmetric(horizontal: 20),
+                              child: GridView.builder(
+                                  shrinkWrap: true,
+                                  gridDelegate:
+                                      const SliverGridDelegateWithFixedCrossAxisCount(
+                                          crossAxisCount: 2,
+                                          crossAxisSpacing: 8,
+                                          childAspectRatio: 1.4),
+                                  itemCount: attendantController
+                                      .attendant.value!
+                                      .getDisplayRoles()
+                                      ?.length,
+                                  itemBuilder: (context, index) {
+                                    RolesModel e = attendantController
+                                        .attendant.value!
+                                        .getDisplayRoles()![index];
+                                    return InkWell(
                                       onTap: () {
                                         if (e.key == "expenses") {
                                           Get.to(() => ExpensePage());
@@ -186,11 +195,9 @@ class AttendantLanding extends StatelessWidget {
                                         } else if (e.key == "stockin") {
                                           Get.to(() => ViewPurchases());
                                         } else if (e.key == "customers") {
-                                          Get.to(
-                                              CustomersPage(type: "customers"));
+                                          Get.to(CustomersPage());
                                         } else if (e.key == "Suppliers") {
-                                          Get.to(
-                                              CustomersPage(type: "supplier"));
+                                          Get.to(SuppliersPage());
                                         } else if (e.key == "stock_balance") {
                                           Get.to(() => ViewOtherShop());
                                         } else if (e.key == "count_stock") {
@@ -202,15 +209,12 @@ class AttendantLanding extends StatelessWidget {
                                           elevation: 10,
                                           color: Colors.transparent,
                                           child: Container(
-                                            width: MediaQuery.of(context)
-                                                    .size
-                                                    .width *
-                                                0.5,
+                                            height: 100,
                                             padding: EdgeInsets.all(12),
                                             decoration: BoxDecoration(
-                                              color: AppColors.mainColor,
+                                              color: setColor(index),
                                               borderRadius:
-                                                  BorderRadius.circular(50),
+                                                  BorderRadius.circular(10),
                                             ),
                                             child: Row(
                                               mainAxisAlignment:
@@ -218,7 +222,7 @@ class AttendantLanding extends StatelessWidget {
                                               children: [
                                                 SizedBox(width: 5),
                                                 Text(
-                                                  e.name,
+                                                  e.name.capitalize!,
                                                   style: TextStyle(
                                                       color: Colors.white),
                                                 )
@@ -227,18 +231,15 @@ class AttendantLanding extends StatelessWidget {
                                           ),
                                         ),
                                       ),
-                                    ),
-                                  ))
-                              .toList(),
-                    ),
-                  ),
-                ),
-                SizedBox(height: 10),
-                SizedBox(height: 20),
-              ],
-            ),
-          ),
-        ));
+                                    );
+                                  }),
+                            )))
+                  ],
+                ))));
+  }
+
+  Color? setColor(int index) {
+    return index.isEven ? AppColors.mainColor : Color(0xFF9575CD);
   }
 
   AppBar top_appbar() {
@@ -257,37 +258,19 @@ class AttendantLanding extends StatelessWidget {
 
   Widget attendantDetails(context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
+        Obx(() {
+          return Text(
+            "Welcome ${attendantController.attendant.value?.fullnames}"
+                .capitalize!,
+            style: TextStyle(color: Colors.amber, fontWeight: FontWeight.bold),
+          );
+        }),
         Row(
-          mainAxisAlignment: MediaQuery.of(context).size.width > 600
-              ? MainAxisAlignment.start
-              : MainAxisAlignment.center,
-          crossAxisAlignment: MediaQuery.of(context).size.width > 600
-              ? CrossAxisAlignment.center
-              : CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text("Welcome ",
-                style: TextStyle(
-                    color: Colors.black, fontWeight: FontWeight.bold)),
-            Obx(() {
-              return Text(
-                "${attendantController.attendant.value?.fullnames}".capitalize!,
-                style:
-                    TextStyle(color: Colors.amber, fontWeight: FontWeight.bold),
-              );
-            })
-          ],
-        ),
-        Row(
-          mainAxisAlignment: MediaQuery.of(context).size.width > 600
-              ? MainAxisAlignment.start
-              : MainAxisAlignment.center,
-          crossAxisAlignment: MediaQuery.of(context).size.width > 600
-              ? CrossAxisAlignment.center
-              : CrossAxisAlignment.center,
-          children: [
-            Text("AttendantID:", style: TextStyle(color: Colors.grey)),
+            Text("ID:", style: TextStyle(color: Colors.grey)),
             Obx(() {
               return Text(
                 "${attendantController.attendant.value?.attendid}",
@@ -304,18 +287,15 @@ class AttendantLanding extends StatelessWidget {
     return Obx(() => InkWell(
           onTap: () {
             attendantController.activeItem.value = title;
-            print(title);
             if (title.toString().trim() == "sales") {
               homeController.selectedWidget.value =
                   AllSalesPage(page: "AttendantLanding");
             } else if (title.toString().trim() == "Stockin") {
               homeController.selectedWidget.value = ViewPurchases();
             } else if (title.toString().trim() == "Manage Customers") {
-              homeController.selectedWidget.value =
-                  CustomersPage(type: "customers");
+              homeController.selectedWidget.value = CustomersPage();
             } else if (title.toString().trim() == "Manage suppliers") {
-              homeController.selectedWidget.value =
-                  CustomersPage(type: "suppliers");
+              homeController.selectedWidget.value = SuppliersPage();
             } else if (title.toString().trim() == "Add products") {
               homeController.selectedWidget.value = ProductPage();
             } else if (title.toString().trim() == "Add expenses") {

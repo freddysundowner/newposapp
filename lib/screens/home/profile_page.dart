@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutterpos/controllers/shop_controller.dart';
-import 'package:flutterpos/responsive/responsiveness.dart';
+import 'package:pointify/controllers/shop_controller.dart';
+import 'package:pointify/responsive/responsiveness.dart';
 import 'package:get/get.dart';
 
 import '../../controllers/AuthController.dart';
@@ -197,10 +197,6 @@ class ProfilePage extends StatelessWidget {
                             showPasswordResetDialog(context,
                                 "${authController.currentUser.value?.id}");
                           }),
-                      accountCard(
-                          title: "Subscriptions",
-                          icon: Icons.subscriptions,
-                          onPressed: () {}),
                       accountCard(
                           title: "Delete Account",
                           icon: Icons.delete,
@@ -405,16 +401,14 @@ showPasswordResetDialog(BuildContext context, String id) {
                                   "") {
                             showSnackBar(
                                 message: "please fill all the fields",
-                                color: Colors.red,
-                                context: context);
+                                color: Colors.red);
                           } else if (authController
                                   .textEditingControllerNewPassword.text !=
                               authController
                                   .textEditingControllerConfirmPassword.text) {
                             showSnackBar(
                                 message: "Password mismatched",
-                                color: Colors.red,
-                                context: context);
+                                color: Colors.red);
                           } else {
                             Get.back();
                             authController.updateUserPasswords(

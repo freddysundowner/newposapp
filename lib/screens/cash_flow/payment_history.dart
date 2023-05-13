@@ -1,11 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterpos/controllers/home_controller.dart';
-import 'package:flutterpos/controllers/sales_controller.dart';
-import 'package:flutterpos/models/customer_model.dart';
-import 'package:flutterpos/models/payment_history.dart';
-import 'package:flutterpos/responsive/responsiveness.dart';
-import 'package:flutterpos/screens/customers/customer_info_page.dart';
+import 'package:pointify/controllers/home_controller.dart';
+import 'package:pointify/controllers/sales_controller.dart';
+import 'package:pointify/controllers/shop_controller.dart';
+import 'package:pointify/models/customer_model.dart';
+import 'package:pointify/models/payment_history.dart';
+import 'package:pointify/responsive/responsiveness.dart';
+import 'package:pointify/screens/customers/customer_info_page.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
@@ -17,17 +18,17 @@ class PaymentHistory extends StatelessWidget {
   PaymentHistory({Key? key, required this.id, this.customerModel, this.type})
       : super(key: key);
   SalesController salesController = Get.find<SalesController>();
+  ShopController shopController = Get.find<ShopController>();
 
   @override
   Widget build(BuildContext context) {
-    print(type);
     salesController.getPaymentHistory(id: id, type: type);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0.0,
-        title: Text(
+        title: const Text(
           "Payment History",
           style: TextStyle(color: Colors.black),
         ),
@@ -37,7 +38,6 @@ class PaymentHistory extends StatelessWidget {
                 Get.find<HomeController>().selectedWidget.value =
                     CustomerInfoPage(
                   customerModel: customerModel!,
-                  user: "customer",
                 );
               } else {
                 Get.back();
@@ -50,88 +50,101 @@ class PaymentHistory extends StatelessWidget {
       ),
       body: ResponsiveWidget(
         largeScreen: Container(),
-        smallScreen: Container(
-          child: Obx(() {
-            return salesController.getPaymentHistoryLoad.value
-                ? Center(
-                    child: CircularProgressIndicator(),
-                  )
-                : Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: ListView.builder(
-                        itemCount: salesController.paymenHistory.length,
-                        shrinkWrap: true,
-                        itemBuilder: (context, index) {
-                          PayHistory payHistory =
-                              salesController.paymenHistory.elementAt(index);
-                          return Container(
-                            padding: EdgeInsets.all(10),
-                            margin: EdgeInsets.symmetric(horizontal: 3)
-                                .copyWith(bottom: 5),
-                            decoration: BoxDecoration(
-                                color: Colors.white,
-                                boxShadow: [
-                                  BoxShadow(
-                                      color: Colors.grey,
-                                      offset: Offset(1, 1),
-                                      blurRadius: 1)
-                                ]),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    Text(
-                                      "Paid:",
-                                      style: TextStyle(
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                    Text(
-                                      payHistory.amountPaid!.toString(),
-                                      style: TextStyle(
-                                        color: Colors.green,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Text(
-                                          "Balance:",
-                                          style: TextStyle(
-                                            color: Colors.black,
-                                          ),
-                                        ),
-                                        Text(
-                                          payHistory.balance!.toString(),
-                                          style: TextStyle(
-                                            color: Colors.red,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    Text(
-                                        "On: ${DateFormat("dd-MM-yyyy").format(payHistory.createdAt!)}",
+        smallScreen: Obx(() {
+          return salesController.getPaymentHistoryLoad.value
+              ? const Center(
+                  child: CircularProgressIndicator(),
+                )
+              : Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: ListView.builder(
+                      itemCount: salesController.paymenHistory.length,
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) {
+                        PayHistory payHistory =
+                            salesController.paymenHistory.elementAt(index);
+                        return Container(
+                          padding: const EdgeInsets.all(10),
+                          margin: EdgeInsets.symmetric(horizontal: 3)
+                              .copyWith(bottom: 5),
+                          decoration: const BoxDecoration(
+                              color: Colors.white,
+                              boxShadow: [
+                                BoxShadow(
+                                    color: Colors.grey,
+                                    offset: Offset(1, 1),
+                                    blurRadius: 1)
+                              ]),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Column(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      const Text(
+                                        "Paid: ",
                                         style: TextStyle(
                                           color: Colors.black,
-                                        ))
-                                  ],
-                                ),
-                              ],
-                            ),
-                          );
-                        }),
-                  );
-          }),
-        ),
+                                        ),
+                                      ),
+                                      Text(
+                                        "${shopController.currentShop.value?.currency} ${payHistory.amountPaid!.toString()}",
+                                        style: TextStyle(
+                                          color: Colors.green,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: 10,
+                                  ),
+                                  Row(
+                                    children: [
+                                      const Text(
+                                        "Balance: ",
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                      Text(
+                                        "-${shopController.currentShop.value?.currency} ${payHistory.balance!.toString()}",
+                                        style: const TextStyle(
+                                          color: Colors.red,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                      "On: ${DateFormat("dd-MM-yyyy").format(payHistory.createdAt!)}",
+                                      style: const TextStyle(
+                                        color: Colors.black,
+                                      )),
+                                  if (payHistory.attendant?.fullnames != null)
+                                    Text(
+                                        "by: ${payHistory.attendant!.fullnames}",
+                                        style: const TextStyle(
+                                          color: Colors.black,
+                                        )),
+                                ],
+                              )
+                            ],
+                          ),
+                        );
+                      }),
+                );
+        }),
       ),
     );
   }

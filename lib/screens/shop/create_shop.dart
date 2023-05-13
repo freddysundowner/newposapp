@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutterpos/controllers/home_controller.dart';
-import 'package:flutterpos/controllers/shop_controller.dart';
-import 'package:flutterpos/responsive/responsiveness.dart';
-import 'package:flutterpos/screens/home/shops_page.dart';
-import 'package:flutterpos/utils/constants.dart';
+import 'package:pointify/controllers/home_controller.dart';
+import 'package:pointify/controllers/shop_controller.dart';
+import 'package:pointify/models/shop_category.dart';
+import 'package:pointify/models/shop_model.dart';
+import 'package:pointify/responsive/responsiveness.dart';
+import 'package:pointify/screens/authentication/shop_cagories.dart';
+import 'package:pointify/screens/home/shops_page.dart';
+import 'package:pointify/utils/constants.dart';
 import 'package:get/get.dart';
 import 'package:switcher_button/switcher_button.dart';
 
@@ -38,7 +41,7 @@ class CreateShop extends StatelessWidget {
               Get.back();
             }
           },
-          icon: Icon(
+          icon: const Icon(
             Icons.arrow_back_ios,
             color: Colors.black,
           ),
@@ -53,7 +56,6 @@ class CreateShop extends StatelessWidget {
               width: MediaQuery.of(context).size.width * 0.5,
               padding: EdgeInsets.symmetric(horizontal: 10),
               margin: EdgeInsets.symmetric(vertical: 10),
-
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(5.0),
                 color: Colors.white,
@@ -72,11 +74,12 @@ class CreateShop extends StatelessWidget {
                   SizedBox(height: 10),
                   Obx(() {
                     return shopController.createShopLoad.value
-                        ? Center(child: CircularProgressIndicator())
+                        ? const Center(child: CircularProgressIndicator())
                         : Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                          child: saveButton(context),
-                        );
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 20.0),
+                            child: saveButton(context),
+                          );
                   }),
                 ],
               ),
@@ -100,7 +103,7 @@ class CreateShop extends StatelessWidget {
               BoxDecoration(border: Border.all(width: 1, color: Colors.grey)),
           child: Obx(() {
             return shopController.createShopLoad.value
-                ? Center(child: CircularProgressIndicator())
+                ? const Center(child: CircularProgressIndicator())
                 : saveButton(context);
           }),
         ),
@@ -135,9 +138,36 @@ class CreateShop extends StatelessWidget {
         shopWidget(
             controller: shopController.nameController, name: "Shop Name"),
         SizedBox(height: 10),
-        shopWidget(
-            controller: shopController.businessController,
-            name: "Business Type"),
+        Text(
+          "Business Type",
+          style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+        ),
+        SizedBox(height: 10),
+        InkWell(
+          onTap: () {
+            Get.to(() => ShopCategories(
+                  selectedItemsCallback: (ShopCategory s) {
+                    Get.back();
+                    shopController.selectedCategory.value = s;
+                  },
+                ));
+          },
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: Colors.grey)),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Obx(() => Text(shopController.selectedCategory.value == null
+                    ? ""
+                    : shopController.selectedCategory.value!.title)),
+                const Icon(Icons.arrow_forward_ios_rounded)
+              ],
+            ),
+          ),
+        ),
         SizedBox(height: 10),
         shopWidget(
             controller: shopController.reqionController, name: "Location"),
@@ -174,7 +204,8 @@ class CreateShop extends StatelessWidget {
                   Obx(() {
                     return Text(
                         " ${shopController.currency.value == "" ? Constants.currenciesData[0] : shopController.currency}",
-                        style: TextStyle(color: Colors.black, fontSize: 12.0));
+                        style: const TextStyle(
+                            color: Colors.black, fontSize: 12.0));
                   }),
                   Spacer(),
                   Icon(Icons.arrow_drop_down)

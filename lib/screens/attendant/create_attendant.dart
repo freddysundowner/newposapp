@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutterpos/controllers/attendant_controller.dart';
-import 'package:flutterpos/controllers/home_controller.dart';
-import 'package:flutterpos/models/roles_model.dart';
-import 'package:flutterpos/responsive/responsiveness.dart';
-import 'package:flutterpos/screens/home/attendants_page.dart';
+import 'package:pointify/controllers/attendant_controller.dart';
+import 'package:pointify/controllers/home_controller.dart';
+import 'package:pointify/models/roles_model.dart';
+import 'package:pointify/responsive/responsiveness.dart';
+import 'package:pointify/screens/home/attendants_page.dart';
 import 'package:get/get.dart';
 import 'package:switcher_button/switcher_button.dart';
 
@@ -13,7 +13,6 @@ import '../../widgets/attendant_user_inputs.dart';
 import '../../widgets/bigtext.dart';
 
 class CreateAttendant extends StatelessWidget {
-
   CreateAttendant({Key? key}) : super(key: key) {
     attendantController.nameController.clear();
     attendantController.passwordController.clear();

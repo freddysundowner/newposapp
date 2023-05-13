@@ -1,11 +1,11 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
-import 'package:flutterpos/controllers/cashflow_controller.dart';
-import 'package:flutterpos/controllers/home_controller.dart';
-import 'package:flutterpos/responsive/responsiveness.dart';
-import 'package:flutterpos/screens/cash_flow/cash_flow_manager.dart';
-import 'package:flutterpos/widgets/snackBars.dart';
+import 'package:pointify/controllers/cashflow_controller.dart';
+import 'package:pointify/controllers/home_controller.dart';
+import 'package:pointify/responsive/responsiveness.dart';
+import 'package:pointify/screens/cash_flow/cash_flow_manager.dart';
+import 'package:pointify/widgets/snackBars.dart';
 import 'package:get/get.dart';
 
 import '../../controllers/shop_controller.dart';
@@ -43,7 +43,7 @@ class CashInLayout extends StatelessWidget {
           centerTitle: false,
           iconTheme: IconThemeData(color: Colors.black),
           titleTextStyle: TextStyle(color: Colors.black),
-          title: Text("Add Cash In ", style: TextStyle(fontSize: 14)),
+          title: Text("AddCash In ", style: TextStyle(fontSize: 14)),
           leading: IconButton(
               onPressed: () {
                 if (MediaQuery.of(context).size.width > 600) {
@@ -59,7 +59,7 @@ class CashInLayout extends StatelessWidget {
         body: ResponsiveWidget(
           largeScreen: Scaffold(
             backgroundColor: Colors.white,
-            body: Container(
+            body: SizedBox(
               width: MediaQuery.of(context).size.width * 0.5,
               height: MediaQuery.of(context).size.height * 0.7,
               child: Column(
@@ -100,15 +100,17 @@ class CashInLayout extends StatelessWidget {
       onTap: () {
         if (cashflowController.textEditingControllerName.text.isEmpty ||
             cashflowController.textEditingControllerAmount.text.isEmpty) {
-          showSnackBar(
-              message: "Please fill all fields",
-              color: Colors.black,
-              context: context);
+          showSnackBar(message: "Please fill all fields", color: Colors.black);
         } else {
-          cashflowController.createTransaction(
+          if (cashflowController.selectedCashFlowCategories.value == null) {
+            showSnackBar(message: "Select Category", color: Colors.black);
+          } else {
+            cashflowController.createTransaction(
               shopId: createShopController.currentShop.value!.id,
               context: context,
-              type: "cash-in");
+              type: "cash-in",
+            );
+          }
         }
       },
       child: Container(
@@ -142,10 +144,12 @@ class CashInLayout extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text("Category", style: TextStyle(color: Colors.grey)),
+                        SizedBox(
+                          height: 10,
+                        ),
                         InkWell(
                           onTap: () {
-                            if (cashflowController.cashFlowCategories.length ==
-                                0) {
+                            if (cashflowController.cashFlowCategories.isEmpty) {
                               showDialog(
                                   context: context,
                                   builder: (BuildContext context) {
@@ -240,6 +244,7 @@ class CashInLayout extends StatelessWidget {
                                         decoration: InputDecoration(
                                             hintText:
                                                 "eg.Loan,Capital,Contribution etc",
+                                            hintStyle: TextStyle(fontSize: 12),
                                             border: OutlineInputBorder(
                                               borderRadius:
                                                   BorderRadius.circular(10),
@@ -259,8 +264,7 @@ class CashInLayout extends StatelessWidget {
                                       onPressed: () {
                                         cashflowController.createCategory(
                                             "cash-in",
-                                            shopController
-                                                .currentShop.value!.id!,
+                                            shopController.currentShop.value,
                                             context);
                                         Navigator.pop(context);
                                       },

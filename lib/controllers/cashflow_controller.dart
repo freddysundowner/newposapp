@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
-import 'package:flutterpos/controllers/AuthController.dart';
-import 'package:flutterpos/controllers/home_controller.dart';
-import 'package:flutterpos/controllers/shop_controller.dart';
-import 'package:flutterpos/models/bank_model.dart';
-import 'package:flutterpos/models/cashflow_category.dart';
-import 'package:flutterpos/screens/cash_flow/cash_flow_manager.dart';
-import 'package:flutterpos/utils/colors.dart';
-import 'package:flutterpos/widgets/snackBars.dart';
+import 'package:pointify/controllers/AuthController.dart';
+import 'package:pointify/controllers/home_controller.dart';
+import 'package:pointify/controllers/shop_controller.dart';
+import 'package:pointify/models/bank_model.dart';
+import 'package:pointify/models/cashflow_category.dart';
+import 'package:pointify/screens/cash_flow/cash_flow_manager.dart';
+import 'package:pointify/utils/colors.dart';
+import 'package:pointify/widgets/alert.dart';
+import 'package:pointify/widgets/snackBars.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 import '../models/bank_transactions.dart';
 import '../models/cashflow_summary.dart';
+import '../screens/finance/components/date_picker.dart';
 import '../services/transactions.dart';
 import '../widgets/loading_dialog.dart';
 
@@ -36,7 +38,8 @@ class CashflowController extends GetxController
   RxBool loadingCashFlowCategories = RxBool(false);
   RxBool loadingBankTransactions = RxBool(false);
   RxBool loadingBankHistory = RxBool(false);
-  var currentDate = DateTime.now().obs;
+  var fromDate = DateTime.now().obs;
+  var toDate = DateTime.now().obs;
   late TabController tabController;
   TextEditingController textEditingControllerBankName = TextEditingController();
   TextEditingController textEditingControllerName = TextEditingController();
@@ -97,7 +100,12 @@ class CashflowController extends GetxController
     }
   }
 
-  createTransaction({required shopId, required context, required type}) async {
+  createTransaction({
+    required shopId,
+    required context,
+    required type,
+    DateTime? date,
+  }) async {
     try {
       LoadingDialog.showLoadingDialog(
           context: context, key: _keyLoader, title: "Confirming");
@@ -106,6 +114,7 @@ class CashflowController extends GetxController
         "bank": selectedBank.value == null ? "" : selectedBank.value!.id,
         "amount": textEditingControllerAmount.text,
         "type": type,
+        "from": date != null ? DateFormat("yyyy-MM-dd").format(date) : "",
         "category": selectedCashFlowCategories.value!.id,
       };
       var response = await Transactions().createTransaction(body: body);
@@ -120,12 +129,16 @@ class CashflowController extends GetxController
         }
         clearInputs();
         getSalesSummary(
-            shopId: shopId,
-            date: DateFormat("yyyy-MM-dd").format(currentDate.value));
+          shopId: shopId,
+          from: DateFormat("yyyy-MM-dd").format(date!),
+          to: DateFormat("yyyy-MM-dd").format(date),
+        );
+      } else {
+        generalAlert(title: "Error", message: response["message"]);
       }
     } catch (e) {
       print(e);
-      Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
+      generalAlert(title: "Error", message: e.toString());
     }
   }
 
@@ -134,40 +147,20 @@ class CashflowController extends GetxController
     textEditingControllerAmount.clear();
   }
 
-  getCashFlowTransactions() {}
-
-  void showDatePicker({required context}) {
-    DatePicker.showDatePicker(context,
-        showTitleActions: true,
-        minTime: DateTime(1990, 5, 5, 20, 50),
-        maxTime: DateTime.now(),
-        theme: DatePickerTheme(
-            itemStyle: TextStyle(color: AppColors.mainColor),
-            cancelStyle: TextStyle(color: AppColors.lightDeepPurple),
-            doneStyle: TextStyle(color: AppColors.mainColor)),
-        onConfirm: (date) {
-      currentDate.value = date;
-      getSalesSummary(
-          shopId: Get.find<ShopController>().currentShop.value!.id,
-          date: DateFormat("yyyy-MM-dd").format(currentDate.value));
-    }, locale: LocaleType.en);
-  }
-
-  void createCategory(type, shopId, context) async {
+  void createCategory(type, shopModel, context) async {
     try {
       Map<String, dynamic> body = {
         "type": type,
         "name": textEditingControllerCategory.text,
-        "shop": shopId,
+        "shop": shopModel.id,
         "admin": Get.find<AuthController>().currentUser.value!.id
       };
       var response = await Transactions().createCategory(body: body);
       if (response["status"] == true) {
         textEditingControllerCategory.clear();
-        getCategory(type, shopId);
+        getCategory(type, shopModel.id);
       } else {
-        showSnackBar(
-            message: response["message"], color: Colors.red, context: context);
+        showSnackBar(message: response["message"], color: Colors.red);
       }
     } catch (e) {
       print(e);
@@ -277,10 +270,11 @@ class CashflowController extends GetxController
     }
   }
 
-  getSalesSummary({required shopId, required date}) async {
+  getSalesSummary({required shopId, required from, required to}) async {
     try {
       loadingCashflowSummry.value = true;
-      var response = await Transactions().getCashFlowSummary(id: shopId, date: date);
+      var response = await Transactions()
+          .getCashFlowSummary(id: shopId, from: from, to: to);
       print(response);
       if (response != null) {
         cashflowSummary.value = CashflowSummary.fromJson(response);
@@ -293,7 +287,6 @@ class CashflowController extends GetxController
       print(e);
     }
   }
-
 
   @override
   void onClose() {

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutterpos/controllers/home_controller.dart';
-import 'package:flutterpos/controllers/shop_controller.dart';
-import 'package:flutterpos/controllers/stock_transfer_controller.dart';
-import 'package:flutterpos/models/product_model.dart';
-import 'package:flutterpos/models/shop_model.dart';
-import 'package:flutterpos/responsive/responsiveness.dart';
-import 'package:flutterpos/screens/stock/stock_transfer.dart';
-import 'package:flutterpos/screens/stock/stock_transfer_submit.dart';
+import 'package:pointify/controllers/home_controller.dart';
+import 'package:pointify/controllers/shop_controller.dart';
+import 'package:pointify/controllers/stock_transfer_controller.dart';
+import 'package:pointify/models/product_model.dart';
+import 'package:pointify/models/shop_model.dart';
+import 'package:pointify/responsive/responsiveness.dart';
+import 'package:pointify/screens/stock/stock_transfer.dart';
+import 'package:pointify/screens/stock/stock_transfer_submit.dart';
 import 'package:get/get.dart';
 
 import '../../controllers/product_controller.dart';
@@ -30,7 +30,6 @@ class ProductSelections extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     productController.getProductsBySort(
-        shopId: "${shopController.currentShop.value?.id}",
         type: productController.selectedSortOrderSearch.value);
     return WillPopScope(
       onWillPop: () async {
@@ -78,9 +77,7 @@ class ProductSelections extends StatelessWidget {
                 // stockTransferController.selectedProducts.length == 0
                 MediaQuery.of(context).size.width > 600
                     ? Obx(() {
-                        return stockTransferController
-                                    .selectedProducts.length ==
-                                0
+                        return stockTransferController.selectedProducts.isEmpty
                             ? Container()
                             : Padding(
                                 padding: const EdgeInsets.only(right: 15.0),
@@ -112,8 +109,8 @@ class ProductSelections extends StatelessWidget {
                       ? Center(
                           child: CircularProgressIndicator(),
                         )
-                      : productController.products.length == 0
-                          ? Center(
+                      : productController.products.isEmpty
+                          ? const Center(
                               child: Text("no products to transfer"),
                             )
                           : Container(
@@ -145,7 +142,8 @@ class ProductSelections extends StatelessWidget {
                                             textAlign: TextAlign.center)),
                                   ],
                                   rows: List.generate(
-                                      productController.products.length, (index) {
+                                      productController.products.length,
+                                      (index) {
                                     ProductModel productBody = productController
                                         .products
                                         .elementAt(index);
@@ -154,12 +152,14 @@ class ProductSelections extends StatelessWidget {
                                     final z = productBody.quantity;
 
                                     return DataRow(cells: [
-                                      DataCell(
-                                          Container(width: 75, child: Text(y!))),
                                       DataCell(Container(
-                                          width: 75, child: Text(x.toString()))),
+                                          width: 75, child: Text(y!))),
                                       DataCell(Container(
-                                          width: 75, child: Text(z.toString()))),
+                                          width: 75,
+                                          child: Text(x.toString()))),
+                                      DataCell(Container(
+                                          width: 75,
+                                          child: Text(z.toString()))),
                                       DataCell(Container(
                                           width: 75,
                                           child: Align(
@@ -167,9 +167,11 @@ class ProductSelections extends StatelessWidget {
                                             child: Checkbox(
                                               value: stockTransferController
                                                           .selectedProducts
-                                                          .indexWhere((element) =>
-                                                              element.id ==
-                                                              productBody.id) !=
+                                                          .indexWhere(
+                                                              (element) =>
+                                                                  element.id ==
+                                                                  productBody
+                                                                      .id) !=
                                                       -1
                                                   ? true
                                                   : false,
@@ -181,8 +183,7 @@ class ProductSelections extends StatelessWidget {
                                                   showSnackBar(
                                                       message:
                                                           "You cannot transfer product that is outof stock",
-                                                      color: Colors.red,
-                                                      context: context);
+                                                      color: Colors.red);
                                                 }
                                               },
                                             ),
@@ -192,83 +193,6 @@ class ProductSelections extends StatelessWidget {
                                 ),
                               ),
                             );
-
-                  GridView.builder(
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          childAspectRatio: MediaQuery.of(context).size.width *
-                              1.4 /
-                              MediaQuery.of(context).size.height,
-                          crossAxisCount: 3,
-                          crossAxisSpacing: 10,
-                          mainAxisSpacing: 10),
-                      itemCount: productController.products.length,
-                      // physics: NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemBuilder: (context, index) {
-                        ProductModel productBody =
-                            productController.products.elementAt(index);
-                        return InkWell(
-                          onTap: () {
-                            if (productBody.quantity! > 0) {
-                              stockTransferController.addToList(productBody);
-                            } else {
-                              showSnackBar(
-                                  message:
-                                      "You cannot transfer product that is outof stock",
-                                  color: Colors.red,
-                                  context: context);
-                            }
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.all(4.0),
-                            child: Card(
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10)),
-                              elevation: 4,
-                              child: Container(
-                                padding: EdgeInsets.all(10),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        majorTitle(
-                                            title: "${productBody.name}",
-                                            color: Colors.black,
-                                            size: 16.0),
-                                        SizedBox(height: 10),
-                                        minorTitle(
-                                            title:
-                                                "Category: ${productBody.category!.name}",
-                                            color: Colors.grey),
-                                        SizedBox(height: 10),
-                                        Text(
-                                            "Qty Available: ${productBody.quantity}",
-                                            style: TextStyle(
-                                                color: Colors.grey, fontSize: 16))
-                                      ],
-                                    ),
-                                    Checkbox(
-                                        value: stockTransferController
-                                                    .selectedProducts
-                                                    .indexWhere((element) =>
-                                                        element.id ==
-                                                        productBody.id) !=
-                                                -1
-                                            ? true
-                                            : false,
-                                        onChanged: (value) {})
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        );
-                      });
                 }),
               ),
             ),
@@ -283,7 +207,6 @@ class ProductSelections extends StatelessWidget {
                       )
                     : ListView.builder(
                         itemCount: productController.products.length,
-                        // physics: NeverScrollableScrollPhysics(),
                         shrinkWrap: true,
                         itemBuilder: (context, index) {
                           ProductModel productBody =
@@ -296,8 +219,7 @@ class ProductSelections extends StatelessWidget {
                                 showSnackBar(
                                     message:
                                         "You cannot transfer product that is outof stock",
-                                    color: Colors.red,
-                                    context: context);
+                                    color: Colors.red);
                               }
                             },
                             child: Padding(
@@ -307,7 +229,7 @@ class ProductSelections extends StatelessWidget {
                                     borderRadius: BorderRadius.circular(10)),
                                 elevation: 4,
                                 child: Container(
-                                  padding: EdgeInsets.all(10),
+                                  padding: const EdgeInsets.all(10),
                                   child: Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
@@ -328,7 +250,7 @@ class ProductSelections extends StatelessWidget {
                                           SizedBox(height: 10),
                                           Text(
                                               "Qty Available: ${productBody.quantity}",
-                                              style: TextStyle(
+                                              style: const TextStyle(
                                                   color: Colors.grey,
                                                   fontSize: 16))
                                         ],
@@ -361,7 +283,7 @@ class ProductSelections extends StatelessWidget {
                     )
                   : Container(
                       width: double.infinity,
-                      padding: EdgeInsets.all(10),
+                      padding: const EdgeInsets.all(10),
                       height: kToolbarHeight * 1.5,
                       decoration: BoxDecoration(
                           border: Border.all(width: 1, color: Colors.grey)),
@@ -370,7 +292,7 @@ class ProductSelections extends StatelessWidget {
                         onTap: () {
                           Get.to(() => StockSubmit(
                                 to: shopModel.id,
-                            shopModel: shopModel,
+                                shopModel: shopModel,
                               ));
                         },
                         child: Container(

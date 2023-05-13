@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutterpos/models/customer_model.dart';
-import 'package:flutterpos/models/sales_model.dart';
-import 'package:flutterpos/models/sales_order_item_model.dart';
-import 'package:flutterpos/services/customer.dart';
+import 'package:pointify/controllers/AuthController.dart';
+import 'package:pointify/models/customer_model.dart';
+import 'package:pointify/models/receipt.dart';
+import 'package:pointify/models/sales_return.dart';
+import 'package:pointify/services/customer.dart';
 import 'package:get/get.dart';
+import 'package:pointify/services/sales.dart';
+import 'package:pointify/widgets/alert.dart';
 
 import '../models/product_model.dart';
 import '../screens/customers/customers_page.dart';
@@ -23,14 +26,17 @@ class CustomerController extends GetxController
   TextEditingController emailController = TextEditingController();
   TextEditingController genderController = TextEditingController();
   TextEditingController addressController = TextEditingController();
+  TextEditingController amountpaid = TextEditingController();
   TextEditingController amountController = TextEditingController();
   RxBool creatingCustomerLoad = RxBool(false);
   RxBool gettingCustomersLoad = RxBool(false);
+  RxBool loadingcustomerReturns = RxBool(false);
   RxBool gettingCustomer = RxBool(false);
   RxBool customerPurchaseLoad = RxBool(false);
   RxList<CustomerModel> customers = RxList([]);
-  RxList<SaleOrderItemModel> customerPurchases = RxList([]);
+  RxList<SalesModel> customerSales = RxList([]);
   Rxn<CustomerModel> customer = Rxn(null);
+  RxList<SalesReturn> customerReturns = RxList([]);
 
   RxString activeItem = RxString("All");
   RxString customerActiveItem = RxString("Credit");
@@ -47,7 +53,7 @@ class CustomerController extends GetxController
     ])),
     Tab(
         child: Text(
-      "Purchase",
+      "Sales",
       style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
     )),
     Tab(
@@ -74,8 +80,7 @@ class CustomerController extends GetxController
         clearTexts();
         if (MediaQuery.of(context).size.width > 600) {
           if (page == "customersPage") {
-            Get.find<HomeController>().selectedWidget.value =
-                CustomersPage(type: "customers");
+            Get.find<HomeController>().selectedWidget.value = CustomersPage();
           }
           if (page == "createSale") {
             Get.find<HomeController>().selectedWidget.value = CreateSale();
@@ -94,8 +99,7 @@ class CustomerController extends GetxController
         }
         await getCustomersInShop(shopId, "all");
       } else {
-        showSnackBar(
-            message: response["message"], color: Colors.red, context: context);
+        showSnackBar(message: response["message"], color: Colors.red);
       }
       creatingCustomerLoad.value = false;
     } catch (e) {
@@ -183,10 +187,7 @@ class CustomerController extends GetxController
         customers[index] = customer.value!;
         customers.refresh();
       } else {
-        showSnackBar(
-            message: response["message"],
-            color: AppColors.mainColor,
-            context: context);
+        showSnackBar(message: response["message"], color: AppColors.mainColor);
       }
     } catch (e) {
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
@@ -202,18 +203,14 @@ class CustomerController extends GetxController
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
       if (response["status"] == true) {
         if (MediaQuery.of(context).size.width > 600) {
-          Get.find<HomeController>().selectedWidget.value =
-              CustomersPage(type: "customers");
+          Get.find<HomeController>().selectedWidget.value = CustomersPage();
         } else {
           Get.back();
         }
         clearTexts();
         await getCustomersInShop(shopId, "all");
       } else {
-        showSnackBar(
-            message: response["message"],
-            color: AppColors.mainColor,
-            context: context);
+        generalAlert(message: response["message"], title: "Error");
       }
     } catch (e) {
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
@@ -222,23 +219,23 @@ class CustomerController extends GetxController
 
   getCustomerPurchases(
       {required uid,
-      required type,
       required operation,
       required attendantId,
-      String ?customer,
-      String ?returned}) async {
+      String? customer,
+      String? returned}) async {
     try {
-      customerPurchases.clear();
+      customerSales.clear();
       customerPurchaseLoad.value = true;
-      var response = await Customer().getPurchases(uid: uid, type: type, operation: operation, attendantId: attendantId);
+      var response =
+          await Sales().getSales(onCredit: "", customer: customer, date: "");
       if (response["status"] == true) {
-        customerPurchases.clear();
+        customerSales.clear();
         List fetchedProducts = response["body"];
-        List<SaleOrderItemModel> listProducts =
-            fetchedProducts.map((e) => SaleOrderItemModel.fromJson(e)).toList();
-        customerPurchases.assignAll(listProducts);
+        List<SalesModel> listProducts =
+            fetchedProducts.map((e) => SalesModel.fromJson(e)).toList();
+        customerSales.assignAll(listProducts);
       } else {
-        customerPurchases.value = [];
+        customerSales.value = [];
       }
 
       customerPurchaseLoad.value = false;
@@ -247,5 +244,24 @@ class CustomerController extends GetxController
     }
   }
 
-
+  getCustomerReturns({String? uid, String? productId}) async {
+    try {
+      loadingcustomerReturns.value = true;
+      customerReturns.clear();
+      var response = await Customer().getReturns(
+          uid: uid!,
+          attendantId: Get.find<AuthController>().currentUser.value!.id!);
+      if (response != null) {
+        List fetchedProducts = response["body"];
+        List<SalesReturn> singleProduct =
+            fetchedProducts.map((e) => SalesReturn.fromJson(e)).toList();
+        customerReturns.assignAll(singleProduct);
+      } else {
+        customerReturns.value = [];
+      }
+      loadingcustomerReturns.value = false;
+    } catch (e) {
+      loadingcustomerReturns.value = false;
+    }
+  }
 }

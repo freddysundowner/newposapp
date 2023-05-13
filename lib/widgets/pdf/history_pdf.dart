@@ -1,6 +1,8 @@
 import 'dart:io';
 
-import 'package:flutterpos/models/bank_transactions.dart';
+import 'package:get/get.dart';
+import 'package:pointify/controllers/shop_controller.dart';
+import 'package:pointify/models/bank_transactions.dart';
 import 'package:intl/intl.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
@@ -12,15 +14,15 @@ HistoryPdf(
     required final name,
     required List<BankTransactions> sales}) async {
   int sum = 0;
-  sales.forEach((element) {
+  for (var element in sales) {
     sum += element.amount!;
-  });
+  }
   final pdf = pw.Document();
   pdf.addPage(
     pw.Page(
         build: (context) {
           return pw.Container(
-            padding: pw.EdgeInsets.all(10),
+            padding: const pw.EdgeInsets.all(10),
             child: pw.Column(
               crossAxisAlignment: pw.CrossAxisAlignment.start,
               children: [
@@ -33,7 +35,7 @@ HistoryPdf(
                 pw.SizedBox(height: 10),
                 pw.Center(
                   child: pw.Text(
-                    "${name} History",
+                    "$name History",
                     style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
                   ),
                 ),
@@ -45,7 +47,7 @@ HistoryPdf(
                         headers: ["Amount", "Date"],
                         data: sales
                             .map((e) => [
-                                  e.amount,
+                                  "${Get.find<ShopController>().currentShop.value?.currency} ${e.amount}",
                                   DateFormat("dd/MM/yyyy").format(e.createdAt!)
                                 ])
                             .toList())),
@@ -58,13 +60,13 @@ HistoryPdf(
                           mainAxisAlignment: pw.MainAxisAlignment.end,
                           children: [
                             pw.Text(
-                              "Totals ${sum}",
+                              "Totals ${Get.find<ShopController>().currentShop.value?.currency} ${sum}",
                               style: pw.TextStyle(
                                   fontWeight: pw.FontWeight.bold, fontSize: 16),
                             ),
                             pw.Divider(
                                 thickness: 1,
-                                color: PdfColor.fromInt(0xFF000000))
+                                color: const PdfColor.fromInt(0xFF000000))
                           ])),
                 ),
                 pw.SizedBox(height: 10),

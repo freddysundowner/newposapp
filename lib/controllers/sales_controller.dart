@@ -1,19 +1,20 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterpos/controllers/AuthController.dart';
-import 'package:flutterpos/controllers/home_controller.dart';
-import 'package:flutterpos/controllers/shop_controller.dart';
-import 'package:flutterpos/models/customer_model.dart';
-import 'package:flutterpos/models/payment_history.dart';
-import 'package:flutterpos/models/product_model.dart';
-import 'package:flutterpos/models/sales_model.dart';
-import 'package:flutterpos/models/sales_order_item_model.dart';
-import 'package:flutterpos/screens/cash_flow/wallet_page.dart';
-import 'package:flutterpos/screens/home/home_page.dart';
-import 'package:flutterpos/screens/sales/all_sales_page.dart';
+import 'package:pointify/controllers/AuthController.dart';
+import 'package:pointify/controllers/home_controller.dart';
+import 'package:pointify/controllers/shop_controller.dart';
+import 'package:pointify/models/customer_model.dart';
+import 'package:pointify/models/payment_history.dart';
+import 'package:pointify/models/product_model.dart';
+import 'package:pointify/models/receipt.dart';
+import 'package:pointify/screens/cash_flow/wallet_page.dart';
+import 'package:pointify/screens/home/home_page.dart';
+import 'package:pointify/screens/sales/all_sales_page.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
+import '../models/invoice_items.dart';
+import '../models/receipt_item.dart';
 import '../models/sales_summary.dart';
 import '../services/sales.dart';
 import '../services/transactions.dart';
@@ -30,12 +31,17 @@ class SalesController extends GetxController
   TextEditingController textEditingSellingPrice = TextEditingController();
   TextEditingController textEditingReturnProduct = TextEditingController();
   TextEditingController textEditingCredit = TextEditingController();
-  RxList<ProductModel> selectedList = RxList([]);
-  RxList<SalesModel> sales = RxList([]);
+  RxList<SalesModel> allSales = RxList([]);
+  RxnInt allSalesTotal = RxnInt(0);
+  RxnInt totalSalesReturned = RxnInt(0);
+  RxList<SalesModel> salesReturned = RxList([]);
+  RxList<SalesModel> todaySales = RxList([]);
+  RxList<SalesModel> creditSales = RxList([]);
   RxList<PayHistory> paymenHistory = RxList([]);
   Rxn<SalesSummary> profitModel = Rxn(null);
 
   RxInt grandTotal = RxInt(0);
+  RxInt changeTotal = RxInt(0);
   RxInt balance = RxInt(0);
   RxInt totalSalesByDate = RxInt(0);
   RxInt salesInitialIndex = RxInt(0);
@@ -46,11 +52,13 @@ class SalesController extends GetxController
 
   RxBool salesOrderItemLoad = RxBool(false);
   RxBool salesOnCreditLoad = RxBool(false);
-  RxBool salesByShopLoad = RxBool(false);
+  RxBool loadingSales = RxBool(false);
   RxString selectedPaymentMethod = RxString("Cash");
+  RxList paymentMethods = RxList(["Cash", "Credit", "Wallet"]);
   Rxn<CustomerModel> selectedCustomer = Rxn(null);
+  RxList<ReceiptItem> saleItem = RxList([]);
 
-  RxList<SaleOrderItemModel> salesHistory = RxList([]);
+  RxList<InvoiceItem> salesHistory = RxList([]);
 
   var dueDate = new DateFormat('MMMM/dd/yyyy hh:mm a')
       .parse(new DateFormat('MMMM/dd/yyyy hh:mm a').format(DateTime.now()))
@@ -59,79 +67,72 @@ class SalesController extends GetxController
 
   RxString activeItem = RxString("All Sales");
 
-  changeSelectedList(value) {
-    var index = selectedList.indexWhere((element) => element.id == value.id);
+  changesaleItem(ReceiptItem value) {
+    var index = saleItem
+        .indexWhere((element) => element.product!.id == value.product!.id);
     if (index == -1) {
-      selectedList.add(value);
-      index = selectedList.indexWhere((element) => element.id == value.id);
+      saleItem.add(value);
+      index = saleItem
+          .indexWhere((element) => element.product!.id == value.product!.id);
     } else {
-      if (selectedList[index].cartquantity! >=
-          selectedList[index].cartquantity! + 1) {
-        var data =
-            int.parse(selectedList[index].cartquantity.toString()) + 1; // +=1;
-        selectedList[index].cartquantity = data;
+      if (saleItem[index].quantity! >= saleItem[index].quantity! + 1) {
+        var data = int.parse(saleItem[index].quantity.toString()) + 1;
+        saleItem[index].quantity = data;
       }
     }
     calculateAmount(index);
 
-    selectedList.refresh();
-    selectedList.reversed;
+    saleItem.refresh();
+    saleItem.reversed;
   }
 
   decrementItem(index) {
-    if (selectedList[index].cartquantity! > 1) {
-      selectedList[index].cartquantity = selectedList[index].cartquantity! - 1;
-      selectedList.refresh();
+    if (saleItem[index].quantity! > 1) {
+      saleItem[index].quantity = saleItem[index].quantity! - 1;
+      saleItem.refresh();
     }
     calculateAmount(index);
   }
 
   incrementItem(index) {
-    if (selectedList[index].quantity! > selectedList[index].cartquantity!) {
-      selectedList[index].cartquantity = selectedList[index].cartquantity! + 1;
-      selectedList.refresh();
-    }
+    saleItem[index].quantity = saleItem[index].quantity! + 1;
     calculateAmount(index);
   }
 
   removeFromList(index) {
-    selectedList.removeAt(index);
-    selectedList.refresh();
+    saleItem.removeAt(index);
+    saleItem.refresh();
     calculateAmount(index);
   }
 
   calculateAmount(index) {
     grandTotal.value = 0;
-    if (selectedList.isNotEmpty) {
-      selectedList[index].amount =
-          (selectedList[index].cartquantity! * selectedList[index].selling!) -
-              selectedList[index].allowedDiscount!;
+    if (saleItem.isNotEmpty) {
+      saleItem[index].price =
+          saleItem[index].price! - saleItem[index].discount!;
+      saleItem[index].total =
+          saleItem[index].quantity! * saleItem[index].price!;
     }
-    if (selectedList.isNotEmpty) {
-      selectedList.forEach((element) {
-        grandTotal.value =
-            grandTotal.value + int.parse(element.amount.toString());
-      });
+    if (saleItem.isNotEmpty) {
+      for (var element in saleItem) {
+        grandTotal.value += element.total!;
+      }
     }
 
     grandTotal.refresh();
-    selectedList.refresh();
+    saleItem.refresh();
   }
 
-  saveSale(
-      {required attendantsUID,
-      required shopUID,
-      required context,
-      required screen}) {
+  saveSale({screen, required attendantsUID, required context}) {
     String size = MediaQuery.of(context).size.width > 600 ? "large" : "small";
     if (selectedPaymentMethod.value == "Credit") {
       if (selectedCustomer.value == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("please select customer to sell to")));
+            const SnackBar(content: Text("please select customer to sell to")));
       } else {
         showSaleDatePicker(
             context: context,
-            shopId: shopUID,
+            shopId: Get.find<ShopController>().currentShop.value?.id,
             size: size,
             attendantsId: attendantsUID,
             screen: screen);
@@ -140,8 +141,7 @@ class SalesController extends GetxController
         selectedCustomer.value == null) {
       showSnackBar(
           message: "please select customer to sell to",
-          color: Colors.redAccent,
-          context: context);
+          color: Colors.redAccent);
     } else if (selectedPaymentMethod.value == "Wallet" &&
         selectedCustomer.value != null &&
         selectedCustomer.value!.walletBalance! < grandTotal.value) {
@@ -149,9 +149,9 @@ class SalesController extends GetxController
           context: context,
           builder: (_) {
             return AlertDialog(
-              title: Text("Deposit For customer"),
-              content:
-                  Text("Wallet  balance insufficient!! deposit for customer"),
+              title: const Text("Deposit For customer"),
+              content: const Text(
+                  "Wallet  balance insufficient!! deposit for customer"),
               actions: [
                 TextButton(
                     onPressed: () {
@@ -185,9 +185,9 @@ class SalesController extends GetxController
             );
           });
     } else {
+      Navigator.pop(context);
       saveSaleData(
           attendantId: attendantsUID,
-          shopId: shopUID,
           type: "noncredit",
           size: size,
           context: context,
@@ -197,7 +197,6 @@ class SalesController extends GetxController
 
   saveSaleData(
       {required attendantId,
-      required shopId,
       required type,
       required context,
       required size,
@@ -205,47 +204,43 @@ class SalesController extends GetxController
     try {
       LoadingDialog.showLoadingDialog(
           context: context, title: "Creating Sale", key: _keyLoader);
-
-      var totaldiscount = 0;
-      selectedList.forEach((element) {
-        totaldiscount += int.parse(element.allowedDiscount.toString());
-      });
-      var sale = {
-        "quantity": selectedList.length,
-        "total": grandTotal.value + totaldiscount,
+      var creditTotal = 0;
+      if (selectedPaymentMethod.value == "Credit" ||
+          selectedPaymentMethod.value == "Wallet") {
+        creditTotal = changeTotal.value.abs();
+      }
+      var receipt = {
         "attendantId": attendantId,
         "paymentMethod": selectedPaymentMethod.value,
-        "totaldiscount": totaldiscount,
-        "shop": shopId,
-        "creditTotal": balance.value,
+        "shop": Get.find<ShopController>().currentShop.value?.id,
+        "creditTotal": creditTotal,
+        "total": grandTotal.value,
         if (selectedCustomer.value != null)
           "customerId": selectedCustomer.value!.id,
         "duedate": type == "noncredit" ? "" : dueDate.value
       };
+      print(receipt);
+      var receiptitems =
+          saleItem.map((element) => element.toJson(element)).toList();
+      var sale = {
+        "sale": receipt,
+        "receiptitems": receiptitems,
+      };
       print(sale);
-      var products = selectedList.map((element) => element).toList();
-      var response = await Sales().createSales({
-        "sale": sale,
-        "products": products,
-        "date": DateFormat("yyyy-MM-dd").format(DateTime.now()),
-      });
+
+      var response = await Sales().createSales(sale);
       print(response);
 
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
       if (response["status"] == true) {
-        selectedList.value = [];
+        saleItem.value = [];
         grandTotal.value = 0;
         balance.value = 0;
         textEditingCredit.text = "0";
         selectedPaymentMethod.value == "Cash";
-        getSalesByShop(
-            id: Get.find<ShopController>().currentShop.value?.id,
-            attendantId: Get.find<AuthController>().usertype == "admin"
-                ? ""
-                : Get.find<AttendantController>().attendant.value!.id,
-            onCredit: "",
-            startingDate: "${DateFormat("yyyy-MM-dd").format(DateTime.now())}");
 
+        Get.find<AuthController>()
+            .init(Get.find<AuthController>().usertype.value);
         if (size == "large") {
           if (screen == "allSales") {
             Get.find<HomeController>().selectedWidget.value =
@@ -259,8 +254,7 @@ class SalesController extends GetxController
           Get.back();
         }
       } else {
-        showSnackBar(
-            message: response["message"], color: Colors.red, context: context);
+        showSnackBar(message: response["message"], color: Colors.red);
       }
     } catch (e) {}
   }
@@ -322,14 +316,13 @@ class SalesController extends GetxController
                             saveSaleData(
                                 type: "credit",
                                 attendantId: attendantsId,
-                                shopId: shopId,
                                 size: size,
                                 context: context,
                                 screen: screen);
                           },
                           child: Text(
                             "Ok".toUpperCase(),
-                            style: TextStyle(
+                            style: const TextStyle(
                                 color: Colors.purple,
                                 fontWeight: FontWeight.bold),
                           ),
@@ -346,7 +339,7 @@ class SalesController extends GetxController
         context: context,
         builder: (_) {
           return AlertDialog(
-            title: Text(
+            title: const Text(
               "Wallet Amount is insufficient",
               style: TextStyle(
                 color: Colors.black,
@@ -387,13 +380,11 @@ class SalesController extends GetxController
   getSalesBySaleId({String? uid, String? productId}) async {
     try {
       salesOrderItemLoad.value = true;
-      salesHistory.clear();
-      var response = await Sales().getSalesBySaleId(
-          uid == null ? "" : uid, productId == null ? "" : productId);
+      var response = await Sales().getSalesBySaleId(uid ?? "", productId ?? "");
       if (response != null) {
         List fetchedProducts = response["body"];
-        List<SaleOrderItemModel> singleProduct =
-            fetchedProducts.map((e) => SaleOrderItemModel.fromJson(e)).toList();
+        List<InvoiceItem> singleProduct =
+            fetchedProducts.map((e) => InvoiceItem.fromJson(e)).toList();
         salesHistory.assignAll(singleProduct);
       } else {
         salesHistory.value = [];
@@ -404,33 +395,42 @@ class SalesController extends GetxController
     }
   }
 
-  getSalesByShop(
-      {required id,
-      String? attendantId,
-      required onCredit,
-      String? startingDate,
-      String? customer}) async {
+  getSales(
+      {onCredit = false,
+      String? startingDate = "",
+      String? customer = "",
+      String total = ""}) async {
     try {
-      salesByShopLoad.value = true;
-      var response = await Sales().getShopSales(
-          shopId: id,
-          attendantId: attendantId,
+      loadingSales.value = true;
+      var response = await Sales().getSales(
           onCredit: onCredit,
           date: startingDate,
-          customer: customer ?? "");
+          customer: customer ?? "",
+          total: total);
       if (response["status"] == true) {
         List data = response["body"];
-
         List<SalesModel> saleData =
             data.map((e) => SalesModel.fromJson(e)).toList();
-        sales.assignAll(saleData);
+
+        if (onCredit == true) {
+          creditSales.value = saleData;
+        }
+        if (startingDate!.isNotEmpty) {
+          todaySales.value = saleData;
+        } else {
+          if (total.isNotEmpty) {
+            allSalesTotal.value = response["totalSales"];
+            totalSalesReturned.value = response["totalSalesReturned"];
+          }
+          allSales.assignAll(saleData);
+        }
       } else {
-        sales.value = [];
+        allSales.value = [];
       }
-      salesByShopLoad.value = false;
+      loadingSales.value = false;
     } catch (e) {
-      sales.clear();
-      salesByShopLoad.value = false;
+      allSales.clear();
+      loadingSales.value = false;
     }
   }
 
@@ -453,15 +453,14 @@ class SalesController extends GetxController
     super.onInit();
   }
 
-  void returnSale(id, salesId, context) async {
+  void returnSale(InvoiceItem sale, int quatity) async {
     try {
       salesOrderItemLoad.value = true;
-      var response = await Sales().retunSale(id);
+      var response = await Sales().retunSale(sale.id, quatity);
       if (response["status"] != false) {
-        getSalesBySaleId(uid: salesId);
+        getSalesBySaleId(uid: sale.sale!.id);
       } else {
-        showSnackBar(
-            message: response["message"], color: Colors.red, context: context);
+        showSnackBar(message: response["message"], color: Colors.red);
       }
       salesOrderItemLoad.value = false;
     } catch (e) {
@@ -471,18 +470,9 @@ class SalesController extends GetxController
 
   totalSales() {
     var subTotal = 0;
-    sales.forEach((element) {
+    for (var element in allSales) {
       subTotal = subTotal + element.grandTotal!;
-    });
-    return subTotal;
-  }
-
-  calculateSalesAmount() {
-    var subTotal = 0;
-    selectedList.forEach((element) {
-      subTotal = subTotal +
-          (int.parse(element.sellingPrice![0]) * element.cartquantity!);
-    });
+    }
     return subTotal;
   }
 
@@ -497,10 +487,8 @@ class SalesController extends GetxController
           await Sales().createPayment(body: body, saleId: salesBody.id);
       if (response["status"] = true) {
         Get.find<CustomerController>().amountController.clear();
-        var index = sales.indexWhere((element) => element.id == salesBody.id);
-        sales[index].creditTotal =
-            sales[index].creditTotal! - int.parse(amount);
-        sales.refresh();
+        salesBody.creditTotal! - int.parse(amount);
+        salesHistory.refresh();
       }
     } catch (e) {
       print(e);
@@ -528,7 +516,10 @@ class SalesController extends GetxController
 
   void getSalesByDate(shopId, startDate, endDate) async {
     var response = await Sales().getSalesByDate(shopId, startDate, endDate);
-    totalSalesByDate.value = response["totalSales"];
+    totalSalesByDate.value = 0;
+    if (response.length > 0) {
+      totalSalesByDate.value = response[0]["totalSales"];
+    }
     totalSalesByDate.refresh();
     return response;
   }

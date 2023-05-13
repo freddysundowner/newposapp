@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 
 import '../models/productTransfer.dart';
 import '../models/product_history_model.dart';
-import '../models/product_sales_history.dart';
+import '../models/receipt_item.dart';
 import '../services/product.dart';
 
 class ProductHistoryController extends GetxController
@@ -13,7 +13,7 @@ class ProductHistoryController extends GetxController
   RxBool loadingSalesHistory = RxBool(false);
   RxList<ProductHistoryModel> product = RxList([]);
   RxList<ProductTransferHistories> productTransferHistories = RxList([]);
-  RxList<ProductSaleHistory> salesHistory = RxList([]);
+  RxList<ReceiptItem> receiptItems = RxList([]);
 
   getProductHistory(
       {required productId,
@@ -25,7 +25,9 @@ class ProductHistoryController extends GetxController
           productId: productId, type: type, stockId: stockId);
       if (response["status"] == true) {
         List fetchedHistory = response["body"];
-        List<ProductTransferHistories> fetchedProductHistory = fetchedHistory.map((e) => ProductTransferHistories.fromJson(e)).toList();
+        List<ProductTransferHistories> fetchedProductHistory = fetchedHistory
+            .map((e) => ProductTransferHistories.fromJson(e))
+            .toList();
         productTransferHistories.assignAll(fetchedProductHistory);
       } else {
         product.value = [];
@@ -44,11 +46,11 @@ class ProductHistoryController extends GetxController
 
       if (response != null) {
         List fetchedHistory = response["body"];
-        List<ProductSaleHistory> fetchedProductHistorys =
-            fetchedHistory.map((e) => ProductSaleHistory.fromJson(e)).toList();
-        salesHistory.assignAll(fetchedProductHistorys);
+        List<ReceiptItem> fetchedProductHistorys =
+            fetchedHistory.map((e) => ReceiptItem.fromJson(e)).toList();
+        receiptItems.assignAll(fetchedProductHistorys);
       } else {
-        salesHistory.value = [];
+        receiptItems.value = [];
       }
       loadingSalesHistory.value = false;
     } catch (e) {

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutterpos/controllers/AuthController.dart';
-import 'package:flutterpos/controllers/home_controller.dart';
-import 'package:flutterpos/controllers/shop_controller.dart';
-import 'package:flutterpos/responsive/responsiveness.dart';
-import 'package:flutterpos/screens/customers/components/customer_table.dart';
-import 'package:flutterpos/screens/customers/create_customers.dart';
-import 'package:flutterpos/screens/home/home_page.dart';
-import 'package:flutterpos/widgets/no_items_found.dart';
+import 'package:pointify/controllers/AuthController.dart';
+import 'package:pointify/controllers/home_controller.dart';
+import 'package:pointify/controllers/shop_controller.dart';
+import 'package:pointify/responsive/responsiveness.dart';
+import 'package:pointify/screens/customers/components/customer_table.dart';
+import 'package:pointify/screens/customers/create_customers.dart';
+import 'package:pointify/screens/home/home_page.dart';
+import 'package:pointify/widgets/no_items_found.dart';
 import 'package:get/get.dart';
 
 import '../../controllers/CustomerController.dart';
@@ -18,16 +18,9 @@ import '../../widgets/customer_card.dart';
 import '../../widgets/smalltext.dart';
 
 class CustomersPage extends StatelessWidget {
-  final type;
-
-  CustomersPage({Key? key, required this.type}) : super(key: key) {
-    if (type == "supplier") {
-      supplierController.getSuppliersInShop(
-          shopController.currentShop.value?.id, "all");
-    } else {
-      customersController.getCustomersInShop(
-          shopController.currentShop.value?.id, "all");
-    }
+  CustomersPage({Key? key}) : super(key: key) {
+    customersController.getCustomersInShop(
+        shopController.currentShop.value?.id, "all");
   }
 
   ShopController createShopController = Get.find<ShopController>();
@@ -52,7 +45,7 @@ class CustomersPage extends StatelessWidget {
           titleSpacing: 0.0,
           elevation: 0.3,
           centerTitle: false,
-          leading: Get.find<AuthController>().usertype == "attendant" &&
+          leading: Get.find<AuthController>().usertype.value == "attendant" &&
                   MediaQuery.of(context).size.width > 600
               ? Container()
               : IconButton(
@@ -72,7 +65,7 @@ class CustomersPage extends StatelessWidget {
           title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              majorTitle(title: type, color: Colors.black, size: 16.0),
+              majorTitle(title: "Customer", color: Colors.black, size: 16.0),
               minorTitle(
                   title: "${createShopController.currentShop.value?.name}",
                   color: Colors.grey)
@@ -85,12 +78,10 @@ class CustomersPage extends StatelessWidget {
                   Get.find<HomeController>().selectedWidget.value =
                       CreateCustomer(
                     page: "customersPage",
-                    type: type,
                   );
                 } else {
                   Get.to(() => CreateCustomer(
                         page: "customersPage",
-                        type: type,
                       ));
                 }
               },
@@ -104,7 +95,7 @@ class CustomersPage extends StatelessWidget {
                       border: Border.all(color: AppColors.mainColor, width: 1)),
                   child: Center(
                     child: majorTitle(
-                        title: "Add ${type}",
+                        title: "Add Customer",
                         color: AppColors.mainColor,
                         size: 12.0),
                   ),
@@ -117,15 +108,9 @@ class CustomersPage extends StatelessWidget {
             labelColor: AppColors.mainColor,
             unselectedLabelColor: Colors.grey,
             onTap: (value) {
-              if (type == "supplier") {
-                supplierController.getSuppliersInShop(
-                    shopController.currentShop.value?.id,
-                    value == 0 ? "all" : "debtors");
-              } else {
-                customersController.getCustomersInShop(
-                    shopController.currentShop.value?.id,
-                    value == 0 ? "all" : "debtors");
-              }
+              customersController.getCustomersInShop(
+                  shopController.currentShop.value?.id,
+                  value == 0 ? "all" : "debtors");
             },
             tabs: [
               Tab(text: "All"),
@@ -135,12 +120,7 @@ class CustomersPage extends StatelessWidget {
         ),
         body: TabBarView(
           physics: const NeverScrollableScrollPhysics(),
-          children: [
-            Customers(
-              type: type,
-            ),
-            Customers(type: type)
-          ],
+          children: [Customers(), Customers()],
         ),
       ),
     );
@@ -148,9 +128,7 @@ class CustomersPage extends StatelessWidget {
 }
 
 class Customers extends StatelessWidget {
-  final type;
-
-  Customers({Key? key, required this.type}) : super(key: key);
+  Customers({Key? key}) : super(key: key);
   CustomerController customersController = Get.find<CustomerController>();
   ShopController shopController = Get.find<ShopController>();
   SupplierController supplierController = Get.find<SupplierController>();
@@ -162,55 +140,26 @@ class Customers extends StatelessWidget {
       body: Padding(
         padding: EdgeInsets.only(top: 5),
         child: Obx(() {
-          return type == "supplier"
-              ? supplierController.getsupplierLoad.value
-                  ? Center(
-                      child: CircularProgressIndicator(),
-                    )
-                  : supplierController.suppliers.length == 0
+          return customersController.gettingCustomersLoad.value
+              ? const Center(
+                  child: CircularProgressIndicator(),
+                )
+              : MediaQuery.of(context).size.width > 600
+                  ? customersController.customers.isEmpty
                       ? noItemsFound(context, true)
-                      : MediaQuery.of(context).size.width > 600
-                          ? supplierController.suppliers.length == 0
-                              ? noItemsFound(context, true)
-                              : customerTable(
-                                  customers: supplierController.suppliers,
-                                  context: context,
-                                  type: type)
-                          : ListView.builder(
-                              itemCount: supplierController.suppliers.length,
-                              itemBuilder: (context, index) {
-                                CustomerModel customerModel = supplierController
-                                    .suppliers
-                                    .elementAt(index);
-                                return customerWidget(
-                                    customerModel: customerModel,
-                                    type: type,
-                                    context: context);
-                              })
-              : customersController.gettingCustomersLoad.value
-                  ? Center(
-                      child: CircularProgressIndicator(),
-                    )
-                  : MediaQuery.of(context).size.width > 600
-                      ? customersController.customers.length == 0
-                          ? noItemsFound(context, true)
-                          : customerTable(
-                              customers: customersController.customers,
-                              context: context,
-                              type: type)
-                      : customersController.customers.length == 0
-                          ? noItemsFound(context, true)
-                          : ListView.builder(
-                              itemCount: customersController.customers.length,
-                              itemBuilder: (context, index) {
-                                CustomerModel customerModel =
-                                    customersController.customers
-                                        .elementAt(index);
-                                return customerWidget(
-                                    customerModel: customerModel,
-                                    type: type,
-                                    context: context);
-                              });
+                      : customerTable(
+                          customers: customersController.customers,
+                          context: context)
+                  : customersController.customers.isEmpty
+                      ? noItemsFound(context, true)
+                      : ListView.builder(
+                          itemCount: customersController.customers.length,
+                          itemBuilder: (context, index) {
+                            CustomerModel customerModel =
+                                customersController.customers.elementAt(index);
+                            return customerWidget(
+                                customerModel: customerModel, context: context);
+                          });
         }),
       ),
     );

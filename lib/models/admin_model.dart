@@ -1,4 +1,4 @@
-import 'package:flutterpos/models/shop_model.dart';
+import 'package:pointify/models/shop_model.dart';
 
 class AdminModel {
   AdminModel({
@@ -26,5 +26,4 @@ class AdminModel {
             json["shops"].map((x) => ShopModel.fromJson(x))),
         phonenumber: json["phonenumber"],
       );
-
 }

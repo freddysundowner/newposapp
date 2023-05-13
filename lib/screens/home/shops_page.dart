@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutterpos/controllers/AuthController.dart';
-import 'package:flutterpos/controllers/home_controller.dart';
-import 'package:flutterpos/controllers/shop_controller.dart';
-import 'package:flutterpos/models/shop_model.dart';
-import 'package:flutterpos/responsive/responsiveness.dart';
-import 'package:flutterpos/screens/shop/create_shop.dart';
-import 'package:flutterpos/widgets/no_items_found.dart';
+import 'package:pointify/controllers/AuthController.dart';
+import 'package:pointify/controllers/home_controller.dart';
+import 'package:pointify/controllers/shop_controller.dart';
+import 'package:pointify/models/shop_model.dart';
+import 'package:pointify/responsive/responsiveness.dart';
+import 'package:pointify/screens/shop/create_shop.dart';
+import 'package:pointify/widgets/no_items_found.dart';
 import 'package:get/get.dart';
 
 import '../../utils/colors.dart';
@@ -46,7 +46,7 @@ class ShopsPage extends StatelessWidget {
                   SizedBox(height: 10),
                   shopController.gettingShopsLoad.value
                       ? loadingWidget(context)
-                      : shopController.AdminShops.length == 0
+                      : shopController.allShops.isEmpty
                           ? noItemsFound(context, true)
                           : Container(
                               padding: EdgeInsets.symmetric(
@@ -77,14 +77,13 @@ class ShopsPage extends StatelessWidget {
                                             textAlign: TextAlign.center)),
                                   ],
                                   rows: List.generate(
-                                      shopController.AdminShops.length,
-                                      (index) {
-                                    ShopModel shopModel =
-                                        shopController.AdminShops.elementAt(
-                                            index);
+                                      shopController.allShops.length, (index) {
+                                    ShopModel shopModel = shopController
+                                        .allShops
+                                        .elementAt(index);
                                     final y = shopModel.name;
                                     final x = shopModel.location;
-                                    final z = shopModel.type;
+                                    final z = shopModel.category!.title;
 
                                     return DataRow(cells: [
                                       DataCell(Container(child: Text(y!))),
@@ -157,15 +156,15 @@ class ShopsPage extends StatelessWidget {
             Obx(() {
               return shopController.gettingShopsLoad.value
                   ? loadingWidget(context)
-                  : shopController.AdminShops.length == 0
+                  : shopController.allShops.length == 0
                       ? noItemsFound(context, true)
                       : ListView.builder(
                           shrinkWrap: true,
                           physics: NeverScrollableScrollPhysics(),
-                          itemCount: shopController.AdminShops.length,
+                          itemCount: shopController.allShops.length,
                           itemBuilder: (context, index) {
                             ShopModel shopModel =
-                                shopController.AdminShops.elementAt(index);
+                                shopController.allShops.elementAt(index);
                             return shopCard(
                                 shopModel: shopModel,
                                 page: "shop",
@@ -216,7 +215,7 @@ class ShopsPage extends StatelessWidget {
     return TextFormField(
       controller: shopController.searchController,
       onChanged: (value) {
-        shopController.getShopsByAdminId(
+        shopController.getShops(
             adminId: authController.currentUser.value?.id, name: value);
       },
       decoration: InputDecoration(
@@ -225,7 +224,7 @@ class ShopsPage extends StatelessWidget {
           onPressed: () {
             if (shopController.searchController.text == "") {
             } else {
-              shopController.getShopsByAdminId(
+              shopController.getShops(
                   adminId: authController.currentUser.value?.id,
                   name: shopController.searchController.text);
             }

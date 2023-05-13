@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutterpos/controllers/AuthController.dart';
-import 'package:flutterpos/controllers/attendant_controller.dart';
-import 'package:flutterpos/controllers/cashflow_controller.dart';
-import 'package:flutterpos/controllers/expense_controller.dart';
-import 'package:flutterpos/controllers/home_controller.dart';
-import 'package:flutterpos/controllers/shop_controller.dart';
-import 'package:flutterpos/responsive/responsiveness.dart';
-import 'package:flutterpos/screens/finance/expense_page.dart';
+import 'package:pointify/controllers/AuthController.dart';
+import 'package:pointify/controllers/attendant_controller.dart';
+import 'package:pointify/controllers/cashflow_controller.dart';
+import 'package:pointify/controllers/expense_controller.dart';
+import 'package:pointify/controllers/home_controller.dart';
+import 'package:pointify/controllers/shop_controller.dart';
+import 'package:pointify/responsive/responsiveness.dart';
+import 'package:pointify/screens/finance/expense_page.dart';
 import 'package:get/get.dart';
 
 import '../../utils/colors.dart';
@@ -38,7 +38,7 @@ class CreateExpense extends StatelessWidget {
               Get.back();
             }
           },
-          icon: Icon(
+          icon: const Icon(
             Icons.arrow_back_ios,
             color: Colors.black,
           ),
@@ -65,7 +65,7 @@ class CreateExpense extends StatelessWidget {
                 padding: const EdgeInsets.all(8.0),
                 child: expenseCreateCard(context),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
             ]),
           )),
     );
@@ -91,36 +91,22 @@ class CreateExpense extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text("Category", style: TextStyle(color: Colors.grey)),
-                        SizedBox(height: 3),
+                        const Text("Category",
+                            style: TextStyle(color: Colors.grey)),
+                        const SizedBox(height: 10),
                         InkWell(
                           onTap: () {
-                            if (cashflowController.cashFlowCategories.length ==
-                                    0 &&
+                            if (cashflowController.cashFlowCategories.isEmpty &&
                                 cashflowController
                                         .loadingCashFlowCategories.value !=
                                     true) {
-                              showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return AlertDialog(
-                                      content:
-                                          Text("Add Category to continue."),
-                                      actions: [
-                                        TextButton(
-                                          child: Text("OK"),
-                                          onPressed: () {
-                                            Get.back();
-                                          },
-                                        )
-                                      ],
-                                    );
-                                  });
+                              _addCategory(context);
                             } else {
                               showDialog(
                                   context: context,
                                   builder: (_) {
                                     return SimpleDialog(
+                                      elevation: 10,
                                       children: List.generate(
                                         cashflowController
                                             .cashFlowCategories.length,
@@ -138,13 +124,12 @@ class CreateExpense extends StatelessWidget {
                                               "${cashflowController.cashFlowCategories.elementAt(index).name}"),
                                         ),
                                       ),
-                                      elevation: 10,
                                     );
                                   });
                             }
                           },
                           child: Container(
-                            padding: EdgeInsets.all(8),
+                            padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
                                 border: Border.all(
                                   color: Colors.grey,
@@ -157,7 +142,8 @@ class CreateExpense extends StatelessWidget {
                                   return Text(
                                       "${expenseController.selectedExpense}");
                                 }),
-                                Icon(Icons.arrow_drop_down, color: Colors.grey)
+                                const Icon(Icons.arrow_drop_down,
+                                    color: Colors.grey)
                               ],
                             ),
                           ),
@@ -172,49 +158,7 @@ class CreateExpense extends StatelessWidget {
                       padding: const EdgeInsets.only(top: 10.0),
                       child: TextButton(
                         onPressed: () {
-                          showDialog(
-                              context: context,
-                              builder: (context) {
-                                return AlertDialog(
-                                  title: Text("Add Category"),
-                                  content: Padding(
-                                    padding: const EdgeInsets.all(5.0),
-                                    child: TextFormField(
-                                        controller: cashflowController
-                                            .textEditingControllerCategory,
-                                        decoration: InputDecoration(
-                                            hintText: "eg, rent",
-                                            border: OutlineInputBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(10),
-                                            ))),
-                                  ),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.pop(context);
-                                      },
-                                      child: Text(
-                                        "Cancel".toUpperCase(),
-                                        style: TextStyle(color: Colors.blue),
-                                      ),
-                                    ),
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.pop(context);
-                                        cashflowController.createCategory(
-                                            "cash-out",
-                                            shopController.currentShop.value,
-                                            context);
-                                      },
-                                      child: Text(
-                                        "Save now".toUpperCase(),
-                                        style: TextStyle(color: Colors.blue),
-                                      ),
-                                    ),
-                                  ],
-                                );
-                              });
+                          _addCategory(context);
                         },
                         child: Container(
                             padding: EdgeInsets.all(8),
@@ -236,13 +180,13 @@ class CreateExpense extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("Name", style: TextStyle(color: Colors.grey)),
-                  SizedBox(height: 2),
+                  const Text("Name", style: TextStyle(color: Colors.grey)),
+                  SizedBox(height: 10),
                   TextField(
                     controller: expenseController.textEditingControllerName,
                     decoration: InputDecoration(
                       border: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.grey),
+                        borderSide: const BorderSide(color: Colors.grey),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       focusedBorder: OutlineInputBorder(
@@ -257,7 +201,8 @@ class CreateExpense extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("Amount", style: TextStyle(color: Colors.grey)),
+                  const Text("Amount", style: TextStyle(color: Colors.grey)),
+                  SizedBox(height: 10),
                   TextField(
                     controller: expenseController.textEditingControllerAmount,
                     keyboardType: TextInputType.number,
@@ -277,7 +222,7 @@ class CreateExpense extends StatelessWidget {
                 child: InkWell(
                   onTap: () {
                     expenseController.saveExpense(
-                        attendantId: authController.usertype == "admin"
+                        attendantId: authController.usertype.value == "admin"
                             ? authController.currentUser.value!.id
                             : attendantController.attendant.value!.id,
                         shopId: shopController.currentShop.value!.id,
@@ -302,5 +247,47 @@ class CreateExpense extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void _addCategory(context) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text("Add Category"),
+            content: Padding(
+              padding: const EdgeInsets.all(5.0),
+              child: TextFormField(
+                  controller: cashflowController.textEditingControllerCategory,
+                  decoration: InputDecoration(
+                      hintText: "eg, rent",
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ))),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text(
+                  "Cancel".toUpperCase(),
+                  style: TextStyle(color: Colors.blue),
+                ),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  cashflowController.createCategory(
+                      "cash-out", shopController.currentShop.value, context);
+                },
+                child: Text(
+                  "Save now".toUpperCase(),
+                  style: TextStyle(color: Colors.blue),
+                ),
+              ),
+            ],
+          );
+        });
   }
 }

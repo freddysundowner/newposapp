@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutterpos/controllers/shop_controller.dart';
+import 'package:pointify/controllers/shop_controller.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
@@ -48,8 +48,7 @@ Widget expenseCard({required context, required ExpenseModel expense}) {
                       ),
                       SizedBox(height: 3),
                       Text(
-                        "@ ${expense.amount} ${shopController.currentShop.value
-                            ?.currency}",
+                        "@ ${expense.amount} ${shopController.currentShop.value?.currency}",
                         style: TextStyle(
                             color: Colors.grey, fontWeight: FontWeight.w600),
                       ),
@@ -70,16 +69,16 @@ Widget expenseCard({required context, required ExpenseModel expense}) {
                           Expanded(
                             flex: 6,
                             child: Text(
-                              "${DateFormat("yyyy-MM-dd hh:mm a").format(
-                                  expense.updatedAt!)}",
+                              "${DateFormat("yyyy-MM-dd hh:mm a").format(expense.updatedAt!)}",
                               style: TextStyle(color: Colors.grey),
                             ),
                           ),
                           Expanded(
                             flex: 3,
                             child: Text(
-                              expense.attendantId==null?"":
-                              "By-${expense.attendantId!.fullnames}",
+                              expense.attendantId == null
+                                  ? ""
+                                  : "By-${expense.attendantId!.fullnames}",
                               style: TextStyle(
                                   color: Color.fromRGBO(158, 158, 158, 1)),
                             ),
@@ -107,54 +106,50 @@ showBottomSheet(BuildContext context, expense) {
             height: 150,
             child: Center(
                 child: Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [Container(child: Text('Manage Bank'))],
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: GestureDetector(
-                        onTap: () {
-                          Navigator.pop(context);
-                        },
-                        child: Row(
-                          children: [
-                            Icon(Icons.edit),
-                            SizedBox(
-                              width: 10,
-                            ),
-                            Container(child: Text('Edit'))
-                          ],
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [Container(child: Text('Manage Bank'))],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    child: Row(
+                      children: [
+                        Icon(Icons.edit),
+                        SizedBox(
+                          width: 10,
                         ),
-                      ),
+                        Container(child: Text('Edit'))
+                      ],
                     ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: GestureDetector(
-                        onTap: () {
-                          Navigator.pop(context);
-                          deleteDialog(
-                              context: context,
-                              onPressed: () {
-
-                              });
-                        },
-                        child: Row(
-                          children: [
-                            Icon(Icons.delete_outline_rounded),
-                            SizedBox(
-                              width: 10,
-                            ),
-                            Container(child: Text('Delete'))
-                          ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.pop(context);
+                      deleteDialog(context: context, onPressed: () {});
+                    },
+                    child: Row(
+                      children: [
+                        Icon(Icons.delete_outline_rounded),
+                        SizedBox(
+                          width: 10,
                         ),
-                      ),
+                        Container(child: Text('Delete'))
+                      ],
                     ),
-                  ],
-                )));
+                  ),
+                ),
+              ],
+            )));
       });
 }

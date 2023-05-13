@@ -1,10 +1,10 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 import 'package:flutter/material.dart';
-import 'package:flutterpos/controllers/home_controller.dart';
-import 'package:flutterpos/controllers/product_history_controller.dart';
-import 'package:flutterpos/controllers/stock_transfer_controller.dart';
-import 'package:flutterpos/responsive/responsiveness.dart';
-import 'package:flutterpos/screens/stock/transfer_history.dart';
+import 'package:pointify/controllers/home_controller.dart';
+import 'package:pointify/controllers/product_history_controller.dart';
+import 'package:pointify/controllers/stock_transfer_controller.dart';
+import 'package:pointify/responsive/responsiveness.dart';
+import 'package:pointify/screens/stock/transfer_history.dart';
 import 'package:get/get.dart';
 
 import '../../controllers/shop_controller.dart';
@@ -158,4 +158,3 @@ class TransferHistoryView extends StatelessWidget {
     );
   }
 }
-

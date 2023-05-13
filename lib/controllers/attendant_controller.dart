@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutterpos/controllers/home_controller.dart';
-import 'package:flutterpos/controllers/shop_controller.dart';
-import 'package:flutterpos/models/attendant_model.dart';
-import 'package:flutterpos/models/roles_model.dart';
-import 'package:flutterpos/screens/home/attendants_page.dart';
-import 'package:flutterpos/widgets/loading_dialog.dart';
+import 'package:pointify/controllers/home_controller.dart';
+import 'package:pointify/controllers/shop_controller.dart';
+import 'package:pointify/models/attendant_model.dart';
+import 'package:pointify/models/roles_model.dart';
+import 'package:pointify/screens/home/attendants_page.dart';
+import 'package:pointify/widgets/alert.dart';
+import 'package:pointify/widgets/loading_dialog.dart';
 import 'package:get/get.dart';
 
 import '../services/attendant.dart';
@@ -30,10 +31,7 @@ class AttendantController extends GetxController {
     String name = nameController.text;
     String password = passwordController.text;
     if (name == "" || password == "") {
-      showSnackBar(
-          message: "please fill all the fields",
-          color: Colors.red,
-          context: context);
+      showSnackBar(message: "please fill all the fields", color: Colors.red);
     } else {
       try {
         creatingAttendantsLoad.value = true;
@@ -54,9 +52,7 @@ class AttendantController extends GetxController {
           getAttendantsByShopId(shopId: shopId);
         } else {
           showSnackBar(
-              message: response["message"],
-              color: AppColors.mainColor,
-              context: context);
+              message: response["message"], color: AppColors.mainColor);
         }
 
         creatingAttendantsLoad.value = false;
@@ -154,10 +150,7 @@ class AttendantController extends GetxController {
 
         getAttendantsByShopId(shopId: shopId);
       } else {
-        showSnackBar(
-            message: response["message"],
-            color: AppColors.mainColor,
-            context: context);
+        showSnackBar(message: response["message"], color: AppColors.mainColor);
       }
     } catch (e) {
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
@@ -165,8 +158,15 @@ class AttendantController extends GetxController {
   }
 
   updateAttedant(
-      {required id, required rolesData, BuildContext? context}) async {
+      {required id,
+      required List<RolesModel> rolesData,
+      BuildContext? context}) async {
     try {
+      if (rolesData.isEmpty) {
+        generalAlert(
+            title: "Error", message: "Add atleast one role to this attendant");
+        return;
+      }
       creatingAttendantsLoad.value = true;
       Map<String, dynamic> body = {
         "fullnames": nameController.text,

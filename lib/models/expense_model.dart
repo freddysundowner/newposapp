@@ -1,4 +1,4 @@
-import 'package:flutterpos/models/attendant_model.dart';
+import 'package:pointify/models/attendant_model.dart';
 
 class ExpenseModel {
   ExpenseModel({

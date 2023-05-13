@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutterpos/controllers/AuthController.dart';
-import 'package:flutterpos/controllers/attendant_controller.dart';
-import 'package:flutterpos/controllers/sales_controller.dart';
-import 'package:flutterpos/controllers/shop_controller.dart';
-import 'package:flutterpos/responsive/responsiveness.dart';
-import 'package:flutterpos/utils/helper.dart';
-import 'package:flutterpos/widgets/bigtext.dart';
-import 'package:flutterpos/widgets/side_menu.dart';
+import 'package:pointify/controllers/AuthController.dart';
+import 'package:pointify/controllers/attendant_controller.dart';
+import 'package:pointify/controllers/sales_controller.dart';
+import 'package:pointify/controllers/shop_controller.dart';
+import 'package:pointify/responsive/responsiveness.dart';
+import 'package:pointify/utils/helper.dart';
+import 'package:pointify/widgets/bigtext.dart';
+import 'package:pointify/widgets/side_menu.dart';
 import 'package:get/get.dart';
-import 'package:google_nav_bar/google_nav_bar.dart';
-import 'package:intl/intl.dart';
 
 import '../../controllers/home_controller.dart';
 import '../../utils/colors.dart';
@@ -45,64 +43,98 @@ class Home extends StatelessWidget {
             return homeControler.pages[homeControler.selectedIndex.value];
           }),
           appBar: top_appbar(),
-          bottomNavigationBar: BottomAppBar(
-            child:Obx(()=> Container(
-              decoration: BoxDecoration(
-                  color: AppColors.lightDeepPurple,
-                  borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(20),
-                      topRight: Radius.circular(20))),
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: GNav(
-                  activeColor: Colors.white,
-                  color: Colors.white,
-                  selectedIndex: homeControler.selectedIndex.value,
-                  tabBackgroundColor: AppColors.mainColor,
-                  gap: 8,
-                  onTabChange: (value) {
-                    homeControler.selectedIndex.value = value;
-                    if (value==0) {
-                      Get.find<SalesController>().getSalesByShop(
-                          id: shopController.currentShop.value?.id,
-                          attendantId: authController.usertype.value == "admin"
-                              ? ""
-                              : Get.find<AttendantController>().attendant.value!.id,
-                          onCredit: "",
-                          startingDate: "${DateFormat("yyyy-MM-dd").format(DateTime.now())}");
-                    }
-                    else if (value == 1) {
-                      shopController.getShopsByAdminId(
+          bottomNavigationBar: Container(
+            padding: const EdgeInsets.only(left: 20, right: 20, bottom: 10),
+            decoration: BoxDecoration(
+                color: AppColors.lightDeepPurple,
+                borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20))),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  InkWell(
+                    onTap: () {
+                      homeControler.selectedIndex.value = 0;
+                      authController.init(authController.usertype.value);
+                    },
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Obx(
+                          () => Icon(
+                            Icons.home,
+                            color: homeControler.selectedIndex.value == 0
+                                ? Colors.white
+                                : Colors.black,
+                          ),
+                        ),
+                        Text("Home")
+                      ],
+                    ),
+                  ),
+                  InkWell(
+                    onTap: () {
+                      homeControler.selectedIndex.value = 1;
+                      shopController.getShops(
                           adminId: authController.currentUser.value?.id);
-                    }
-                    else if (value == 2) {
+                    },
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Obx(
+                          () => Icon(Icons.shop,
+                              color: homeControler.selectedIndex.value == 1
+                                  ? Colors.white
+                                  : Colors.black),
+                        ),
+                        Text("Shops")
+                      ],
+                    ),
+                  ),
+                  InkWell(
+                    onTap: () {
+                      homeControler.selectedIndex.value = 2;
+
                       attendantController.getAttendantsByShopId(
                           shopId: shopController.currentShop.value?.id);
-                    }
-                  },
-                  padding: EdgeInsets.all(16),
-                  backgroundColor: Colors.transparent,
-                  tabs: [
-                    GButton(
-                      icon: Icons.home,
-                      text: "Home",
+                    },
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Obx(
+                          () => Icon(Icons.people,
+                              color: homeControler.selectedIndex.value == 2
+                                  ? Colors.white
+                                  : Colors.black),
+                        ),
+                        Text("Attendants")
+                      ],
                     ),
-                    GButton(
-                      icon: Icons.shop,
-                      text: "Shops",
+                  ),
+                  InkWell(
+                    onTap: () {
+                      homeControler.selectedIndex.value = 3;
+                    },
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Obx(
+                          () => Icon(Icons.people,
+                              color: homeControler.selectedIndex.value == 3
+                                  ? Colors.white
+                                  : Colors.black),
+                        ),
+                        Text("Profile")
+                      ],
                     ),
-                    GButton(
-                      icon: Icons.people,
-                      text: "Attendants",
-                    ),
-                    GButton(
-                      icon: Icons.person,
-                      text: "Profile",
-                    )
-                  ],
-                ),
+                  )
+                ],
               ),
-            )),
+            ),
           ),
         ));
   }

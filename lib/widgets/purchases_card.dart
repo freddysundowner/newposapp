@@ -1,12 +1,12 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 import 'package:flutter/material.dart';
-import 'package:flutterpos/controllers/AuthController.dart';
-import 'package:flutterpos/controllers/attendant_controller.dart';
-import 'package:flutterpos/controllers/purchase_controller.dart';
-import 'package:flutterpos/controllers/shop_controller.dart';
-import 'package:flutterpos/models/product_model.dart';
-import 'package:flutterpos/screens/product/create_product.dart';
-import 'package:flutterpos/widgets/smalltext.dart';
+import 'package:pointify/controllers/AuthController.dart';
+import 'package:pointify/controllers/attendant_controller.dart';
+import 'package:pointify/controllers/purchase_controller.dart';
+import 'package:pointify/controllers/shop_controller.dart';
+import 'package:pointify/models/product_model.dart';
+import 'package:pointify/screens/product/create_product.dart';
+import 'package:pointify/widgets/smalltext.dart';
 import 'package:get/get.dart';
 
 import 'bigtext.dart';
@@ -16,7 +16,7 @@ Widget purchasesCard(
     {required context, required ProductModel productModel, required index}) {
   PurchaseController salesController = Get.find<PurchaseController>();
   ShopController shopController = Get.find<ShopController>();
-  AuthController authController= Get.find<AuthController>();
+  AuthController authController = Get.find<AuthController>();
   AttendantController attendantController = Get.find<AttendantController>();
   return Padding(
     padding: const EdgeInsets.all(10.0),
@@ -74,15 +74,15 @@ Widget purchasesCard(
                       if (authController.usertype == "admin" ||
                           (authController.usertype == "attendant" &&
                               attendantController.checkRole("edit_entries")))
-                      InkWell(
-                          onTap: () {
-                            Get.to(() => CreateProduct(
-                                page: "edit", productModel: productModel));
-                          },
-                          child: Text(
-                            "Edit Price",
-                            style: TextStyle(color: Colors.red),
-                          )),
+                        InkWell(
+                            onTap: () {
+                              Get.to(() => CreateProduct(
+                                  page: "edit", productModel: productModel));
+                            },
+                            child: Text(
+                              "Edit Price",
+                              style: TextStyle(color: Colors.red),
+                            )),
                     ],
                   ),
                 ],

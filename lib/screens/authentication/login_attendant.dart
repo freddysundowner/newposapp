@@ -1,7 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 import 'package:flutter/material.dart';
-import 'package:flutterpos/controllers/home_controller.dart';
-import 'package:flutterpos/responsive/responsiveness.dart';
+import 'package:pointify/controllers/home_controller.dart';
+import 'package:pointify/responsive/responsiveness.dart';
 import 'package:get/get.dart';
 
 import '../../controllers/AuthController.dart';
@@ -27,7 +27,7 @@ class AttendantLogin extends StatelessWidget {
                 Get.back();
               },
               icon: Icon(
-                Icons.arrow_back_ios,
+                Icons.clear,
                 color: MediaQuery.of(context).size.width <= 600
                     ? Colors.white
                     : Colors.black,

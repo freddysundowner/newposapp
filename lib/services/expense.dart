@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:flutterpos/services/apiurls.dart';
+import 'package:pointify/services/apiurls.dart';
 
 import 'client.dart';
 
@@ -17,7 +17,7 @@ class Expense {
       required endDate,
       required attendant}) async {
     var response = await DbBase().databaseRequest(
-        "$expenses?shop=$shopId&fromDate=$startDate&toDate=$endDate&attendant=$attendant",
+        "$expenses?shop=$shopId&fromDate=$startDate&toDate=$endDate&attendant=${attendant ?? ""}",
         DbBase().getRequestType);
     return jsonDecode(response);
   }

@@ -1,26 +1,25 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterpos/controllers/attendant_controller.dart';
-import 'package:flutterpos/controllers/home_controller.dart';
-import 'package:flutterpos/controllers/sales_controller.dart';
-import 'package:flutterpos/controllers/shop_controller.dart';
-import 'package:flutterpos/models/attendant_model.dart';
-import 'package:flutterpos/screens/home/profile_page.dart';
-import 'package:flutterpos/screens/shop/create_shop.dart';
-import 'package:flutterpos/services/admin.dart';
-import 'package:flutterpos/services/attendant.dart';
-import 'package:flutterpos/utils/colors.dart';
-import 'package:flutterpos/widgets/snackBars.dart';
+import 'package:pointify/controllers/attendant_controller.dart';
+import 'package:pointify/controllers/home_controller.dart';
+import 'package:pointify/controllers/sales_controller.dart';
+import 'package:pointify/controllers/shop_controller.dart';
+import 'package:pointify/models/attendant_model.dart';
+import 'package:pointify/screens/authentication/admin_login.dart';
+import 'package:pointify/screens/home/profile_page.dart';
+import 'package:pointify/screens/shop/create_shop.dart';
+import 'package:pointify/services/admin.dart';
+import 'package:pointify/services/attendant.dart';
+import 'package:pointify/utils/colors.dart';
+import 'package:pointify/widgets/snackBars.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-// import 'package:shared_preferences/shared_preferences.dart';
-
 import '../models/admin_model.dart';
 import '../screens/attendant/attendant_landing.dart';
 import '../screens/home/home.dart';
-import '../screens/landing/landing.dart';
+import '../screens/authentication/landing.dart';
 import '../widgets/loading_dialog.dart';
 
 class AuthController extends GetxController {
@@ -61,10 +60,7 @@ class AuthController extends GetxController {
         var response = await Admin().createAdmin(body: body);
         signuserLoad.value = false;
         if (response["status"] == false) {
-          showSnackBar(
-              message: "${response["message"]}",
-              color: Colors.red,
-              context: context);
+          showSnackBar(message: "${response["message"]}", color: Colors.red);
         } else {
           AdminModel adminModel = AdminModel.fromJson(response["body"]);
           SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -74,6 +70,7 @@ class AuthController extends GetxController {
           currentUser.value = adminModel;
           clearDataFromTextFields();
           usertype.value = "admin";
+          await init(usertype.value);
           if (MediaQuery.of(context).size.width > 600) {
             Get.find<HomeController>().selectedWidget.value =
                 CreateShop(page: "home");
@@ -86,10 +83,7 @@ class AuthController extends GetxController {
         signuserLoad.value = false;
       }
     } else {
-      showSnackBar(
-          message: "please fill all fields",
-          color: Colors.red,
-          context: context);
+      showSnackBar(message: "please fill all fields", color: Colors.red);
     }
   }
 
@@ -104,23 +98,18 @@ class AuthController extends GetxController {
         var response = await Admin().loginAdmin(body: body);
         loginuserLoad.value = false;
         if (response["error"] != null) {
-          showSnackBar(
-              message: "${response["error"]}",
-              color: Colors.red,
-              context: context);
+          showSnackBar(message: "${response["error"]}", color: Colors.red);
         } else {
           AdminModel adminModel = AdminModel.fromJson(response["body"]);
           SharedPreferences prefs = await SharedPreferences.getInstance();
           prefs.setString("userId", adminModel.id!);
           prefs.setString("token", response["token"]);
           prefs.setString("type", "admin");
-
           currentUser.value = adminModel;
           clearDataFromTextFields();
-          shopController.currentShop.value =
-              adminModel.shops!.isNotEmpty ? adminModel.shops![0] : null;
           usertype.value = "admin";
-          Get.off(() => Home());
+          await init(usertype.value);
+          Get.offAll(() => Home());
         }
         signuserLoad.value = false;
       } catch (e) {
@@ -128,10 +117,43 @@ class AuthController extends GetxController {
         loginuserLoad.value = false;
       }
     } else {
-      showSnackBar(
-          message: "please fill all fields",
-          color: Colors.red,
-          context: context);
+      showSnackBar(message: "please fill all fields", color: Colors.red);
+    }
+  }
+
+  init(userType) async {
+    if (userType == "") return;
+    await shopController.getDefaultShop();
+    if (shopController.currentShop.value != null) {
+      String id = await getUserId();
+      Get.find<SalesController>().getSales(onCredit: "");
+      Get.find<SalesController>().getSalesByDate(
+          shopController.currentShop.value?.id,
+          DateFormat("yyyy-MM-dd").format(DateTime.now()),
+          DateFormat("yyyy-MM-dd").format(DateTime.now()));
+    }
+  }
+
+  resetPasswordEmail() async {
+    if (loginKey.currentState!.validate()) {
+      try {
+        loginuserLoad.value = true;
+        Map<String, dynamic> body = {
+          "email": emailController.text,
+        };
+        var response = await Admin().resetPasswordEmail(body: body);
+        loginuserLoad.value = false;
+        if (response["error"] != null) {
+          showSnackBar(message: "${response["error"]}", color: Colors.red);
+        } else {
+          Get.off(() => AdminLogin());
+        }
+        signuserLoad.value = false;
+      } catch (e) {
+        loginuserLoad.value = false;
+      }
+    } else {
+      showSnackBar(message: "please fill all fields", color: Colors.red);
     }
   }
 
@@ -157,27 +179,17 @@ class AuthController extends GetxController {
   getUserId() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? user = prefs.getString("userId");
+    if (user == null) return "";
     return user;
   }
 
   getUserType() async {
     String? userType = await _getUserType();
-    await shopController.getDefaultShop();
-    Get.find<SalesController>().getSalesByShop(
-        id: shopController.currentShop.value?.id,
-        attendantId: userType == "admin"
-            ? ""
-            : Get.find<AttendantController>().attendant.value!.id,
-        onCredit: "");
-    Get.find<SalesController>().getSalesByDate(
-        shopController.currentShop.value?.id,
-        "${DateFormat("yyyy-MM-dd").format(DateTime.now())}",
-        "${DateFormat("yyyy-MM-dd").format(DateTime.now())}");
-
+    await init(userType);
     if (userType == "admin") {
       AdminModel adminModel = await getUserById();
       return ["admin", adminModel];
-    } else {
+    } else if (userType == "attendant") {
       String? id = await getUserId();
       if (id != null) {
         AttendantModel attendantModel =
@@ -190,7 +202,10 @@ class AuthController extends GetxController {
   Future<String?> _getUserType() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? userType = prefs.getString("type");
-    usertype.value = userType!;
+    if (userType == null) {
+      return "";
+    }
+    usertype.value = userType;
     return userType;
   }
 
@@ -214,10 +229,7 @@ class AuthController extends GetxController {
         }
         getUserById();
       } else {
-        showSnackBar(
-            message: response["message"],
-            color: AppColors.mainColor,
-            context: context);
+        showSnackBar(message: response["message"], color: AppColors.mainColor);
       }
       updateAdminLoad.value = false;
     } catch (e) {
@@ -246,6 +258,7 @@ class AuthController extends GetxController {
     await prefs.clear();
     shopController.currentShop.value = null;
     usertype.value = "";
+    Get.find<HomeController>().selectedIndex.value = 0;
     clearDataFromTextFields();
     Get.offAll(() => Landing());
   }
@@ -259,13 +272,9 @@ class AuthController extends GetxController {
       var response = await Admin().deleteAdmin(id);
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
       if (response["status"] == false) {
-        showSnackBar(
-            message: response["message"], color: Colors.red, context: context);
+        showSnackBar(message: response["message"], color: Colors.red);
       } else {
-        showSnackBar(
-            message: response["message"],
-            color: Colors.redAccent,
-            context: context);
+        showSnackBar(message: response["message"], color: Colors.redAccent);
         Get.find<AuthController>().getUserById();
       }
     } catch (e) {
@@ -284,17 +293,6 @@ class AuthController extends GetxController {
       };
       await Admin().updatePassword(id: id, body: body);
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
-      // if (response["status"] == true) {
-      //   showSnackBar(
-      //       message: response["message"],
-      //       color: AppColors.mainColor,
-      //       context: context);
-      // } else {
-      //   showSnackBar(
-      //       message: response["message"],
-      //       color: AppColors.mainColor,
-      //       context: context);
-      // }
     } catch (e) {
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
     }
@@ -323,9 +321,12 @@ class AuthController extends GetxController {
           prefs.setString("userId", attendantModel.id!);
           prefs.setString("token", response["token"]);
           prefs.setString("type", "attendant");
+          print("bb ${attendantModel.shop!.id!}");
+          prefs.setString("current_shop", attendantModel.shop!.id!);
           attendantUidController.text = "";
           attendantPasswordController.text = "";
           usertype.value = "attendant";
+          await init(usertype.value);
           Get.offAll(() => AttendantLanding());
         }
         LoginAttendantLoad.value = false;
@@ -333,5 +334,13 @@ class AuthController extends GetxController {
     } catch (e) {
       LoginAttendantLoad.value = false;
     }
+  }
+
+  void resetPassword() async {
+    Map<String, dynamic> data = {
+      "attend_id": attendantUidController.text,
+      "password": attendantPasswordController.text,
+    };
+    var response = await Admin().resetPasswordEmail(body: data);
   }
 }

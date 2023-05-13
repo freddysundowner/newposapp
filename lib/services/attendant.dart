@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:flutterpos/services/apiurls.dart';
-import 'package:flutterpos/services/client.dart';
+import 'package:pointify/services/apiurls.dart';
+import 'package:pointify/services/client.dart';
 
 class Attendant {
   createAttendant({required Map<String, dynamic> body}) async {
@@ -9,9 +9,11 @@ class Attendant {
         .databaseRequest(attendant, DbBase().postRequestType, body: body);
     return jsonDecode(response);
   }
+
   loginAttendant({required Map<String, dynamic> body}) async {
-    var response = await DbBase()
-        .databaseRequest("${attendant}login", DbBase().postRequestType, body: body);
+    var response = await DbBase().databaseRequest(
+        "${attendant}login", DbBase().postRequestType,
+        body: body);
     return jsonDecode(response);
   }
 
@@ -46,9 +48,10 @@ class Attendant {
     return jsonDecode(response);
   }
 
-  updateAttendant({required id, required Map<String, dynamic> body})async  {
-    var response = await DbBase()
-        .databaseRequest(attendant + "update/${id}", DbBase().patchRequestType,body: body);
+  updateAttendant({required id, required Map<String, dynamic> body}) async {
+    var response = await DbBase().databaseRequest(
+        attendant + "update/${id}", DbBase().patchRequestType,
+        body: body);
     return jsonDecode(response);
   }
 }

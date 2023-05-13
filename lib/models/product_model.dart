@@ -1,5 +1,5 @@
-import 'package:flutterpos/models/product_category_model.dart';
-import 'package:flutterpos/models/shop_model.dart';
+import 'package:pointify/models/product_category_model.dart';
+import 'package:pointify/models/shop_model.dart';
 
 import 'attendant_model.dart';
 
@@ -23,7 +23,6 @@ class ProductModel {
     this.amount,
     this.createdAt,
     this.updatedAt,
-    this.allowedDiscount,
     this.deleted,
     this.selling,
     this.minPrice,
@@ -49,7 +48,6 @@ class ProductModel {
   int? cartquantity;
   int? amount;
   int? selling;
-  int? allowedDiscount;
 
   DateTime? createdAt;
   DateTime? updatedAt;
@@ -66,13 +64,15 @@ class ProductModel {
         sellingPrice: List<String>.from(json["sellingPrice"].map((x) => x)),
         discount: json["discount"],
         supplier: json["supplier"],
-        shop: json["shop"]==null||json["shop"].toString().length<=40?ShopModel():ShopModel.fromJson(json["shop"]),
-        selling: int.parse(List<String>.from(json["sellingPrice"].map((x) => x))[0]),
+        shop: json["shop"] == null || json["shop"].toString().length <= 40
+            ? ShopModel()
+            : ShopModel.fromJson(json["shop"]),
+        selling:
+            int.parse(List<String>.from(json["sellingPrice"].map((x) => x))[0]),
         cartquantity: 1,
         deleted: json["deleted"],
         amount: 0,
         minPrice: json["minSellingPrice"],
-        allowedDiscount: 0,
         attendant: json["attendant"] == null ||
                 json["category"].toString().length <= 40
             ? AttendantModel()
@@ -97,7 +97,6 @@ class ProductModel {
         "cartquantity": cartquantity,
         "selling": selling,
         "amount": amount,
-        "allowedDiscount": allowedDiscount,
         "buyingPrice": buyingPrice,
         "badstock": badstock,
         "description": description,

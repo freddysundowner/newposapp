@@ -1,20 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:flutterpos/controllers/home_controller.dart';
-import 'package:flutterpos/controllers/product_controller.dart';
-import 'package:flutterpos/controllers/purchase_controller.dart';
-import 'package:flutterpos/controllers/sales_controller.dart';
-import 'package:flutterpos/controllers/shop_controller.dart';
-import 'package:flutterpos/models/product_model.dart';
-import 'package:flutterpos/screens/product/products_page.dart';
+import 'package:pointify/controllers/home_controller.dart';
+import 'package:pointify/controllers/product_controller.dart';
+import 'package:pointify/controllers/purchase_controller.dart';
+import 'package:pointify/controllers/sales_controller.dart';
+import 'package:pointify/controllers/shop_controller.dart';
+import 'package:pointify/models/product_model.dart';
+import 'package:pointify/screens/product/products_page.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 import '../../controllers/product_history_controller.dart';
 import '../../models/badstock.dart';
+import '../../models/invoice_items.dart';
 import '../../models/productTransfer.dart';
 import '../../models/product_history_model.dart';
-import '../../models/sales_order_item_model.dart';
-import '../../models/supply_order_model.dart';
 import '../../utils/colors.dart';
 import '../../widgets/bigtext.dart';
 import '../../widgets/smalltext.dart';
@@ -230,8 +229,8 @@ class PurchasesPages extends StatelessWidget {
           ? Center(
               child: CircularProgressIndicator(),
             )
-          : purchaseController.purchaseOrderItems.length == 0
-              ? Center(
+          : purchaseController.invoicesItems.isEmpty
+              ? const Center(
                   child: Text("There are no iems to display"),
                 )
               : MediaQuery.of(context).size.width > 600
@@ -245,7 +244,7 @@ class PurchasesPages extends StatelessWidget {
                                 .copyWith(dividerColor: Colors.grey),
                             child: Container(
                               width: double.infinity,
-                              margin: EdgeInsets.only(
+                              margin: const EdgeInsets.only(
                                   right: 15, left: 15, bottom: 20),
                               child: DataTable(
                                 decoration: BoxDecoration(
@@ -307,14 +306,12 @@ class PurchasesPages extends StatelessWidget {
                     )
                   : ListView.builder(
                       shrinkWrap: true,
-                      itemCount: purchaseController.purchaseOrderItems.length,
-                      // physics: NeverScrollableScrollPhysics(),
+                      itemCount: purchaseController.invoicesItems.length,
                       itemBuilder: (context, index) {
-                        SupplyOrderModel productBody = purchaseController
-                            .purchaseOrderItems
-                            .elementAt(index);
+                        InvoiceItem productBody =
+                            purchaseController.invoicesItems.elementAt(index);
 
-                        return productHistoryContainer(productBody);
+                        return productPurchaseHistoryContainer(productBody);
                       });
     });
   }
@@ -479,7 +476,7 @@ class SalesPages extends StatelessWidget {
                               ],
                               rows: List.generate(
                                   salesController.salesHistory.length, (index) {
-                                SaleOrderItemModel productBody = salesController
+                                InvoiceItem productBody = salesController
                                     .salesHistory
                                     .elementAt(index);
                                 final y = productBody.product!.name;
@@ -514,16 +511,14 @@ class SalesPages extends StatelessWidget {
                       shrinkWrap: true,
                       itemCount: salesController.salesHistory.length,
                       itemBuilder: (context, index) {
-                        SaleOrderItemModel saleOrderItemModel =
+                        InvoiceItem saleOrderItemModel =
                             salesController.salesHistory.elementAt(index);
                         return productHistoryContainer(saleOrderItemModel);
-
-                        // return productHistoryContainer(productBody);
                       });
     });
   }
 
-  Widget productHistoryContainer(productBody) {
+  Widget productHistoryContainer(InvoiceItem saleOrderItemModel) {
     ShopController shopController = Get.find<ShopController>();
     return Padding(
       padding: const EdgeInsets.all(3.0),
@@ -541,19 +536,21 @@ class SalesPages extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "${productBody.product!.name}".capitalize!,
-                        style: TextStyle(
+                        "${saleOrderItemModel.product!.name}".capitalize!,
+                        style: const TextStyle(
                             color: Colors.black,
                             fontWeight: FontWeight.bold,
                             fontSize: 18),
                       ),
+                      if (saleOrderItemModel.itemCount == 0)
+                        Text(
+                          "item returned",
+                          style: TextStyle(color: Colors.red, fontSize: 13),
+                        ),
+                      if (saleOrderItemModel.itemCount! > 0)
+                        Text('Qty ${saleOrderItemModel.itemCount}'),
                       Text(
-                        "${productBody.product!.category.name}",
-                        style: TextStyle(color: Colors.grey, fontSize: 16),
-                      ),
-                      Text('Qty ${productBody.itemCount}'),
-                      Text(
-                          '${DateFormat("MMM dd,yyyy, hh:m a").format(productBody.createdAt!)} '),
+                          '${DateFormat("MMM dd,yyyy, hh:m a").format(saleOrderItemModel.createdAt!)} '),
                     ],
                   )
                 ],
@@ -562,9 +559,13 @@ class SalesPages extends StatelessWidget {
               Column(
                 children: [
                   Text(
-                      'BP/= ${shopController.currentShop.value?.currency}.${productBody.product!.buyingPrice}'),
+                      'BP/= ${shopController.currentShop.value?.currency}.${saleOrderItemModel.product!.buyingPrice}'),
                   Text(
-                      'SP/=  ${shopController.currentShop.value?.currency}.${productBody.total}')
+                      'SP/=  ${shopController.currentShop.value?.currency}.${saleOrderItemModel.total}'),
+                  Text(
+                    "Cashier ${saleOrderItemModel.attendantid!.fullnames}",
+                    style: TextStyle(fontSize: 13),
+                  ),
                 ],
               )
             ],

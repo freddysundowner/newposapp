@@ -1,15 +1,17 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterpos/controllers/attendant_controller.dart';
-import 'package:flutterpos/controllers/home_controller.dart';
-import 'package:flutterpos/controllers/product_controller.dart';
-import 'package:flutterpos/controllers/shop_controller.dart';
-import 'package:flutterpos/models/product_model.dart';
-import 'package:flutterpos/responsive/responsiveness.dart';
-import 'package:flutterpos/screens/home/home_page.dart';
-import 'package:flutterpos/screens/sales/all_sales_page.dart';
-import 'package:flutterpos/widgets/no_items_found.dart';
-import 'package:flutterpos/widgets/search_widget.dart';
+import 'package:pointify/controllers/attendant_controller.dart';
+import 'package:pointify/controllers/home_controller.dart';
+import 'package:pointify/controllers/product_controller.dart';
+import 'package:pointify/controllers/shop_controller.dart';
+import 'package:pointify/functions/functions.dart';
+import 'package:pointify/models/product_model.dart';
+import 'package:pointify/models/receipt_item.dart';
+import 'package:pointify/responsive/responsiveness.dart';
+import 'package:pointify/screens/home/home_page.dart';
+import 'package:pointify/screens/sales/all_sales_page.dart';
+import 'package:pointify/widgets/no_items_found.dart';
+import 'package:pointify/widgets/search_widget.dart';
 import 'package:get/get.dart';
 
 import '../../controllers/AuthController.dart';
@@ -17,10 +19,10 @@ import '../../controllers/CustomerController.dart';
 import '../../controllers/sales_controller.dart';
 import '../../utils/colors.dart';
 import '../../widgets/bigtext.dart';
-import '../../widgets/sales_card.dart';
+import '../../widgets/sales_container.dart';
 import '../../widgets/smalltext.dart';
 import '../customers/create_customers.dart';
-import '../product/product_selection.dart';
+import '../product/products_screen.dart';
 import 'components/discount_dialog.dart';
 import 'components/edit_price_dialog.dart';
 
@@ -29,11 +31,11 @@ class CreateSale extends StatelessWidget {
 
   CreateSale({Key? key, this.page}) : super(key: key) {
     customersController.getCustomersInShop(
-        createShopController.currentShop.value?.id, "all");
+        shopController.currentShop.value?.id, "all");
   }
 
   SalesController salesController = Get.find<SalesController>();
-  ShopController createShopController = Get.find<ShopController>();
+  ShopController shopController = Get.find<ShopController>();
   CustomerController customersController = Get.find<CustomerController>();
   AuthController authController = Get.find<AuthController>();
   AttendantController attendantController = Get.find<AttendantController>();
@@ -45,7 +47,7 @@ class CreateSale extends StatelessWidget {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        salesController.selectedList.clear();
+        salesController.saleItem.clear();
         return true;
       },
       child: ResponsiveWidget(
@@ -58,7 +60,7 @@ class CreateSale extends StatelessWidget {
             centerTitle: false,
             leading: IconButton(
                 onPressed: () {
-                  salesController.selectedList.clear();
+                  salesController.saleItem.clear();
                   if (page == "allSales") {
                     Get.find<HomeController>().selectedWidget.value =
                         AllSalesPage(page: "AttendantLanding");
@@ -71,42 +73,40 @@ class CreateSale extends StatelessWidget {
                   Icons.arrow_back_ios,
                   color: Colors.black,
                 )),
-            title: majorTitle(
-                title: "Make New Sale", color: Colors.black, size: 18.0),
+            title:
+                majorTitle(title: "New Sale", color: Colors.black, size: 18.0),
           ),
           body: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 Container(
+                  padding: EdgeInsets.only(left: 30, right: 80),
                   child: searchWidget(
                       autoCompletKey: _autocompleteKey,
                       focusNode: _focusNode,
-                      shopId: createShopController.currentShop.value?.id,
+                      shopId: shopController.currentShop.value?.id,
                       page: "createSale"),
-                  padding: EdgeInsets.only(left: 30, right: 80),
                 ),
                 Obx(() {
-                  return salesController.selectedList.length == 0
+                  return salesController.saleItem.isEmpty
                       ? Container()
                       : Padding(
                           padding: const EdgeInsets.only(right: 30.0, top: 10),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
-                              Text(
-                                  "Totals:${salesController.calculateSalesAmount()}"),
+                              Text("Totals:${salesController.grandTotal}"),
                               SizedBox(
                                 width: 10,
                               ),
                               InkWell(
                                 splashColor: Colors.transparent,
                                 onTap: () {
-                                  if (salesController.selectedList.length ==
-                                      0) {
+                                  if (salesController.saleItem.isEmpty) {
                                     ScaffoldMessenger.of(context).showSnackBar(
-                                        new SnackBar(
+                                        const SnackBar(
                                             content: Text(
                                                 "Please select products to sell")));
                                   } else {
@@ -115,8 +115,7 @@ class CreateSale extends StatelessWidget {
                                     salesController
                                         .selectedPaymentMethod.value = "Cash";
                                     customersController.getCustomersInShop(
-                                        createShopController
-                                            .currentShop.value?.id,
+                                        shopController.currentShop.value?.id,
                                         "all");
                                     confirmPayment(context, "large");
                                   }
@@ -130,7 +129,7 @@ class CreateSale extends StatelessWidget {
                           ),
                         );
                 }),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 Obx(() {
                   return productController.getProductLoad.value
                       ? Column(
@@ -142,7 +141,7 @@ class CreateSale extends StatelessWidget {
                             Center(child: CircularProgressIndicator()),
                           ],
                         )
-                      : salesController.selectedList.length == 0
+                      : salesController.saleItem.isEmpty
                           ? noItemsFound(context, true)
                           : Container(
                               width: double.infinity,
@@ -158,7 +157,7 @@ class CreateSale extends StatelessWidget {
                                   )),
                                   columnSpacing: 50.0,
                                   columns: [
-                                    DataColumn(
+                                    const DataColumn(
                                         label: Text('Product',
                                             textAlign: TextAlign.center)),
                                     DataColumn(
@@ -166,7 +165,7 @@ class CreateSale extends StatelessWidget {
                                             textAlign: TextAlign.center)),
                                     DataColumn(
                                         label: Text(
-                                            'Price(${createShopController.currentShop.value?.currency})',
+                                            'Price(${shopController.currentShop.value?.currency})',
                                             textAlign: TextAlign.center)),
                                     DataColumn(
                                         label: Text('Sale Total',
@@ -176,18 +175,15 @@ class CreateSale extends StatelessWidget {
                                             textAlign: TextAlign.center)),
                                   ],
                                   rows: List.generate(
-                                      salesController.selectedList.length,
-                                      (index) {
-                                    ProductModel productModel = salesController
-                                        .selectedList
+                                      salesController.saleItem.length, (index) {
+                                    ReceiptItem receiptItem = salesController
+                                        .saleItem
                                         .elementAt(index);
-                                    final y = productModel.name!;
-                                    final x =
-                                        productModel.cartquantity.toString();
-                                    final z = productModel.sellingPrice![0];
-                                    final w = int.parse(
-                                            productModel.sellingPrice![0]) *
-                                        productModel.cartquantity!;
+                                    final y = receiptItem.product!.name!;
+                                    final x = receiptItem.quantity.toString();
+                                    final z = receiptItem.price;
+                                    final w = receiptItem.price! *
+                                        receiptItem.quantity!;
 
                                     return DataRow(cells: [
                                       DataCell(
@@ -199,7 +195,7 @@ class CreateSale extends StatelessWidget {
                                                 salesController
                                                     .decrementItem(index);
                                               },
-                                              icon: Icon(Icons.remove,
+                                              icon: const Icon(Icons.remove,
                                                   color: Colors.black,
                                                   size: 16)),
                                           Container(
@@ -218,7 +214,7 @@ class CreateSale extends StatelessWidget {
                                               ),
                                               child: majorTitle(
                                                   title:
-                                                      "${productModel.cartquantity}",
+                                                      "${receiptItem.quantity}",
                                                   color: Colors.black,
                                                   size: 12.0)),
                                           IconButton(
@@ -231,7 +227,8 @@ class CreateSale extends StatelessWidget {
                                                   size: 16)),
                                         ]),
                                       )),
-                                      DataCell(Container(child: Text(z))),
+                                      DataCell(
+                                          Container(child: Text(z.toString()))),
                                       DataCell(
                                           Container(child: Text(w.toString()))),
                                       DataCell(
@@ -241,7 +238,7 @@ class CreateSale extends StatelessWidget {
                                               child: showPopUpdialog(
                                                   context: context,
                                                   index: index,
-                                                  productModel: productModel)),
+                                                  receiptItem: receiptItem)),
                                         ),
                                       )
                                     ]);
@@ -264,42 +261,60 @@ class CreateSale extends StatelessWidget {
             leading: IconButton(
                 onPressed: () {
                   Get.back();
-                  salesController.selectedList.clear();
+                  salesController.saleItem.clear();
                 },
-                icon: Icon(
+                icon: const Icon(
                   Icons.arrow_back_ios,
                   color: Colors.black,
                 )),
-            title: majorTitle(
-                title: "Make New Sale", color: Colors.black, size: 18.0),
+            title:
+                majorTitle(title: "New Sale", color: Colors.black, size: 18.0),
           ),
           body: Stack(
             children: [
               Obx(() {
-                return salesController.selectedList.length == 0
+                return salesController.saleItem.isEmpty
                     ? Center(
-                        child: minorTitle(
-                          title: "No products selected for sale",
-                          color: Colors.black,
+                        child: InkWell(
+                          onTap: () {
+                            Get.to(() => ProductsScreen(
+                                  type: "sales",
+                                  shopId: shopController.currentShop.value?.id,
+                                ));
+                          },
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                "Add",
+                                style: TextStyle(
+                                    color: AppColors.mainColor, fontSize: 21),
+                              ),
+                              Icon(
+                                Icons.add_circle_outline_outlined,
+                                size: 60,
+                                color: AppColors.mainColor,
+                              ),
+                            ],
+                          ),
                         ),
                       )
                     : SingleChildScrollView(
                         child: Column(
                           children: [
-                            SizedBox(
+                            const SizedBox(
                               height: kToolbarHeight,
                             ),
                             ListView.builder(
                                 physics: NeverScrollableScrollPhysics(),
                                 shrinkWrap: true,
-                                itemCount: salesController.selectedList.length,
+                                itemCount: salesController.saleItem.length,
                                 itemBuilder: (context, index) {
-                                  ProductModel productModel = salesController
-                                      .selectedList
-                                      .elementAt(index);
+                                  ReceiptItem receiptItem =
+                                      salesController.saleItem.elementAt(index);
                                   return SalesContainer(
-                                      context: context,
-                                      productModel: productModel,
+                                      receiptItem: receiptItem,
                                       index: index,
                                       type: "small");
                                 }),
@@ -321,16 +336,16 @@ class CreateSale extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          SizedBox(height: 10),
+                          const SizedBox(height: 10),
 
                           Row(
                             children: [
                               Expanded(
                                 child: InkWell(
                                   onTap: () {
-                                    Get.to(() => ProductSelection(
+                                    Get.to(() => ProductsScreen(
                                           type: "sales",
-                                          shopId: createShopController
+                                          shopId: shopController
                                               .currentShop.value?.id,
                                         ));
                                   },
@@ -343,7 +358,7 @@ class CreateSale extends StatelessWidget {
                                     child: Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
-                                      children: [
+                                      children: const [
                                         Text("Select products to sell"),
                                         Icon(Icons.arrow_drop_down,
                                             color: Colors.grey)
@@ -366,7 +381,7 @@ class CreateSale extends StatelessWidget {
           bottomNavigationBar: Obx(() {
             return BottomAppBar(
               color: Colors.white,
-              child: salesController.selectedList.length == 0
+              child: salesController.saleItem.isEmpty
                   ? Container(height: 0)
                   : Container(
                       width: double.infinity,
@@ -375,13 +390,13 @@ class CreateSale extends StatelessWidget {
                       decoration: BoxDecoration(
                           border: Border.all(width: 1, color: Colors.grey)),
                       child: salesController.saveSaleLoad.value
-                          ? Center(child: CircularProgressIndicator())
+                          ? const Center(child: CircularProgressIndicator())
                           : InkWell(
                               splashColor: Colors.transparent,
                               onTap: () {
-                                if (salesController.selectedList.length == 0) {
+                                if (salesController.saleItem.isEmpty) {
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                      new SnackBar(
+                                      const SnackBar(
                                           content: Text(
                                               "Please select products to sell")));
                                 } else {
@@ -389,10 +404,367 @@ class CreateSale extends StatelessWidget {
                                   salesController.selectedPaymentMethod.value =
                                       "Cash";
                                   customersController.getCustomersInShop(
-                                      createShopController
-                                          .currentShop.value?.id,
+                                      shopController.currentShop.value?.id,
                                       "all");
-                                  confirmPayment(context, "small");
+                                  // confirmPayment(context, "small");
+                                  showModalBottomSheet(
+                                      context: Get.context!,
+                                      builder: (BuildContext c) {
+                                        return Obx(() {
+                                          return Container(
+                                            margin: EdgeInsets.symmetric(
+                                                horizontal: 20),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                SizedBox(
+                                                  height: 20,
+                                                ),
+                                                Row(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        majorTitle(
+                                                            title: "Items",
+                                                            color: Colors.black,
+                                                            size: 16.0),
+                                                        SizedBox(height: 10),
+                                                        minorTitle(
+                                                            title:
+                                                                "${salesController.saleItem.length}",
+                                                            color: Colors.grey)
+                                                      ],
+                                                    ),
+                                                    SizedBox(width: 10),
+                                                    Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        majorTitle(
+                                                            title: "Total",
+                                                            color: Colors.black,
+                                                            size: 16.0),
+                                                        SizedBox(height: 10),
+                                                        minorTitle(
+                                                            title: htmlPrice(
+                                                                salesController
+                                                                    .grandTotal
+                                                                    .value),
+                                                            color: Colors.grey)
+                                                      ],
+                                                    )
+                                                  ],
+                                                ),
+                                                SizedBox(height: 10),
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    majorTitle(
+                                                        title: "Pay with",
+                                                        color: Colors.black,
+                                                        size: 16.0),
+                                                    Container(
+                                                      padding: const EdgeInsets
+                                                              .symmetric(
+                                                          horizontal: 20),
+                                                      decoration: BoxDecoration(
+                                                          border: Border.all(
+                                                              color:
+                                                                  Colors.grey),
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(5)),
+                                                      child: InkWell(
+                                                        onTap: () {
+                                                          showDialog(
+                                                              context: context,
+                                                              builder:
+                                                                  (context) {
+                                                                return SimpleDialog(
+                                                                  children: List
+                                                                      .generate(
+                                                                          salesController
+                                                                              .paymentMethods
+                                                                              .length,
+                                                                          (index) =>
+                                                                              SimpleDialogOption(
+                                                                                onPressed: () {
+                                                                                  salesController.selectedPaymentMethod.value = salesController.paymentMethods[index];
+                                                                                  Navigator.pop(context);
+                                                                                },
+                                                                                child: Container(
+                                                                                  padding: const EdgeInsets.symmetric(vertical: 5),
+                                                                                  child: Text(
+                                                                                    "${salesController.paymentMethods[index]}",
+                                                                                    style: const TextStyle(fontSize: 18),
+                                                                                  ),
+                                                                                ),
+                                                                              )),
+                                                                );
+                                                              });
+                                                        },
+                                                        child: Row(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .spaceBetween,
+                                                          children: [
+                                                            Obx(
+                                                              () => Text(
+                                                                  salesController
+                                                                      .selectedPaymentMethod
+                                                                      .value),
+                                                            ),
+                                                            const Icon(Icons
+                                                                .arrow_drop_down)
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    )
+                                                  ],
+                                                ),
+                                                const SizedBox(height: 20),
+                                                if (customersController
+                                                    .customers.isEmpty)
+                                                  InkWell(
+                                                    onTap: () {
+                                                      Get.to(() =>
+                                                          CreateCustomer(
+                                                              page:
+                                                                  "createSale"));
+                                                    },
+                                                    child: Text(
+                                                      "Add Customer",
+                                                      style: TextStyle(
+                                                          color: AppColors
+                                                              .mainColor),
+                                                    ),
+                                                  ),
+                                                majorTitle(
+                                                    title: "Paid Amount",
+                                                    color: Colors.black,
+                                                    size: 14.0),
+                                                SizedBox(height: 10),
+                                                TextFormField(
+                                                    controller:
+                                                        customersController
+                                                            .amountpaid,
+                                                    onChanged: (value) {
+                                                      salesController
+                                                          .changeTotal
+                                                          .value = int.parse(
+                                                              customersController
+                                                                  .amountpaid
+                                                                  .text) -
+                                                          salesController
+                                                              .grandTotal.value;
+                                                    },
+                                                    keyboardType:
+                                                        TextInputType.number,
+                                                    autofocus: true,
+                                                    decoration: InputDecoration(
+                                                        contentPadding:
+                                                            const EdgeInsets
+                                                                    .symmetric(
+                                                                horizontal: 10),
+                                                        border:
+                                                            OutlineInputBorder(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(10),
+                                                        ),
+                                                        prefix: Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                      .only(
+                                                                  right: 10),
+                                                          child: Text(
+                                                              shopController
+                                                                  .currentShop
+                                                                  .value!
+                                                                  .currency!),
+                                                        ))),
+                                                SizedBox(height: 10),
+                                                majorTitle(
+                                                    title:
+                                                        "Balance: ${htmlPrice(salesController.changeTotal.value)}",
+                                                    color: Colors.black,
+                                                    size: 14.0),
+                                                SizedBox(height: 10),
+                                                if ((salesController
+                                                                .selectedPaymentMethod
+                                                                .value ==
+                                                            "Wallet" ||
+                                                        salesController
+                                                                .selectedPaymentMethod
+                                                                .value ==
+                                                            "Credit") &&
+                                                    customersController
+                                                        .customers.isNotEmpty)
+                                                  Expanded(
+                                                    child: Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        majorTitle(
+                                                            title:
+                                                                "Choose Customer",
+                                                            color: Colors.black,
+                                                            size: 14.0),
+                                                        SizedBox(height: 10),
+                                                        Flexible(
+                                                          child: InkWell(
+                                                            onTap: () {
+                                                              if (customersController
+                                                                  .customers
+                                                                  .isEmpty) {
+                                                                showDialog(
+                                                                    context:
+                                                                        context,
+                                                                    builder:
+                                                                        (BuildContext
+                                                                            context) {
+                                                                      return AlertDialog(
+                                                                        title: const Text(
+                                                                            "This Shop Doesn't have customer"),
+                                                                        content:
+                                                                            const Text("Would you like to add Customer?"),
+                                                                        actions: [
+                                                                          TextButton(
+                                                                            child:
+                                                                                const Text("Cancel"),
+                                                                            onPressed:
+                                                                                () {
+                                                                              Get.back();
+                                                                            },
+                                                                          ),
+                                                                          TextButton(
+                                                                            child:
+                                                                                Text("OK"),
+                                                                            onPressed:
+                                                                                () {
+                                                                              Get.back();
+                                                                              Get.to(() => CreateCustomer(page: "createSale"));
+                                                                            },
+                                                                          )
+                                                                        ],
+                                                                      );
+                                                                    });
+                                                              } else {
+                                                                showDialog(
+                                                                    context:
+                                                                        context,
+                                                                    builder:
+                                                                        (context) {
+                                                                      return SimpleDialog(
+                                                                        children: List.generate(
+                                                                            customersController.customers.length,
+                                                                            (index) => SimpleDialogOption(
+                                                                                  onPressed: () {
+                                                                                    salesController.selectedCustomer.value = customersController.customers.elementAt(index);
+                                                                                    Navigator.pop(context);
+                                                                                  },
+                                                                                  child: Text("${customersController.customers.elementAt(index).fullName}"),
+                                                                                )),
+                                                                      );
+                                                                    });
+                                                              }
+                                                            },
+                                                            child: Container(
+                                                              padding:
+                                                                  EdgeInsets
+                                                                      .all(10),
+                                                              decoration: BoxDecoration(
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              10),
+                                                                  border: Border.all(
+                                                                      color: Colors
+                                                                          .grey)),
+                                                              child: Row(
+                                                                children: [
+                                                                  Obx(() {
+                                                                    return majorTitle(
+                                                                        title: salesController.selectedCustomer.value ==
+                                                                                null
+                                                                            ? ""
+                                                                            : salesController
+                                                                                .selectedCustomer.value!.fullName!,
+                                                                        color: Colors
+                                                                            .black,
+                                                                        size:
+                                                                            12.0);
+                                                                  }),
+                                                                  Spacer(),
+                                                                  const Icon(Icons
+                                                                      .arrow_drop_down)
+                                                                ],
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        SizedBox(height: 10),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.end,
+                                                  children: [
+                                                    TextButton(
+                                                        onPressed: () {
+                                                          Navigator.pop(
+                                                              context);
+                                                        },
+                                                        child: majorTitle(
+                                                            title: "Cancel",
+                                                            color: AppColors
+                                                                .mainColor,
+                                                            size: 16.0)),
+                                                    TextButton(
+                                                        onPressed: () {
+                                                          salesController.saveSale(
+                                                              screen: page ??
+                                                                  "admin",
+                                                              attendantsUID: page ==
+                                                                      "allSales"
+                                                                  ? attendantController
+                                                                      .attendant
+                                                                      .value!
+                                                                      .id
+                                                                  : authController
+                                                                      .currentUser
+                                                                      .value
+                                                                      ?.attendantId,
+                                                              context: context);
+                                                        },
+                                                        child: majorTitle(
+                                                            title: "Pay",
+                                                            color: AppColors
+                                                                .mainColor,
+                                                            size: 16.0)),
+                                                  ],
+                                                ),
+                                                SizedBox(height: 20),
+                                              ],
+                                            ),
+                                          );
+                                        });
+                                      });
                                 }
                               },
                               child: Container(
@@ -422,25 +794,27 @@ class CreateSale extends StatelessWidget {
         context: context,
         builder: (_) {
           return AlertDialog(
-            contentPadding: EdgeInsets.only(bottom: 0.0, left: 20, right: 20),
-            title: Center(
+            contentPadding:
+                const EdgeInsets.only(bottom: 0.0, left: 20, right: 20),
+            title: const Center(
                 child: Padding(
-              padding: const EdgeInsets.only(bottom: 10.0),
+              padding: EdgeInsets.only(bottom: 10.0),
               child: Text("Confirm Payment"),
             )),
             content: Obx(() {
               return SingleChildScrollView(
-                child: Container(
-                  height:
-                      salesController.selectedPaymentMethod.value == "Credit"
-                          ? MediaQuery.of(context).size.height * 0.65
-                          : MediaQuery.of(context).size.height * 0.5,
+                child: SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.4,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
+                      SizedBox(
+                        height: 20,
+                      ),
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -451,8 +825,7 @@ class CreateSale extends StatelessWidget {
                                   size: 16.0),
                               SizedBox(height: 10),
                               minorTitle(
-                                  title:
-                                      "${salesController.selectedList.length}",
+                                  title: "${salesController.saleItem.length}",
                                   color: Colors.grey)
                             ],
                           ),
@@ -466,255 +839,203 @@ class CreateSale extends StatelessWidget {
                                   size: 16.0),
                               SizedBox(height: 10),
                               minorTitle(
-                                  title: "${salesController.grandTotal.value}",
+                                  title:
+                                      "${shopController.currentShop.value?.currency} ${salesController.grandTotal.value}",
                                   color: Colors.grey)
                             ],
                           )
                         ],
                       ),
                       SizedBox(height: 10),
-                      majorTitle(
-                          title: "Paywith", color: Colors.black, size: 16.0),
-                      Obx(() {
-                        return RadioListTile(
-                          contentPadding: EdgeInsets.zero,
-                          dense: true,
-                          title:Transform.translate(
-                            offset: Offset(-15, 0),
-                            child: Text(
-                              "Cash",
-                              style: TextStyle(fontSize: 12),
-                            ),
-                          ),
-
-                          // title: Text('Cash'),
-                          value: "Cash",
-                          groupValue:
-                              salesController.selectedPaymentMethod.value,
-                          onChanged: (value) {
-                            salesController.selectedPaymentMethod.value =
-                                value.toString();
-                          },
-                        );
-                      }),
-
-                      Obx(() {
-                        return RadioListTile(
-                          contentPadding: EdgeInsets.zero,
-                          dense: true,
-                          title:Transform.translate(
-                            offset: Offset(-15, 0),
-                            child: Text(
-                              "Credit",
-                              style: TextStyle(fontSize: 12),
-                            ),
-                          ),
-
-                          // title: Text('Cash'),
-                          value: "Credit",
-                          groupValue:
-                          salesController.selectedPaymentMethod.value,
-                          onChanged: (value) {
-                            salesController.selectedPaymentMethod.value =
-                                value.toString();
-                            salesController.textEditingCredit.text = "0";
-                            salesController.balance.value =
-                                salesController.grandTotal.value;
-                          },
-                        );
-                      }),
-                      Obx(() {
-                        return RadioListTile(
-                          contentPadding: EdgeInsets.zero,
-                          dense: true,
-                          title:Transform.translate(
-                            offset: Offset(-15, 0),
-                            child: Text(
-                              "Wallet",
-                              style: TextStyle(fontSize: 12),
-                            ),
-                          ),
-
-                          // title: Text('Cash'),
-                          value: "Wallet",
-                          groupValue:
-                          salesController.selectedPaymentMethod.value,
-                          onChanged: (value) {
-                            salesController.selectedPaymentMethod.value =
-                                value.toString();
-                          },
-                        );
-                      }),
-
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Obx(() {
-                        return salesController.selectedPaymentMethod.value ==
-                                "Credit"
-                            ? Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          majorTitle(
+                              title: "Pay with",
+                              color: Colors.black,
+                              size: 16.0),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            decoration: BoxDecoration(
+                                border: Border.all(color: Colors.grey),
+                                borderRadius: BorderRadius.circular(5)),
+                            child: InkWell(
+                              onTap: () {
+                                showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return SimpleDialog(
+                                        children: List.generate(
+                                            salesController
+                                                .paymentMethods.length,
+                                            (index) => SimpleDialogOption(
+                                                  onPressed: () {
+                                                    salesController
+                                                            .selectedPaymentMethod
+                                                            .value =
+                                                        salesController
+                                                                .paymentMethods[
+                                                            index];
+                                                    Navigator.pop(context);
+                                                  },
+                                                  child: Container(
+                                                    padding: const EdgeInsets
+                                                        .symmetric(vertical: 5),
+                                                    child: Text(
+                                                      "${salesController.paymentMethods[index]}",
+                                                      style: const TextStyle(
+                                                          fontSize: 18),
+                                                    ),
+                                                  ),
+                                                )),
+                                      );
+                                    });
+                              },
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Expanded(
-                                    flex: 3,
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                  Obx(
+                                    () => Text(salesController
+                                        .selectedPaymentMethod.value),
+                                  ),
+                                  const Icon(Icons.arrow_drop_down)
+                                ],
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                      if (customersController.customers.isEmpty)
+                        InkWell(
+                          onTap: () {
+                            Get.to(() => CreateCustomer(page: "createSale"));
+                          },
+                          child: Text(
+                            "Add Customer",
+                            style: TextStyle(color: AppColors.mainColor),
+                          ),
+                        ),
+                      if ((salesController.selectedPaymentMethod.value ==
+                                  "Wallet" ||
+                              salesController.selectedPaymentMethod.value ==
+                                  "Credit") &&
+                          customersController.customers.isNotEmpty)
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              TextFormField(
+                                  controller: customersController.amountpaid,
+                                  keyboardType: TextInputType.number,
+                                  decoration: InputDecoration(
+                                      contentPadding:
+                                          EdgeInsets.symmetric(horizontal: 10),
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      prefix: Padding(
+                                        padding:
+                                            const EdgeInsets.only(right: 10),
+                                        child: Text(shopController
+                                            .currentShop.value!.currency!),
+                                      ))),
+                              SizedBox(height: 10),
+                              majorTitle(
+                                  title: "Choose Customer",
+                                  color: Colors.black,
+                                  size: 14.0),
+                              SizedBox(height: 10),
+                              Flexible(
+                                child: InkWell(
+                                  onTap: () {
+                                    if (customersController.customers.isEmpty) {
+                                      showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return AlertDialog(
+                                              title: const Text(
+                                                  "This Shop Doesn't have customer"),
+                                              content: const Text(
+                                                  "Would you like to add Customer?"),
+                                              actions: [
+                                                TextButton(
+                                                  child: const Text("Cancel"),
+                                                  onPressed: () {
+                                                    Get.back();
+                                                  },
+                                                ),
+                                                TextButton(
+                                                  child: Text("OK"),
+                                                  onPressed: () {
+                                                    Get.back();
+                                                    Get.to(() => CreateCustomer(
+                                                        page: "createSale"));
+                                                  },
+                                                )
+                                              ],
+                                            );
+                                          });
+                                    } else {
+                                      showDialog(
+                                          context: context,
+                                          builder: (context) {
+                                            return SimpleDialog(
+                                              children: List.generate(
+                                                  customersController
+                                                      .customers.length,
+                                                  (index) => SimpleDialogOption(
+                                                        onPressed: () {
+                                                          salesController
+                                                                  .selectedCustomer
+                                                                  .value =
+                                                              customersController
+                                                                  .customers
+                                                                  .elementAt(
+                                                                      index);
+                                                          Navigator.pop(
+                                                              context);
+                                                        },
+                                                        child: Text(
+                                                            "${customersController.customers.elementAt(index).fullName}"),
+                                                      )),
+                                            );
+                                          });
+                                    }
+                                  },
+                                  child: Container(
+                                    padding: EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(10),
+                                        border: Border.all(color: Colors.grey)),
+                                    child: Row(
                                       children: [
-                                        minorTitle(
-                                            title: "Amount",
-                                            color: Colors.black),
-                                        TextFormField(
-                                          keyboardType: TextInputType.number,
-                                          controller:
-                                              salesController.textEditingCredit,
-                                          onChanged: (value) {
-                                            if (int.parse(value) >
-                                                salesController
-                                                    .grandTotal.value) {
-                                              salesController
-                                                      .textEditingCredit.text =
-                                                  salesController
-                                                      .grandTotal.value
-                                                      .toString();
-                                              salesController.balance.value = 0;
-                                            } else if (salesController
-                                                    .textEditingCredit.text ==
-                                                "") {
-                                              salesController.balance.value =
-                                                  salesController
-                                                      .grandTotal.value;
-                                            } else {
-                                              salesController.balance.value =
-                                                  salesController
-                                                          .grandTotal.value -
-                                                      int.parse(value);
-                                            }
-                                          },
-                                          decoration: InputDecoration(
-                                              isDense: true,
-                                              contentPadding:
-                                                  EdgeInsets.fromLTRB(
-                                                      10, 10, 10, 0),
-                                              border: OutlineInputBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          20))),
-                                        ),
+                                        Obx(() {
+                                          return majorTitle(
+                                              title: salesController
+                                                          .selectedCustomer
+                                                          .value ==
+                                                      null
+                                                  ? ""
+                                                  : salesController
+                                                      .selectedCustomer
+                                                      .value!
+                                                      .fullName!,
+                                              color: Colors.black,
+                                              size: 12.0);
+                                        }),
+                                        Spacer(),
+                                        const Icon(Icons.arrow_drop_down)
                                       ],
                                     ),
                                   ),
-                                  Spacer(),
-                                  Expanded(
-                                    flex: 2,
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        majorTitle(
-                                            title: "Balance",
-                                            color: Colors.black,
-                                            size: 13.0),
-                                        Obx(() {
-                                          return minorTitle(
-                                              title:
-                                                  salesController.balance.value,
-                                              color: Colors.grey);
-                                        })
-                                      ],
-                                    ),
-                                  )
-                                ],
-                              )
-                            : Container();
-                      }),
-                      SizedBox(height: 10),
-                      majorTitle(
-                          title: "Select Customer",
-                          color: Colors.black,
-                          size: 14.0),
-                      SizedBox(height: 10),
-                      Flexible(
-                        child: InkWell(
-                          onTap: () {
-                            if (customersController.customers.length == 0) {
-                              showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return AlertDialog(
-                                      title: Text(
-                                          "This Shop Doesn't have customer"),
-                                      content: Text(
-                                          "Wuould you like to add Customer?"),
-                                      actions: [
-                                        TextButton(
-                                          child: Text("Cancel"),
-                                          onPressed: () {
-                                            Get.back();
-                                          },
-                                        ),
-                                        TextButton(
-                                          child: Text("OK"),
-                                          onPressed: () {
-                                            Get.back();
-                                            Get.to(() => CreateCustomer(
-                                                page: "createSale",
-                                                type: "customers"));
-                                          },
-                                        )
-                                      ],
-                                    );
-                                  });
-                            } else {
-                              showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return SimpleDialog(
-                                      children: List.generate(
-                                          customersController.customers.length,
-                                          (index) => SimpleDialogOption(
-                                                onPressed: () {
-                                                  salesController
-                                                          .selectedCustomer
-                                                          .value =
-                                                      customersController
-                                                          .customers
-                                                          .elementAt(index);
-                                                  Navigator.pop(context);
-                                                },
-                                                child: Text(
-                                                    "${customersController.customers.elementAt(index).fullName}"),
-                                              )),
-                                    );
-                                  });
-                            }
-                          },
-                          child: Container(
-                            padding: EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20),
-                                border:
-                                    Border.all(color: Colors.black, width: 2)),
-                            child: Row(
-                              children: [
-                                Obx(() {
-                                  return majorTitle(
-                                      title: salesController
-                                                  .selectedCustomer.value ==
-                                              null
-                                          ? ""
-                                          : "${salesController.selectedCustomer.value!.fullName!}",
-                                      color: Colors.black,
-                                      size: 12.0);
-                                }),
-                                Spacer(),
-                                Icon(Icons.arrow_drop_down)
-                              ],
-                            ),
+                                ),
+                              ),
+                              SizedBox(height: 10),
+                            ],
                           ),
                         ),
-                      ),
-                      SizedBox(height: 10),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
@@ -728,16 +1049,13 @@ class CreateSale extends StatelessWidget {
                                   size: 16.0)),
                           TextButton(
                               onPressed: () {
-                                Navigator.pop(context);
                                 salesController.saveSale(
-                                    screen: page == null ? "admin" : page,
+                                    screen: page ?? "admin",
                                     attendantsUID: page == "allSales"
                                         ? attendantController
                                             .attendant.value!.id
                                         : authController
                                             .currentUser.value?.attendantId,
-                                    shopUID: createShopController
-                                        .currentShop.value?.id,
                                     context: context);
                               },
                               child: majorTitle(
@@ -756,12 +1074,12 @@ class CreateSale extends StatelessWidget {
   }
 
   Widget showPopUpdialog(
-      {required context, required index, required ProductModel productModel}) {
+      {required context, required index, required ReceiptItem receiptItem}) {
     TextEditingController textEditingController = TextEditingController();
     return PopupMenuButton(
       itemBuilder: (ctx) => [
-        if (authController.usertype == "admin" ||
-            (authController.usertype == "attendant" &&
+        if (authController.usertype.value == "admin" ||
+            (authController.usertype.value == "attendant" &&
                 attendantController.checkRole("edit_entries")))
           PopupMenuItem(
             child: ListTile(
@@ -769,13 +1087,13 @@ class CreateSale extends StatelessWidget {
               onTap: () {
                 Get.back();
                 showEditDialogPrice(
-                    context: context, productModel: productModel, index: index);
+                    productModel: receiptItem.product!, index: index);
               },
               title: Text("Edit Selling price"),
             ),
           ),
-        if (authController.usertype == "admin" ||
-            (authController.usertype == "attendant" &&
+        if (authController.usertype.value == "admin" ||
+            (authController.usertype.value == "attendant" &&
                 attendantController.checkRole("discounts")))
           PopupMenuItem(
             child: ListTile(
@@ -783,9 +1101,8 @@ class CreateSale extends StatelessWidget {
               onTap: () {
                 Get.back();
                 discountDialog(
-                    context: context,
                     controller: textEditingController,
-                    productModel: productModel,
+                    receiptItem: receiptItem,
                     index: index);
               },
               title: Text("Give Discount"),

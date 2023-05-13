@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutterpos/controllers/AuthController.dart';
-import 'package:flutterpos/controllers/attendant_controller.dart';
-import 'package:flutterpos/controllers/shop_controller.dart';
-import 'package:flutterpos/models/sales_model.dart';
-import 'package:flutterpos/responsive/responsiveness.dart';
-import 'package:flutterpos/screens/sales/create_sale.dart';
-import 'package:flutterpos/screens/stock/badstocks.dart';
-import 'package:flutterpos/utils/helper.dart';
-import 'package:flutterpos/widgets/pdf/sales_pdf.dart';
+import 'package:pointify/controllers/AuthController.dart';
+import 'package:pointify/controllers/attendant_controller.dart';
+import 'package:pointify/controllers/shop_controller.dart';
+import 'package:pointify/models/receipt.dart';
+import 'package:pointify/responsive/responsiveness.dart';
+import 'package:pointify/screens/sales/create_sale.dart';
+import 'package:pointify/screens/stock/badstocks.dart';
+import 'package:pointify/utils/helper.dart';
+import 'package:pointify/widgets/pdf/sales_pdf.dart';
+import 'package:pointify/widgets/sales_card.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
@@ -16,7 +17,6 @@ import '../../controllers/sales_controller.dart';
 import '../../utils/colors.dart';
 import '../../widgets/bigtext.dart';
 import '../../widgets/normal_text.dart';
-import '../../widgets/sold_card.dart';
 import '../finance/finance_page.dart';
 import '../finance/profit_page.dart';
 import '../home/home_page.dart';
@@ -35,28 +35,13 @@ class AllSalesPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(page);
-    return WillPopScope(
-      onWillPop: () async {
-        salesController.getSalesByShop(
-            id: shopController.currentShop.value?.id,
-            attendantId: authController.usertype.value == "admin"
-                ? ""
-                : attendantController.attendant.value!.id,
-            onCredit: "",
-            startingDate: DateFormat("yyyy-MM-dd").format(DateTime.now()));
-
-        return true;
-      },
-      child: ResponsiveWidget(
-        largeScreen: _body(context),
-        smallScreen: _body(context),
-      ),
+    return ResponsiveWidget(
+      largeScreen: _body(context),
+      smallScreen: _body(context),
     );
   }
 
   Widget _body(context) {
-    print("user type ${authController.usertype.value}");
     return Obx(() => DefaultTabController(
           length: salesController.tabController.length,
           initialIndex: salesController.salesInitialIndex.value,
@@ -102,11 +87,11 @@ class AllSalesPage extends StatelessWidget {
                                 Get.to(() => BadStockPage(page: "sales"));
                               }
                             },
-                            title: Text("BadStock"),
+                            title: const Text("Bad Stocks"),
                           ),
                         ),
                       ],
-                      icon: Icon(
+                      icon: const Icon(
                         Icons.more_vert,
                         color: Colors.black,
                         size: 30,
@@ -144,19 +129,19 @@ class AllSalesPage extends StatelessWidget {
                       ),
                     ),
               actions: [
-                if (authController.usertype == "admin")
+                if (authController.usertype.value == "admin")
                   IconButton(
                       onPressed: () {
                         SalesPdf(
                             shop: shopController.currentShop.value!.name!,
-                            sales: salesController.sales,
+                            sales: salesController.allSales,
                             type: salesController.salesInitialIndex.value == 0
                                 ? "All"
                                 : salesController.salesInitialIndex.value == 1
                                     ? "Credit"
                                     : "Today");
                       },
-                      icon: Icon(
+                      icon: const Icon(
                         Icons.download_rounded,
                         color: Colors.black,
                       ))
@@ -168,33 +153,17 @@ class AllSalesPage extends StatelessWidget {
                 onTap: (value) {
                   salesController.salesInitialIndex.value = value;
                   if (value == 0) {
-                    salesController.getSalesByShop(
-                        id: shopController.currentShop.value?.id,
-                        attendantId: page == "AtedantLanding"
-                            ? attendantController.attendant.value!.id
-                            : "",
-                        onCredit: "",
-                        startingDate: "");
+                    salesController.getSales(onCredit: "", startingDate: "");
                   } else if (value == 1) {
-                    salesController.getSalesByShop(
-                        id: shopController.currentShop.value?.id,
-                        attendantId: page == "AtedantLanding"
-                            ? attendantController.attendant.value!.id
-                            : "",
-                        onCredit: true,
-                        startingDate: "");
+                    salesController.getSales(onCredit: true, startingDate: "");
                   } else {
-                    salesController.getSalesByShop(
-                        id: shopController.currentShop.value?.id,
-                        attendantId: authController.usertype == "admin"
-                            ? ""
-                            : attendantController.attendant.value!.id,
+                    salesController.getSales(
                         onCredit: "",
                         startingDate:
-                            "${DateFormat("yyyy-MM-dd").format(DateTime.now())}");
+                            DateFormat("yyyy-MM-dd").format(DateTime.now()));
                   }
                 },
-                tabs: [
+                tabs: const [
                   Tab(text: 'All Sales'),
                   Tab(text: 'On Credit'),
                   Tab(text: 'Today'),
@@ -225,14 +194,26 @@ class AllSales extends StatelessWidget {
 
   AllSales({Key? key}) : super(key: key);
 
+  _checkEmptyView() {
+    if (salesController.salesInitialIndex.value == 0) {
+      return salesController.allSales.isEmpty;
+    }
+    if (salesController.salesInitialIndex.value == 1) {
+      return salesController.creditSales.isEmpty;
+    }
+    if (salesController.salesInitialIndex.value == 2) {
+      return salesController.todaySales.isEmpty;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      return salesController.salesByShopLoad.value
-          ? Center(
+      return salesController.loadingSales.value
+          ? const Center(
               child: CircularProgressIndicator(),
             )
-          : salesController.sales.length == 0
+          : _checkEmptyView()
               ? Center(
                   child: normalText(
                       title: "No entries found",
@@ -257,8 +238,8 @@ class AllSales extends StatelessWidget {
                                 children: [
                                   Row(
                                     children: [
-                                      Text("Total Sales:"),
-                                      SizedBox(
+                                      const Text("Total Sales:"),
+                                      const SizedBox(
                                         width: 10,
                                       ),
                                       Text(
@@ -277,15 +258,38 @@ class AllSales extends StatelessWidget {
                         ],
                       ),
                     )
-                  : ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: salesController.sales.length,
-                      itemBuilder: (context, index) {
-                        SalesModel salesModel =
-                            salesController.sales.elementAt(index);
-                        return soldCard(
-                            salesModel: salesModel, context: context);
-                      });
+                  : _sales();
     });
+  }
+
+  _sales() {
+    if (salesController.salesInitialIndex.value == 0) {
+      return ListView.builder(
+          shrinkWrap: true,
+          itemCount: salesController.allSales.length,
+          itemBuilder: (context, index) {
+            SalesModel salesModel = salesController.allSales.elementAt(index);
+            return SalesCard(salesModel: salesModel);
+          });
+    }
+    if (salesController.salesInitialIndex.value == 1) {
+      return ListView.builder(
+          shrinkWrap: true,
+          itemCount: salesController.creditSales.length,
+          itemBuilder: (context, index) {
+            SalesModel salesModel =
+                salesController.creditSales.elementAt(index);
+            return SalesCard(salesModel: salesModel);
+          });
+    }
+    if (salesController.salesInitialIndex.value == 2) {
+      return ListView.builder(
+          shrinkWrap: true,
+          itemCount: salesController.todaySales.length,
+          itemBuilder: (context, index) {
+            SalesModel salesModel = salesController.todaySales.elementAt(index);
+            return SalesCard(salesModel: salesModel);
+          });
+    }
   }
 }

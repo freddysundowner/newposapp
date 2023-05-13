@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutterpos/controllers/attendant_controller.dart';
-import 'package:flutterpos/controllers/shop_controller.dart';
-import 'package:flutterpos/models/product_model.dart';
-import 'package:flutterpos/responsive/responsiveness.dart';
-import 'package:flutterpos/screens/product/products_page.dart';
+import 'package:pointify/controllers/attendant_controller.dart';
+import 'package:pointify/controllers/shop_controller.dart';
+import 'package:pointify/models/product_model.dart';
+import 'package:pointify/responsive/responsiveness.dart';
+import 'package:pointify/screens/product/products_page.dart';
 import 'package:get/get.dart';
+import 'package:pointify/screens/suppliers/create_suppliers.dart';
 
 import '../../../controllers/AuthController.dart';
 import '../../../controllers/product_controller.dart';
@@ -24,8 +25,10 @@ class CreateProduct extends StatelessWidget {
       : super(key: key) {
     if (page == "create") {
       productController.clearControllers();
-      supplierController.getSuppliersInShop(shopController.currentShop.value!.id!, "all");
-      productController.getProductCategory(shopId: shopController.currentShop.value?.id);
+      supplierController.getSuppliersInShop(
+          shopController.currentShop.value!.id!, "all");
+      productController.getProductCategory(
+          shopId: shopController.currentShop.value?.id);
     } else {
       productController.assignTextFields(productModel);
     }
@@ -567,7 +570,8 @@ class CreateProduct extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("Supplier", style: TextStyle(color: Colors.black)),
+                    const Text("Supplier",
+                        style: TextStyle(color: Colors.black)),
                     SizedBox(height: 5),
                     InkWell(
                       onTap: () {
@@ -577,10 +581,11 @@ class CreateProduct extends StatelessWidget {
                               context: context,
                               builder: (BuildContext context) {
                                 return AlertDialog(
-                                  content: Text("Add suppliers to continue."),
+                                  content:
+                                      const Text("Add suppliers to continue."),
                                   actions: [
                                     TextButton(
-                                      child: Text("OK"),
+                                      child: const Text("OK"),
                                       onPressed: () {
                                         Get.back();
                                       },
@@ -648,25 +653,23 @@ class CreateProduct extends StatelessWidget {
                     onPressed: () {
                       if (MediaQuery.of(context).size.width > 600) {
                         Get.find<HomeController>().selectedWidget.value =
-                            CreateCustomer(
+                            CreateSuppliers(
                           page: "createProduct",
-                          type: "supplier",
                         );
                       } else {
-                        Get.to(() => CreateCustomer(
+                        Get.to(() => CreateSuppliers(
                               page: "createProduct",
-                              type: "supplier",
                             ));
                       }
                     },
                     child: Container(
-                        padding: EdgeInsets.all(8),
+                        padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
                             color: Colors.grey.withOpacity(0.2),
-                            borderRadius: BorderRadius.only(
+                            borderRadius: const BorderRadius.only(
                                 topRight: Radius.circular(10),
                                 bottomRight: Radius.circular(10))),
-                        child: Text(
+                        child: const Text(
                           "+ Add",
                           style: TextStyle(color: Colors.green),
                         )),
@@ -679,7 +682,7 @@ class CreateProduct extends StatelessWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("Description"),
+            const Text("Description"),
             SizedBox(height: 5),
             TextFormField(
               controller: productController.descriptionController,
@@ -690,7 +693,7 @@ class CreateProduct extends StatelessWidget {
                 fillColor: Colors.white,
                 filled: true,
                 hintText: "optional",
-                labelStyle: TextStyle(
+                labelStyle: const TextStyle(
                     fontFamily: 'Montserrat',
                     fontWeight: FontWeight.bold,
                     color: Colors.grey),
@@ -714,7 +717,7 @@ class CreateProduct extends StatelessWidget {
     return Obx(() {
       return productController.creatingProductLoad.value ||
               productController.updateProductLoad.value
-          ? Center(
+          ? const Center(
               child: CircularProgressIndicator(),
             )
           : InkWell(
@@ -723,9 +726,9 @@ class CreateProduct extends StatelessWidget {
                 if (page == "create") {
                   productController.saveProducts(
                       "${shopController.currentShop.value!.id}",
-                      authController.usertype != "admin"
+                      authController.usertype.value != "admin"
                           ? "${Get.find<AttendantController>().attendant.value!.id}"
-                          : "${authController.currentUser.value!.attendantId!}",
+                          : authController.currentUser.value!.attendantId!,
                       context);
                 } else {
                   productController.updateProduct(

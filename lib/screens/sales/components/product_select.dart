@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:flutterpos/controllers/shop_controller.dart';
+import 'package:pointify/controllers/shop_controller.dart';
 import 'package:get/get.dart';
+import 'package:pointify/models/product_model.dart';
+import 'package:pointify/models/receipt_item.dart';
+import 'package:pointify/widgets/alert.dart';
 
 import '../../../controllers/purchase_controller.dart';
 import '../../../controllers/sales_controller.dart';
 
-Widget shopcard({required product, required type}) {
-  SalesController salesController = Get.find<SalesController>();
+Widget productCard(
+    {required ProductModel product, required type, Function? function}) {
   PurchaseController purchaseController = Get.find<PurchaseController>();
   ShopController shopController = Get.find<ShopController>();
   return Padding(
@@ -14,23 +17,26 @@ Widget shopcard({required product, required type}) {
     child: InkWell(
       onTap: () {
         if (type == "product") {
-          if (product.quantity <= 0) {
-            Get.snackbar("", "Product is Already Out off Stock",
-                backgroundColor: Colors.deepPurple, colorText: Colors.white);
+          if (product.quantity! <= 0) {
+            generalAlert(title: "Alert", message: "Product out of stock");
           } else {
             Get.back();
           }
         } else if (type == "purchase") {
-          purchaseController.changeSelectedList(product);
+          purchaseController.changesaleItem(product);
           Get.back();
+        } else if (type == "badstock") {
+          if (product.quantity! <= 0) {
+            generalAlert(title: "Alert", message: "Product out of stock");
+            return;
+          }
+          function!(product);
         } else {
-          if (product.quantity <= 0) {
-            Get.snackbar("", "Product is Already Out off Stock",
-                backgroundColor: Colors.deepPurple, colorText: Colors.white);
+          if (product.quantity! <= 0) {
+            generalAlert(title: "Alert", message: "Product out of stock");
           } else {
-            salesController.selecteProduct.value = product;
-            salesController.changeSelectedList(product);
-            Get.back();
+            print("b");
+            function!(product);
           }
         }
       },
@@ -51,7 +57,7 @@ Widget shopcard({required product, required type}) {
               ),
               Text(
                 "@ ${product.sellingPrice![0]} ${shopController.currentShop.value?.currency}, ${product.quantity} Left",
-                style: TextStyle(
+                style: const TextStyle(
                     color: Colors.grey,
                     fontSize: 14,
                     fontWeight: FontWeight.bold),
@@ -60,8 +66,8 @@ Widget shopcard({required product, required type}) {
                 height: 5,
               ),
               Text(
-                product.category.name,
-                style: TextStyle(color: Colors.grey, fontSize: 16),
+                product.category!.name!,
+                style: const TextStyle(color: Colors.grey, fontSize: 16),
               ),
             ],
           ),

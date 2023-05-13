@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutterpos/controllers/cashflow_controller.dart';
-import 'package:flutterpos/controllers/home_controller.dart';
-import 'package:flutterpos/models/cashflow_category.dart';
-import 'package:flutterpos/screens/cash_flow/cash_at_bank.dart';
-import 'package:flutterpos/utils/colors.dart';
-import 'package:flutterpos/widgets/delete_dialog.dart';
+import 'package:pointify/controllers/cashflow_controller.dart';
+import 'package:pointify/controllers/home_controller.dart';
+import 'package:pointify/controllers/shop_controller.dart';
+import 'package:pointify/models/cashflow_category.dart';
+import 'package:pointify/screens/cash_flow/cash_at_bank.dart';
+import 'package:pointify/screens/cash_flow/cashflow_category_history.dart';
+import 'package:pointify/utils/colors.dart';
+import 'package:pointify/widgets/delete_dialog.dart';
 import 'package:get/get.dart';
-
-import '../bank_history.dart';
 
 Widget categoryCard(context, {required CashFlowCategory cashflowCategory}) {
   return Padding(
@@ -31,7 +31,7 @@ Widget categoryCard(context, {required CashFlowCategory cashflowCategory}) {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(
+            const Icon(
               Icons.account_balance_wallet,
               color: Colors.grey,
             ),
@@ -41,10 +41,10 @@ Widget categoryCard(context, {required CashFlowCategory cashflowCategory}) {
               children: [
                 Text(
                   cashflowCategory.name!,
-                  style: TextStyle(color: Colors.black),
+                  style: const TextStyle(color: Colors.black),
                 ),
                 Text(
-                  cashflowCategory.amount!.toString(),
+                  "${Get.find<ShopController>().currentShop.value?.currency} ${cashflowCategory.amount!.toString()}",
                   style: TextStyle(color: Colors.black),
                 ),
               ],
@@ -65,14 +65,14 @@ actionsBottomSheet(
   showModalBottomSheet(
       context: context,
       builder: (_) {
-        return Container(
+        return SizedBox(
           height: MediaQuery.of(context).size.height * 0.3,
           child: Column(
             children: [
               Container(
                 color: AppColors.mainColor.withOpacity(0.1),
                 width: double.infinity,
-                child: ListTile(
+                child: const ListTile(
                   title: Text("Select Action"),
                 ),
               ),
@@ -82,13 +82,13 @@ actionsBottomSheet(
                   Get.back();
                   if (MediaQuery.of(context).size.width > 600) {
                     Get.find<HomeController>().selectedWidget.value =
-                        CashHistory(
+                        CashCategoryHistory(
                             title: cashflowCategory.name,
                             subtitle: "All records",
                             page: "cashflowcategory",
                             id: cashflowCategory.id);
                   } else {
-                    Get.to(() => CashHistory(
+                    Get.to(() => CashCategoryHistory(
                         title: cashflowCategory.name,
                         subtitle: "All records",
                         page: "cashflowcategory",
@@ -180,9 +180,11 @@ actionsBottomSheet(
                 leading: Icon(Icons.delete),
                 onTap: () {
                   Get.back();
-                  deleteDialog(context: context, onPressed: () {
-                    cashflowController.deleteCategory(cashflowCategory.id);
-                  });
+                  deleteDialog(
+                      context: context,
+                      onPressed: () {
+                        cashflowController.deleteCategory(cashflowCategory.id);
+                      });
                 },
                 title: Text("Delete"),
               )

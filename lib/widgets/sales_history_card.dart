@@ -1,24 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:flutterpos/controllers/shop_controller.dart';
-import 'package:flutterpos/screens/sales/components/return_stock.dart';
-import 'package:flutterpos/widgets/snackBars.dart';
+import 'package:pointify/controllers/shop_controller.dart';
+import 'package:pointify/screens/sales/components/return_stock.dart';
+import 'package:pointify/widgets/snackBars.dart';
 import 'package:get/get.dart';
 import 'package:get/get_utils/get_utils.dart';
 
 import '../controllers/sales_controller.dart';
-import '../models/sales_order_item_model.dart';
+import '../models/invoice_items.dart';
 import 'bigtext.dart';
 
-Widget salesHistoryCard(
-    SaleOrderItemModel salesOrderItemModel, context, salesId, page) {
+Widget SaleOrderItemCard(InvoiceItem invoiceItem, page) {
   ShopController shopController = Get.find<ShopController>();
   return InkWell(
     onTap: () {
-      if (page != "credit") {
-        if (salesOrderItemModel.returned != true) {
-          // showbottomSheet(salesOrderItemModel, context, salesId);
-          returnStockDialog(context: context, id: salesOrderItemModel.id, saleId: salesId);
-        }
+      if (page != "returns") {
+        returnInvoiceItem(invoiceItem: invoiceItem);
       }
     },
     child: Card(
@@ -33,11 +29,9 @@ Widget salesHistoryCard(
           children: [
             Icon(
               Icons.warning,
-              color: page == "credit"
-                  ? Colors.green
-                  : salesOrderItemModel.returned == true
-                      ? Colors.red
-                      : Colors.green,
+              color: page == "credit" || page == "returns"
+                  ? Colors.red
+                  : Colors.green,
               size: 25,
             ),
             SizedBox(
@@ -47,41 +41,96 @@ Widget salesHistoryCard(
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      "${salesOrderItemModel.product!.name}".capitalize!,
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600),
+                    Row(
+                      children: [
+                        Text(
+                          "${invoiceItem.product!.name}".capitalize!,
+                          style: const TextStyle(
+                              color: Colors.black,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600),
+                        ),
+                        Spacer(),
+                        Text(
+                          "Receipt# ${invoiceItem.sale!.receiptNumber}"
+                              .toUpperCase(),
+                          style: const TextStyle(
+                              color: Colors.black,
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600),
+                        ),
+                      ],
                     ),
                     SizedBox(height: 5),
-                    Text(
-                      "Qty :${salesOrderItemModel.itemCount}".capitalize!,
-                      style: TextStyle(color: Colors.black, fontSize: 16),
-                    ),
-                    SizedBox(height: 5),
-                    Text(
-                      "Price : ${shopController.currentShop.value?.currency}.${salesOrderItemModel.price!}",
-                      style: TextStyle(color: Colors.black, fontSize: 16),
-                    ),
-                    if (page != "credit" &&
-                        salesOrderItemModel.returned == true)
-                      Text(
-                        "Product has been returned to stock",
-                        style: TextStyle(color: Colors.red, fontSize: 12),
-                      ),
-                    Align(
-                        alignment: Alignment.bottomRight,
-                        child: Text(
-                          "Sub total= ${shopController.currentShop.value?.currency}.${salesOrderItemModel.total}",
-                          style: TextStyle(
-                              color: page == "credit"
-                                  ? Colors.yellow
-                                  : salesOrderItemModel.returned == true
-                                      ? Colors.red
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              "Qty :${invoiceItem.itemCount} @".capitalize!,
+                              style: const TextStyle(
+                                  color: Colors.black, fontSize: 16),
+                            ),
+                            SizedBox(height: 5),
+                            Text(
+                              "${shopController.currentShop.value?.currency}.${invoiceItem.price!}",
+                              style: const TextStyle(
+                                  color: Colors.black, fontSize: 16),
+                            ),
+                            Spacer(),
+                            Text(
+                              "Total:${shopController.currentShop.value?.currency}.${invoiceItem.total}",
+                              style: TextStyle(
+                                  color: page == "credit"
+                                      ? Colors.yellow
                                       : Colors.green,
-                              fontSize: 16),
-                        )),
+                                  fontSize: 16),
+                            )
+                          ],
+                        ),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        if (invoiceItem.sale!.creditTotal! > 0 &&
+                            page != "returns")
+                          Row(
+                            children: [
+                              Text(
+                                "${invoiceItem.returnedItems} item returned",
+                                style: const TextStyle(
+                                    color: Colors.red, fontSize: 16),
+                              ),
+                              SizedBox(
+                                width: 30,
+                              ),
+                              InkWell(
+                                onTap: () {},
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 5, vertical: 3),
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(5),
+                                      border: Border.all(color: Colors.grey)),
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                        "View",
+                                        style:
+                                            const TextStyle(color: Colors.red),
+                                      ),
+                                      Icon(
+                                        Icons.receipt_long,
+                                        size: 10,
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                      ],
+                    ),
                   ]),
             ),
           ],
@@ -109,7 +158,7 @@ showbottomSheet(historyBody, context, salesId) {
                     showSnackBar(
                         message:
                             "You cannot return a product that ha no customer",
-                        color: Colors.red,context: context);
+                        color: Colors.red);
                   } else {
                     // salesController.returnSale(historyBody, salesId);
                   }

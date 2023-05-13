@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutterpos/models/product_model.dart';
+import 'package:pointify/models/product_model.dart';
 import 'package:get/get.dart';
 
 import '../controllers/product_controller.dart';
@@ -51,7 +51,8 @@ Widget incrementWidget(
                   ],
                 ),
                 MediaQuery.of(context).size.width < 600
-                    ? _incrementQuantityWidget(context:context, product:product)
+                    ? _incrementQuantityWidget(
+                        context: context, product: product)
                     : Container(),
               ],
             ),
@@ -60,7 +61,8 @@ Widget incrementWidget(
                     alignment: Alignment.bottomRight,
                     child: Container(
                         width: 80,
-                        child: _incrementQuantityWidget(context:context, product:product)),
+                        child: _incrementQuantityWidget(
+                            context: context, product: product)),
                   )
                 : Container(),
           ],
@@ -70,7 +72,8 @@ Widget incrementWidget(
   );
 }
 
-Widget _incrementQuantityWidget({required context, required ProductModel product}) {
+Widget _incrementQuantityWidget(
+    {required context, required ProductModel product}) {
   return InkWell(
     onTap: () {
       showDialog(

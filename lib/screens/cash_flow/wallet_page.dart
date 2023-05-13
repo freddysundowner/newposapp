@@ -1,14 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterpos/controllers/AuthController.dart';
-import 'package:flutterpos/controllers/home_controller.dart';
-import 'package:flutterpos/controllers/shop_controller.dart';
-import 'package:flutterpos/models/deposit_model.dart';
-import 'package:flutterpos/responsive/responsiveness.dart';
-import 'package:flutterpos/screens/customers/customer_info_page.dart';
-import 'package:flutterpos/screens/sales/create_sale.dart';
-import 'package:flutterpos/utils/helper.dart';
-import 'package:flutterpos/widgets/pdf/wallet_pdf.dart';
+import 'package:pointify/controllers/AuthController.dart';
+import 'package:pointify/controllers/home_controller.dart';
+import 'package:pointify/controllers/shop_controller.dart';
+import 'package:pointify/models/deposit_model.dart';
+import 'package:pointify/responsive/responsiveness.dart';
+import 'package:pointify/screens/customers/customer_info_page.dart';
+import 'package:pointify/screens/sales/create_sale.dart';
+import 'package:pointify/utils/helper.dart';
+import 'package:pointify/widgets/pdf/wallet_pdf.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
@@ -40,16 +40,14 @@ class WalletPage extends StatelessWidget {
         largeScreen: Obx(() {
           return Scaffold(
             appBar: _appBar(context, "large"),
-            body: Container(
-              child: SingleChildScrollView(
-                physics: NeverScrollableScrollPhysics(),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    walletBalanceContainer(context, "large"),
-                    tabsPage(context)
-                  ],
-                ),
+            body: SingleChildScrollView(
+              physics: const NeverScrollableScrollPhysics(),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  walletBalanceContainer(context, "large"),
+                  tabsPage(context)
+                ],
               ),
             ),
           );
@@ -90,7 +88,7 @@ class WalletPage extends StatelessWidget {
                           walletController.getWallet(customerModel.id, "usage");
                         }
                       },
-                      tabs: [
+                      tabs: const [
                         Tab(text: "Deposit"),
                         Tab(text: "Usage"),
                       ]),
@@ -123,9 +121,7 @@ class WalletPage extends StatelessWidget {
   Widget walletBalanceContainer(context, type) {
     return Container(
       color: type == "large" ? Colors.white : AppColors.mainColor,
-      height: type == "large"
-          ? MediaQuery.of(context).size.height * 0.2
-          : MediaQuery.of(context).size.height * 0.3,
+      height: MediaQuery.of(context).size.height * 0.2,
       width: double.infinity,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -139,9 +135,9 @@ class WalletPage extends StatelessWidget {
                 color: type == "small" ? Colors.white : Colors.black,
                 fontWeight: FontWeight.bold),
           ),
-          SizedBox(height: 5),
+          const SizedBox(height: 5),
           Text(
-            "KES ${customersController.customer.value?.walletBalance ?? 0}"
+            "${Get.find<ShopController>().currentShop.value?.currency} ${customersController.customer.value?.walletBalance ?? 0}"
                 .toUpperCase(),
             style: TextStyle(
                 color: type == "small" ? Colors.white : Colors.black,
@@ -188,7 +184,6 @@ class WalletPage extends StatelessWidget {
             } else if (type == "large") {
               Get.find<HomeController>().selectedWidget.value =
                   CustomerInfoPage(
-                user: "customer",
                 customerModel: customerModel,
               );
             } else {
@@ -327,19 +322,19 @@ class DepositHistory extends StatelessWidget {
   Widget build(BuildContext context) {
     return Obx(() {
       return walletController.gettingWalletLoad.value
-          ? Center(
+          ? const Center(
               child: CircularProgressIndicator(),
             )
           : walletController.deposits.isEmpty
-              ? Center(
+              ? const Center(
                   child: Text("No Entries found"),
                 )
               : MediaQuery.of(context).size.width > 600
                   ? SingleChildScrollView(
                       child: Container(
                         width: double.infinity,
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 5, vertical: 10),
                         child: Theme(
                           data: Theme.of(context)
                               .copyWith(dividerColor: Colors.grey),
@@ -386,7 +381,7 @@ class DepositHistory extends StatelessWidget {
                   : ListView.builder(
                       itemCount: walletController.deposits.length,
                       shrinkWrap: true,
-                      physics: ScrollPhysics(),
+                      physics: const ScrollPhysics(),
                       itemBuilder: (context, index) {
                         DepositModel depositModel =
                             walletController.deposits.elementAt(index);

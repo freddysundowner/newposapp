@@ -1,12 +1,19 @@
 import 'dart:convert';
 
-import 'package:flutterpos/services/apiurls.dart';
-import 'package:flutterpos/services/client.dart';
+import 'package:pointify/services/apiurls.dart';
+import 'package:pointify/services/client.dart';
 
 class Admin {
   createAdmin({required Map<String, dynamic> body}) async {
     var user = await DbBase()
         .databaseRequest(admin, DbBase().postRequestType, body: body);
+    return jsonDecode(user);
+  }
+
+  resetPasswordEmail({required Map<String, dynamic> body}) async {
+    var user = await DbBase().databaseRequest(
+        resetpasswordemail, DbBase().postRequestType,
+        body: body);
     return jsonDecode(user);
   }
 

@@ -1,12 +1,12 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 
 import 'package:flutter/material.dart';
-import 'package:flutterpos/controllers/cashflow_controller.dart';
-import 'package:flutterpos/models/cashflow_category.dart';
-import 'package:flutterpos/responsive/responsiveness.dart';
-import 'package:flutterpos/screens/cash_flow/cash_flow_manager.dart';
-import 'package:flutterpos/screens/cash_flow/components/cashflow_category_dialog.dart';
-import 'package:flutterpos/utils/helper.dart';
+import 'package:pointify/controllers/cashflow_controller.dart';
+import 'package:pointify/models/cashflow_category.dart';
+import 'package:pointify/responsive/responsiveness.dart';
+import 'package:pointify/screens/cash_flow/cash_flow_manager.dart';
+import 'package:pointify/screens/cash_flow/components/cashflow_category_dialog.dart';
+import 'package:pointify/utils/helper.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
@@ -19,6 +19,7 @@ class CashFlowCategories extends StatelessWidget {
     cashflowController.initialPage.value = 0;
     cashflowController.cashFlowCategories.clear();
     cashflowController.cashFlowCategories.refresh();
+    cashflowController.initialPage.refresh();
     cashflowController.getCategory(
         "cash-in", createShopController.currentShop.value!.id);
   }
@@ -129,51 +130,6 @@ class CashFlowCategories extends StatelessWidget {
           ),
         ));
   }
-
-  Widget categoryCard() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: GestureDetector(
-        onTap: () {
-          // if (categoryBody.name == "Bank") {
-          //   Get.to(() => CashAtBank());
-          // }
-        },
-        child: Container(
-          padding: EdgeInsets.all(10),
-          width: double.infinity,
-          decoration: BoxDecoration(
-              color: Colors.white,
-              border: Border.all(width: 1, color: Colors.black),
-              borderRadius: BorderRadius.circular(8)),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Icon(
-                Icons.account_balance_wallet,
-                color: Colors.grey,
-              ),
-              SizedBox(width: 10),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Apple",
-                    style: TextStyle(color: Colors.black),
-                  ),
-                  SizedBox(height: 3),
-                  Text(
-                    "${200}",
-                    style: TextStyle(color: Colors.black),
-                  )
-                ],
-              )
-            ],
-          ),
-        ),
-      ),
-    );
-  }
 }
 
 class CashInUi extends StatelessWidget {
@@ -227,7 +183,8 @@ class CashInUi extends StatelessWidget {
                                     controller: cashflowController
                                         .textEditingControllerCategory,
                                     decoration: InputDecoration(
-                                        hintText: "eg.Personaal use etc",
+                                        hintText: "eg.Personal use etc",
+                                        hintStyle: TextStyle(fontSize: 12),
                                         border: OutlineInputBorder(
                                           borderRadius:
                                               BorderRadius.circular(10),
@@ -248,8 +205,7 @@ class CashInUi extends StatelessWidget {
                                     Navigator.pop(context);
                                     cashflowController.createCategory(
                                         type == "in" ? "cash-in" : "cash-out",
-                                        createShopController
-                                            .currentShop.value!.id!,
+                                        createShopController.currentShop.value,
                                         context);
                                   },
                                   child: Text(
@@ -343,12 +299,12 @@ class CashInUi extends StatelessWidget {
                                       child: Text(
                                           DateFormat("MM-dd-yyyy").format(z)))),
                                   DataCell(Align(
+                                    alignment: Alignment.topRight,
                                     child: Container(
                                         padding: EdgeInsets.only(top: 10),
                                         child: cashFlowCategoryDialog(context,
                                             cashflowCategory:
                                                 cashflowCategory)),
-                                    alignment: Alignment.topRight,
                                   )),
                                 ]);
                               }),

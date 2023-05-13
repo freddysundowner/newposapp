@@ -1,5 +1,5 @@
-import 'package:flutterpos/models/attendant_model.dart';
-import 'package:flutterpos/models/product_model.dart';
+import 'package:pointify/models/attendant_model.dart';
+import 'package:pointify/models/product_model.dart';
 
 class BadStock {
   String? description;

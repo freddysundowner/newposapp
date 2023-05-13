@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutterpos/controllers/home_controller.dart';
-import 'package:flutterpos/responsive/responsiveness.dart';
-import 'package:flutterpos/screens/home/profile_page.dart';
+import 'package:pointify/controllers/home_controller.dart';
+import 'package:pointify/responsive/responsiveness.dart';
+import 'package:pointify/screens/home/profile_page.dart';
 import 'package:get/get.dart';
 
 import '../../controllers/AuthController.dart';
@@ -10,7 +10,7 @@ import '../../widgets/bigtext.dart';
 import '../../widgets/shopWidget.dart';
 
 class ProfileUpdate extends StatelessWidget {
-  ProfileUpdate({Key? key}) : super(key: key){
+  ProfileUpdate({Key? key}) : super(key: key) {
     authController.assignDataToTextFields();
   }
   AuthController authController = Get.find<AuthController>();
@@ -108,7 +108,8 @@ class ProfileUpdate extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(height: 10),
-                  profileInputWidget(controller: authController.nameController, name: "Name"),
+                  profileInputWidget(
+                      controller: authController.nameController, name: "Name"),
                   SizedBox(height: 10),
                   profileInputWidget(
                       controller: authController.emailController,

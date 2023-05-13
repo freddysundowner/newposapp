@@ -1,17 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutterpos/controllers/shop_controller.dart';
-import 'package:flutterpos/models/sales_order_item_model.dart';
+import 'package:pointify/controllers/shop_controller.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-
-import '../models/supply_order_model.dart';
+import '../models/invoice_items.dart';
+import '../models/purchase_return.dart';
 import '../utils/colors.dart';
 import 'delete_dialog.dart';
 
-Widget purchaseCard(
-    {required context,
-    SaleOrderItemModel? saleOrderItemModel,
-    SupplyOrderModel? supplyOrderModel}) {
+Widget returnedIvoiceItemsCard(
+    {required context, PurchaseReturn? purchaseReturn}) {
   ShopController shopController = Get.find<ShopController>();
   return InkWell(
     child: Padding(
@@ -44,42 +41,30 @@ Widget purchaseCard(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      saleOrderItemModel == null
-                          ? "${supplyOrderModel!.product!.name}"
-                          : "${saleOrderItemModel.product!.name}",
-                      style: TextStyle(
+                      "${purchaseReturn!.productModel!.name}",
+                      style: const TextStyle(
                           color: Colors.black, fontWeight: FontWeight.w600),
                     ),
                     SizedBox(height: 3),
-                    saleOrderItemModel == null
-                        ? Text(
-                            "Qty ${supplyOrderModel!.quantity} @ ${shopController.currentShop.value?.currency}.${supplyOrderModel.total}",
-                            style: TextStyle(
-                                color: Colors.grey,
-                                fontWeight: FontWeight.w600),
-                          )
-                        : Text(
-                            "Qty ${saleOrderItemModel.itemCount} @ ${shopController.currentShop.value?.currency}.${saleOrderItemModel.price}  =  ${shopController.currentShop.value?.currency}.${saleOrderItemModel.total}",
-                            style: TextStyle(
-                                color: Colors.grey,
-                                fontWeight: FontWeight.w600),
-                          ),
+                    Text(
+                      "Qty ${purchaseReturn.count} @ ${shopController.currentShop.value?.currency}.${purchaseReturn.saleOrderItemModel?.price}  =  ${shopController.currentShop.value?.currency}.${purchaseReturn.saleOrderItemModel!.price! * purchaseReturn.count!}",
+                      style: const TextStyle(
+                          color: Colors.grey, fontWeight: FontWeight.w600),
+                    ),
                     SizedBox(height: 3),
                     Row(
                       children: [
                         Text(
-                          DateFormat().format(saleOrderItemModel == null
-                              ? supplyOrderModel!.createdAt!
-                              : saleOrderItemModel.createdAt!),
+                          DateFormat().format(purchaseReturn.createdAt!),
                           style: TextStyle(color: Colors.grey),
                         ),
                         SizedBox(width: 20),
                         Text(
-                          "By-${saleOrderItemModel == null ? supplyOrderModel!.attendantid!.fullnames : saleOrderItemModel.attendantid?.fullnames}",
+                          "By-${purchaseReturn.attendant!.fullnames}",
                           style: TextStyle(color: Colors.grey),
                         ),
                       ],
-                    )
+                    ),
                   ],
                 )
               ],

@@ -1,43 +1,33 @@
-import 'package:flutterpos/models/product_model.dart';
+import 'package:pointify/models/product_model.dart';
+
 class ProductHistoryModel {
-  ProductHistoryModel({
-    this.id,
-    this.product,
-    this.type,
-    this.quantity,
-    this.shop,
-    // this.attendantId,
-    // this.stockTransfer,
-    this.supplier,
-    this.createdAt
+  ProductHistoryModel(
+      {this.id,
+      this.product,
+      this.type,
+      this.quantity,
+      this.shop,
+      this.supplier,
+      this.createdAt});
 
-  });
-
-  String ?id;
-  ProductModel ?product;
+  String? id;
+  ProductModel? product;
   String? type;
-  int ?quantity;
-  String ?shop;
-  // String ?attendantId;
-  // String ?stockTransfer;
-  String ?supplier;
-  DateTime ?createdAt;
+  int? quantity;
+  String? shop;
+  String? supplier;
+  DateTime? createdAt;
 
-
-  factory ProductHistoryModel.fromJson(Map<String, dynamic> json) => ProductHistoryModel(
-    id: json["_id"],
-    product: ProductModel.fromJson(json["product"]),
-    type: json["type"],
-    quantity: json["quantity"],
-    shop: json["shop"],
-    // attendantId: json["attendantId"],
-    // stockTransfer: json["stockTransfer"],
-    supplier: json["supplier"],
-    createdAt: DateTime.parse(json["createdAt"]),
-
-  );
-
-
+  factory ProductHistoryModel.fromJson(Map<String, dynamic> json) =>
+      ProductHistoryModel(
+        id: json["_id"],
+        product: ProductModel.fromJson(json["product"]),
+        type: json["type"],
+        quantity: json["quantity"],
+        shop: json["shop"],
+        supplier: json["supplier"],
+        createdAt: DateTime.parse(json["createdAt"]),
+      );
 }
 
 class Product {
@@ -58,43 +48,41 @@ class Product {
     this.deleted,
     this.counted,
     this.createdAt,
-
   });
 
   String? id;
   String? name;
-  int ?quantity;
+  int? quantity;
   String? category;
-  int ?stockLevel;
+  int? stockLevel;
   List<String>? sellingPrice;
   int? discount;
   String? shop;
   String? attendant;
-  int ?buyingPrice;
+  int? buyingPrice;
   int? minSellingPrice;
-  int ?badStock;
+  int? badStock;
   String? description;
-  bool ?deleted;
-  bool ?counted;
-  DateTime ?createdAt;
+  bool? deleted;
+  bool? counted;
+  DateTime? createdAt;
 
   factory Product.fromJson(Map<String, dynamic> json) => Product(
-    id: json["_id"],
-    name: json["name"],
-    quantity: json["quantity"],
-    category: json["category"],
-    stockLevel: json["stockLevel"],
-    sellingPrice: List<String>.from(json["sellingPrice"].map((x) => x)),
-    discount: json["discount"],
-    shop: json["shop"],
-    attendant: json["attendant"],
-    buyingPrice: json["buyingPrice"],
-    minSellingPrice: json["minSellingPrice"],
-    badStock: json["badStock"],
-    description: json["description"],
-    deleted: json["deleted"],
-    counted: json["counted"],
-    createdAt: DateTime.parse(json["createdAt"]),
-  );
-
+        id: json["_id"],
+        name: json["name"],
+        quantity: json["quantity"],
+        category: json["category"],
+        stockLevel: json["stockLevel"],
+        sellingPrice: List<String>.from(json["sellingPrice"].map((x) => x)),
+        discount: json["discount"],
+        shop: json["shop"],
+        attendant: json["attendant"],
+        buyingPrice: json["buyingPrice"],
+        minSellingPrice: json["minSellingPrice"],
+        badStock: json["badStock"],
+        description: json["description"],
+        deleted: json["deleted"],
+        counted: json["counted"],
+        createdAt: DateTime.parse(json["createdAt"]),
+      );
 }

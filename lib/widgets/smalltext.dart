@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get_utils/src/extensions/string_extensions.dart';
 
-Widget minorTitle({required title, required Color color,double? size}) {
+Widget minorTitle({required title, required Color color, double? size}) {
   return Text(
-    "${title}".capitalize!,
-    style: TextStyle(color: color, fontSize:size ?? 14),
+    "${title}",
+    style: TextStyle(color: color, fontSize: size ?? 14),
   );
 }

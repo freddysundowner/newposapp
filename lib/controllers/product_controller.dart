@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
-import 'package:flutterpos/controllers/AuthController.dart';
-import 'package:flutterpos/controllers/attendant_controller.dart';
-import 'package:flutterpos/controllers/home_controller.dart';
-import 'package:flutterpos/controllers/purchase_controller.dart';
-import 'package:flutterpos/controllers/shop_controller.dart';
-import 'package:flutterpos/models/badstock.dart';
-import 'package:flutterpos/screens/product/products_page.dart';
-import 'package:flutterpos/screens/stock/stock_page.dart';
-import 'package:flutterpos/services/category.dart';
-import 'package:flutterpos/utils/colors.dart';
-import 'package:flutterpos/widgets/snackBars.dart';
+import 'package:pointify/controllers/AuthController.dart';
+import 'package:pointify/controllers/attendant_controller.dart';
+import 'package:pointify/controllers/home_controller.dart';
+import 'package:pointify/controllers/purchase_controller.dart';
+import 'package:pointify/controllers/shop_controller.dart';
+import 'package:pointify/models/badstock.dart';
+import 'package:pointify/screens/product/products_page.dart';
+import 'package:pointify/screens/stock/stock_page.dart';
+import 'package:pointify/services/category.dart';
+import 'package:pointify/utils/colors.dart';
+import 'package:pointify/widgets/snackBars.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
@@ -81,29 +81,23 @@ class ProductController extends GetxController {
         selling.isEmpty ||
         categoryName.value == "") {
       showSnackBar(
-          message: "Please fill all fields marked by *",
-          color: Colors.red,
-          context: context);
+          message: "Please fill all fields marked by *", color: Colors.red);
     } else if (int.parse(buying) > int.parse(selling)) {
       showSnackBar(
           message: "Selling price cannot be lower than buying price",
-          color: Colors.red,
-          context: context);
+          color: Colors.red);
     } else if (minSelling != "" && int.parse(minSelling) > int.parse(selling)) {
       showSnackBar(
           message: "minimum selling price cannot be greater than selling price",
-          color: Colors.red,
-          context: context);
+          color: Colors.red);
     } else if (minSelling != "" && int.parse(buying) > int.parse(minSelling)) {
       showSnackBar(
           message: "minimum selling price cannot be less than buying price",
-          color: Colors.red,
-          context: context);
+          color: Colors.red);
     } else if (discount != "" && int.parse(discount) > int.parse(selling)) {
       showSnackBar(
           message: "discount cannot be greater than selling price",
-          color: Colors.red,
-          context: context);
+          color: Colors.red);
     } else {
       try {
         creatingProductLoad.value = true;
@@ -125,8 +119,7 @@ class ProductController extends GetxController {
         };
         var response = await Products().createProduct(body);
         if (response["status"] == false) {
-          showSnackBar(
-              message: response["status"], color: Colors.red, context: context);
+          showSnackBar(message: response["status"], color: Colors.red);
         } else {
           clearControllers();
           if (MediaQuery.of(context).size.width > 600) {
@@ -134,7 +127,7 @@ class ProductController extends GetxController {
           } else {
             Get.back();
           }
-          await getProductsBySort(shopId: shopId, type: "all");
+          await getProductsBySort(type: "all");
         }
         creatingProductLoad.value = false;
       } catch (e) {
@@ -155,10 +148,7 @@ class ProductController extends GetxController {
         category.text = "";
         getProductCategory(shopId: shopId);
       } else {
-        showSnackBar(
-            message: response["message"],
-            color: AppColors.mainColor,
-            context: context);
+        showSnackBar(message: response["message"], color: AppColors.mainColor);
       }
     } catch (e) {
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
@@ -196,10 +186,11 @@ class ProductController extends GetxController {
     selectedSupplier.clear();
   }
 
-  getProductsBySort({required String shopId, required String type}) async {
+  getProductsBySort({required String type}) async {
     try {
       getProductLoad.value = true;
-      var response = await Products().getProductsBySort(shopId, type);
+      var response = await Products().getProductsBySort(
+          Get.find<ShopController>().currentShop.value!.id!, type);
       print(response);
       products.clear();
       if (response != null) {
@@ -274,9 +265,7 @@ class ProductController extends GetxController {
       searchProduct(shopId, type);
     } on PlatformException {
       showSnackBar(
-          message: 'Failed to get platform version.',
-          color: Colors.red,
-          context: context);
+          message: 'Failed to get platform version.', color: Colors.red);
     }
   }
 
@@ -286,12 +275,9 @@ class ProductController extends GetxController {
       getProductLoad.value = true;
       var response = await Products().deleteProduct(id: id);
       if (response["status"] == true) {
-        await getProductsBySort(shopId: shopId, type: "all");
+        await getProductsBySort(type: "all");
       } else {
-        showSnackBar(
-            message: response["message"],
-            color: AppColors.mainColor,
-            context: context);
+        showSnackBar(message: response["message"], color: AppColors.mainColor);
       }
 
       getProductLoad.value = false;
@@ -308,10 +294,7 @@ class ProductController extends GetxController {
           qtyController.text == "" ||
           sellingPriceController.text == "" ||
           buyingPriceController.text == "") {
-        showSnackBar(
-            message: "Please fill all the fields",
-            color: Colors.red,
-            context: context);
+        showSnackBar(message: "Please fill all the fields", color: Colors.red);
       } else {
         Map<String, dynamic> body = {
           "name": itemNameController.text,
@@ -329,18 +312,18 @@ class ProductController extends GetxController {
         var response = await Products().updateProduct(id: id, body: body);
         if (response["status"] == true) {
           clearControllers();
-          await getProductsBySort(shopId: shopId, type: "all");
-          var stockinProducts = Get.find<PurchaseController>().selectedList;
+          await getProductsBySort(type: "all");
+          var stockinProducts = Get.find<PurchaseController>().saleItem;
           int index = stockinProducts.indexWhere((e) =>
               products.indexWhere((element) => element.id == e.id) != -1);
           if (index != -1) {
-            Get.find<PurchaseController>().selectedList.removeAt(index);
-            Get.find<PurchaseController>().selectedList.add(products[index]);
-            Get.find<PurchaseController>().selectedList.refresh();
+            Get.find<PurchaseController>().saleItem.removeAt(index);
+            Get.find<PurchaseController>().saleItem.add(products[index]);
+            Get.find<PurchaseController>().saleItem.refresh();
             Get.find<PurchaseController>().calculateAmount(index);
           }
           stockinProducts.refresh();
-          Get.find<PurchaseController>().selectedList.refresh();
+          Get.find<PurchaseController>().saleItem.refresh();
           if (MediaQuery.of(context).size.width > 600) {
             Get.find<HomeController>().selectedWidget.value = ProductPage();
           } else {
@@ -348,9 +331,7 @@ class ProductController extends GetxController {
           }
         } else {
           showSnackBar(
-              message: response["message"],
-              color: AppColors.mainColor,
-              context: context);
+              message: response["message"], color: AppColors.mainColor);
         }
         updateProductLoad.value = false;
       }
@@ -452,20 +433,19 @@ class ProductController extends GetxController {
     }
   }
 
-  saveBadStock(
-      {required String shop,
-      required page,
-      required context,
-      attendant}) async {
+  saveBadStock({required page, required context}) async {
     try {
       saveBadstockLoad.value = true;
       Map<String, dynamic> body = {
         "product": selectedBadStock.value?.id,
         "quantity": qtyController.text,
         "description": itemNameController.text,
-        "attendantId": attendant,
-        "shop": shop
+        "attendantId": Get.find<AuthController>().usertype.value == "admin"
+            ? Get.find<AuthController>().currentUser.value!.id
+            : Get.find<AttendantController>().attendant.value!.id,
+        "shop": Get.find<ShopController>().currentShop.value?.id!
       };
+
       var response = await Products().saveBadStock(body: body);
 
       if (response["status"] == true) {
@@ -483,9 +463,9 @@ class ProductController extends GetxController {
         }
 
         getBadStock(
-          product: "",
-            shopId: shop,
-            attendant: Get.find<AuthController>().usertype == "admin"
+            product: "",
+            shopId: Get.find<ShopController>().currentShop.value?.id!,
+            attendant: Get.find<AuthController>().usertype.value == "admin"
                 ? ""
                 : Get.find<AttendantController>().attendant.value?.id);
       }
@@ -493,16 +473,14 @@ class ProductController extends GetxController {
     } catch (e) {
       saveBadstockLoad.value = false;
       print(e);
-    } finally {
-      getBadStock(shopId: shop,attendant: "",product: "");
     }
   }
 
-  getBadStock({required shopId, String? attendant,String? product}) async {
+  getBadStock({required shopId, String? attendant, String? product}) async {
     try {
       saveBadstockLoad.value = true;
       badstocks.clear();
-      var response = await Products().getBadStock(shopId, attendant,product);
+      var response = await Products().getBadStock(shopId, attendant, product);
       if (response["status"] == true) {
         List responseData = response["body"];
         List<BadStock> jsonData =

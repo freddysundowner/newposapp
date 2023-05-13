@@ -1,15 +1,15 @@
 import 'package:f_datetimerangepicker/f_datetimerangepicker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterpos/controllers/AuthController.dart';
-import 'package:flutterpos/controllers/attendant_controller.dart';
-import 'package:flutterpos/controllers/expense_controller.dart';
-import 'package:flutterpos/controllers/home_controller.dart';
-import 'package:flutterpos/controllers/shop_controller.dart';
-import 'package:flutterpos/responsive/responsiveness.dart';
-import 'package:flutterpos/screens/finance/finance_page.dart';
-import 'package:flutterpos/widgets/no_items_found.dart';
-import 'package:flutterpos/widgets/pdf/expense_pdf.dart';
-import 'package:flutterpos/widgets/snackBars.dart';
+import 'package:pointify/controllers/AuthController.dart';
+import 'package:pointify/controllers/attendant_controller.dart';
+import 'package:pointify/controllers/expense_controller.dart';
+import 'package:pointify/controllers/home_controller.dart';
+import 'package:pointify/controllers/shop_controller.dart';
+import 'package:pointify/responsive/responsiveness.dart';
+import 'package:pointify/screens/finance/finance_page.dart';
+import 'package:pointify/widgets/no_items_found.dart';
+import 'package:pointify/widgets/pdf/expense_pdf.dart';
+import 'package:pointify/widgets/snackBars.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
@@ -29,7 +29,7 @@ class ExpensePage extends StatelessWidget {
       shopId: "${shopController.currentShop.value?.id}",
       startingDate: DateTime.parse(startDate),
       endingDate: DateTime.parse(endDate),
-      attendant: authController.usertype == "admin"
+      attendant: authController.usertype.value == "admin"
           ? ""
           : Get.find<AttendantController>().attendant.value!.id,
     );
@@ -57,7 +57,7 @@ class ExpensePage extends StatelessWidget {
                         decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(8),
-                            boxShadow: [
+                            boxShadow: const [
                               BoxShadow(
                                   color: Colors.black26,
                                   offset: Offset(0, 1),
@@ -82,10 +82,10 @@ class ExpensePage extends StatelessWidget {
                     ),
                     Obx(() {
                       return expenseController.getExpenseByDateLoad.value
-                          ? Center(
+                          ? const Center(
                               child: CircularProgressIndicator(),
                             )
-                          : expenseController.expenses.length == 0
+                          : expenseController.expenses.isEmpty
                               ? noItemsFound(context, true)
                               : Container(
                                   padding: EdgeInsets.symmetric(
@@ -208,16 +208,17 @@ class ExpensePage extends StatelessWidget {
 
   totalsContainer() {
     return Container(
-      padding: const EdgeInsets.fromLTRB(80.0, 20, 80.0, 20),
+      padding: const EdgeInsets.fromLTRB(0, 20, 80.0, 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Obx(() {
-            return majorTitle(
-                title:
-                    "As from ${DateFormat("yyy-MM-dd").format(expenseController.startdate.value)} to ${DateFormat("yyy-MM-dd").format(expenseController.enddate.value)}",
-                color: AppColors.mainColor,
-                size: 14.0);
+            return Text(
+              "As from ${DateFormat("yyy-MM-dd").format(expenseController.startdate.value)} to ${DateFormat("yyy-MM-dd").format(expenseController.enddate.value)}",
+              style: TextStyle(color: AppColors.mainColor, fontSize: 14.0),
+              textAlign: TextAlign.center,
+            );
           }),
           SizedBox(height: 20),
           Center(
@@ -281,9 +282,9 @@ class ExpensePage extends StatelessWidget {
           padding: const EdgeInsets.all(8.0),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+            children: const [
               Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: EdgeInsets.all(8.0),
                 child: Text(
                   "Choose Date Range",
                   style: TextStyle(color: Colors.black),
@@ -344,14 +345,12 @@ class ExpensePage extends StatelessWidget {
       title: majorTitle(title: "Expenses", color: Colors.black, size: 16.0),
       actions: [
         dateChoser(context),
-        if (Get.find<AuthController>().usertype == "admin")
+        if (Get.find<AuthController>().usertype.value == "admin")
           InkWell(
             onTap: () {
-              if (expenseController.expenses.length == 0) {
+              if (expenseController.expenses.isEmpty) {
                 showSnackBar(
-                    message: "No items to download",
-                    color: Colors.black,
-                    context: context);
+                    message: "No items to download", color: Colors.black);
               } else {
                 ExpensePdf(
                     shop: shopController.currentShop.value!.name!,

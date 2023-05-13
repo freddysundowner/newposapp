@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutterpos/controllers/home_controller.dart';
-import 'package:flutterpos/screens/customers/customer_info_page.dart';
+import 'package:pointify/controllers/home_controller.dart';
+import 'package:pointify/screens/customers/customer_info_page.dart';
 import 'package:get/get.dart';
 
 import '../../../models/customer_model.dart';
 import '../../../utils/colors.dart';
 
-Widget customerTable({required customers, required context, required type}) {
+Widget customerTable({required customers, required context}) {
   return SingleChildScrollView(
     child: Container(
       padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
@@ -20,7 +20,7 @@ Widget customerTable({required customers, required context, required type}) {
             color: Colors.black,
           )),
           columnSpacing: 30.0,
-          columns: [
+          columns: const [
             DataColumn(label: Text('Name', textAlign: TextAlign.center)),
             DataColumn(label: Text('Phone', textAlign: TextAlign.center)),
             DataColumn(label: Text('', textAlign: TextAlign.center)),
@@ -38,9 +38,8 @@ Widget customerTable({required customers, required context, required type}) {
                   onTap: () {
                     Get.find<HomeController>().selectedWidget.value =
                         CustomerInfoPage(
-                          customerModel: customerModel,
-                            user: type,
-                           );
+                      customerModel: customerModel,
+                    );
                   },
                   child: Align(
                     child: Center(

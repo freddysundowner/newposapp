@@ -1,20 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:flutterpos/controllers/shop_controller.dart';
-import 'package:flutterpos/models/purchase_order.dart';
-import 'package:flutterpos/widgets/smalltext.dart';
+import 'package:pointify/controllers/shop_controller.dart';
+import 'package:pointify/screens/stock/invoice_screen.dart';
+import 'package:pointify/widgets/smalltext.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
-import '../screens/stock/purchase_order_item.dart';
-import 'bigtext.dart';
+import '../models/invoice.dart';
 import 'normal_text.dart';
 
-Widget purchaseOrderCard({required PurchaseOrder purchaseOrder}) {
+Widget InvoiceCard({required Invoice invoice, String? tab}) {
   ShopController shopController = Get.find<ShopController>();
   return InkWell(
     onTap: () {
-      Get.to(() => PurchaseOrderItems(
-            id: purchaseOrder.id,
+      Get.to(() => InvoiceScreen(
+            invoice: invoice,
           ));
     },
     child: Container(
@@ -36,20 +35,34 @@ Widget purchaseOrderCard({required PurchaseOrder purchaseOrder}) {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    majorTitle(
-                        title: "Purchase No:#${purchaseOrder.receiptNumber}",
-                        color: Colors.black,
-                        size: 12.0),
+                    Text(
+                      "Invoice#${invoice.receiptNumber}",
+                      style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 12.0,
+                          fontWeight: FontWeight.bold),
+                    ),
                     SizedBox(height: 3),
-                    normalText(
-                        title:
-                            "Amount: ${shopController.currentShop.value?.currency}.${purchaseOrder.total}",
-                        color: Colors.black,
-                        size: 14.0),
-                    SizedBox(height: 3),
-                    minorTitle(
-                        title: "Products: ${purchaseOrder.productCount}",
-                        color: Colors.black),
+                    Row(
+                      children: [
+                        if (tab != "credit")
+                          normalText(
+                              title:
+                                  "Amount: ${shopController.currentShop.value?.currency}.${invoice.total}",
+                              color: Colors.black,
+                              size: 14.0),
+                        if (tab == "credit")
+                          normalText(
+                              title:
+                                  "Amount: ${shopController.currentShop.value?.currency}.${invoice.balance}",
+                              color: Colors.black,
+                              size: 14.0),
+                        SizedBox(width: 30),
+                        minorTitle(
+                            title: "Products: ${invoice.productCount}",
+                            color: Colors.black),
+                      ],
+                    ),
                   ],
                 ),
               ),
@@ -58,7 +71,7 @@ Widget purchaseOrderCard({required PurchaseOrder purchaseOrder}) {
           SizedBox(height: 5),
           normalText(
               title:
-                  "On :${DateFormat("yyyy-MM-dd hh :mm a").format(purchaseOrder.createdAt!)}",
+                  "On :${DateFormat("yyyy-MM-dd hh:mm a").format(invoice.createdAt!)}",
               color: Colors.black,
               size: 14.0),
         ],

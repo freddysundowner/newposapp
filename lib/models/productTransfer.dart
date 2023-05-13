@@ -1,11 +1,11 @@
-import 'package:flutterpos/models/product_model.dart';
+import 'package:pointify/models/product_model.dart';
 
 class ProductTransferHistories {
   ProductModel? product;
   int? quantity;
   DateTime? createdAt;
 
-  ProductTransferHistories({this.product, this.quantity,this.createdAt});
+  ProductTransferHistories({this.product, this.quantity, this.createdAt});
 
   factory ProductTransferHistories.fromJson(Map<String, dynamic> json) =>
       ProductTransferHistories(

@@ -1,21 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:flutterpos/controllers/sales_controller.dart';
-import 'package:flutterpos/models/product_model.dart';
+import 'package:pointify/controllers/sales_controller.dart';
+import 'package:pointify/models/product_model.dart';
 import 'package:get/get.dart';
+import 'package:pointify/models/receipt_item.dart';
 
 import '../../../widgets/snackBars.dart';
 
 discountDialog(
-    {required context,
-    required controller,
-    required ProductModel productModel,
-    required index}) {
+    {required controller, required ReceiptItem receiptItem, required index}) {
   SalesController salesController = Get.find<SalesController>();
   return showDialog(
-      context: context,
+      context: Get.context!,
       builder: (context) {
         return AlertDialog(
-          title: Text("Add Discount"),
+          title: const Text("Add Discount"),
           content: Padding(
             padding: const EdgeInsets.all(5.0),
             child: TextFormField(
@@ -40,14 +38,15 @@ discountDialog(
             TextButton(
               onPressed: () {
                 Navigator.pop(context);
-                if (int.parse(controller.text) > productModel.discount!) {
+                print(receiptItem.product!.discount);
+                if (int.parse(controller.text) >
+                    receiptItem.product!.discount!) {
                   showSnackBar(
                       message:
-                          "discount cannot be greater than ${productModel.discount}",
-                      color: Colors.red,
-                      context: context);
+                          "discount cannot be greater than ${receiptItem.product!.discount}",
+                      color: Colors.red);
                 } else {
-                  productModel.allowedDiscount = int.parse(controller.text);
+                  receiptItem.discount = int.parse(controller.text);
                   controller.text = "";
                   salesController.calculateAmount(index);
                 }

@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:pointify/controllers/shop_controller.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
@@ -44,7 +46,7 @@ ExpensePdf({required final shop, required List<ExpenseModel> expenses}) async {
                         data: expenses
                             .map((e) => [
                                   e.name,
-                                  e.amount,
+                                  "${Get.find<ShopController>().currentShop.value?.currency} ${e.amount}",
                                   DateFormat("dd/MM/yyyy").format(e.createdAt!)
                                 ])
                             .toList())),
@@ -57,7 +59,7 @@ ExpensePdf({required final shop, required List<ExpenseModel> expenses}) async {
                           mainAxisAlignment: pw.MainAxisAlignment.end,
                           children: [
                             pw.Text(
-                              "Totals ${sum}",
+                              "Totals ${Get.find<ShopController>().currentShop.value?.currency} $sum",
                               style: pw.TextStyle(
                                   fontWeight: pw.FontWeight.bold, fontSize: 16),
                             ),

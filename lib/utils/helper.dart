@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutterpos/controllers/AuthController.dart';
-import 'package:flutterpos/controllers/home_controller.dart';
-import 'package:flutterpos/models/product_model.dart';
-import 'package:flutterpos/screens/cash_flow/cash_flow_manager.dart';
-import 'package:flutterpos/screens/finance/expense_page.dart';
-import 'package:flutterpos/screens/product/create_product.dart';
-import 'package:flutterpos/screens/sales/create_sale.dart';
-import 'package:flutterpos/screens/shop/create_shop.dart';
+import 'package:pointify/controllers/AuthController.dart';
+import 'package:pointify/controllers/home_controller.dart';
+import 'package:pointify/models/product_model.dart';
+import 'package:pointify/screens/cash_flow/cash_flow_manager.dart';
+import 'package:pointify/screens/finance/expense_page.dart';
+import 'package:pointify/screens/product/create_product.dart';
+import 'package:pointify/screens/sales/create_sale.dart';
+import 'package:pointify/screens/shop/create_shop.dart';
 import 'package:get/get.dart';
 
 import '../screens/home/home.dart';
@@ -32,7 +32,7 @@ class Helper extends StatelessWidget {
   final AppBar? appBar;
   final Widget widget;
   final String? page;
-  final BottomAppBar? bottomNavigationBar;
+  final Widget? bottomNavigationBar;
   List pages = [
     "Home",
     "Sell",
@@ -62,7 +62,7 @@ class Helper extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: appBar == null ? null : appBar,
+      appBar: appBar,
       floatingActionButton:
           Get.find<AuthController>().currentUser.value == null ||
                   MediaQuery.of(context).size.width > 600 ||
@@ -120,7 +120,6 @@ class Helper extends StatelessWidget {
                                     {
                                       if (page == null) {
                                         Get.off(() => Home());
-
                                       } else {
                                         Get.find<HomeController>()
                                             .selectedIndex
@@ -161,7 +160,9 @@ class Helper extends StatelessWidget {
                                   if (page != null) {
                                     Get.off(() => Home());
                                   } else {
-                                    Get.find<HomeController>().selectedIndex.value = 0;
+                                    Get.find<HomeController>()
+                                        .selectedIndex
+                                        .value = 0;
                                   }
                                 }
                               },

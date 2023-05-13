@@ -1,65 +1,42 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
-
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterpos/controllers/home_controller.dart';
-import 'package:flutterpos/controllers/purchase_controller.dart';
-import 'package:flutterpos/controllers/sales_controller.dart';
-import 'package:flutterpos/controllers/shop_controller.dart';
-import 'package:flutterpos/models/customer_model.dart';
-import 'package:flutterpos/models/sales_model.dart';
-import 'package:flutterpos/models/sales_order_item_model.dart';
-import 'package:flutterpos/responsive/responsiveness.dart';
-import 'package:flutterpos/screens/cash_flow/wallet_page.dart';
-import 'package:flutterpos/screens/customers/customers_page.dart';
-import 'package:flutterpos/utils/helper.dart';
-import 'package:flutterpos/widgets/no_items_found.dart';
-import 'package:flutterpos/widgets/smalltext.dart';
+import 'package:pointify/controllers/home_controller.dart';
+import 'package:pointify/controllers/purchase_controller.dart';
+import 'package:pointify/controllers/sales_controller.dart';
+import 'package:pointify/controllers/shop_controller.dart';
+import 'package:pointify/models/customer_model.dart';
+import 'package:pointify/models/receipt.dart';
+import 'package:pointify/models/sales_return.dart';
+import 'package:pointify/responsive/responsiveness.dart';
+import 'package:pointify/screens/cash_flow/wallet_page.dart';
+import 'package:pointify/screens/customers/customers_page.dart';
+import 'package:pointify/screens/customers/edit_user.dart';
+import 'package:pointify/utils/helper.dart';
+import 'package:pointify/widgets/alert.dart';
+import 'package:pointify/widgets/sales_card.dart';
+import 'package:pointify/widgets/sales_rerurn_card.dart';
+import 'package:pointify/widgets/smalltext.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../controllers/AuthController.dart';
 import '../../controllers/CustomerController.dart';
 import '../../controllers/attendant_controller.dart';
 import '../../controllers/supplierController.dart';
-import '../../models/purchase_order.dart';
-import '../../models/stock_in_credit.dart';
-import '../../models/supply_order_model.dart';
 import '../../utils/colors.dart';
-import '../../widgets/creditPurchaseCard.dart';
-import '../../widgets/credit_history_card.dart';
 import '../../widgets/delete_dialog.dart';
-import '../../widgets/edit_dialog.dart';
-import '../../widgets/purchase_card.dart';
+import '../../widgets/snackBars.dart';
 import '../cash_flow/payment_history.dart';
 import '../stock/purchase_order_item.dart';
 
 class CustomerInfoPage extends StatelessWidget {
-  final user;
   final CustomerModel customerModel;
 
-  CustomerInfoPage({Key? key, required this.user, required this.customerModel})
-      : super(key: key) {
+  CustomerInfoPage({Key? key, required this.customerModel}) : super(key: key) {
     customerController.initialPage.value = 0;
-    if (user == "supplier") {
-      print("supplier");
-      Get.find<PurchaseController>().getPurchase(
-          shopId: createShopController.currentShop.value!.id,
-          onCredit: "true",
-          attendantId: authController.usertype == "admin"
-              ? ""
-              : attendantController.attendant.value!.id,
-          customer: customerModel.id);
-    } else {
-      salesController.getSalesByShop(
-          id: shopController.currentShop.value?.id,
-          attendantId: authController.usertype == "admin"
-              ? ""
-              : attendantController.attendant.value!.id,
-          onCredit: true,
-          customer: customerModel.id,
-          startingDate: "");
-      print("customer");
-    }
+    salesController.getSales(
+        onCredit: true, customer: customerModel.id, startingDate: "");
   }
 
   CustomerController customerController = Get.find<CustomerController>();
@@ -71,20 +48,19 @@ class CustomerInfoPage extends StatelessWidget {
   SalesController salesController = Get.find<SalesController>();
 
   launchWhatsApp({required number, required message}) async {
-    // String url = "whatsapp://send?phone=+254${number}&text=$message";
-    // await canLaunch(url)
-    //     ? launch(url)
-    //     : showSnackBar(
-    //         message: "Cannot open whatsapp", color: Colors.red, context: null);
+    String url = "whatsapp://send?phone=+254${number}&text=$message";
+    await canLaunchUrl(Uri.parse(url))
+        ? canLaunchUrl(Uri.parse(url))
+        : showSnackBar(message: "Cannot open whatsapp", color: Colors.red);
   }
 
   launchMessage({required number, required message}) async {
-    // Uri sms = Uri.parse('sms:$number?body=$message');
-    // if (await launchUrl(sms)) {
-    //   //app opened
-    // } else {
-    //   //app is not opened
-    // }
+    Uri sms = Uri.parse('sms:$number?body=$message');
+    if (await launchUrl(sms)) {
+      //app opened
+    } else {
+      //app is not opened
+    }
   }
 
   @override
@@ -107,39 +83,36 @@ class CustomerInfoPage extends StatelessWidget {
                       size: 18)
                 ],
               ),
-              if (user != "supplier")
-                InkWell(
-                  onTap: () {
-                    Get.find<HomeController>().selectedWidget.value =
-                        WalletPage(
-                      customerModel: customerModel,
-                    );
-                  },
-                  child: Container(
-                    padding:
-                        EdgeInsets.only(top: 5, bottom: 5, left: 10, right: 15),
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(50),
-                        color: Colors.white.withOpacity(0.2)),
-                    child: Row(
-                      children: [
-                        Icon(Icons.credit_card, color: Colors.black),
-                        SizedBox(width: 10),
-                        Text(
-                          "Wallet",
-                          style: TextStyle(color: Colors.black),
-                        )
-                      ],
-                    ),
+              InkWell(
+                onTap: () {
+                  Get.find<HomeController>().selectedWidget.value = WalletPage(
+                    customerModel: customerModel,
+                  );
+                },
+                child: Container(
+                  padding:
+                      EdgeInsets.only(top: 5, bottom: 5, left: 10, right: 15),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(50),
+                      color: Colors.white.withOpacity(0.2)),
+                  child: Row(
+                    children: [
+                      Icon(Icons.credit_card, color: Colors.black),
+                      SizedBox(width: 10),
+                      Text(
+                        "Wallet",
+                        style: TextStyle(color: Colors.black),
+                      )
+                    ],
                   ),
-                )
+                ),
+              )
             ],
           ),
           leading: IconButton(
               onPressed: () {
-                Get.find<HomeController>().selectedWidget.value = CustomersPage(
-                  type: user,
-                );
+                Get.find<HomeController>().selectedWidget.value =
+                    CustomersPage();
               },
               icon: Icon(
                 Icons.arrow_back_ios,
@@ -148,15 +121,8 @@ class CustomerInfoPage extends StatelessWidget {
           actions: [
             IconButton(
                 onPressed: () {
-                  if (user == "supplier") {
-                    supplierController.assignTextFields(customerModel);
-                  } else {
-                    customerController.assignTextFields(customerModel);
-                  }
-                  showEditDialog(
-                      user: user,
-                      context: context,
-                      customerModel: customerModel);
+                  customerController.assignTextFields(customerModel);
+                  Get.to(() => EditCustomer(customerModel: customerModel));
                 },
                 icon: Icon(
                   Icons.edit,
@@ -164,20 +130,14 @@ class CustomerInfoPage extends StatelessWidget {
                 )),
             IconButton(
                 onPressed: () {
-                  deleteDialog(
-                      context: context,
-                      onPressed: () {
-                        if (user == "supplier") {
-                          supplierController.deleteSuppler(
-                              context: context,
-                              id: customerModel.id,
-                              shopId: shopController.currentShop.value?.id);
-                        } else {
-                          customerController.deleteCustomer(
-                              context: context,
-                              id: customerModel.id,
-                              shopId: shopController.currentShop.value?.id);
-                        }
+                  generalAlert(
+                      title:
+                          "Are you sure you want to delete ${customerModel.fullName}",
+                      function: () {
+                        customerController.deleteCustomer(
+                            context: context,
+                            id: customerModel.id,
+                            shopId: shopController.currentShop.value?.id);
                       });
                 },
                 icon: Icon(
@@ -193,11 +153,10 @@ class CustomerInfoPage extends StatelessWidget {
             child: Column(
               children: [
                 Container(
-                  height: MediaQuery.of(context).size.height * 0.3,
+                  height: MediaQuery.of(context).size.height * 0.2,
                   color: AppColors.mainColor,
                   child: Column(
                     children: [
-                      SizedBox(height: 10),
                       Center(
                         child: Container(
                           decoration: BoxDecoration(
@@ -220,20 +179,6 @@ class CustomerInfoPage extends StatelessWidget {
                             color: Colors.white, fontWeight: FontWeight.bold),
                       )),
                       SizedBox(height: 5),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.phone,
-                            color: Colors.white,
-                            size: 14,
-                          ),
-                          Text(
-                            customerModel.phoneNumber!,
-                            style: TextStyle(color: Colors.white),
-                          )
-                        ],
-                      ),
                       SizedBox(height: 10),
                       Container(
                         width: double.infinity,
@@ -246,9 +191,8 @@ class CustomerInfoPage extends StatelessWidget {
                                 onPressed: () {
                                   launchMessage(
                                       number: customerModel.phoneNumber,
-                                      message: user == "supplier"
-                                          ? "we will be paying your debt very soon"
-                                          : "Aquick reminde that you owe our shop please pay your debt ");
+                                      message:
+                                          "Aquick reminde that you owe our shop please pay your debt ");
                                 },
                                 icon: Icon(Icons.message),
                                 color: Colors.white),
@@ -256,47 +200,49 @@ class CustomerInfoPage extends StatelessWidget {
                                 onPressed: () {
                                   launchWhatsApp(
                                       number: customerModel.phoneNumber,
-                                      message: user == "supplier"
-                                          ? "we will be paying your debt very soon"
-                                          : "Aquick reminde that you owe our shop please pay your debt ");
+                                      message:
+                                          "Aquick reminde that you owe our shop please pay your debt ");
                                 },
                                 icon: Icon(Icons.whatshot),
                                 color: Colors.white),
                             IconButton(
                                 onPressed: () async {
-                                  // await launch(
-                                  //     "tel://${user == "suppliers" ? "${supplierController.supplier.value?.phoneNumber}" : "${customerController.customer.value?.phoneNumber}"}");
+                                  final Uri launchUri = Uri(
+                                    scheme: 'tel',
+                                    path: customerController
+                                        .customer.value?.phoneNumber,
+                                  );
+                                  await launchUrl(launchUri);
                                 },
                                 icon: Icon(Icons.phone),
                                 color: Colors.white),
-                            if (user != "supplier")
-                              InkWell(
-                                onTap: () {
-                                  Get.to(
-                                    () => WalletPage(
-                                      customerModel: customerModel,
-                                    ),
-                                  );
-                                },
-                                child: Container(
-                                  padding: EdgeInsets.only(
-                                      top: 5, bottom: 5, left: 10, right: 15),
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(50),
-                                      color: Colors.white.withOpacity(0.2)),
-                                  child: Row(
-                                    children: [
-                                      Icon(Icons.credit_card,
-                                          color: Colors.white),
-                                      SizedBox(width: 10),
-                                      Text(
-                                        "Wallet",
-                                        style: TextStyle(color: Colors.white),
-                                      )
-                                    ],
+                            InkWell(
+                              onTap: () {
+                                Get.to(
+                                  () => WalletPage(
+                                    customerModel: customerModel,
                                   ),
+                                );
+                              },
+                              child: Container(
+                                padding: EdgeInsets.only(
+                                    top: 5, bottom: 5, left: 10, right: 15),
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(50),
+                                    color: Colors.white.withOpacity(0.2)),
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.credit_card,
+                                        color: Colors.white),
+                                    SizedBox(width: 10),
+                                    Text(
+                                      "Wallet",
+                                      style: TextStyle(color: Colors.white),
+                                    )
+                                  ],
                                 ),
                               ),
+                            ),
                           ],
                         ),
                       ),
@@ -319,33 +265,21 @@ class CustomerInfoPage extends StatelessWidget {
             actions: [
               IconButton(
                   onPressed: () {
-                    if (user == "supplier") {
-                      supplierController.assignTextFields(customerModel);
-                    } else {
-                      customerController.assignTextFields(customerModel);
-                    }
-                    showEditDialog(
-                        user: user,
-                        context: context,
-                        customerModel: customerModel);
+                    customerController.assignTextFields(customerModel);
+
+                    Get.to(() => EditCustomer(customerModel: customerModel));
                   },
                   icon: Icon(Icons.edit)),
               IconButton(
                   onPressed: () {
-                    deleteDialog(
-                        context: context,
-                        onPressed: () {
-                          if (user == "supplier") {
-                            supplierController.deleteSuppler(
-                                context: context,
-                                id: customerModel.id,
-                                shopId: shopController.currentShop.value?.id);
-                          } else {
-                            customerController.deleteCustomer(
-                                context: context,
-                                id: customerModel.id,
-                                shopId: shopController.currentShop.value?.id);
-                          }
+                    generalAlert(
+                        title:
+                            "Are you sure you want to delete ${customerModel.fullName}",
+                        function: () {
+                          customerController.deleteCustomer(
+                              context: context,
+                              id: customerModel.id,
+                              shopId: shopController.currentShop.value?.id);
                         });
                   },
                   icon: Icon(Icons.delete)),
@@ -355,7 +289,7 @@ class CustomerInfoPage extends StatelessWidget {
   }
 
   Widget customerInfoBody(context) {
-    return Container(
+    return SizedBox(
       height: MediaQuery.of(context).size.height * 0.9,
       child: Column(
         children: [
@@ -374,61 +308,17 @@ class CustomerInfoPage extends StatelessWidget {
                       indicatorWeight: 3,
                       onTap: (index) {
                         customerController.initialPage.value = index;
-                        print(customerController.initialPage.value);
                         if (index == 0) {
-                          if (user == "supplier") {
-                            Get.find<PurchaseController>().getPurchase(
-                                shopId:
-                                    createShopController.currentShop.value!.id,
-                                onCredit: "true",
-                                attendantId: authController.usertype == "admin"
-                                    ? ""
-                                    : attendantController.attendant.value!.id,
-                                customer: customerModel.id);
-                          } else {
-                            Get.find<SalesController>().getSalesByShop(
-                                id: shopController.currentShop.value?.id,
-                                attendantId: authController.usertype == "admin"
-                                    ? ""
-                                    : attendantController.attendant.value!.id,
-                                onCredit: true,
-                                customer: customerModel.id,
-                                startingDate: "");
-                          }
+                          salesController.getSales(
+                            onCredit: true,
+                            customer: customerModel.id,
+                          );
                         } else if (index == 1) {
-                          if (user == "supplier") {
-                            supplierController.getSupplierSupplies(
-                                returned: "",
-                                attendantId: authController.usertype == "admin"
-                                    ? ""
-                                    : attendantController.attendant.value!.id,
-                                supplierId: customerModel.id);
-                          } else {
-                            customerController.getCustomerPurchases(
-                                uid: customerModel.id,
-                                type: user,
-                                operation: "purchases",
-                                attendantId: authController.usertype == "admin"
-                                    ? ""
-                                    : attendantController.attendant.value!.id);
-                          }
+                          salesController.getSales(customer: customerModel.id);
                         } else {
-                          if (user == "supplier") {
-                            supplierController.getSupplierSupplies(
-                                returned: "true",
-                                attendantId: authController.usertype == "admin"
-                                    ? ""
-                                    : attendantController.attendant.value!.id,
-                                supplierId: customerModel.id);
-                          } else {
-                            customerController.getCustomerPurchases(
-                                uid: customerModel.id,
-                                type: user,
-                                operation: "returns",
-                                attendantId: authController.usertype == "admin"
-                                    ? ""
-                                    : attendantController.attendant.value!.id);
-                          }
+                          customerController.getCustomerReturns(
+                            uid: customerModel.id,
+                          );
                         }
                       },
                       tabs: customerController.tabs),
@@ -442,9 +332,9 @@ class CustomerInfoPage extends StatelessWidget {
                 physics: NeverScrollableScrollPhysics(),
                 controller: customerController.tabController,
                 children: [
-                  CreditInfo(customerModel: customerModel, user: user),
-                  Purchase(id: customerModel.id, user: user),
-                  Purchase(id: customerModel.id, user: user)
+                  CreditInfo(customerModel: customerModel),
+                  SalesTab(),
+                  RetunsTab()
                 ],
               ),
             ),
@@ -539,12 +429,98 @@ class CustomerInfoPage extends StatelessWidget {
   }
 }
 
-class Purchase extends StatelessWidget {
-  final id;
-  final user;
+class SalesTab extends StatelessWidget {
+  SalesTab({Key? key}) : super(key: key);
 
-  Purchase({Key? key, required this.id, required this.user}) : super(key: key);
+  CustomerController customerController = Get.find<CustomerController>();
+  SupplierController supplierController = Get.find<SupplierController>();
+  ShopController createShopController = Get.find<ShopController>();
+  SalesController salesController = Get.find<SalesController>();
 
+  @override
+  Widget build(BuildContext context) {
+    return Obx(() {
+      return salesController.loadingSales.value
+          ? const Center(child: CircularProgressIndicator())
+          : salesController.allSales.isEmpty
+              ? Container(
+                  margin: const EdgeInsets.only(top: 50),
+                  child: const Text(
+                    "No entries",
+                    textAlign: TextAlign.center,
+                  ))
+              : MediaQuery.of(context).size.width > 600
+                  ? SingleChildScrollView(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 15, vertical: 10),
+                        width: double.infinity,
+                        child: Theme(
+                          data: Theme.of(context)
+                              .copyWith(dividerColor: Colors.grey),
+                          child: DataTable(
+                            decoration: BoxDecoration(
+                                border: Border.all(
+                              width: 1,
+                              color: Colors.black,
+                            )),
+                            columnSpacing: 30.0,
+                            columns: const [
+                              DataColumn(
+                                  label: Text('Name',
+                                      textAlign: TextAlign.center)),
+                              DataColumn(
+                                  label:
+                                      Text('Qty', textAlign: TextAlign.center)),
+                              DataColumn(
+                                  label: Text('Total',
+                                      textAlign: TextAlign.center)),
+                              DataColumn(
+                                  label: Text('Date',
+                                      textAlign: TextAlign.center)),
+                            ],
+                            rows: List.generate(
+                                customerController.customerSales.length,
+                                (index) {
+                              SalesModel saleOrder = customerController
+                                  .customerSales
+                                  .elementAt(index);
+                              // final y = saleOrder.product!.name;
+                              // final x = saleOrder.;
+                              final z = saleOrder.grandTotal;
+                              final a = saleOrder.createdAt!;
+
+                              return DataRow(cells: [
+                                // DataCell(Text(y!)),
+                                // DataCell(Text(x.toString())),
+                                DataCell(Text(z.toString())),
+                                DataCell(
+                                    Text(DateFormat("dd-MM-yyyy").format(a))),
+                              ]);
+                            }),
+                          ),
+                        ),
+                      ),
+                    )
+                  : ListView.builder(
+                      itemCount: salesController.allSales.length,
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemBuilder: (context, index) {
+                        SalesModel saleOrder =
+                            salesController.allSales.elementAt(index);
+                        return SalesCard(
+                          salesModel: saleOrder,
+                        );
+                      });
+    });
+  }
+}
+
+class RetunsTab extends StatelessWidget {
+  RetunsTab({Key? key}) : super(key: key);
+
+  SalesController salesController = Get.find<SalesController>();
   CustomerController customerController = Get.find<CustomerController>();
   SupplierController supplierController = Get.find<SupplierController>();
   ShopController createShopController = Get.find<ShopController>();
@@ -552,16 +528,117 @@ class Purchase extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      return customerController.customerPurchaseLoad.value &&
-                  user != "supplier" ||
-              supplierController.gettingSupplierSuppliesLoad.value &&
-                  user == "supplier"
-          ? Center(child: CircularProgressIndicator())
-          : customerController.customerPurchases.length == 0 &&
-                      user != "supplier" ||
-                  supplierController.supplierSupplies.isEmpty &&
-                      user == "supplier"
-              ? noItemsFound(context, true)
+      return customerController.loadingcustomerReturns.value
+          ? const Center(child: CircularProgressIndicator())
+          : customerController.customerReturns.isEmpty
+              ? Container(
+                  margin: const EdgeInsets.only(top: 50),
+                  child: const Text(
+                    "No entries",
+                    textAlign: TextAlign.center,
+                  ))
+              : MediaQuery.of(context).size.width > 600
+                  ? SingleChildScrollView(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 15, vertical: 10),
+                        width: double.infinity,
+                        child: Theme(
+                          data: Theme.of(context)
+                              .copyWith(dividerColor: Colors.grey),
+                          child: DataTable(
+                            decoration: BoxDecoration(
+                                border: Border.all(
+                              width: 1,
+                              color: Colors.black,
+                            )),
+                            columnSpacing: 30.0,
+                            columns: const [
+                              DataColumn(
+                                  label: Text('Name',
+                                      textAlign: TextAlign.center)),
+                              DataColumn(
+                                  label:
+                                      Text('Qty', textAlign: TextAlign.center)),
+                              DataColumn(
+                                  label: Text('Total',
+                                      textAlign: TextAlign.center)),
+                              DataColumn(
+                                  label: Text('Date',
+                                      textAlign: TextAlign.center)),
+                            ],
+                            rows: List.generate(
+                                customerController.customerReturns.length,
+                                (index) {
+                              SalesReturn saleOrder = customerController
+                                  .customerReturns
+                                  .elementAt(index);
+                              final y = saleOrder.productModel!.name;
+                              // final x = saleOrder.shop;
+                              // final z = saleOrder.total;
+                              // final a = saleOrder.createdAt!;
+
+                              return DataRow(cells: [
+                                // DataCell(Text(y!)),
+                                // DataCell(Text(x.toString())),
+                                // DataCell(Text(z.toString())),
+                                // DataCell(
+                                //     Text(DateFormat("dd-MM-yyyy").format(a))),
+                              ]);
+                            }),
+                          ),
+                        ),
+                      ),
+                    )
+                  : ListView.builder(
+                      itemCount: customerController.customerReturns.length,
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemBuilder: (context, index) {
+                        SalesReturn saleOrder =
+                            customerController.customerReturns.elementAt(index);
+                        return SaleReturnCard(saleOrder);
+                      });
+    });
+  }
+}
+
+class CreditInfo extends StatelessWidget {
+  final CustomerModel customerModel;
+  SupplierController supplierController = Get.find<SupplierController>();
+  CustomerController customerController = Get.find<CustomerController>();
+  AttendantController attendantController = Get.find<AttendantController>();
+  ShopController createShopController = Get.find<ShopController>();
+  AuthController authController = Get.find<AuthController>();
+  SalesController salesController = Get.find<SalesController>();
+  PurchaseController purchaseController = Get.find<PurchaseController>();
+
+  CreditInfo({Key? key, required this.customerModel}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(() {
+      return salesController.loadingSales.value
+          ? const Center(child: CircularProgressIndicator())
+          : salesController.creditSales.isEmpty
+              ? Center(
+                  child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const [
+                    Center(
+                      child: Text(
+                        "No entries found.",
+                        style: TextStyle(color: Colors.black),
+                      ),
+                    ),
+                    Center(
+                      child: Text(
+                        "For now",
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                    ),
+                  ],
+                ))
               : MediaQuery.of(context).size.width > 600
                   ? SingleChildScrollView(
                       child: Container(
@@ -580,28 +657,28 @@ class Purchase extends StatelessWidget {
                             columnSpacing: 30.0,
                             columns: [
                               DataColumn(
-                                  label: Text('Name',
+                                  label: Text('Receipt Number',
                                       textAlign: TextAlign.center)),
                               DataColumn(
-                                  label:
-                                      Text('Qty', textAlign: TextAlign.center)),
+                                  label: Text('Balance',
+                                      textAlign: TextAlign.center)),
                               DataColumn(
                                   label: Text('Total',
                                       textAlign: TextAlign.center)),
                               DataColumn(
                                   label: Text('Date',
                                       textAlign: TextAlign.center)),
+                              DataColumn(
+                                  label: Text('', textAlign: TextAlign.center)),
                             ],
                             rows: List.generate(
-                                customerController.customerPurchases.length,
-                                (index) {
-                              SaleOrderItemModel saleOrder = customerController
-                                  .customerPurchases
-                                  .elementAt(index);
-                              final y = saleOrder.product!.name;
-                              final x = saleOrder.itemCount;
-                              final z = saleOrder.total;
-                              final a = saleOrder.createdAt!;
+                                salesController.creditSales.length, (index) {
+                              SalesModel salesBody =
+                                  salesController.creditSales.elementAt(index);
+                              final y = salesBody.receiptNumber;
+                              final x = salesBody.creditTotal;
+                              final z = salesBody.grandTotal;
+                              final a = salesBody.createdAt!;
 
                               return DataRow(cells: [
                                 DataCell(Container(child: Text(y!))),
@@ -610,314 +687,155 @@ class Purchase extends StatelessWidget {
                                 DataCell(Container(
                                     child: Text(
                                         DateFormat("dd-MM-yyyy").format(a)))),
+                                DataCell(Align(
+                                  alignment: Alignment.topRight,
+                                  child: Container(
+                                    child: PopupMenuButton(
+                                      itemBuilder: (ctx) => [
+                                        PopupMenuItem(
+                                          child: ListTile(
+                                            leading: Icon(Icons.list),
+                                            onTap: () {
+                                              Navigator.pop(context);
+                                              if (MediaQuery.of(context)
+                                                      .size
+                                                      .width >
+                                                  600) {
+                                                Get.find<HomeController>()
+                                                        .selectedWidget
+                                                        .value =
+                                                    PurchaseOrderItems(
+                                                        id: salesBody.id);
+                                              } else {
+                                                Get.to(() => PurchaseOrderItems(
+                                                    id: salesBody.id));
+                                              }
+                                            },
+                                            title: Text('View Purchases'),
+                                          ),
+                                        ),
+                                        PopupMenuItem(
+                                          child: ListTile(
+                                            leading: Icon(Icons.payment),
+                                            onTap: () {
+                                              Navigator.pop(context);
+                                            },
+                                            title: Text('Pay'),
+                                          ),
+                                        ),
+                                        PopupMenuItem(
+                                          child: ListTile(
+                                            leading: Icon(Icons.wallet),
+                                            onTap: () {
+                                              Navigator.pop(context);
+                                              if (MediaQuery.of(context)
+                                                      .size
+                                                      .width >
+                                                  600) {
+                                                Get.find<HomeController>()
+                                                    .selectedWidget
+                                                    .value = PaymentHistory(
+                                                  id: salesBody.id!,
+                                                );
+                                              } else {
+                                                Get.to(() => PaymentHistory(
+                                                      id: salesBody.id!,
+                                                    ));
+                                              }
+                                            },
+                                            title: Text('Payment History'),
+                                          ),
+                                        ),
+                                        PopupMenuItem(
+                                          child: ListTile(
+                                            leading:
+                                                Icon(Icons.file_copy_outlined),
+                                            onTap: () async {
+                                              Navigator.pop(context);
+                                            },
+                                            title: Text('Generate Report'),
+                                          ),
+                                        ),
+                                      ],
+                                      icon: Icon(Icons.more_vert),
+                                    ),
+                                  ),
+                                )),
                               ]);
                             }),
                           ),
                         ),
                       ),
                     )
-                  : user == "supplier"
-                      ? ListView.builder(
-                          itemCount: supplierController.supplierSupplies.length,
-                          shrinkWrap: true,
-                          itemBuilder: (context, index) {
-                            SupplyOrderModel supplyOrderModel =
-                                supplierController.supplierSupplies
-                                    .elementAt(index);
-                            return purchaseCard(
-                                context: context,
-                                supplyOrderModel: supplyOrderModel);
-                          })
-                      : ListView.builder(
-                          itemCount:
-                              customerController.customerPurchases.length,
-                          shrinkWrap: true,
-                          itemBuilder: (context, index) {
-                            SaleOrderItemModel saleOrder = customerController
-                                .customerPurchases
-                                .elementAt(index);
+                  : ListView.builder(
+                      itemCount: salesController.creditSales.length,
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      itemBuilder: (context, index) {
+                        SalesModel salesBody =
+                            salesController.creditSales.elementAt(index);
 
-                            return purchaseCard(
-                              context: context,
-                              saleOrderItemModel: saleOrder,
-                            );
-                          });
+                        return SalesCard(salesModel: salesBody);
+                      });
     });
   }
 }
 
-class CreditInfo extends StatelessWidget {
-  final CustomerModel customerModel;
-  final user;
-  SupplierController supplierController = Get.find<SupplierController>();
-  CustomerController customerController = Get.find<CustomerController>();
-  AttendantController attendantController = Get.find<AttendantController>();
-  ShopController createShopController = Get.find<ShopController>();
-  AuthController authController = Get.find<AuthController>();
-  SalesController salesController = Get.find<SalesController>();
-  PurchaseController purchaseController = Get.find<PurchaseController>();
-
-  CreditInfo({Key? key, required this.customerModel, required this.user})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Obx(() {
-      return user == "supplier"
-          ? purchaseController.getPurchaseLoad.value
-              ? Center(
-                  child: CircularProgressIndicator(),
-                )
-              : purchaseController.purchasedItems.length == 0
-                  ? Center(
-                      child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
+showBottomSheet(BuildContext context) {
+  return showModalBottomSheet<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+            height: 150,
+            child: Center(
+                child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                    padding: EdgeInsets.all(10),
+                    width: double.infinity,
+                    color: Colors.grey.withOpacity(0.7),
+                    child: Text('Manage Bank')),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.pop(context);
+                      // editingDialog(
+                      //   context: context,
+                      //   onPressed: () {},
+                      // );
+                    },
+                    child: Row(
                       children: [
-                        Center(
-                          child: Text(
-                            "No entries found.",
-                            style: TextStyle(color: Colors.black),
-                          ),
+                        Icon(Icons.edit),
+                        SizedBox(
+                          width: 10,
                         ),
-                        Center(
-                          child: Text(
-                            "For now",
-                            style: TextStyle(color: Colors.grey),
-                          ),
-                        ),
+                        Container(child: Text('Edit'))
                       ],
-                    ))
-                  : MediaQuery.of(context).size.width > 600
-                      ? SingleChildScrollView(
-                          child: Container(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 15, vertical: 10),
-                            width: double.infinity,
-                            child: Theme(
-                              data: Theme.of(context)
-                                  .copyWith(dividerColor: Colors.grey),
-                              child: DataTable(
-                                decoration: BoxDecoration(
-                                    border: Border.all(
-                                  width: 1,
-                                  color: Colors.black,
-                                )),
-                                columnSpacing: 30.0,
-                                columns: [
-                                  DataColumn(
-                                      label: Text('Receipt Number',
-                                          textAlign: TextAlign.center)),
-                                  DataColumn(
-                                      label: Text('Balance',
-                                          textAlign: TextAlign.center)),
-                                  DataColumn(
-                                      label: Text('Total',
-                                          textAlign: TextAlign.center)),
-                                  DataColumn(
-                                      label: Text('Date',
-                                          textAlign: TextAlign.center)),
-                                ],
-                                rows: List.generate(
-                                    customerController.customerPurchases.length,
-                                    (index) {
-                                  StockInCredit salesBody = supplierController
-                                      .stockInCredit
-                                      .elementAt(index);
-                                  final y = salesBody.recietNumber;
-                                  final x = salesBody.balance;
-                                  final z = salesBody.total;
-                                  final a = salesBody.createdAt!;
-
-                                  return DataRow(cells: [
-                                    DataCell(Container(child: Text(y!))),
-                                    DataCell(
-                                        Container(child: Text(x.toString()))),
-                                    DataCell(
-                                        Container(child: Text(z.toString()))),
-                                    DataCell(Container(
-                                        child: Text(DateFormat("dd-MM-yyyy")
-                                            .format(a)))),
-                                  ]);
-                                }),
-                              ),
-                            ),
-                          ),
-                        )
-                      : ListView.builder(
-                          itemCount: purchaseController.purchasedItems.length,
-                          shrinkWrap: true,
-                          physics: NeverScrollableScrollPhysics(),
-                          itemBuilder: (context, index) {
-                            PurchaseOrder salesBody = purchaseController
-                                .purchasedItems
-                                .elementAt(index);
-
-                            return CreditPurchaseHistoryCard(
-                                context, salesBody);
-                          })
-          : salesController.salesByShopLoad.value
-              ? Center(child: CircularProgressIndicator())
-              : salesController.sales.length == 0
-                  ? Center(
-                      child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.pop(context);
+                      deleteDialog(context: context, onPressed: () {});
+                    },
+                    child: Row(
                       children: [
-                        Center(
-                          child: Text(
-                            "No entries found.",
-                            style: TextStyle(color: Colors.black),
-                          ),
+                        Icon(Icons.delete_outline_rounded),
+                        SizedBox(
+                          width: 10,
                         ),
-                        Center(
-                          child: Text(
-                            "For now",
-                            style: TextStyle(color: Colors.grey),
-                          ),
-                        ),
+                        Container(child: Text('Delete'))
                       ],
-                    ))
-                  : MediaQuery.of(context).size.width > 600
-                      ? SingleChildScrollView(
-                          child: Container(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 15, vertical: 10),
-                            width: double.infinity,
-                            child: Theme(
-                              data: Theme.of(context)
-                                  .copyWith(dividerColor: Colors.grey),
-                              child: DataTable(
-                                decoration: BoxDecoration(
-                                    border: Border.all(
-                                  width: 1,
-                                  color: Colors.black,
-                                )),
-                                columnSpacing: 30.0,
-                                columns: [
-                                  DataColumn(
-                                      label: Text('Receipt Number',
-                                          textAlign: TextAlign.center)),
-                                  DataColumn(
-                                      label: Text('Balance',
-                                          textAlign: TextAlign.center)),
-                                  DataColumn(
-                                      label: Text('Total',
-                                          textAlign: TextAlign.center)),
-                                  DataColumn(
-                                      label: Text('Date',
-                                          textAlign: TextAlign.center)),
-                                  DataColumn(
-                                      label: Text('',
-                                          textAlign: TextAlign.center)),
-                                ],
-                                rows: List.generate(
-                                    salesController.sales.length, (index) {
-                                  SalesModel salesBody =
-                                      salesController.sales.elementAt(index);
-                                  final y = salesBody.receiptNumber;
-                                  final x = salesBody.creditTotal;
-                                  final z = salesBody.grandTotal;
-                                  final a = salesBody.createdAt!;
-
-                                  return DataRow(cells: [
-                                    DataCell(Container(child: Text(y!))),
-                                    DataCell(
-                                        Container(child: Text(x.toString()))),
-                                    DataCell(
-                                        Container(child: Text(z.toString()))),
-                                    DataCell(Container(
-                                        child: Text(DateFormat("dd-MM-yyyy")
-                                            .format(a)))),
-                                    DataCell(Align(
-                                      alignment: Alignment.topRight,
-                                      child: Container(
-                                        child: PopupMenuButton(
-                                          itemBuilder: (ctx) => [
-                                            PopupMenuItem(
-                                              child: ListTile(
-                                                leading: Icon(Icons.list),
-                                                onTap: () {
-                                                  Navigator.pop(context);
-                                                  if (MediaQuery.of(context)
-                                                          .size
-                                                          .width >
-                                                      600) {
-                                                    Get.find<HomeController>()
-                                                            .selectedWidget
-                                                            .value =
-                                                        PurchaseOrderItems(
-                                                            id: salesBody.id);
-                                                  } else {
-                                                    Get.to(() =>
-                                                        PurchaseOrderItems(
-                                                            id: salesBody.id));
-                                                  }
-                                                },
-                                                title: Text('View Purchases'),
-                                              ),
-                                            ),
-                                            PopupMenuItem(
-                                              child: ListTile(
-                                                leading: Icon(Icons.payment),
-                                                onTap: () {
-                                                  Navigator.pop(context);
-                                                },
-                                                title: Text('Pay'),
-                                              ),
-                                            ),
-                                            PopupMenuItem(
-                                              child: ListTile(
-                                                leading: Icon(Icons.wallet),
-                                                onTap: () {
-                                                  Navigator.pop(context);
-                                                  if (MediaQuery.of(context)
-                                                          .size
-                                                          .width >
-                                                      600) {
-                                                    Get.find<HomeController>()
-                                                        .selectedWidget
-                                                        .value = PaymentHistory(
-                                                      id: salesBody.id!,
-                                                    );
-                                                  } else {
-                                                    Get.to(() => PaymentHistory(
-                                                          id: salesBody.id!,
-                                                        ));
-                                                  }
-                                                },
-                                                title: Text('Payment History'),
-                                              ),
-                                            ),
-                                            PopupMenuItem(
-                                              child: ListTile(
-                                                leading: Icon(
-                                                    Icons.file_copy_outlined),
-                                                onTap: () async {
-                                                  Navigator.pop(context);
-                                                },
-                                                title: Text('Generate Report'),
-                                              ),
-                                            ),
-                                          ],
-                                          icon: Icon(Icons.more_vert),
-                                        ),
-                                      ),
-                                    )),
-                                  ]);
-                                }),
-                              ),
-                            ),
-                          ),
-                        )
-                      : ListView.builder(
-                          itemCount: salesController.sales.length,
-                          shrinkWrap: true,
-                          itemBuilder: (context, index) {
-                            SalesModel salesBody =
-                                salesController.sales.elementAt(index);
-
-                            return CreditHistoryCard(
-                                context, salesBody, customerModel);
-                          });
-    });
-  }
+                    ),
+                  ),
+                ),
+              ],
+            )));
+      });
 }

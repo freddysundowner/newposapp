@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutterpos/controllers/AuthController.dart';
-import 'package:flutterpos/controllers/home_controller.dart';
-import 'package:flutterpos/controllers/shop_controller.dart';
-import 'package:flutterpos/models/product_model.dart';
-import 'package:flutterpos/responsive/responsiveness.dart';
-import 'package:flutterpos/screens/stock/stock_page.dart';
-import 'package:flutterpos/utils/constants.dart';
-import 'package:flutterpos/widgets/increament_widget.dart';
-import 'package:flutterpos/widgets/no_items_found.dart';
+import 'package:pointify/controllers/AuthController.dart';
+import 'package:pointify/controllers/home_controller.dart';
+import 'package:pointify/controllers/shop_controller.dart';
+import 'package:pointify/models/product_model.dart';
+import 'package:pointify/responsive/responsiveness.dart';
+import 'package:pointify/screens/stock/stock_page.dart';
+import 'package:pointify/utils/constants.dart';
+import 'package:pointify/widgets/increament_widget.dart';
+import 'package:pointify/widgets/no_items_found.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
@@ -319,7 +319,8 @@ class CountingPage extends StatelessWidget {
                 ],
               ),
             ),
-            if (Get.find<AuthController>().currentUser.value != null&& authController.usertype=="admin")
+            if (Get.find<AuthController>().currentUser.value != null &&
+                authController.usertype == "admin")
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Row(

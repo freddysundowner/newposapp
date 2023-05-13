@@ -1,4 +1,4 @@
-# flutterpos
+# pointify
 
 A new Flutter project.
 

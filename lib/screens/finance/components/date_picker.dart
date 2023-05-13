@@ -1,10 +1,10 @@
 import 'package:f_datetimerangepicker/f_datetimerangepicker.dart';
 import 'package:flutter/animation.dart';
-import 'package:flutterpos/controllers/expense_controller.dart';
+import 'package:pointify/controllers/expense_controller.dart';
 import 'package:get/get.dart';
 
-showDatePickers({required context ,required VoidCallback function}) {
-  ExpenseController expenseController=Get.find<ExpenseController>();
+showDatePickers({required context, required Function function}) {
+  ExpenseController expenseController = Get.find<ExpenseController>();
   return DateTimeRangePicker(
       startText: "From",
       endText: "To",
@@ -20,6 +20,6 @@ showDatePickers({required context ,required VoidCallback function}) {
       onConfirm: (start, end) {
         expenseController.startdate.value = start;
         expenseController.enddate.value = end;
-        function();
+        function(start, end);
       }).showPicker(context);
 }

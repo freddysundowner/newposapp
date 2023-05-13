@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutterpos/controllers/AuthController.dart';
-import 'package:flutterpos/controllers/home_controller.dart';
-import 'package:flutterpos/screens/home/attendants_page.dart';
-import 'package:flutterpos/screens/home/shops_page.dart';
-import 'package:flutterpos/utils/colors.dart';
-import 'package:flutterpos/widgets/logout.dart';
+import 'package:pointify/controllers/AuthController.dart';
+import 'package:pointify/controllers/home_controller.dart';
+import 'package:pointify/screens/home/attendants_page.dart';
+import 'package:pointify/screens/home/shops_page.dart';
+import 'package:pointify/utils/colors.dart';
+import 'package:pointify/widgets/logout.dart';
 import 'package:get/get.dart';
 
 import '../screens/home/home_page.dart';
@@ -43,7 +43,7 @@ class SideMenu extends StatelessWidget {
             } else if (title == "Profile") {
               homeController.selectedWidget.value = ProfilePage();
             } else if (title == "Log Out") {
-             logoutAccountDialog(context);
+              logoutAccountDialog(context);
             }
           },
           onHover: (value) {

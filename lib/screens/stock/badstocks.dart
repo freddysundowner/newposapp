@@ -1,18 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutterpos/controllers/AuthController.dart';
-import 'package:flutterpos/controllers/attendant_controller.dart';
-import 'package:flutterpos/controllers/home_controller.dart';
-import 'package:flutterpos/controllers/shop_controller.dart';
-import 'package:flutterpos/models/badstock.dart';
-import 'package:flutterpos/responsive/responsiveness.dart';
-import 'package:flutterpos/screens/sales/all_sales_page.dart';
-import 'package:flutterpos/screens/stock/stock_page.dart';
-import 'package:flutterpos/utils/colors.dart';
-import 'package:flutterpos/utils/helper.dart';
+import 'package:pointify/controllers/AuthController.dart';
+import 'package:pointify/controllers/attendant_controller.dart';
+import 'package:pointify/controllers/home_controller.dart';
+import 'package:pointify/controllers/shop_controller.dart';
+import 'package:pointify/models/badstock.dart';
+import 'package:pointify/responsive/responsiveness.dart';
+import 'package:pointify/screens/product/products_screen.dart';
+import 'package:pointify/screens/sales/all_sales_page.dart';
+import 'package:pointify/screens/stock/products_selection.dart';
+import 'package:pointify/screens/stock/stock_page.dart';
+import 'package:pointify/utils/colors.dart';
+import 'package:pointify/utils/helper.dart';
 import 'package:get/get.dart';
+import 'package:pointify/widgets/alert.dart';
 
 import '../../controllers/product_controller.dart';
+import '../../models/product_history_model.dart';
+import '../../models/product_model.dart';
 import '../../utils/themer.dart';
 import '../../widgets/bigtext.dart';
 import '../../widgets/no_items_found.dart';
@@ -26,7 +31,7 @@ class BadStockPage extends StatelessWidget {
         attendant: authController.usertype.value == "admin"
             ? ""
             : attendantController.attendant.value?.id!,
-     product: "");
+        product: "");
   }
 
   ProductController productController = Get.find<ProductController>();
@@ -99,9 +104,7 @@ class BadStockPage extends StatelessWidget {
                     child: InkWell(
                       onTap: () {
                         productController.showBadStockWidget.value = true;
-                        productController.getProductsBySort(
-                            shopId: shopController.currentShop.value!.id!,
-                            type: "all");
+                        productController.getProductsBySort(type: "all");
                       },
                       child: Container(
                         padding: EdgeInsets.all(10),
@@ -110,7 +113,7 @@ class BadStockPage extends StatelessWidget {
                         decoration: BoxDecoration(
                             color: AppColors.mainColor,
                             borderRadius: BorderRadius.circular(10)),
-                        child: Text(
+                        child: const Text(
                           "Add New",
                           style: TextStyle(color: Colors.white),
                         ),
@@ -125,7 +128,7 @@ class BadStockPage extends StatelessWidget {
                       SizedBox(
                         height: MediaQuery.of(context).size.height * 0.4,
                       ),
-                      Center(
+                      const Center(
                         child: CircularProgressIndicator(),
                       ),
                     ],
@@ -134,19 +137,19 @@ class BadStockPage extends StatelessWidget {
                     ? noItemsFound(context, true)
                     : ListView.builder(
                         shrinkWrap: true,
-                        physics: NeverScrollableScrollPhysics(),
+                        physics: const NeverScrollableScrollPhysics(),
                         itemCount: productController.badstocks.length,
                         itemBuilder: (context, index) {
                           BadStock badstock =
                               productController.badstocks.elementAt(index);
                           return Container(
-                            padding: EdgeInsets.all(10),
+                            padding: const EdgeInsets.all(10),
                             margin: EdgeInsets.symmetric(horizontal: 10)
                                 .copyWith(bottom: 5),
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(8),
                                 color: Colors.white,
-                                boxShadow: [
+                                boxShadow: const [
                                   BoxShadow(
                                       offset: Offset(1, 1),
                                       blurRadius: 1,
@@ -154,15 +157,6 @@ class BadStockPage extends StatelessWidget {
                                 ]),
                             child: Row(
                               children: [
-                                // CircleAvatar(
-                                //   backgroundColor: Colors.deepPurple,
-                                //   child: ClipOval(
-                                //     child: Icon(
-                                //       Icons.water_damage,
-                                //       color: Colors.white,
-                                //     ),
-                                //   ),
-                                // ),
                                 SizedBox(
                                   width: 5,
                                 ),
@@ -172,9 +166,8 @@ class BadStockPage extends StatelessWidget {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        "${badstock.product!.name!}"
-                                            .capitalize!,
-                                        style: TextStyle(
+                                        badstock.product!.name!.capitalize!,
+                                        style: const TextStyle(
                                             color: Colors.black,
                                             fontWeight: FontWeight.w500),
                                       ),
@@ -183,10 +176,10 @@ class BadStockPage extends StatelessWidget {
                                       ),
                                       Text(
                                         "${badstock.description}",
-                                        style: TextStyle(
+                                        style: const TextStyle(
                                             color: Colors.black, fontSize: 15),
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         height: 5,
                                       ),
                                       Row(
@@ -202,7 +195,7 @@ class BadStockPage extends StatelessWidget {
                                             alignment: Alignment.bottomRight,
                                             child: Text(
                                               "By: ${badstock.attendantId!.fullnames}",
-                                              style: TextStyle(
+                                              style: const TextStyle(
                                                   color: Colors.black,
                                                   fontSize: 15),
                                             ),
@@ -227,7 +220,7 @@ class BadStockPage extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(1.0),
         color: Colors.white,
-        boxShadow: [
+        boxShadow: const [
           BoxShadow(
             color: Colors.grey,
             offset: Offset(0.0, 0.0), //(x,y)
@@ -235,8 +228,8 @@ class BadStockPage extends StatelessWidget {
           ),
         ],
       ),
-      margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      padding: EdgeInsets.all(20),
+      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      padding: const EdgeInsets.all(20),
       width: MediaQuery.of(context).size.width > 600
           ? MediaQuery.of(context).size.width * 0.4
           : double.infinity,
@@ -245,19 +238,23 @@ class BadStockPage extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("Category", style: TextStyle(color: Colors.grey)),
+              const Text("Select product",
+                  style: TextStyle(color: Colors.grey)),
+              const SizedBox(
+                height: 10,
+              ),
               InkWell(
                 onTap: () {
-                  if (productController.products.length == 0 &&
+                  if (productController.products.isEmpty &&
                       !productController.getProductLoad.value) {
                     showDialog(
                         context: context,
                         builder: (BuildContext context) {
                           return AlertDialog(
-                            content: Text("Add product to continue."),
+                            content: const Text("Add product to continue."),
                             actions: [
                               TextButton(
-                                child: Text("OK"),
+                                child: const Text("OK"),
                                 onPressed: () {
                                   Get.back();
                                 },
@@ -266,30 +263,14 @@ class BadStockPage extends StatelessWidget {
                           );
                         });
                   } else {
-                    showDialog(
-                        context: context,
-                        builder: (context) {
-                          return SimpleDialog(
-                            children: List.generate(
-                                productController.products.length,
-                                (index) => SimpleDialogOption(
-                                      onPressed: () {
-                                        if (productController.products
-                                                .elementAt(index)
-                                                .quantity! >
-                                            1) {
-                                          productController
-                                                  .selectedBadStock.value =
-                                              productController.products
-                                                  .elementAt(index);
-                                        }
-                                        Navigator.pop(context);
-                                      },
-                                      child: Text(
-                                          "${productController.products.elementAt(index).name}"),
-                                    )),
-                          );
-                        });
+                    Get.to(() => ProductsScreen(
+                          shopId: shopController.currentShop.value!.id,
+                          type: "badstock",
+                          function: (ProductModel product) {
+                            productController.selectedBadStock.value = product;
+                            Navigator.pop(context);
+                          },
+                        ));
                   }
                 },
                 child: Container(
@@ -315,7 +296,10 @@ class BadStockPage extends StatelessWidget {
               SizedBox(
                 height: 10,
               ),
-              Text("Qty", style: TextStyle(color: Colors.grey)),
+              const Text("Qty", style: TextStyle(color: Colors.grey)),
+              const SizedBox(
+                height: 10,
+              ),
               TextFormField(
                 controller: productController.qtyController,
                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -341,7 +325,10 @@ class BadStockPage extends StatelessWidget {
               SizedBox(
                 height: 10,
               ),
-              Text("Describe", style: TextStyle(color: Colors.grey)),
+              const Text("Reason", style: TextStyle(color: Colors.grey)),
+              const SizedBox(
+                height: 10,
+              ),
               TextFormField(
                 controller: productController.itemNameController,
                 decoration: InputDecoration(
@@ -374,7 +361,7 @@ class BadStockPage extends StatelessWidget {
                             padding: EdgeInsets.fromLTRB(40, 10, 40, 10),
                             child: Text(
                               'Save'.toUpperCase(),
-                              style: TextStyle(
+                              style: const TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.white),
@@ -396,13 +383,7 @@ class BadStockPage extends StatelessWidget {
                                   "Quantity Can't be greater than ${productController.selectedBadStock.value?.quantity}");
                             } else {
                               productController.saveBadStock(
-                                  shop:
-                                      "${shopController.currentShop.value?.id!}",
-                                  attendant: authController.usertype == "admin"
-                                      ? authController.currentUser.value!.id
-                                      : attendantController.attendant.value!.id,
-                                  page: page,
-                                  context: context);
+                                  page: page, context: context);
                             }
                           },
                         );

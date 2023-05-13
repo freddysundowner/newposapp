@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:flutterpos/controllers/shop_controller.dart';
+import 'package:pointify/controllers/shop_controller.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:open_file/open_file.dart';
@@ -8,12 +8,9 @@ import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 
-import '../../models/purchase_order.dart';
+import '../../models/invoice.dart';
 
-PurchasesPdf(
-    {required final shop,
-    required List<PurchaseOrder> sales,
-    required type}) async {
+PurchasesPdf({required List<Invoice> sales, required type}) async {
   int sum = 0;
   sales.forEach((element) {
     sum += element.total!;
@@ -29,7 +26,7 @@ PurchasesPdf(
               children: [
                 pw.Center(
                   child: pw.Text(
-                    "${shop}",
+                    "${Get.find<ShopController>().currentShop.value!.name}",
                     style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
                   ),
                 ),
@@ -54,7 +51,7 @@ PurchasesPdf(
                         data: sales
                             .map((e) => [
                                   e.receiptNumber,
-                                  e.total,
+                                  "${Get.find<ShopController>().currentShop.value?.currency} ${e.total}",
                                   e.productCount,
                                   DateFormat("dd/MM/yyyy").format(e.createdAt!)
                                 ])
@@ -68,7 +65,7 @@ PurchasesPdf(
                           mainAxisAlignment: pw.MainAxisAlignment.end,
                           children: [
                             pw.Text(
-                              "Totals ${sum}",
+                              "Totals ${Get.find<ShopController>().currentShop.value?.currency} ${sum}",
                               style: pw.TextStyle(
                                   fontWeight: pw.FontWeight.bold, fontSize: 16),
                             ),

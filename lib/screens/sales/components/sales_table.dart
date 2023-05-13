@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutterpos/controllers/sales_controller.dart';
-import 'package:flutterpos/controllers/shop_controller.dart';
+import 'package:pointify/controllers/sales_controller.dart';
+import 'package:pointify/controllers/shop_controller.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 import '../../../controllers/home_controller.dart';
-import '../../../models/sales_model.dart';
+import '../../../models/receipt.dart';
 import '../../../utils/colors.dart';
 import '../sale_order_item.dart';
 
@@ -38,13 +38,13 @@ Widget salesTable(context, page) {
         ],
         rows: List.generate(
             page != "home"
-                ? salesController.sales.length
-                : salesController.sales.length == 0
+                ? salesController.allSales.length
+                : salesController.allSales.length == 0
                     ? 0
-                    : salesController.sales.length > 4
+                    : salesController.allSales.length > 4
                         ? 4
-                        : salesController.sales.length, (index) {
-          SalesModel salesModel = salesController.sales.elementAt(index);
+                        : salesController.allSales.length, (index) {
+          SalesModel salesModel = salesController.allSales.elementAt(index);
           final y = salesModel.receiptNumber;
           final x = salesModel.grandTotal.toString();
           final z = salesModel.paymentMethod;

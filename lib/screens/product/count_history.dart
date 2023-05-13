@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutterpos/controllers/shop_controller.dart';
-import 'package:flutterpos/responsive/responsiveness.dart';
-import 'package:flutterpos/widgets/no_items_found.dart';
+import 'package:pointify/controllers/shop_controller.dart';
+import 'package:pointify/responsive/responsiveness.dart';
+import 'package:pointify/widgets/no_items_found.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
@@ -18,7 +18,8 @@ class CountHistory extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    productController.getProductCount(createShopController.currentShop.value?.id);
+    productController
+        .getProductCount(createShopController.currentShop.value?.id);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -56,64 +57,6 @@ class CountHistory extends StatelessWidget {
                   })
                 ],
               ),
-              // IconButton(
-              //     onPressed: () {
-              //       showDialog(
-              //         context: context,
-              //         builder: (_) {
-              //           return AlertDialog(
-              //             title: Text('Sort By'),
-              //             content: ListView(
-              //               shrinkWrap: true,
-              //               children: [
-              //                 Row(
-              //                   children: [
-              //                     Text('2022'),
-              //                   ],
-              //                 ),
-              //                 Divider(),
-              //                 Row(
-              //                   children: [
-              //                     Text('2021'),
-              //                   ],
-              //                 ),
-              //                 Divider(),
-              //                 Row(
-              //                   children: [
-              //                     Text('2020'),
-              //                   ],
-              //                 ),
-              //                 Divider(),
-              //                 Row(
-              //                   children: [
-              //                     Text('2019'),
-              //                   ],
-              //                 ),
-              //                 Divider(),
-              //                 Row(
-              //                   children: [
-              //                     Text('2018'),
-              //                   ],
-              //                 ),
-              //                 Divider(),
-              //                 Row(
-              //                   children: [
-              //                     Text('2017'),
-              //                   ],
-              //                 )
-              //               ],
-              //             ),
-              //             actions: [
-              //               TextButton(
-              //                 onPressed: () => Navigator.pop(context),
-              //                 child: Text('Cancel'),
-              //               ),
-              //             ],
-              //           );
-              //         },
-              //       );
-              //     },
-              //     icon: Icon(Icons.arrow_drop_down))
             ],
           )),
       body: ResponsiveWidget(
@@ -162,7 +105,8 @@ class CountHistory extends StatelessWidget {
                               final y = productBody.product?.name;
                               final x = productBody.quantity;
                               final z = productBody.createdAt!;
-                              final a = productBody.attendantId!.fullnames??"";
+                              final a =
+                                  productBody.attendantId!.fullnames ?? "";
 
                               return DataRow(cells: [
                                 DataCell(Container(child: Text(y!))),
@@ -190,7 +134,7 @@ class CountHistory extends StatelessWidget {
           ? Center(
               child: CircularProgressIndicator(),
             )
-          : productController.countHistoryList.length == 0
+          : productController.countHistoryList.isEmpty
               ? noItemsFound(context, true)
               : ListView.builder(
                   shrinkWrap: true,
@@ -240,14 +184,10 @@ class CountHistory extends StatelessWidget {
                     children: [
                       Text(
                         "${productBody.product!.name}".capitalize!,
-                        style: TextStyle(
+                        style: const TextStyle(
                             color: Colors.black,
                             fontWeight: FontWeight.bold,
                             fontSize: 18),
-                      ),
-                      Text(
-                        "${productBody.product!.category}",
-                        style: TextStyle(color: Colors.grey, fontSize: 16),
                       ),
                       Text('Qty ${productBody.quantity}'),
                       Text(

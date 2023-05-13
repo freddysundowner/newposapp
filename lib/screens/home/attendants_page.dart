@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutterpos/controllers/home_controller.dart';
-import 'package:flutterpos/controllers/shop_controller.dart';
-import 'package:flutterpos/responsive/responsiveness.dart';
-import 'package:flutterpos/screens/attendant/create_attendant.dart';
-import 'package:flutterpos/widgets/attendant_card.dart';
-import 'package:flutterpos/widgets/no_items_found.dart';
+import 'package:pointify/controllers/home_controller.dart';
+import 'package:pointify/controllers/shop_controller.dart';
+import 'package:pointify/responsive/responsiveness.dart';
+import 'package:pointify/screens/attendant/create_attendant.dart';
+import 'package:pointify/widgets/attendant_card.dart';
+import 'package:pointify/widgets/no_items_found.dart';
 import 'package:get/get.dart';
 
 import '../../../../utils/colors.dart';
@@ -30,10 +30,10 @@ class AttendantsPage extends StatelessWidget {
                     createAttendantWidget(context),
                     Obx(() {
                       return attendantController.getAttendantsLoad.value
-                          ? Center(
+                          ? const Center(
                               child: CircularProgressIndicator(),
                             )
-                          : attendantController.attendants.length == 0
+                          : attendantController.attendants.isEmpty
                               ? noItemsFound(context, true)
                               : Container(
                                   padding: EdgeInsets.symmetric(
@@ -49,7 +49,7 @@ class AttendantsPage extends StatelessWidget {
                                         color: Colors.black,
                                       )),
                                       columnSpacing: 30.0,
-                                      columns: [
+                                      columns: const [
                                         DataColumn(
                                             label: Text('Name',
                                                 textAlign: TextAlign.center)),

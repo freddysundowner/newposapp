@@ -2,77 +2,77 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
-import 'package:flutterpos/controllers/home_controller.dart';
-import 'package:flutterpos/controllers/product_controller.dart';
-import 'package:flutterpos/models/customer_model.dart';
-import 'package:flutterpos/models/product_model.dart';
-import 'package:flutterpos/models/purchase_order.dart';
-import 'package:flutterpos/models/supply_order_model.dart';
-import 'package:flutterpos/screens/stock/view_purchases.dart';
-import 'package:flutterpos/services/purchases.dart';
-import 'package:flutterpos/widgets/loading_dialog.dart';
+import 'package:pointify/controllers/AuthController.dart';
+import 'package:pointify/controllers/attendant_controller.dart';
+import 'package:pointify/controllers/home_controller.dart';
+import 'package:pointify/controllers/product_controller.dart';
+import 'package:pointify/controllers/shop_controller.dart';
+import 'package:pointify/models/invoice_items.dart';
+import 'package:pointify/models/product_model.dart';
+import 'package:pointify/models/supplier.dart';
+import 'package:pointify/screens/stock/view_purchases.dart';
+import 'package:pointify/services/purchases.dart';
+import 'package:pointify/widgets/loading_dialog.dart';
 import 'package:get/get.dart';
 
+import '../models/invoice.dart';
 import '../widgets/snackBars.dart';
 import 'CustomerController.dart';
 
 class PurchaseController extends GetxController {
   final GlobalKey<State> _keyLoader = new GlobalKey<State>();
-  RxList<ProductModel> selectedList = RxList([]);
-  RxList<PurchaseOrder> purchasedItems = RxList([]);
-  RxList<SupplyOrderModel> purchaseOrderItems = RxList([]);
+  RxList<ProductModel> saleItem = RxList([]);
+  RxList<Invoice> purchasedItems = RxList([]);
+  RxList<Invoice> creditPurchases = RxList([]);
+  RxList<InvoiceItem> invoicesItems = RxList([]);
   RxInt grandTotal = RxInt(0);
   RxInt balance = RxInt(0);
-  Rxn<CustomerModel> selectedSupplier = Rxn(null);
+  Rxn<SupplierModel> selectedSupplier = Rxn(null);
 
+  RxBool returningIvoiceLoad = RxBool(false);
   RxBool getPurchaseLoad = RxBool(false);
   RxBool getPurchaseByDateLoad = RxBool(false);
   RxBool getPurchaseOrderItemLoad = RxBool(false);
   TextEditingController textEditingControllerAmount = TextEditingController();
   ProductController productController = Get.find<ProductController>();
 
-  createPurchase(
-      {required shopId,
-      required attendantid,
-      required context,
-      required screen}) async {
+  createPurchase({required context, required screen}) async {
     if (balance.value > 0 && selectedSupplier.value == null) {
-      showSnackBar(
-          message: "please select supplier",
-          color: Colors.red,
-          context: context);
+      showSnackBar(message: "please select supplier", color: Colors.red);
     } else {
       try {
+        Navigator.pop(context);
         LoadingDialog.showLoadingDialog(
             context: context,
             title: "adding purchase please wait...",
             key: _keyLoader);
-        var products = selectedList.map((element) => element).toList();
-        print(products.map((e) => e.buyingPrice));
+        var products = saleItem.map((element) => element.toJson()).toList();
         var supplier = {
           if (selectedSupplier.value != null)
             "supplier": selectedSupplier.value!.id,
           "balance": balance.value,
           "total": grandTotal.value,
           "itemstotal": grandTotal.value,
-          "attendant": attendantid,
-          "shop": shopId,
+          "attendant": Get.find<AuthController>().usertype.value == "admin"
+              ? Get.find<AuthController>().currentUser.value!.id
+              : Get.find<AttendantController>().attendant.value!.id,
+          "shop": Get.find<ShopController>().currentShop.value!.id,
         };
 
-
-        var response = await Purchases().createPurchase(shopId: shopId, body: {
+        var response = await Purchases().createPurchase(body: {
           "supplier": supplier,
           "products": products,
-          "date": DateTime.parse(DateTime.now().toString()).millisecondsSinceEpoch,
+          "date":
+              DateTime.parse(DateTime.now().toString()).millisecondsSinceEpoch,
         });
         Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
         if (response["status"] == true) {
           balance.value = 0;
-          selectedList.value = [];
+          saleItem.value = [];
           grandTotal.value = 0;
           selectedSupplier.value = null;
           textEditingControllerAmount.text = "0";
-          getPurchase(shopId: shopId, attendantId: attendantid);
+          getPurchase();
           if (screen == "admin") {
             if (MediaQuery.of(context).size.width > 600) {
               Get.find<HomeController>().selectedWidget.value = ViewPurchases();
@@ -88,29 +88,28 @@ class PurchaseController extends GetxController {
   }
 
   getPurchase({
-    required shopId,
-    String? attendantId,
-    String? customer,
+    String? supplier,
     String? onCredit,
   }) async {
     try {
       getPurchaseLoad.value = true;
-      var response = await Purchases().getPurchase(
-          shopId: shopId,
-          attendantId: attendantId,
-          customer: customer == null ? "" : customer,
-          onCredit: onCredit == null ? "" : onCredit);
-      print(response);
+      var response = await Purchases()
+          .getPurchase(supplier: supplier ?? "", onCredit: onCredit ?? "");
       if (response["status"] == true) {
         List fetchedResponse = response["body"];
-        List<PurchaseOrder> supply =
-            fetchedResponse.map((e) => PurchaseOrder.fromJson(e)).toList();
-        purchasedItems.assignAll(supply);
+        List<Invoice> supply =
+            fetchedResponse.map((e) => Invoice.fromJson(e)).toList();
+        if (onCredit!.isNotEmpty) {
+          creditPurchases.value = supply;
+        } else {
+          purchasedItems.assignAll(supply);
+        }
       } else {
         purchasedItems.value = RxList([]);
       }
       getPurchaseLoad.value = false;
     } catch (e) {
+      print(e);
       getPurchaseLoad.value = false;
     }
   }
@@ -118,48 +117,47 @@ class PurchaseController extends GetxController {
   getPurchaseOrderItems({String? purchaseId, String? productId}) async {
     try {
       getPurchaseOrderItemLoad.value = true;
-      var response = await Purchases().getPurchaseOrderItems(id: purchaseId == null ? "" : purchaseId,productId:productId==null?"":productId);
-      print(response);
+      var response = await Purchases().getPurchaseOrderItems(
+          id: purchaseId ?? "", productId: productId ?? "");
       if (response["status"] == true) {
         List fetchedResponse = response["body"];
-        List<SupplyOrderModel> supply =
-            fetchedResponse.map((e) => SupplyOrderModel.fromJson(e)).toList();
-        purchaseOrderItems.assignAll(supply);
+        invoicesItems.clear();
+        List<InvoiceItem> supply =
+            fetchedResponse.map((e) => InvoiceItem.fromJson(e)).toList();
+        invoicesItems.assignAll(supply);
       } else {
-        purchaseOrderItems.value = RxList([]);
+        invoicesItems.value = RxList([]);
       }
       getPurchaseOrderItemLoad.value = false;
     } catch (e) {
-      print(e);
       getPurchaseOrderItemLoad.value = false;
     }
   }
 
-  changeSelectedList(value) {
-    var index = selectedList.indexWhere((element) => element.id == value.id);
+  changesaleItem(value) {
+    var index = saleItem.indexWhere((element) => element.id == value.id);
     if (index == -1) {
-      selectedList.add(value);
-      index = selectedList.indexWhere((element) => element.id == value.id);
+      saleItem.add(value);
+      index = saleItem.indexWhere((element) => element.id == value.id);
     } else {
-      var data =
-          int.parse(selectedList[index].cartquantity.toString()) + 1; // +=1;
-      selectedList[index].cartquantity = data;
+      var data = int.parse(saleItem[index].cartquantity.toString()) + 1; // +=1;
+      saleItem[index].cartquantity = data;
     }
     calculateAmount(index);
-    selectedList.refresh();
+    saleItem.refresh();
   }
 
   decrementItem(index) {
-    if (selectedList[index].cartquantity! > 1) {
-      selectedList[index].cartquantity = selectedList[index].cartquantity! - 1;
-      selectedList.refresh();
+    if (saleItem[index].cartquantity! > 1) {
+      saleItem[index].cartquantity = saleItem[index].cartquantity! - 1;
+      saleItem.refresh();
     }
     calculateAmount(index);
   }
 
   incrementItem(index) {
-    selectedList[index].cartquantity = selectedList[index].cartquantity! + 1;
-    selectedList.refresh();
+    saleItem[index].cartquantity = saleItem[index].cartquantity! + 1;
+    saleItem.refresh();
 
     calculateAmount(index);
   }
@@ -168,13 +166,13 @@ class PurchaseController extends GetxController {
     grandTotal.value = 0;
     balance.value = 0;
     textEditingControllerAmount.text = "0";
-    if (selectedList.length > 0) {
-      selectedList[index].amount =
-          selectedList[index].cartquantity! * selectedList[index].buyingPrice!;
+    if (saleItem.isNotEmpty) {
+      saleItem[index].amount =
+          saleItem[index].cartquantity! * saleItem[index].buyingPrice!;
     }
 
-    if (selectedList.length > 0) {
-      selectedList.forEach((element) {
+    if (saleItem.isNotEmpty) {
+      saleItem.forEach((element) {
         grandTotal.value =
             grandTotal.value + int.parse(element.amount.toString());
         textEditingControllerAmount.text = grandTotal.value.toString();
@@ -186,8 +184,8 @@ class PurchaseController extends GetxController {
   }
 
   removeFromList(index) {
-    selectedList.removeAt(index);
-    selectedList.refresh();
+    saleItem.removeAt(index);
+    saleItem.refresh();
     calculateAmount(index);
   }
 
@@ -198,27 +196,23 @@ class PurchaseController extends GetxController {
           '#ff6666', 'Cancel', true, ScanMode.BARCODE);
       productController.searchProductController.text = barcodeScanRes;
       await productController.searchProduct(shopId, "product");
-      if (productController.products.length == 0) {
+      if (productController.products.isEmpty) {
         showSnackBar(
-            message: "product doesnot exist in this shop",
-            color: Colors.red,
-            context: context);
+            message: "product doesnot exist in this shop", color: Colors.red);
       } else {
         for (int i = 0; i < productController.products.length; i++) {
-          changeSelectedList(productController.products[i]);
+          changesaleItem(productController.products[i]);
         }
       }
     } on PlatformException {
       showSnackBar(
-          message: 'Failed to get platform version.',
-          color: Colors.red,
-          context: context);
+          message: 'Failed to get platform version.', color: Colors.red);
     }
   }
 
   calculateSalesAmount() {
     var subTotal = 0;
-    selectedList.forEach((element) {
+    saleItem.forEach((element) {
       subTotal = subTotal + (element.buyingPrice! * element.cartquantity!);
     });
     return subTotal;
@@ -232,21 +226,39 @@ class PurchaseController extends GetxController {
     return subTotal;
   }
 
+  void returnInvoiceItem(InvoiceItem sale, int quatity, Invoice invoice) async {
+    try {
+      returningIvoiceLoad.value = true;
+      var response = await Purchases().retunPurchase(sale.id, quatity);
+      if (response["status"] != false) {
+        getPurchaseOrderItems(purchaseId: invoice.id);
+      } else {
+        showSnackBar(message: response["message"], color: Colors.red);
+      }
+      returningIvoiceLoad.value = false;
+    } catch (e) {
+      returningIvoiceLoad.value = false;
+    }
+  }
+
   paySupplierCredit(
-      {required String amount, required PurchaseOrder salesBody}) async {
+      {required String amount, required Invoice salesBody}) async {
     try {
       Map<String, dynamic> body = {
         "supplier": salesBody.supplier,
         "amount": int.parse(amount),
+        "attendant": Get.find<AuthController>().usertype.value == "admin"
+            ? Get.find<AuthController>().currentUser.value!.id
+            : Get.find<AttendantController>().attendant.value!.id,
       };
       var response =
           await Purchases().createPayment(body: body, saleId: salesBody.id);
       if (response["status"] = true) {
         int index =
-            purchasedItems.indexWhere((element) => element.id == salesBody.id);
-        purchasedItems[index].balance =
-            purchasedItems[index].balance! - int.parse(amount);
-        purchasedItems.refresh();
+            creditPurchases.indexWhere((element) => element.id == salesBody.id);
+        creditPurchases[index].balance =
+            creditPurchases[index].balance! - int.parse(amount);
+        creditPurchases.refresh();
         Get.find<CustomerController>().amountController.clear();
       }
     } catch (e) {

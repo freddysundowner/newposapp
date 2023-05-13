@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:flutterpos/controllers/shop_controller.dart';
-import 'package:flutterpos/models/sales_model.dart';
+import 'package:pointify/controllers/shop_controller.dart';
+import 'package:pointify/models/receipt.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:open_file/open_file.dart';
@@ -13,27 +13,29 @@ SalesPdf(
     {required final shop,
     required List<SalesModel> sales,
     required type}) async {
-  int sum=0;
-  sales.forEach((element) {sum+=element.grandTotal!;});
+  int sum = 0;
+  for (var element in sales) {
+    sum += element.grandTotal!;
+  }
   final pdf = pw.Document();
   pdf.addPage(
     pw.Page(
         build: (context) {
           return pw.Container(
-            padding: pw.EdgeInsets.all(10),
+            padding: const pw.EdgeInsets.all(10),
             child: pw.Column(
               crossAxisAlignment: pw.CrossAxisAlignment.start,
               children: [
                 pw.Center(
                   child: pw.Text(
-                    "${shop}",
+                    "$shop",
                     style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
                   ),
                 ),
                 pw.SizedBox(height: 10),
                 pw.Center(
                   child: pw.Text(
-                    "${type} Sales",
+                    "$type Sales",
                     style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
                   ),
                 ),
@@ -51,9 +53,9 @@ SalesPdf(
                         data: sales
                             .map((e) => [
                                   e.receiptNumber,
-                                  e.grandTotal,
+                                  "${Get.find<ShopController>().currentShop.value?.currency} ${e.grandTotal}",
                                   e.paymentMethod,
-                              DateFormat("dd/MM/yyyy").format (e.createdAt!)
+                                  DateFormat("dd/MM/yyyy").format(e.createdAt!)
                                 ])
                             .toList())),
                 pw.SizedBox(height: 10),
@@ -62,16 +64,17 @@ SalesPdf(
                   child: pw.SizedBox(
                       width: 200,
                       child: pw.Column(
-                        mainAxisAlignment: pw.MainAxisAlignment.end,
+                          mainAxisAlignment: pw.MainAxisAlignment.end,
                           children: [
-                        pw.Text(
-                          "Totals ${sum}",
-                          style: pw.TextStyle(
-                              fontWeight: pw.FontWeight.bold, fontSize: 16),
-                        ),
-                        pw.Divider(
-                            thickness: 1, color: PdfColor.fromInt(0xFF000000))
-                      ])),
+                            pw.Text(
+                              "Totals ${Get.find<ShopController>().currentShop.value?.currency} ${sum}",
+                              style: pw.TextStyle(
+                                  fontWeight: pw.FontWeight.bold, fontSize: 16),
+                            ),
+                            pw.Divider(
+                                thickness: 1,
+                                color: const PdfColor.fromInt(0xFF000000))
+                          ])),
                 ),
                 pw.SizedBox(height: 10),
               ],
@@ -80,7 +83,6 @@ SalesPdf(
         },
         pageFormat: PdfPageFormat.a4),
   );
-
 
   final dir = await getApplicationDocumentsDirectory();
   final file = File('${dir.path}/$type-Sales.pdf');

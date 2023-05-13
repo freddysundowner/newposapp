@@ -1,5 +1,5 @@
-import 'package:flutterpos/models/roles_model.dart';
-import 'package:flutterpos/models/shop_model.dart';
+import 'package:pointify/models/roles_model.dart';
+import 'package:pointify/models/shop_model.dart';
 
 class AttendantModel {
   AttendantModel({
@@ -27,8 +27,17 @@ class AttendantModel {
       shop: json["shop"] == null || json["shop"].toString().length <= 40
           ? ShopModel()
           : ShopModel.fromJson(json["shop"]),
-      roles:json["roles"]==null?[]: List<RolesModel>.from(
-          json["roles"].map((x) => RolesModel.fromJson(x))),
+      roles: json["roles"] == null
+          ? []
+          : List<RolesModel>.from(
+              json["roles"].map((x) => RolesModel.fromJson(x))),
     );
+  }
+
+  getDisplayRoles() {
+    return roles
+        ?.where((element) =>
+            element.key != "edit_entries" && element.key != "discounts")
+        .toList();
   }
 }

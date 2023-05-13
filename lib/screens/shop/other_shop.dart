@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutterpos/controllers/attendant_controller.dart';
-import 'package:flutterpos/models/product_model.dart';
-import 'package:flutterpos/responsive/responsiveness.dart';
+import 'package:pointify/controllers/attendant_controller.dart';
+import 'package:pointify/models/product_model.dart';
+import 'package:pointify/responsive/responsiveness.dart';
 import 'package:get/get.dart';
 
 import '../../controllers/product_controller.dart';
@@ -16,10 +16,9 @@ class ViewOtherShop extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    createShopController.getShopsByAdminId(
+    createShopController.getShops(
         adminId: attendantController.attendant.value!.shop!.owner);
-    productController.getProductsBySort(
-        shopId: attendantController.attendant.value!.shop!.id!, type: "all");
+    productController.getProductsBySort(type: "all");
     return WillPopScope(
       onWillPop: () async {
         createShopController.currentShop.value =
@@ -227,20 +226,19 @@ class ViewOtherShop extends StatelessWidget {
                 builder: (_) {
                   return SimpleDialog(
                     children: List.generate(
-                        createShopController.AdminShops.length,
+                        createShopController.allShops.length,
                         (index) => SimpleDialogOption(
                               onPressed: () {
                                 Navigator.pop(context);
                                 createShopController.currentShop.value =
-                                    createShopController.AdminShops.elementAt(
-                                        index);
+                                    createShopController.allShops
+                                        .elementAt(index);
                                 productController.getProductsBySort(
-                                    shopId:
-                                        "${createShopController.currentShop.value?.id}",
                                     type: "all");
                               },
                               child: Text(
-                                createShopController.AdminShops.elementAt(index)
+                                createShopController.allShops
+                                    .elementAt(index)
                                     .name!,
                               ),
                             )),

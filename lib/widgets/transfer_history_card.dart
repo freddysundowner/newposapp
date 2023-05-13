@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutterpos/models/stockTransferHistoryModel.dart';
+import 'package:pointify/models/stockTransferHistoryModel.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 

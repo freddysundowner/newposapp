@@ -1,5 +1,5 @@
-name: flutterpos
-description: A new Flutter project.
+name: pointify
+description: reggy pos
 
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
@@ -14,17 +14,12 @@ dependencies:
   flutter_screenutil: ^5.5.4
   math_expressions: ^2.3.0
   cupertino_icons: ^1.0.2
-
-#  share_plus: ^4.1.0
-#  url_launcher: ^6.1.5
   shared_preferences: ^2.1.0
   get: ^4.6.5
   http: ^0.13.4
   open_file: ^3.2.1
   mime: ^1.0.2
   switcher_button: ^0.0.4
-#  syncfusion_flutter
-#  datepicker: ^20.2.44
   intl: ^0.17.0
   date_time_picker: ^2.1.0
   pdf: ^3.10.1
@@ -33,7 +28,6 @@ dependencies:
   shimmer: ^2.0.0
   flutter_barcode_scanner: ^2.0.0
   barcode_widget: ^2.0.3
-  google_nav_bar: ^5.0.6
   flutter_svg: ^1.1.4
   font_awesome_flutter: ^10.1.0
   google_fonts: ^3.0.1
@@ -41,7 +35,8 @@ dependencies:
   f_datetimerangepicker: ^0.2.0
   flutter_datetime_picker: ^1.5.1
   autocomplete_textfield: ^2.0.1
-
+  url_launcher: ^6.1.10
+  realm: ^1.0.3
 
 dev_dependencies:
   flutter_test:
@@ -49,9 +44,7 @@ dev_dependencies:
   flutter_lints: ^2.0.0
 
 flutter:
-
   uses-material-design: true
-
   assets:
     - assets/images/
 

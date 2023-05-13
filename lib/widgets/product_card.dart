@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutterpos/controllers/AuthController.dart';
-import 'package:flutterpos/controllers/attendant_controller.dart';
-import 'package:flutterpos/controllers/product_controller.dart';
-import 'package:flutterpos/controllers/product_history_controller.dart';
-import 'package:flutterpos/controllers/shop_controller.dart';
-import 'package:flutterpos/models/product_model.dart';
-import 'package:flutterpos/widgets/pdf/bar_code_pdf.dart';
-import 'package:flutterpos/widgets/smalltext.dart';
+import 'package:pointify/controllers/AuthController.dart';
+import 'package:pointify/controllers/attendant_controller.dart';
+import 'package:pointify/controllers/product_controller.dart';
+import 'package:pointify/controllers/product_history_controller.dart';
+import 'package:pointify/controllers/shop_controller.dart';
+import 'package:pointify/models/product_model.dart';
+import 'package:pointify/widgets/pdf/bar_code_pdf.dart';
+import 'package:pointify/widgets/smalltext.dart';
 import 'package:get/get.dart';
 
 import '../screens/product/create_product.dart';
@@ -106,7 +106,7 @@ showProductModal(context, ProductModel product, shopId) {
                   children: [Container(child: Text('Manage ${product.name}'))],
                 ),
               ),
-              if (authController.usertype == "admin")
+              if (authController.usertype.value == "admin")
                 ListTile(
                     leading: Icon(Icons.list),
                     onTap: () {
@@ -115,8 +115,8 @@ showProductModal(context, ProductModel product, shopId) {
                       Get.to(() => ProductHistory(product: product));
                     },
                     title: Text('Product History')),
-              if (authController.usertype == "admin" ||
-                  (authController.usertype == "attendant" &&
+              if (authController.usertype.value == "admin" ||
+                  (authController.usertype.value == "attendant" &&
                       attendantController.checkRole("edit_entries")))
                 ListTile(
                     leading: Icon(Icons.edit),
@@ -128,7 +128,7 @@ showProductModal(context, ProductModel product, shopId) {
                           ));
                     },
                     title: Text('Edit')),
-              if (authController.usertype == "admin")
+              if (authController.usertype.value == "admin")
                 ListTile(
                     leading: Icon(Icons.code),
                     onTap: () {
@@ -141,8 +141,8 @@ showProductModal(context, ProductModel product, shopId) {
                               .name!);
                     },
                     title: Text('Generate Barcode')),
-              if (authController.usertype == "admin" ||
-                  (authController.usertype == "attendant" &&
+              if (authController.usertype.value == "admin" ||
+                  (authController.usertype.value == "attendant" &&
                       attendantController.checkRole("edit_entries")))
                 ListTile(
                     leading: Icon(Icons.delete),

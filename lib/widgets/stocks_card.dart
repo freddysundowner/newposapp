@@ -1,28 +1,26 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 
 import 'package:flutter/material.dart';
-import 'package:flutterpos/controllers/AuthController.dart';
-import 'package:flutterpos/controllers/attendant_controller.dart';
-import 'package:flutterpos/controllers/purchase_controller.dart';
-import 'package:flutterpos/controllers/shop_controller.dart';
-import 'package:flutterpos/models/supply_order_model.dart';
-import 'package:flutterpos/widgets/snackBars.dart';
+import 'package:pointify/controllers/purchase_controller.dart';
+import 'package:pointify/controllers/shop_controller.dart';
+import 'package:pointify/widgets/alert.dart';
+import 'package:pointify/widgets/snackBars.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 import '../controllers/supplierController.dart';
+import '../models/invoice_items.dart';
 import '../utils/colors.dart';
 
 Widget stockCard(
     {required context,
-    required SupplyOrderModel supplyOrderModel,
-    required type}) {
+    required InvoiceItem supplyOrderModel,
+    required type,
+    String? purchaseId}) {
   ShopController shopController = Get.find<ShopController>();
   return InkWell(
     onTap: () {
-      if (supplyOrderModel.returned == false) {
-        showProductModal(context, supplyOrderModel, type);
-      }
+      showProductModal(context, supplyOrderModel, type, purchaseId: purchaseId);
     },
     child: Padding(
       padding: const EdgeInsets.all(2.0),
@@ -38,30 +36,17 @@ Widget stockCard(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Center(
-                    child: supplyOrderModel.returned == true
-                        ? ClipOval(
-                            child: Container(
-                              height: 40,
-                              width: 40,
-                              decoration: BoxDecoration(
-                                color: Colors.red,
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: Icon(Icons.warning_amber_outlined,
-                                  color: Colors.white),
-                            ),
-                          )
-                        : ClipOval(
-                            child: Container(
-                              height: 40,
-                              width: 40,
-                              decoration: BoxDecoration(
-                                color: AppColors.mainColor,
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: Icon(Icons.check, color: Colors.white),
-                            ),
-                          ),
+                    child: ClipOval(
+                      child: Container(
+                        height: 40,
+                        width: 40,
+                        decoration: BoxDecoration(
+                          color: AppColors.mainColor,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Icon(Icons.check, color: Colors.white),
+                      ),
+                    ),
                   ),
                   SizedBox(width: 10),
                   Column(
@@ -69,24 +54,29 @@ Widget stockCard(
                     children: [
                       Text("${supplyOrderModel.product!.name}"),
                       SizedBox(height: 5),
-                      Text(
-                          'Qty ${supplyOrderModel.quantity} @${shopController.currentShop.value?.currency}.${supplyOrderModel.product!.buyingPrice}'),
-                      SizedBox(height: 5),
-                      Text(
-                        "Total :${shopController.currentShop.value?.currency}.${supplyOrderModel.quantity! * supplyOrderModel.product!.buyingPrice!}",
-                        style: TextStyle(
-                            color: Colors.black, fontWeight: FontWeight.bold),
+                      Row(
+                        children: [
+                          Text(
+                              'Qty ${supplyOrderModel.itemCount} @${shopController.currentShop.value?.currency}.${supplyOrderModel.product!.buyingPrice}'),
+                          SizedBox(width: 5),
+                          Text(
+                            "Total :${shopController.currentShop.value?.currency}.${supplyOrderModel.itemCount! * supplyOrderModel.product!.buyingPrice!}",
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ],
                       ),
                       SizedBox(height: 5),
-                      Text(DateFormat('yyyy-MM-dd hh:mm a')
-                          .format(supplyOrderModel.createdAt!)
-                          .toString()),
-                      SizedBox(height: 5),
-                      if (supplyOrderModel.returned == true)
-                        Text(
-                          "Product Returned to Supplier",
-                          style: TextStyle(color: Colors.red),
-                        )
+                      Row(
+                        children: [
+                          Text(DateFormat('yyyy-MM-dd hh:mm a')
+                              .format(supplyOrderModel.createdAt!)
+                              .toString()),
+                          Text(
+                              ", by: ${supplyOrderModel.attendantid?.fullnames}"),
+                        ],
+                      ),
                     ],
                   )
                 ],
@@ -115,9 +105,7 @@ Widget stockCard(
   );
 }
 
-showProductModal(context, SupplyOrderModel supplyOrderModel, type) {
-  AuthController authController = Get.find<AuthController>();
-  AttendantController attendantController = Get.find<AttendantController>();
+showProductModal(context, InvoiceItem supplyOrderModel, type, {purchaseId}) {
   return showModalBottomSheet<void>(
       context: context,
       builder: (BuildContext context) {
@@ -130,16 +118,15 @@ showProductModal(context, SupplyOrderModel supplyOrderModel, type) {
                   title: Text("Return to supplier"),
                   leading: Icon(Icons.recycling),
                   onTap: () {
-                    Get.back();
-                    if (supplyOrderModel.supplier == null) {
-                      showSnackBar(
-                          message: "please select customer to sell to",
-                          color: Colors.red,
-                          context: context);
-                    } else {
-                      Get.find<SupplierController>().returnOrderToSupplier(
-                          uid: supplyOrderModel.id, context: context);
-                    }
+                    // if (supplyOrderModel.supplier == null) {
+                    //   generalAlert(
+                    //       title: "Error!",
+                    //       message: "No supplier to return item to");
+                    // } else {
+                    //   Get.back();
+                    //   Get.find<SupplierController>().returnOrderToSupplier(
+                    //       uid: supplyOrderModel.id, purchaseId: purchaseId);
+                    // }
                   },
                 ),
               ],
@@ -147,9 +134,8 @@ showProductModal(context, SupplyOrderModel supplyOrderModel, type) {
       });
 }
 
-showQuantityDialog(context, SupplyOrderModel supplyOrderModel) {
+showQuantityDialog(context, InvoiceItem supplyOrderModel) {
   PurchaseController purchaseController = Get.find<PurchaseController>();
-  ShopController shopController = Get.find<ShopController>();
   return showDialog(
       context: context,
       builder: (context) {
@@ -191,11 +177,10 @@ showQuantityDialog(context, SupplyOrderModel supplyOrderModel) {
                                 .textEditingControllerAmount.text.isEmpty ||
                             int.parse(purchaseController
                                     .textEditingControllerAmount.text) >
-                                supplyOrderModel.quantity!) {
+                                supplyOrderModel.itemCount!) {
                           showSnackBar(
                               message: "Enter a valid amount",
-                              color: Colors.redAccent,
-                              context: context);
+                              color: Colors.redAccent);
                         } else {}
                       },
                       child: Text(

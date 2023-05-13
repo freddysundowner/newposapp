@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:flutterpos/services/client.dart';
+import 'package:pointify/services/client.dart';
 
 import 'apiurls.dart';
 
@@ -66,30 +66,31 @@ class Transactions {
     return data;
   }
 
-  getCategoryHistory({required id})async{
+  getCategoryHistory({required id}) async {
     var response = await DbBase().databaseRequest(
         "${cashflow}" + "category/category/$id", DbBase().getRequestType);
     var data = jsonDecode(response);
     return data;
   }
 
-  ediCategory({required Map<String, dynamic> body, required id})async{
+  ediCategory({required Map<String, dynamic> body, required id}) async {
     var response = await DbBase().databaseRequest(
-        "${cashflow}" + "category/$id", DbBase().patchRequestType,body: body);
+        "${cashflow}" + "category/$id", DbBase().patchRequestType,
+        body: body);
     var data = jsonDecode(response);
     return data;
   }
 
-  deleteCategory({String? id}) async{
+  deleteCategory({String? id}) async {
     var response = await DbBase().databaseRequest(
         "${cashflow}" + "category/$id", DbBase().deleteRequestType);
     var data = jsonDecode(response);
     return data;
   }
 
-  getCashFlowSummary({required id, required date}) async{
+  getCashFlowSummary({required id, required from, required to}) async {
     var response = await DbBase().databaseRequest(
-        "${cashflow}" + "salessummary/$id/$date", DbBase().getRequestType);
+        "${cashflow}" + "salessummary/$id/$from/$to", DbBase().getRequestType);
     var data = jsonDecode(response);
     return data;
   }

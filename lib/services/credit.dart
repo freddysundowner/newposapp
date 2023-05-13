@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:flutterpos/services/client.dart';
+import 'package:pointify/services/client.dart';
 
 import 'apiurls.dart';
 

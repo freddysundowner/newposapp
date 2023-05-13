@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutterpos/controllers/home_controller.dart';
-import 'package:flutterpos/controllers/shop_controller.dart';
-import 'package:flutterpos/responsive/responsiveness.dart';
-import 'package:flutterpos/screens/finance/components/date_picker.dart';
-import 'package:flutterpos/screens/finance/expense_page.dart';
-import 'package:flutterpos/screens/finance/finance_page.dart';
-import 'package:flutterpos/utils/helper.dart';
+import 'package:pointify/controllers/home_controller.dart';
+import 'package:pointify/controllers/shop_controller.dart';
+import 'package:pointify/responsive/responsiveness.dart';
+import 'package:pointify/screens/finance/components/date_picker.dart';
+import 'package:pointify/screens/finance/expense_page.dart';
+import 'package:pointify/screens/finance/finance_page.dart';
+import 'package:pointify/utils/colors.dart';
+import 'package:pointify/utils/helper.dart';
 import 'package:get/get.dart';
 
 import '../../controllers/expense_controller.dart';
@@ -105,9 +106,9 @@ class ProfitPage extends StatelessWidget {
               padding: const EdgeInsets.all(8.0),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+                children: const [
                   Padding(
-                    padding: const EdgeInsets.all(8.0),
+                    padding: EdgeInsets.all(8.0),
                     child: Text(
                       "Choose Date Range",
                       style: TextStyle(color: Colors.black),
@@ -157,7 +158,7 @@ class ProfitPage extends StatelessWidget {
                       children: [
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
+                          children: const [
                             Text(
                               "Total Sales",
                               style: TextStyle(
@@ -176,7 +177,7 @@ class ProfitPage extends StatelessWidget {
                           ],
                         ),
                         Text(
-                          "${salesController.profitModel.value!.sales ?? "0"}",
+                          "${shopController.currentShop.value?.currency} ${salesController.profitModel.value!.sales ?? "0"}",
                           style: TextStyle(color: Colors.black),
                         )
                       ],
@@ -189,7 +190,7 @@ class ProfitPage extends StatelessWidget {
                     children: [
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
+                        children: const [
                           Text(
                             "Profit On Sales",
                             style: TextStyle(
@@ -208,8 +209,8 @@ class ProfitPage extends StatelessWidget {
                         ],
                       ),
                       Text(
-                        "${salesController.profitModel.value?.profitOnSales ?? "0"}",
-                        style: TextStyle(color: Colors.black),
+                        "${shopController.currentShop.value?.currency} ${salesController.profitModel.value?.profitOnSales ?? "0"}",
+                        style: const TextStyle(color: Colors.black),
                       )
                     ],
                   ),
@@ -222,7 +223,7 @@ class ProfitPage extends StatelessWidget {
                       children: [
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
+                          children: const [
                             Text(
                               "Bad Stock",
                               style: TextStyle(
@@ -241,13 +242,13 @@ class ProfitPage extends StatelessWidget {
                           ],
                         ),
                         Text(
-                          "${salesController.profitModel.value?.badStockValue ?? "0"}",
-                          style: TextStyle(color: Colors.black),
+                          "${shopController.currentShop.value?.currency} ${salesController.profitModel.value?.badStockValue ?? "0"}",
+                          style: const TextStyle(color: Colors.black),
                         )
                       ],
                     ),
                   ),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
                   InkWell(
                     onTap: () {
                       Get.find<HomeController>().selectedWidget.value =
@@ -259,7 +260,7 @@ class ProfitPage extends StatelessWidget {
                       children: [
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
+                          children: const [
                             Text(
                               "Expenses",
                               style: TextStyle(
@@ -278,26 +279,13 @@ class ProfitPage extends StatelessWidget {
                           ],
                         ),
                         Text(
-                          "${salesController.profitModel.value?.totalExpense ?? "0"}",
-                          style: TextStyle(color: Colors.black),
+                          "${shopController.currentShop.value?.currency} ${salesController.profitModel.value?.totalExpense ?? "0"}",
+                          style: const TextStyle(color: Colors.black),
                         )
                       ],
                     ),
                   ),
-                  SizedBox(height: 25),
-                  // Align(
-                  //   alignment: Alignment.centerRight,
-                  //   child: Container(
-                  //     padding: EdgeInsets.all(10),
-                  //     decoration: BoxDecoration(
-                  //       color: Colors.white,
-                  //       borderRadius: BorderRadius.circular(50),
-                  //       border: Border.all(color: AppColors.mainColor,width: 3)
-                  //     ),
-                  //     child: majorTitle(title: "Related Expenses", color: AppColors.mainColor, size: 12.0),
-                  //   ),
-                  // ),
-                  SizedBox(height: 25),
+                  const SizedBox(height: 25),
                 ],
               ),
             ),

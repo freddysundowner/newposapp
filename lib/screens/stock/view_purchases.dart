@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:flutterpos/controllers/AuthController.dart';
-import 'package:flutterpos/controllers/attendant_controller.dart';
-import 'package:flutterpos/controllers/home_controller.dart';
-import 'package:flutterpos/controllers/purchase_controller.dart';
-import 'package:flutterpos/controllers/shop_controller.dart';
-import 'package:flutterpos/models/purchase_order.dart';
-import 'package:flutterpos/responsive/responsiveness.dart';
-import 'package:flutterpos/screens/stock/purchase_order_item.dart';
-import 'package:flutterpos/screens/stock/stock_page.dart';
-import 'package:flutterpos/widgets/no_items_found.dart';
-import 'package:flutterpos/widgets/pdf/purchases_pdf.dart';
+import 'package:pointify/controllers/AuthController.dart';
+import 'package:pointify/controllers/attendant_controller.dart';
+import 'package:pointify/controllers/home_controller.dart';
+import 'package:pointify/controllers/purchase_controller.dart';
+import 'package:pointify/controllers/shop_controller.dart';
+import 'package:pointify/models/invoice.dart';
+import 'package:pointify/responsive/responsiveness.dart';
+import 'package:pointify/screens/stock/purchase_order_item.dart';
+import 'package:pointify/screens/stock/stock_page.dart';
+import 'package:pointify/widgets/no_items_found.dart';
+import 'package:pointify/widgets/pdf/purchases_pdf.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
@@ -21,12 +21,7 @@ import 'create_purchase.dart';
 
 class ViewPurchases extends StatelessWidget {
   ViewPurchases({Key? key}) : super(key: key) {
-    purchaseController.getPurchase(
-      shopId: shopController.currentShop.value?.id,
-      attendantId: attendantController.attendant.value == null
-          ? ""
-          : attendantController.attendant.value?.id,
-    );
+    purchaseController.getPurchase();
   }
 
   ShopController shopController = Get.find<ShopController>();
@@ -75,7 +70,7 @@ class ViewPurchases extends StatelessWidget {
                 ],
               ),
               Spacer(),
-              if (authController.usertype == "attendant")
+              if (authController.usertype.value == "attendant")
                 InkWell(
                     onTap: () {
                       if (MediaQuery.of(context).size.width > 600) {
@@ -100,9 +95,7 @@ class ViewPurchases extends StatelessWidget {
             InkWell(
                 onTap: () {
                   PurchasesPdf(
-                      shop: shopController.currentShop.value!.name!,
-                      sales: purchaseController.purchasedItems,
-                      type: "type");
+                      sales: purchaseController.purchasedItems, type: "type");
                 },
                 child: Icon(
                   Icons.download,
@@ -116,7 +109,7 @@ class ViewPurchases extends StatelessWidget {
               ? Center(
                   child: CircularProgressIndicator(),
                 )
-              : purchaseController.purchasedItems.length == 0
+              : purchaseController.purchasedItems.isEmpty
                   ? noItemsFound(context, true)
                   : Padding(
                       padding: const EdgeInsets.symmetric(
@@ -160,9 +153,9 @@ class ViewPurchases extends StatelessWidget {
                                   rows: List.generate(
                                       purchaseController.purchasedItems.length,
                                       (index) {
-                                    PurchaseOrder purchaseOrder =
-                                        purchaseController.purchasedItems
-                                            .elementAt(index);
+                                    Invoice purchaseOrder = purchaseController
+                                        .purchasedItems
+                                        .elementAt(index);
                                     final y = purchaseOrder.receiptNumber;
                                     final x = purchaseOrder.total.toString();
                                     final z =
@@ -237,18 +230,18 @@ class ViewPurchases extends StatelessWidget {
               ? Center(
                   child: CircularProgressIndicator(),
                 )
-              : purchaseController.purchasedItems.length == 0
-                  ? Center(
+              : purchaseController.purchasedItems.isEmpty
+                  ? const Center(
                       child: Text("No purchase Entries Found"),
                     )
                   : ListView.builder(
                       itemCount: purchaseController.purchasedItems.length,
-                      physics: ScrollPhysics(),
+                      physics: const ScrollPhysics(),
                       shrinkWrap: true,
                       itemBuilder: (context, index) {
-                        PurchaseOrder purchaseOrder =
+                        Invoice invoicedata =
                             purchaseController.purchasedItems.elementAt(index);
-                        return purchaseOrderCard(purchaseOrder: purchaseOrder);
+                        return InvoiceCard(invoice: invoicedata);
                       });
         }),
       ),

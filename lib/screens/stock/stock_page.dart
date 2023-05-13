@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutterpos/controllers/product_controller.dart';
-import 'package:flutterpos/controllers/shop_controller.dart';
-import 'package:flutterpos/models/product_model.dart';
-import 'package:flutterpos/responsive/responsiveness.dart';
-import 'package:flutterpos/screens/stock/stock_transfer.dart';
-import 'package:flutterpos/screens/stock/view_purchases.dart';
-import 'package:flutterpos/utils/helper.dart';
+import 'package:pointify/controllers/product_controller.dart';
+import 'package:pointify/controllers/shop_controller.dart';
+import 'package:pointify/models/product_model.dart';
+import 'package:pointify/responsive/responsiveness.dart';
+import 'package:pointify/screens/stock/stock_transfer.dart';
+import 'package:pointify/screens/stock/view_purchases.dart';
+import 'package:pointify/utils/helper.dart';
 import 'package:get/get.dart';
 
 import '../../controllers/home_controller.dart';
@@ -27,8 +27,7 @@ class StockPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    productController.getProductsBySort(
-        shopId: "${shopController.currentShop.value?.id}", type: "all");
+    productController.getProductsBySort(type: "all");
     return ResponsiveWidget(
         largeScreen: Scaffold(
           backgroundColor: Colors.white,
