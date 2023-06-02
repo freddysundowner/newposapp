@@ -3,10 +3,10 @@ import 'package:pointify/controllers/shop_controller.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
+import '../Real/Models/schema.dart';
 import '../controllers/AuthController.dart';
-import '../controllers/attendant_controller.dart';
+import '../controllers/user_controller.dart';
 import '../controllers/expense_controller.dart';
-import '../models/expense_model.dart';
 import 'delete_dialog.dart';
 
 Widget expenseCard({required context, required ExpenseModel expense}) {
@@ -97,7 +97,7 @@ Widget expenseCard({required context, required ExpenseModel expense}) {
 
 showBottomSheet(BuildContext context, expense) {
   ExpenseController expensesController = Get.find<ExpenseController>();
-  AttendantController attendantController = Get.find<AttendantController>();
+  UserController attendantController = Get.find<UserController>();
   AuthController authController = Get.find<AuthController>();
   return showModalBottomSheet<void>(
       context: context,

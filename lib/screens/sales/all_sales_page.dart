@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pointify/controllers/AuthController.dart';
-import 'package:pointify/controllers/attendant_controller.dart';
+import 'package:pointify/controllers/user_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
-import 'package:pointify/models/receipt.dart';
 import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/sales/create_sale.dart';
 import 'package:pointify/screens/stock/badstocks.dart';
@@ -12,6 +11,7 @@ import 'package:pointify/widgets/sales_card.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
+import '../../Real/Models/schema.dart';
 import '../../controllers/home_controller.dart';
 import '../../controllers/sales_controller.dart';
 import '../../utils/colors.dart';
@@ -25,13 +25,18 @@ import 'components/sales_table.dart';
 class AllSalesPage extends StatelessWidget {
   final page;
 
-  AllSalesPage({Key? key, required this.page}) : super(key: key) {}
+  AllSalesPage({Key? key, required this.page}) : super(key: key) {
+    final DateTime now = DateTime.now();
+    final DateFormat formatter = DateFormat('yyyy-MM-dd');
+    final String formatted = formatter.format(now);
+    salesController.getSales(date: formatted);
+  }
 
   SalesController salesController = Get.find<SalesController>();
   ShopController shopController = Get.find<ShopController>();
   HomeController homeController = Get.find<HomeController>();
   AuthController authController = Get.find<AuthController>();
-  AttendantController attendantController = Get.find<AttendantController>();
+  UserController usercontroller = Get.find<UserController>();
 
   @override
   Widget build(BuildContext context) {
@@ -52,10 +57,10 @@ class AllSalesPage extends StatelessWidget {
               centerTitle: false,
               title: Row(
                 children: [
-                  if (authController.usertype.value == "admin")
+                  if (usercontroller.user.value?.usertype == "admin")
                     majorTitle(title: "Sales", color: Colors.black, size: 18.0),
                   const Spacer(),
-                  if (authController.usertype.value == "attendant")
+                  if (usercontroller.user.value?.usertype == "attendant")
                     PopupMenuButton(
                       itemBuilder: (ctx) => [
                         PopupMenuItem(
@@ -81,10 +86,10 @@ class AllSalesPage extends StatelessWidget {
                               if (MediaQuery.of(context).size.width > 600) {
                                 homeController.selectedWidget.value =
                                     BadStockPage(
-                                  page: "sales",
+                                  page: "services",
                                 );
                               } else {
-                                Get.to(() => BadStockPage(page: "sales"));
+                                Get.to(() => BadStockPage(page: "services"));
                               }
                             },
                             title: const Text("Bad Stocks"),
@@ -99,7 +104,7 @@ class AllSalesPage extends StatelessWidget {
                     ),
                 ],
               ),
-              leading: Get.find<AuthController>().usertype.value ==
+              leading: Get.find<UserController>().user.value?.usertype ==
                           "attendant" &&
                       MediaQuery.of(context).size.width > 600
                   ? null
@@ -129,7 +134,7 @@ class AllSalesPage extends StatelessWidget {
                       ),
                     ),
               actions: [
-                if (authController.usertype.value == "admin")
+                if (usercontroller.user.value?.usertype == "admin")
                   IconButton(
                       onPressed: () {
                         SalesPdf(
@@ -153,14 +158,14 @@ class AllSalesPage extends StatelessWidget {
                 onTap: (value) {
                   salesController.salesInitialIndex.value = value;
                   if (value == 0) {
-                    salesController.getSales(onCredit: "", startingDate: "");
+                    salesController.getSales(date: "");
                   } else if (value == 1) {
-                    salesController.getSales(onCredit: true, startingDate: "");
+                    salesController.getSales(onCredit: true);
                   } else {
-                    salesController.getSales(
-                        onCredit: "",
-                        startingDate:
-                            DateFormat("yyyy-MM-dd").format(DateTime.now()));
+                    final DateTime now = DateTime.now();
+                    final DateFormat formatter = DateFormat('yyyy-MM-dd');
+                    final String formatted = formatter.format(now);
+                    salesController.getSales(date: formatted);
                   }
                 },
                 tabs: const [
@@ -192,17 +197,17 @@ class AllSales extends StatelessWidget {
   SalesController salesController = Get.find<SalesController>();
   ShopController shopController = Get.find<ShopController>();
 
-  AllSales({Key? key}) : super(key: key);
+  AllSales({Key? key}) : super(key: key) {}
 
   _checkEmptyView() {
     if (salesController.salesInitialIndex.value == 0) {
       return salesController.allSales.isEmpty;
     }
     if (salesController.salesInitialIndex.value == 1) {
-      return salesController.creditSales.isEmpty;
+      return salesController.allSales.isEmpty;
     }
     if (salesController.salesInitialIndex.value == 2) {
-      return salesController.todaySales.isEmpty;
+      return salesController.allSales.isEmpty;
     }
   }
 
@@ -225,7 +230,7 @@ class AllSales extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          salesTable(context, "sales"),
+                          salesTable(context, "services"),
                           SizedBox(
                             height: 10,
                           ),
@@ -275,19 +280,18 @@ class AllSales extends StatelessWidget {
     if (salesController.salesInitialIndex.value == 1) {
       return ListView.builder(
           shrinkWrap: true,
-          itemCount: salesController.creditSales.length,
+          itemCount: salesController.allSales.length,
           itemBuilder: (context, index) {
-            SalesModel salesModel =
-                salesController.creditSales.elementAt(index);
+            SalesModel salesModel = salesController.allSales.elementAt(index);
             return SalesCard(salesModel: salesModel);
           });
     }
     if (salesController.salesInitialIndex.value == 2) {
       return ListView.builder(
           shrinkWrap: true,
-          itemCount: salesController.todaySales.length,
+          itemCount: salesController.allSales.length,
           itemBuilder: (context, index) {
-            SalesModel salesModel = salesController.todaySales.elementAt(index);
+            SalesModel salesModel = salesController.allSales.elementAt(index);
             return SalesCard(salesModel: salesModel);
           });
     }

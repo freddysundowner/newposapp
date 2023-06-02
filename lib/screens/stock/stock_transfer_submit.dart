@@ -3,19 +3,18 @@ import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/controllers/product_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/controllers/stock_transfer_controller.dart';
-import 'package:pointify/models/product_model.dart';
-import 'package:pointify/models/shop_model.dart';
 import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/stock/products_selection.dart';
 import 'package:pointify/utils/colors.dart';
 import 'package:get/get.dart';
 
-class StockSubmit extends StatelessWidget {
-  final to;
-  ShopModel shopModel;
+import '../../Real/Models/schema.dart';
+import '../../widgets/bigtext.dart';
 
-  StockSubmit({Key? key, required this.to, required this.shopModel})
-      : super(key: key);
+class StockSubmit extends StatelessWidget {
+  final Shop toShop;
+
+  StockSubmit({Key? key, required this.toShop}) : super(key: key);
   StockTransferController stockTransferController =
       Get.find<StockTransferController>();
   ProductController productController = Get.find<ProductController>();
@@ -37,7 +36,7 @@ class StockSubmit extends StatelessWidget {
             onPressed: () {
               if (MediaQuery.of(context).size.width > 600) {
                 Get.find<HomeController>().selectedWidget.value =
-                    ProductSelections(shopModel: shopModel);
+                    ProductSelections(toShop: toShop);
               } else {
                 Get.back();
               }
@@ -46,41 +45,44 @@ class StockSubmit extends StatelessWidget {
               Icons.arrow_back_ios,
               color: Colors.black,
             )),
-        actions: [
-          Obx(() {
-            return Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: InkWell(
-                onTap: () {
-                  stockTransferController.submitTranster(
-                      to: to,
-                      from: shopController.currentShop.value!.id,
-                      context: context);
-                },
-                child: Row(
-                  children: [
-                    Text(
-                      "Submit",
-                      style: TextStyle(
-                          color:
-                              stockTransferController.selectedProducts.length ==
-                                      0
-                                  ? Colors.grey
-                                  : Colors.black),
+      ),
+      bottomNavigationBar: BottomAppBar(
+        color: Colors.white,
+        child: Obx(() {
+          return stockTransferController.selectedProducts.isEmpty ||
+                  MediaQuery.of(context).size.width > 600
+              ? Container(
+                  height: 0,
+                )
+              : Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(10),
+                  height: kToolbarHeight * 1.5,
+                  decoration: BoxDecoration(
+                      border: Border.all(width: 1, color: Colors.grey)),
+                  child: InkWell(
+                    splashColor: Colors.transparent,
+                    onTap: () {
+                      print(toShop.name);
+                      stockTransferController.submitTranster(
+                          toShop: toShop, context: context);
+                    },
+                    child: Container(
+                      padding: EdgeInsets.all(10),
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                          border:
+                              Border.all(width: 3, color: AppColors.mainColor),
+                          borderRadius: BorderRadius.circular(40)),
+                      child: Center(
+                          child: majorTitle(
+                              title: "Complete",
+                              color: AppColors.mainColor,
+                              size: 18.0)),
                     ),
-                    Icon(
-                      Icons.check,
-                      color:
-                          stockTransferController.selectedProducts.length == 0
-                              ? Colors.grey
-                              : Colors.black,
-                    ),
-                  ],
-                ),
-              ),
-            );
-          })
-        ],
+                  ),
+                );
+        }),
       ),
       body: ResponsiveWidget(
           largeScreen: Obx(() => SingleChildScrollView(
@@ -111,7 +113,7 @@ class StockSubmit extends StatelessWidget {
                       rows: List.generate(
                           stockTransferController.selectedProducts.length,
                           (index) {
-                        ProductModel productModel = stockTransferController
+                        Product productModel = stockTransferController
                             .selectedProducts
                             .elementAt(index);
                         final y = productModel.name;
@@ -183,7 +185,7 @@ class StockSubmit extends StatelessWidget {
             () => ListView.builder(
               shrinkWrap: true,
               itemBuilder: (context, index) {
-                ProductModel productModel =
+                Product productModel =
                     stockTransferController.selectedProducts.elementAt(index);
                 return selectedProducts(productModel);
               },
@@ -193,7 +195,7 @@ class StockSubmit extends StatelessWidget {
     );
   }
 
-  selectedProducts(ProductModel productModel) {
+  selectedProducts(Product productModel) {
     return Container(
       width: double.infinity,
       decoration: const BoxDecoration(
@@ -268,7 +270,7 @@ class StockSubmit extends StatelessWidget {
                             child: Icon(Icons.remove_circle_outline)),
                         Spacer(),
                         Text(
-                          "${productModel.cartquantity}",
+                          "${productModel.cartquantity ?? 1}",
                           style: TextStyle(color: Colors.grey, fontSize: 15),
                         ),
                         Spacer(),

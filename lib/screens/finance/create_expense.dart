@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pointify/controllers/AuthController.dart';
-import 'package:pointify/controllers/attendant_controller.dart';
+import 'package:pointify/controllers/user_controller.dart';
 import 'package:pointify/controllers/cashflow_controller.dart';
 import 'package:pointify/controllers/expense_controller.dart';
 import 'package:pointify/controllers/home_controller.dart';
@@ -9,6 +8,7 @@ import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/finance/expense_page.dart';
 import 'package:get/get.dart';
 
+import '../../controllers/AuthController.dart';
 import '../../utils/colors.dart';
 import '../../widgets/bigtext.dart';
 
@@ -17,7 +17,7 @@ class CreateExpense extends StatelessWidget {
   ExpenseController expenseController = Get.find<ExpenseController>();
   ShopController shopController = Get.find<ShopController>();
   AuthController authController = Get.find<AuthController>();
-  AttendantController attendantController = Get.find<AttendantController>();
+  UserController attendantController = Get.find<UserController>();
   CashflowController cashflowController = Get.find<CashflowController>();
 
   @override
@@ -221,12 +221,12 @@ class CreateExpense extends StatelessWidget {
               Center(
                 child: InkWell(
                   onTap: () {
-                    expenseController.saveExpense(
-                        attendantId: authController.usertype.value == "admin"
-                            ? authController.currentUser.value!.id
-                            : attendantController.attendant.value!.id,
-                        shopId: shopController.currentShop.value!.id,
-                        context: context);
+                    // expenseController.saveExpense(
+                    //     attendantId: authController.usertype.value == "admin"
+                    //         ? authController.currentUser.value!.id
+                    //         : attendantController.attendant.value!.id,
+                    //     shopId: shopController.currentShop.value!.id,
+                    //     context: context);
                   },
                   child: Container(
                       padding: EdgeInsets.only(

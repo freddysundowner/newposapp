@@ -1,13 +1,14 @@
 import 'dart:io';
 
 import 'package:pointify/controllers/shop_controller.dart';
-import 'package:pointify/models/receipt.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
+
+import '../../Real/Models/schema.dart';
 
 SalesPdf(
     {required final shop,

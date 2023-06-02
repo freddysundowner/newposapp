@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:pointify/controllers/AuthController.dart';
-import 'package:pointify/controllers/attendant_controller.dart';
+import 'package:pointify/controllers/user_controller.dart';
 import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/controllers/purchase_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
-import 'package:pointify/models/invoice.dart';
 import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/stock/purchase_order_item.dart';
 import 'package:pointify/screens/stock/stock_page.dart';
@@ -12,22 +11,25 @@ import 'package:pointify/widgets/no_items_found.dart';
 import 'package:pointify/widgets/pdf/purchases_pdf.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:realm/realm.dart';
 
+import '../../Real/Models/schema.dart';
+import '../../services/purchases.dart';
 import '../../utils/colors.dart';
 import '../../widgets/bigtext.dart';
 import '../../widgets/purchase_order_card.dart';
 import '../../widgets/smalltext.dart';
 import 'create_purchase.dart';
 
-class ViewPurchases extends StatelessWidget {
-  ViewPurchases({Key? key}) : super(key: key) {
-    purchaseController.getPurchase();
+class AllPurchases extends StatelessWidget {
+  AllPurchases({Key? key}) : super(key: key) {
+    // purchaseController.getPurchase();
   }
 
   ShopController shopController = Get.find<ShopController>();
   PurchaseController purchaseController = Get.find<PurchaseController>();
   AuthController authController = Get.find<AuthController>();
-  AttendantController attendantController = Get.find<AttendantController>();
+  UserController usercontroller = Get.find<UserController>();
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +40,7 @@ class ViewPurchases extends StatelessWidget {
         elevation: 0.3,
         centerTitle: false,
         titleSpacing: 0.4,
-        leading: Get.find<AuthController>().usertype == "attendant" &&
+        leading: usercontroller.user.value?.usertype == "attendant" &&
                 MediaQuery.of(context).size.width > 600
             ? null
             : IconButton(
@@ -70,7 +72,7 @@ class ViewPurchases extends StatelessWidget {
                 ],
               ),
               Spacer(),
-              if (authController.usertype.value == "attendant")
+              if (usercontroller.user.value?.usertype == "attendant")
                 InkWell(
                     onTap: () {
                       if (MediaQuery.of(context).size.width > 600) {
@@ -91,11 +93,12 @@ class ViewPurchases extends StatelessWidget {
           ),
         ),
         actions: [
-          if (authController.usertype.value == "admin")
+          if (usercontroller.user.value?.usertype == "admin")
             InkWell(
                 onTap: () {
                   PurchasesPdf(
-                      sales: purchaseController.purchasedItems, type: "type");
+                      sales: purchaseController.purchasedItems.value,
+                      type: "type");
                 },
                 child: Icon(
                   Icons.download,
@@ -225,25 +228,27 @@ class ViewPurchases extends StatelessWidget {
                         ),
                       ));
         }),
-        smallScreen: Obx(() {
-          return purchaseController.getPurchaseLoad.value
-              ? Center(
-                  child: CircularProgressIndicator(),
-                )
-              : purchaseController.purchasedItems.isEmpty
-                  ? const Center(
-                      child: Text("No purchase Entries Found"),
-                    )
-                  : ListView.builder(
-                      itemCount: purchaseController.purchasedItems.length,
-                      physics: const ScrollPhysics(),
-                      shrinkWrap: true,
-                      itemBuilder: (context, index) {
-                        Invoice invoicedata =
-                            purchaseController.purchasedItems.elementAt(index);
-                        return InvoiceCard(invoice: invoicedata);
-                      });
-        }),
+        smallScreen: StreamBuilder<RealmResultsChanges<Invoice>>(
+            stream: Purchases().getPurchase().changes,
+            builder: (context, snapshot) {
+              final data = snapshot.data;
+
+              if (data == null) {
+                return const Center(
+                  child: Text("No purchase Entries Found"),
+                );
+              }
+
+              final results = data.results;
+              return ListView.builder(
+                  itemCount: results.realm.isClosed ? 0 : results.length,
+                  physics: const ScrollPhysics(),
+                  shrinkWrap: true,
+                  itemBuilder: (context, index) {
+                    Invoice invoicedata = results.elementAt(index);
+                    return InvoiceCard(invoice: invoicedata);
+                  });
+            }),
       ),
     );
   }

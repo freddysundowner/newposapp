@@ -10,7 +10,7 @@ import 'package:pointify/widgets/no_items_found.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
-import '../../models/invoice_items.dart';
+import '../../Real/Models/schema.dart';
 import '../../widgets/bigtext.dart';
 import '../../widgets/sales_history_card.dart';
 
@@ -25,7 +25,7 @@ class SaleOrderItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    salesController.getSalesBySaleId(uid: id);
+    // salesController.getSalesBySaleId(uid: id);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(

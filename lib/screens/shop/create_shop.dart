@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
-import 'package:pointify/models/shop_category.dart';
-import 'package:pointify/models/shop_model.dart';
 import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/authentication/shop_cagories.dart';
-import 'package:pointify/screens/home/shops_page.dart';
+import 'package:pointify/screens/shop/shops_page.dart';
 import 'package:pointify/utils/constants.dart';
 import 'package:get/get.dart';
 import 'package:switcher_button/switcher_button.dart';
 
+import '../../Real/Models/schema.dart';
+import '../../Real/services/r_shop.dart';
 import '../../utils/colors.dart';
 import '../../widgets/bigtext.dart';
 import '../../widgets/shop_widget.dart';
@@ -146,7 +146,7 @@ class CreateShop extends StatelessWidget {
         InkWell(
           onTap: () {
             Get.to(() => ShopCategories(
-                  selectedItemsCallback: (ShopCategory s) {
+                  selectedItemsCallback: (ShopTypes s) {
                     Get.back();
                     shopController.selectedCategory.value = s;
                   },
@@ -162,7 +162,7 @@ class CreateShop extends StatelessWidget {
               children: [
                 Obx(() => Text(shopController.selectedCategory.value == null
                     ? ""
-                    : shopController.selectedCategory.value!.title)),
+                    : shopController.selectedCategory.value!.title!)),
                 const Icon(Icons.arrow_forward_ios_rounded)
               ],
             ),
@@ -192,7 +192,7 @@ class CreateShop extends StatelessWidget {
                                   Navigator.pop(context);
                                 },
                                 child: Text(
-                                    "${Constants.currenciesData.elementAt(index)}"),
+                                    Constants.currenciesData.elementAt(index)),
                               )),
                     );
                   });

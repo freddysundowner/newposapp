@@ -3,31 +3,33 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:pointify/controllers/AuthController.dart';
-import 'package:pointify/controllers/attendant_controller.dart';
 import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/controllers/product_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
-import 'package:pointify/models/invoice_items.dart';
-import 'package:pointify/models/product_model.dart';
-import 'package:pointify/models/supplier.dart';
-import 'package:pointify/screens/stock/view_purchases.dart';
+import 'package:pointify/controllers/supplierController.dart';
+import 'package:pointify/controllers/user_controller.dart';
+import 'package:pointify/functions/functions.dart';
+import 'package:pointify/screens/purchases/all_purchases.dart';
+import 'package:pointify/services/product.dart';
 import 'package:pointify/services/purchases.dart';
+import 'package:pointify/services/sales.dart';
+import 'package:pointify/widgets/alert.dart';
 import 'package:pointify/widgets/loading_dialog.dart';
 import 'package:get/get.dart';
+import 'package:realm/realm.dart';
 
-import '../models/invoice.dart';
+import '../Real/Models/schema.dart';
+import '../services/supplier.dart';
 import '../widgets/snackBars.dart';
 import 'CustomerController.dart';
+import 'realm_controller.dart';
 
 class PurchaseController extends GetxController {
-  final GlobalKey<State> _keyLoader = new GlobalKey<State>();
-  RxList<ProductModel> saleItem = RxList([]);
+  Rxn<Invoice> invoice = Rxn(null);
   RxList<Invoice> purchasedItems = RxList([]);
   RxList<Invoice> creditPurchases = RxList([]);
-  RxList<InvoiceItem> invoicesItems = RxList([]);
-  RxInt grandTotal = RxInt(0);
-  RxInt balance = RxInt(0);
-  Rxn<SupplierModel> selectedSupplier = Rxn(null);
+  Rxn<Invoice> currentInvoice = Rxn(null);
+  RxList<InvoiceItem> currentInvoiceReturns = RxList([]);
 
   RxBool returningIvoiceLoad = RxBool(false);
   RxBool getPurchaseLoad = RxBool(false);
@@ -35,158 +37,158 @@ class PurchaseController extends GetxController {
   RxBool getPurchaseOrderItemLoad = RxBool(false);
   TextEditingController textEditingControllerAmount = TextEditingController();
   ProductController productController = Get.find<ProductController>();
+  ShopController shopController = Get.find<ShopController>();
 
   createPurchase({required context, required screen}) async {
-    if (balance.value > 0 && selectedSupplier.value == null) {
-      showSnackBar(message: "please select supplier", color: Colors.red);
+    if (invoice.value!.balance! > 0 && invoice.value!.supplier == null) {
+      generalAlert(title: "Error", message: "please select supplier");
     } else {
-      try {
-        Navigator.pop(context);
-        LoadingDialog.showLoadingDialog(
-            context: context,
-            title: "adding purchase please wait...",
-            key: _keyLoader);
-        var products = saleItem.map((element) => element.toJson()).toList();
-        var supplier = {
-          if (selectedSupplier.value != null)
-            "supplier": selectedSupplier.value!.id,
-          "balance": balance.value,
-          "total": grandTotal.value,
-          "itemstotal": grandTotal.value,
-          "attendant": Get.find<AuthController>().usertype.value == "admin"
-              ? Get.find<AuthController>().currentUser.value!.id
-              : Get.find<AttendantController>().attendant.value!.id,
-          "shop": Get.find<ShopController>().currentShop.value!.id,
-        };
+      Navigator.pop(context);
+      Invoice invoiceData = invoice.value!;
+      invoiceData.shop = shopController.currentShop.value;
+      invoiceData.attendantId = Get.find<UserController>().user.value;
+      invoiceData.receiptNumber = getRandomString(10);
+      invoiceData.onCredit = invoiceData.balance! > 0;
+      invoiceData.createdAt = DateTime.now();
+      invoiceData.productCount = invoiceData.items.length;
 
-        var response = await Purchases().createPurchase(body: {
-          "supplier": supplier,
-          "products": products,
-          "date":
-              DateTime.parse(DateTime.now().toString()).millisecondsSinceEpoch,
-        });
-        Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
-        if (response["status"] == true) {
-          balance.value = 0;
-          saleItem.value = [];
-          grandTotal.value = 0;
-          selectedSupplier.value = null;
-          textEditingControllerAmount.text = "0";
-          getPurchase();
-          if (screen == "admin") {
-            if (MediaQuery.of(context).size.width > 600) {
-              Get.find<HomeController>().selectedWidget.value = ViewPurchases();
-            } else {
-              Get.back();
-            }
+      if (_onCredit(invoiceData)) {
+        var balance = (invoiceData.supplier!.balance ?? 0);
+        if (invoiceData.balance == 0) {
+          invoiceData.balance = invoiceData.total! * -1;
+        } else {
+          invoiceData.balance = invoiceData.balance! * -1;
+        }
+        if (invoiceData.balance! > balance) {
+          balance = (balance.abs() + invoiceData.balance!.abs()) * -1;
+        } else {
+          balance = balance.abs() - invoiceData.balance!.abs();
+          if (balance < 0) {
+            invoiceData.balance = balance;
+          } else {
+            invoiceData.balance = 0;
           }
         }
-      } catch (e) {
-        Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
+        SupplierService().updateSupplierWalletbalance(invoiceData.supplier!,
+            amount: balance);
       }
+
+      //save purchase invoice
+      Purchases().createPurchase(invoiceData);
+
+      //update product quantities
+      for (var element in invoiceData.items) {
+        Products().updateProductPart(
+            product: element.product!,
+            quantity: element.itemCount! + element.product!.quantity!);
+        //create product history
+        ProductHistoryModel productHistoryModel = ProductHistoryModel(
+            ObjectId(),
+            quantity: element.product!.quantity!,
+            supplier: invoiceData.supplier == null
+                ? ""
+                : invoiceData.supplier!.id.toString(),
+            shop: invoiceData.shop!.id.toString(),
+            product: element.product,
+            type: "purchases");
+        Products().createProductHistory(productHistoryModel);
+      }
+      invoice.value = null;
+      refresh();
+      Get.back();
     }
   }
 
   getPurchase({
-    String? supplier,
-    String? onCredit,
+    Supplier? supplier,
+    bool? onCredit,
   }) async {
-    try {
-      getPurchaseLoad.value = true;
-      var response = await Purchases()
-          .getPurchase(supplier: supplier ?? "", onCredit: onCredit ?? "");
-      if (response["status"] == true) {
-        List fetchedResponse = response["body"];
-        List<Invoice> supply =
-            fetchedResponse.map((e) => Invoice.fromJson(e)).toList();
-        if (onCredit!.isNotEmpty) {
-          creditPurchases.value = supply;
-        } else {
-          purchasedItems.assignAll(supply);
-        }
-      } else {
-        purchasedItems.value = RxList([]);
-      }
-      getPurchaseLoad.value = false;
-    } catch (e) {
-      print(e);
-      getPurchaseLoad.value = false;
-    }
+    purchasedItems.clear();
+    RealmResults<Invoice> invoices =
+        Purchases().getPurchase(supplier: supplier, onCredit: onCredit);
+    purchasedItems.addAll(invoices.map((e) => e).toList());
   }
 
-  getPurchaseOrderItems({String? purchaseId, String? productId}) async {
-    try {
-      getPurchaseOrderItemLoad.value = true;
-      var response = await Purchases().getPurchaseOrderItems(
-          id: purchaseId ?? "", productId: productId ?? "");
-      if (response["status"] == true) {
-        List fetchedResponse = response["body"];
-        invoicesItems.clear();
-        List<InvoiceItem> supply =
-            fetchedResponse.map((e) => InvoiceItem.fromJson(e)).toList();
-        invoicesItems.assignAll(supply);
-      } else {
-        invoicesItems.value = RxList([]);
-      }
-      getPurchaseOrderItemLoad.value = false;
-    } catch (e) {
-      getPurchaseOrderItemLoad.value = false;
-    }
+  getIvoiceById(Invoice invoice) {
+    Invoice? invoiceResponse = Purchases().getIvoiceById(invoice);
+    currentInvoice.value = invoiceResponse!;
+
+    currentInvoice.refresh();
   }
 
-  changesaleItem(value) {
-    var index = saleItem.indexWhere((element) => element.id == value.id);
+  addNewPurchase(InvoiceItem value) {
+    var index = -1;
+    if (invoice.value != null) {
+      index = invoice.value!.items
+          .indexWhere((element) => element.product!.id == value.product!.id);
+    }
     if (index == -1) {
-      saleItem.add(value);
-      index = saleItem.indexWhere((element) => element.id == value.id);
+      if (invoice.value == null) {
+        invoice.value = Invoice(
+          ObjectId(),
+          items: [value],
+        );
+      } else {
+        invoice.value =
+            Invoice(invoice.value!.id, items: [...invoice.value!.items, value]);
+      }
+      index =
+          invoice.value!.items.indexWhere((element) => element.id == value.id);
     } else {
-      var data = int.parse(saleItem[index].cartquantity.toString()) + 1; // +=1;
-      saleItem[index].cartquantity = data;
+      var data = int.parse(invoice.value!.items[index].itemCount.toString()) +
+          1; // +=1;
+      invoice.value?.items[index].itemCount = data;
     }
     calculateAmount(index);
-    saleItem.refresh();
+    invoice.refresh();
   }
 
   decrementItem(index) {
-    if (saleItem[index].cartquantity! > 1) {
-      saleItem[index].cartquantity = saleItem[index].cartquantity! - 1;
-      saleItem.refresh();
+    if (invoice.value!.items[index].itemCount! > 1) {
+      invoice.value?.items[index].itemCount =
+          invoice.value!.items[index].itemCount! - 1;
+      invoice.refresh();
     }
     calculateAmount(index);
   }
 
   incrementItem(index) {
-    saleItem[index].cartquantity = saleItem[index].cartquantity! + 1;
-    saleItem.refresh();
+    invoice.value?.items[index].itemCount =
+        invoice.value!.items[index].itemCount! + 1;
+    invoice.refresh();
 
     calculateAmount(index);
   }
 
   calculateAmount(index) {
-    grandTotal.value = 0;
-    balance.value = 0;
+    invoice.value!.total = 0;
+    invoice.value!.balance = 0;
     textEditingControllerAmount.text = "0";
-    if (saleItem.isNotEmpty) {
-      saleItem[index].amount =
-          saleItem[index].cartquantity! * saleItem[index].buyingPrice!;
+
+    invoice.value!.total = invoice.value!.items.fold(
+        0,
+        (previousValue, element) =>
+            previousValue! +
+            (element.product!.buyingPrice! * element.itemCount!));
+
+    textEditingControllerAmount.text = invoice.value!.total.toString();
+
+    invoice.value!.balance =
+        invoice.value!.total! - int.parse(textEditingControllerAmount.text);
+    if (index == -1) {
+      return;
     }
 
-    if (saleItem.isNotEmpty) {
-      saleItem.forEach((element) {
-        grandTotal.value =
-            grandTotal.value + int.parse(element.amount.toString());
-        textEditingControllerAmount.text = grandTotal.value.toString();
-        balance.value =
-            grandTotal.value - int.parse(textEditingControllerAmount.text);
-      });
-    }
-    grandTotal.refresh();
+    invoice.value?.items[index].total =
+        invoice.value!.items[index].product!.buyingPrice! *
+            invoice.value!.items[index!].itemCount!;
+    invoice.refresh();
   }
 
   removeFromList(index) {
-    saleItem.removeAt(index);
-    saleItem.refresh();
-    calculateAmount(index);
+    invoice.value?.items.removeAt(index);
+    invoice.refresh();
+    calculateAmount(-1);
   }
 
   Future<void> scanQR({required shopId, required context}) async {
@@ -195,13 +197,13 @@ class PurchaseController extends GetxController {
       barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
           '#ff6666', 'Cancel', true, ScanMode.BARCODE);
       productController.searchProductController.text = barcodeScanRes;
-      await productController.searchProduct(shopId, "product");
+      productController.getProductsBySort(type: "all");
       if (productController.products.isEmpty) {
         showSnackBar(
             message: "product doesnot exist in this shop", color: Colors.red);
       } else {
         for (int i = 0; i < productController.products.length; i++) {
-          changesaleItem(productController.products[i]);
+          // addNewPurchase(productController.products[i]);
         }
       }
     } on PlatformException {
@@ -212,8 +214,8 @@ class PurchaseController extends GetxController {
 
   calculateSalesAmount() {
     var subTotal = 0;
-    saleItem.forEach((element) {
-      subTotal = subTotal + (element.buyingPrice! * element.cartquantity!);
+    invoice.value?.items.forEach((element) {
+      subTotal = subTotal + (element.price! * element.itemCount!);
     });
     return subTotal;
   }
@@ -226,43 +228,76 @@ class PurchaseController extends GetxController {
     return subTotal;
   }
 
-  void returnInvoiceItem(InvoiceItem sale, int quatity, Invoice invoice) async {
-    try {
-      returningIvoiceLoad.value = true;
-      var response = await Purchases().retunPurchase(sale.id, quatity);
-      if (response["status"] != false) {
-        getPurchaseOrderItems(purchaseId: invoice.id);
-      } else {
-        showSnackBar(message: response["message"], color: Colors.red);
-      }
-      returningIvoiceLoad.value = false;
-    } catch (e) {
-      returningIvoiceLoad.value = false;
+  _onCredit(Invoice invoice) => invoice.balance!.abs() > 0;
+  void returnInvoiceItem(
+      InvoiceItem invoiceItem, int quatity, Invoice invoice) {
+    var amount = quatity * invoiceItem.price!; // amount to be returned
+    InvoiceItem returnedReceipt = InvoiceItem(ObjectId(),
+        itemCount: quatity,
+        product: invoiceItem.product,
+        total: amount,
+        price: invoiceItem.price,
+        type: "return",
+        invoice: invoice,
+        createdAt: DateTime.now(),
+        attendantid: Get.find<UserController>().user.value,
+        supplier: invoice.supplier);
+    Purchases().createSaleReceiptItem(returnedReceipt);
+
+    //increate product quantity
+    Products().updateProductPart(
+        product: invoiceItem.product!,
+        quantity: invoiceItem.product!.quantity! - quatity);
+
+    //update receit item sold items qty and total
+    var newqty = invoiceItem.itemCount! - quatity;
+    Purchases().updateInvoiceItem(
+        invoiceItem: invoiceItem,
+        quantity: newqty,
+        total: newqty * invoiceItem.price!);
+
+    // update receipt qty returned and re-calculate the total
+    Purchases().updateInvoice(
+        invoice: invoice,
+        total: invoice.items.fold(
+            0,
+            (previousValue, element) =>
+                previousValue! + (element.itemCount! * element.price!)),
+        returnedquantity: quatity,
+        creditBalance: (invoice.balance!.abs() - amount) * -1,
+        returnedItems: returnedReceipt);
+
+    // //refund to the wallet if its was a wallet sale
+    // //if it was credit sale return the paid amount to the wallet
+    if (_onCredit(invoice)) {
+      //what was already paid
+      var newBalance =
+          invoice.supplier!.balance! + (quatity * invoiceItem.price!);
+      SupplierService()
+          .updateSupplierWalletbalance(invoice.supplier!, amount: newBalance);
     }
+    getIvoiceById(invoice);
+    currentInvoice.refresh();
   }
 
-  paySupplierCredit(
-      {required String amount, required Invoice salesBody}) async {
-    try {
-      Map<String, dynamic> body = {
-        "supplier": salesBody.supplier,
-        "amount": int.parse(amount),
-        "attendant": Get.find<AuthController>().usertype.value == "admin"
-            ? Get.find<AuthController>().currentUser.value!.id
-            : Get.find<AttendantController>().attendant.value!.id,
-      };
-      var response =
-          await Purchases().createPayment(body: body, saleId: salesBody.id);
-      if (response["status"] = true) {
-        int index =
-            creditPurchases.indexWhere((element) => element.id == salesBody.id);
-        creditPurchases[index].balance =
-            creditPurchases[index].balance! - int.parse(amount);
-        creditPurchases.refresh();
-        Get.find<CustomerController>().amountController.clear();
+  paySupplierCredit({required String amount, required Invoice invoice}) async {
+    Purchases().createPayment(invoice, int.parse(amount));
+    getIvoiceById(invoice);
+    currentInvoice.refresh();
+  }
+
+  void getReturns({Supplier? supplier, Invoice? invoice}) {
+    currentInvoiceReturns.clear();
+    RealmResults<InvoiceItem> response =
+        Purchases().getReturns(invoice: invoice, supplier: supplier);
+    List<InvoiceItem> invoiceReturn = response.map((e) => e).toList();
+    for (var e in invoiceReturn) {
+      if (currentInvoiceReturns
+              .indexWhere((element) => element.invoice!.id == e.invoice!.id) ==
+          -1) {
+        print(e.invoice!.id);
+        currentInvoiceReturns.add(e);
       }
-    } catch (e) {
-      print(e);
     }
   }
 }

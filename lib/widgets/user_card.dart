@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:pointify/models/attendant_model.dart';
 import 'package:pointify/widgets/smalltext.dart';
 import 'package:get/get.dart';
 
+import '../Real/Models/schema.dart';
 import '../screens/attendant/attendant_details.dart';
 import '../utils/colors.dart';
 import 'bigtext.dart';
 
-Widget attendantCard({required AttendantModel attendantModel}) {
+Widget attendantCard({required UserModel userModel}) {
   return Container(
     margin: EdgeInsets.only(top: 10),
     padding: EdgeInsets.all(15),
@@ -29,13 +29,12 @@ Widget attendantCard({required AttendantModel attendantModel}) {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 majorTitle(
-                    title: "Name: ${attendantModel.fullnames}",
+                    title: "Name: ${userModel.fullnames}",
                     color: Colors.white,
                     size: 16.0),
                 SizedBox(width: 10),
-                minorTitle(
-                    title: "Id: ${attendantModel.attendid}",
-                    color: Colors.white)
+                // minorTitle(
+                //     title: "Id: ${userModel.attendid}", color: Colors.white)
               ],
             ),
           ],
@@ -43,7 +42,7 @@ Widget attendantCard({required AttendantModel attendantModel}) {
         SizedBox(width: 10),
         InkWell(
           onTap: () {
-            Get.to(() => AttendantDetails(attendantModel: attendantModel));
+            Get.to(() => UserModelDetails(userModel: userModel));
           },
           child: Align(
             alignment: Alignment.bottomRight,

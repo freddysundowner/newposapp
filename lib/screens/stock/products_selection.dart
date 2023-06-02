@@ -2,13 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/controllers/stock_transfer_controller.dart';
-import 'package:pointify/models/product_model.dart';
-import 'package:pointify/models/shop_model.dart';
 import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/stock/stock_transfer.dart';
 import 'package:pointify/screens/stock/stock_transfer_submit.dart';
 import 'package:get/get.dart';
 
+import '../../Real/Models/schema.dart';
 import '../../controllers/product_controller.dart';
 import '../../utils/colors.dart';
 import '../../widgets/bigtext.dart';
@@ -16,10 +15,10 @@ import '../../widgets/smalltext.dart';
 import '../../widgets/snackBars.dart';
 
 class ProductSelections extends StatelessWidget {
-  final ShopModel shopModel;
+  final Shop toShop;
 
-  ProductSelections({Key? key, required this.shopModel}) : super(key: key) {
-    productController.searchProduct(shopModel.id!, "selection");
+  ProductSelections({Key? key, required this.toShop}) : super(key: key) {
+    // productController.getProductsBySort(type: "all");
   }
 
   ProductController productController = Get.find<ProductController>();
@@ -29,8 +28,6 @@ class ProductSelections extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    productController.getProductsBySort(
-        type: productController.selectedSortOrderSearch.value);
     return WillPopScope(
       onWillPop: () async {
         stockTransferController.selectedProducts.value = [];
@@ -86,8 +83,7 @@ class ProductSelections extends StatelessWidget {
                                     Get.find<HomeController>()
                                         .selectedWidget
                                         .value = StockSubmit(
-                                      to: shopModel.id,
-                                      shopModel: shopModel,
+                                      toShop: toShop,
                                     );
                                   },
                                   child: majorTitle(
@@ -144,7 +140,7 @@ class ProductSelections extends StatelessWidget {
                                   rows: List.generate(
                                       productController.products.length,
                                       (index) {
-                                    ProductModel productBody = productController
+                                    Product productBody = productController
                                         .products
                                         .elementAt(index);
                                     final y = productBody.name;
@@ -197,86 +193,82 @@ class ProductSelections extends StatelessWidget {
               ),
             ),
           ), smallScreen: Obx(() {
-            return productController.getProductLoad.value
+            return productController.products.isEmpty
                 ? Center(
-                    child: CircularProgressIndicator(),
+                    child: Text("no products to transfer"),
                   )
-                : productController.products.length == 0
-                    ? Center(
-                        child: Text("no products to transfer"),
-                      )
-                    : ListView.builder(
-                        itemCount: productController.products.length,
-                        shrinkWrap: true,
-                        itemBuilder: (context, index) {
-                          ProductModel productBody =
-                              productController.products.elementAt(index);
-                          return InkWell(
-                            onTap: () {
-                              if (productBody.quantity! > 0) {
-                                stockTransferController.addToList(productBody);
-                              } else {
-                                showSnackBar(
-                                    message:
-                                        "You cannot transfer product that is outof stock",
-                                    color: Colors.red);
-                              }
-                            },
-                            child: Padding(
-                              padding: const EdgeInsets.all(4.0),
-                              child: Card(
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10)),
-                                elevation: 4,
-                                child: Container(
-                                  padding: const EdgeInsets.all(10),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
+                : ListView.builder(
+                    itemCount: productController.products.length,
+                    shrinkWrap: true,
+                    itemBuilder: (context, index) {
+                      Product productBody =
+                          productController.products.elementAt(index);
+                      return InkWell(
+                        onTap: () {
+                          if (productBody.quantity! > 0) {
+                            // productBody.cartquantity = 1;
+                            stockTransferController.addToList(productBody);
+                          } else {
+                            showSnackBar(
+                                message:
+                                    "You cannot transfer product that is outof stock",
+                                color: Colors.red);
+                          }
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.all(4.0),
+                          child: Card(
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10)),
+                            elevation: 4,
+                            child: Container(
+                              padding: const EdgeInsets.all(10),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          majorTitle(
-                                              title: "${productBody.name}",
-                                              color: Colors.black,
-                                              size: 16.0),
-                                          SizedBox(height: 10),
-                                          minorTitle(
-                                              title:
-                                                  "Category: ${productBody.category!.name}",
-                                              color: Colors.grey),
-                                          SizedBox(height: 10),
-                                          Text(
-                                              "Qty Available: ${productBody.quantity}",
-                                              style: const TextStyle(
-                                                  color: Colors.grey,
-                                                  fontSize: 16))
-                                        ],
-                                      ),
-                                      Checkbox(
-                                          value: stockTransferController
-                                                      .selectedProducts
-                                                      .indexWhere((element) =>
-                                                          element.id ==
-                                                          productBody.id) !=
-                                                  -1
-                                              ? true
-                                              : false,
-                                          onChanged: (value) {})
+                                      majorTitle(
+                                          title: "${productBody.name}",
+                                          color: Colors.black,
+                                          size: 16.0),
+                                      SizedBox(height: 10),
+                                      minorTitle(
+                                          title:
+                                              "Category: ${productBody.category!.name}",
+                                          color: Colors.grey),
+                                      SizedBox(height: 10),
+                                      Text(
+                                          "Qty Available: ${productBody.quantity}",
+                                          style: const TextStyle(
+                                              color: Colors.grey, fontSize: 16))
                                     ],
                                   ),
-                                ),
+                                  Checkbox(
+                                      value: stockTransferController
+                                                  .selectedProducts
+                                                  .indexWhere((element) =>
+                                                      element.id ==
+                                                      productBody.id) !=
+                                              -1
+                                          ? true
+                                          : false,
+                                      onChanged: (value) {})
+                                ],
                               ),
                             ),
-                          );
-                        });
+                          ),
+                        ),
+                      );
+                    });
           })),
           bottomNavigationBar: BottomAppBar(
             color: Colors.white,
             child: Obx(() {
-              return stockTransferController.selectedProducts.length == 0 ||
+              return stockTransferController.selectedProducts.isEmpty ||
                       MediaQuery.of(context).size.width > 600
                   ? Container(
                       height: 0,
@@ -291,8 +283,7 @@ class ProductSelections extends StatelessWidget {
                         splashColor: Colors.transparent,
                         onTap: () {
                           Get.to(() => StockSubmit(
-                                to: shopModel.id,
-                                shopModel: shopModel,
+                                toShop: toShop,
                               ));
                         },
                         child: Container(

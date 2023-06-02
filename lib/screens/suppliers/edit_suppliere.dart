@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:pointify/models/customer_model.dart';
 import 'package:get/get.dart';
-import 'package:pointify/models/supplier.dart';
 
-import '../../controllers/CustomerController.dart';
+import '../../Real/Models/schema.dart';
 import '../../controllers/supplierController.dart';
 
 class EditSupplier extends StatelessWidget {
   final userType;
-  final SupplierModel supplierModel;
+  final Supplier supplierModel;
   EditSupplier({Key? key, this.userType, required this.supplierModel}) {
     supplierController.nameController.text = supplierModel.fullName!;
   }

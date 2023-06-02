@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:pointify/controllers/attendant_controller.dart';
+import 'package:pointify/controllers/user_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/functions/functions.dart';
-import 'package:pointify/models/product_model.dart';
-import 'package:pointify/models/receipt_item.dart';
 import 'package:pointify/screens/sales/components/discount_dialog.dart';
 import 'package:pointify/screens/sales/components/edit_price_dialog.dart';
 import 'package:pointify/widgets/smalltext.dart';
 import 'package:get/get.dart';
 
+import '../Real/Models/schema.dart';
 import '../controllers/AuthController.dart';
 import '../controllers/sales_controller.dart';
 import 'bigtext.dart';
@@ -17,11 +16,9 @@ import 'normal_text.dart';
 Widget SalesContainer(
     {required ReceiptItem receiptItem, required index, required type}) {
   SalesController salesController = Get.find<SalesController>();
-  ShopController shopController = Get.find<ShopController>();
-  AuthController authController = Get.find<AuthController>();
-  AttendantController attendantController = Get.find<AttendantController>();
+  UserController userController = Get.find<UserController>();
   TextEditingController textEditingController = TextEditingController();
-  ProductModel productModel = receiptItem.product!;
+  Product productModel = receiptItem.product!;
   return Padding(
     padding: const EdgeInsets.all(5.0),
     child: Card(
@@ -66,9 +63,9 @@ Widget SalesContainer(
                 ],
               ),
               SizedBox(width: 15),
-              if (authController.usertype.value == "admin" ||
-                  (authController.usertype.value == "attendant" &&
-                      attendantController.checkRole("edit_entries")))
+              if (userController.user.value?.usertype == "admin" ||
+                  (userController.user.value?.usertype == "attendant" &&
+                      userController.checkRole("edit_entries")))
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -91,9 +88,9 @@ Widget SalesContainer(
             ],
           ),
           const SizedBox(height: 10),
-          if ((authController.usertype.value == "attendant" &&
-                  attendantController.checkRole("discounts") == true) ||
-              authController.usertype.value == "admin")
+          if ((userController.user.value?.usertype == "attendant" &&
+                  userController.checkRole("discounts") == true) ||
+              userController.user.value?.usertype == "admin")
             Align(
               alignment: Alignment.topRight,
               child: InkWell(

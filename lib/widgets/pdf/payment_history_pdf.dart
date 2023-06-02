@@ -6,8 +6,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 
-import '../../models/deposit_model.dart';
-import '../../models/payment_history.dart';
+import '../../Real/Models/schema.dart';
 
 PaymentHistoryPdf(
     {required final shop, required List<PayHistory> deposits}) async {
@@ -38,17 +37,13 @@ PaymentHistoryPdf(
                 pw.Expanded(
                     child: pw.Table.fromTextArray(
                         border: pw.TableBorder.all(width: 1), //table border
-                        headers: [
-                          "Paid",
-                          "Balance",
-                          "Date"
-                        ],
+                        headers: ["Paid", "Balance", "Date"],
                         data: deposits
                             .map((e) => [
-                          e.amountPaid,
-                          e.balance,
-                          DateFormat("dd/MM/yyyy").format (e.createdAt!)
-                        ])
+                                  e.amountPaid,
+                                  e.balance,
+                                  DateFormat("dd/MM/yyyy").format(e.createdAt!)
+                                ])
                             .toList())),
                 pw.SizedBox(height: 10),
               ],

@@ -1,11 +1,11 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:pointify/controllers/AuthController.dart';
 import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/authentication/landing.dart';
 import 'package:get/get.dart';
 
+import '../../controllers/AuthController.dart';
 import '../../utils/colors.dart';
 import '../../utils/themer.dart';
 import '../../widgets/header.dart';
@@ -141,7 +141,7 @@ class ForgotPassword extends StatelessWidget {
                         ),
                         onPressed: () async {
                           print("b");
-                          await authController.resetPasswordEmail();
+                          // await authController.resetPasswordEmail();
                         },
                       );
               }),

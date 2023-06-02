@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pointify/controllers/AuthController.dart';
 import 'package:pointify/controllers/home_controller.dart';
-import 'package:pointify/models/product_model.dart';
 import 'package:pointify/screens/cash_flow/cash_flow_manager.dart';
 import 'package:pointify/screens/finance/expense_page.dart';
 import 'package:pointify/screens/product/create_product.dart';
@@ -63,19 +62,19 @@ class Helper extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: appBar,
-      floatingActionButton:
-          Get.find<AuthController>().currentUser.value == null ||
-                  MediaQuery.of(context).size.width > 600 ||
-                  Get.find<AuthController>().usertype == "attendant"
-              ? null
-              : FloatingActionButton(
-                  onPressed: () {
-                    showShortCutBottomSheet(context: context);
-                  },
-                  child: Center(
-                    child: Icon(Icons.menu, color: Colors.white),
-                  ),
-                ),
+      // floatingActionButton:
+      //     Get.find<AuthController>().currentUser.value == null ||
+      //             MediaQuery.of(context).size.width > 600 ||
+      //             Get.find<AuthController>().usertype == "attendant"
+      //         ? null
+      //         : FloatingActionButton(
+      //             onPressed: () {
+      //               showShortCutBottomSheet(context: context);
+      //             },
+      //             child: Center(
+      //               child: Icon(Icons.menu, color: Colors.white),
+      //             ),
+      //           ),
       body: widget,
       bottomNavigationBar: bottomNavigationBar,
     );
@@ -135,8 +134,7 @@ class Helper extends StatelessWidget {
                                   case 2:
                                     {
                                       Get.to(() => CreateProduct(
-                                          page: "create",
-                                          productModel: ProductModel()));
+                                          page: "create", productModel: null));
                                     }
                                     break;
                                   case 3:

@@ -1,8 +1,5 @@
-// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
-
 import 'package:flutter/material.dart';
 import 'package:pointify/controllers/cashflow_controller.dart';
-import 'package:pointify/models/cashflow_category.dart';
 import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/cash_flow/cash_flow_manager.dart';
 import 'package:pointify/screens/cash_flow/components/cashflow_category_dialog.dart';
@@ -10,6 +7,7 @@ import 'package:pointify/utils/helper.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
+import '../../Real/Models/schema.dart';
 import '../../controllers/home_controller.dart';
 import '../../controllers/shop_controller.dart';
 import 'components/category_card.dart';

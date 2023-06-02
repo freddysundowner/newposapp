@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/controllers/purchase_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
-import 'package:pointify/models/invoice_items.dart';
 import 'package:pointify/responsive/responsiveness.dart';
-import 'package:pointify/screens/stock/view_purchases.dart';
+import 'package:pointify/screens/purchases/all_purchases.dart';
 import 'package:pointify/widgets/no_items_found.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
+import '../../Real/Models/schema.dart';
 import '../../widgets/bigtext.dart';
 import '../../widgets/smalltext.dart';
 import '../../widgets/stocks_card.dart';
@@ -23,7 +23,6 @@ class PurchaseOrderItems extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    purchaseController.getPurchaseOrderItems(purchaseId: id);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -36,7 +35,7 @@ class PurchaseOrderItems extends StatelessWidget {
               if (page != null && page == "customerInfoPage") {
               } else {
                 Get.find<HomeController>().selectedWidget.value =
-                    ViewPurchases();
+                    AllPurchases();
               }
             } else {
               Get.back();
@@ -67,7 +66,7 @@ class PurchaseOrderItems extends StatelessWidget {
                   ),
                 ],
               )
-            : purchaseController.invoicesItems.isEmpty
+            : purchaseController.invoice.value!.items.isEmpty
                 ? noItemsFound(context, true)
                 : SingleChildScrollView(
                     child: Column(
@@ -106,10 +105,10 @@ class PurchaseOrderItems extends StatelessWidget {
                                         Text('', textAlign: TextAlign.center)),
                               ],
                               rows: List.generate(
-                                  purchaseController.invoicesItems.length,
-                                  (index) {
+                                  purchaseController
+                                      .invoice.value!.items.length, (index) {
                                 InvoiceItem saleOrderItemModel =
-                                    purchaseController.invoicesItems
+                                    purchaseController.invoice.value!.items
                                         .elementAt(index);
                                 final y =
                                     saleOrderItemModel.product!.name.toString();
@@ -182,17 +181,18 @@ class PurchaseOrderItems extends StatelessWidget {
             ? const Center(
                 child: CircularProgressIndicator(),
               )
-            : purchaseController.invoicesItems.length == 0
+            : purchaseController.invoice.value!.items.length == 0
                 ? const Center(
                     child: Text("No stock Entries Found"),
                   )
                 : ListView.builder(
-                    itemCount: purchaseController.invoicesItems.length,
+                    itemCount: purchaseController.invoice.value!.items.length,
                     physics: const NeverScrollableScrollPhysics(),
                     shrinkWrap: true,
                     itemBuilder: (context, index) {
-                      InvoiceItem supplyOrderModel =
-                          purchaseController.invoicesItems.elementAt(index);
+                      InvoiceItem supplyOrderModel = purchaseController
+                          .invoice.value!.items
+                          .elementAt(index);
 
                       return stockCard(
                           context: context,

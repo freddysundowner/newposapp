@@ -1,36 +1,35 @@
 import 'package:flutter/material.dart';
-import 'package:pointify/controllers/attendant_controller.dart';
+import 'package:pointify/controllers/user_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
-import 'package:pointify/models/product_model.dart';
 import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/product/products_page.dart';
 import 'package:get/get.dart';
 import 'package:pointify/screens/suppliers/create_suppliers.dart';
+import 'package:realm/realm.dart';
 
-import '../../../controllers/AuthController.dart';
 import '../../../controllers/product_controller.dart';
 import '../../../utils/colors.dart';
 import '../../../widgets/bigtext.dart';
 import '../../../widgets/smalltext.dart';
+import '../../Real/Models/schema.dart';
+import '../../controllers/AuthController.dart';
 import '../../controllers/home_controller.dart';
 import '../../controllers/supplierController.dart';
-import '../customers/create_customers.dart';
+import '../../services/category.dart';
+import '../../services/supplier.dart';
 import '../stock/stock_page.dart';
 
 class CreateProduct extends StatelessWidget {
   final page;
-  final ProductModel productModel;
+  final Product? productModel;
 
   CreateProduct({Key? key, required this.page, required this.productModel})
       : super(key: key) {
     if (page == "create") {
       productController.clearControllers();
-      supplierController.getSuppliersInShop(
-          shopController.currentShop.value!.id!, "all");
-      productController.getProductCategory(
-          shopId: shopController.currentShop.value?.id);
+      supplierController.getSuppliersInShop("all");
     } else {
-      productController.assignTextFields(productModel);
+      productController.assignTextFields(productModel!);
     }
   }
 
@@ -38,6 +37,7 @@ class CreateProduct extends StatelessWidget {
   ProductController productController = Get.find<ProductController>();
   SupplierController supplierController = Get.find<SupplierController>();
   AuthController authController = Get.find<AuthController>();
+  UserController userController = Get.find<UserController>();
   var measures = [
     'Kg',
     "Litter",
@@ -65,7 +65,7 @@ class CreateProduct extends StatelessWidget {
                 if (page == "edit") {
                   Get.find<HomeController>().selectedWidget.value =
                       ProductPage();
-                } else if (authController.usertype == "attendant") {
+                } else if (userController.user.value?.usertype == "attendant") {
                   Get.find<HomeController>().selectedWidget.value =
                       ProductPage();
                 } else {
@@ -376,45 +376,40 @@ class CreateProduct extends StatelessWidget {
                   SizedBox(height: 5),
                   InkWell(
                     onTap: () {
-                      if (productController.productCategory.length == 0) {
-                        showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                content: Text("Add Category to continue."),
-                                actions: [
-                                  TextButton(
-                                    child: Text("OK"),
-                                    onPressed: () {
-                                      Get.back();
-                                    },
-                                  )
-                                ],
-                              );
-                            });
-                      } else {
-                        showDialog(
-                            context: context,
-                            builder: (context) {
-                              return SimpleDialog(
-                                children: List.generate(
-                                    productController.productCategory.length,
-                                    (index) => SimpleDialogOption(
-                                          onPressed: () {
-                                            productController
-                                                    .categoryName.value =
+                      showDialog(
+                          context: context,
+                          builder: (context) {
+                            return StreamBuilder<
+                                    RealmResultsChanges<ProductCategory>>(
+                                stream: Categories().getProductCategories(),
+                                builder: (context, snapshot) {
+                                  final data = snapshot.data;
+
+                                  if (data == null) {
+                                    return const Center(
+                                        child: CircularProgressIndicator());
+                                  }
+
+                                  final results = data.results;
+
+                                  return SimpleDialog(
+                                    children: List.generate(
+                                        results.realm.isClosed
+                                            ? 0
+                                            : results.length,
+                                        (index) => SimpleDialogOption(
+                                              onPressed: () {
                                                 productController
-                                                    .productCategory
-                                                    .elementAt(index)
-                                                    .name!;
-                                            Navigator.pop(context);
-                                          },
-                                          child: Text(
-                                              "${productController.productCategory.elementAt(index).name}"),
-                                        )),
-                              );
-                            });
-                      }
+                                                        .categoryId.value =
+                                                    results.elementAt(index);
+                                                Navigator.pop(context);
+                                              },
+                                              child: Text(
+                                                  "${results.elementAt(index).name}"),
+                                            )),
+                                  );
+                                });
+                          });
                     },
                     child: Container(
                       padding: EdgeInsets.all(8),
@@ -427,7 +422,10 @@ class CreateProduct extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Obx(() {
-                            return Text(productController.categoryName.value);
+                            return Text(
+                                productController.categoryId.value != null
+                                    ? productController.categoryId.value!.name!
+                                    : "choose category");
                           }),
                           Icon(Icons.arrow_drop_down, color: Colors.grey)
                         ],
@@ -480,8 +478,7 @@ class CreateProduct extends StatelessWidget {
                                 onPressed: () async {
                                   Navigator.pop(context);
                                   productController.createCategory(
-                                      shopId:
-                                          shopController.currentShop.value!.id!,
+                                      shop: shopController.currentShop.value!,
                                       context: context);
                                 },
                                 child: Text(
@@ -513,7 +510,7 @@ class CreateProduct extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("Unit Of Measure "),
+                  const Text("Unit Of Measure "),
                   SizedBox(height: 5),
                   InkWell(
                     onTap: () {
@@ -561,7 +558,7 @@ class CreateProduct extends StatelessWidget {
             ),
           ],
         ),
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         if (page == "create")
           Row(
             children: [
@@ -575,53 +572,52 @@ class CreateProduct extends StatelessWidget {
                     SizedBox(height: 5),
                     InkWell(
                       onTap: () {
-                        if (productController.selectedSupplier.length == 0 &&
-                            !supplierController.getsupplierLoad.value) {
-                          showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  content:
-                                      const Text("Add suppliers to continue."),
-                                  actions: [
-                                    TextButton(
-                                      child: const Text("OK"),
-                                      onPressed: () {
-                                        Get.back();
-                                      },
-                                    )
-                                  ],
-                                );
-                              });
-                        } else {
-                          showDialog(
-                              context: context,
-                              builder: (context) {
-                                return SimpleDialog(
-                                  children: List.generate(
-                                      productController.selectedSupplier.length,
-                                      (index) => SimpleDialogOption(
-                                            onPressed: () {
-                                              productController
-                                                      .supplierName.value =
-                                                  productController
-                                                      .selectedSupplier
-                                                      .elementAt(
-                                                          index)["name"]!;
-                                              productController
-                                                      .supplierId.value =
-                                                  productController
-                                                      .selectedSupplier
-                                                      .elementAt(index)["id"]!;
+                        showDialog(
+                            context: context,
+                            builder: (context) {
+                              return StreamBuilder<
+                                      RealmResultsChanges<Supplier>>(
+                                  stream: SupplierService()
+                                      .getSuppliersByShopId()
+                                      .changes,
+                                  builder: (context, AsyncSnapshot snapshot) {
+                                    final data = snapshot.data;
 
-                                              Navigator.pop(context);
-                                            },
-                                            child: Text(
-                                                "${productController.selectedSupplier.elementAt(index)["name"]}"),
-                                          )),
-                                );
-                              });
-                        }
+                                    if (data == null) {
+                                      return CreateSuppliers(
+                                        page: "createProduct",
+                                      );
+                                    } else {
+                                      final results = data.results;
+                                      return SimpleDialog(
+                                        children: List.generate(
+                                            results.realm.isClosed
+                                                ? 0
+                                                : results.length,
+                                            (index) => SimpleDialogOption(
+                                                  onPressed: () {
+                                                    productController
+                                                            .supplierName
+                                                            .value =
+                                                        results
+                                                            .elementAt(index)
+                                                            .fullName!;
+                                                    productController
+                                                            .supplierId.value =
+                                                        results
+                                                            .elementAt(index)
+                                                            .id
+                                                            .toString();
+
+                                                    Navigator.pop(context);
+                                                  },
+                                                  child: Text(
+                                                      "${results.elementAt(index).fullName}"),
+                                                )),
+                                      );
+                                    }
+                                  });
+                            });
                       },
                       child: Container(
                         padding: EdgeInsets.all(8),
@@ -651,16 +647,7 @@ class CreateProduct extends StatelessWidget {
                   padding: const EdgeInsets.only(top: 10.0),
                   child: TextButton(
                     onPressed: () {
-                      if (MediaQuery.of(context).size.width > 600) {
-                        Get.find<HomeController>().selectedWidget.value =
-                            CreateSuppliers(
-                          page: "createProduct",
-                        );
-                      } else {
-                        Get.to(() => CreateSuppliers(
-                              page: "createProduct",
-                            ));
-                      }
+                      _navigateToCreate(context);
                     },
                     child: Container(
                         padding: const EdgeInsets.all(8),
@@ -713,6 +700,18 @@ class CreateProduct extends StatelessWidget {
     );
   }
 
+  _navigateToCreate(context) {
+    if (MediaQuery.of(context).size.width > 600) {
+      Get.find<HomeController>().selectedWidget.value = CreateSuppliers(
+        page: "createProduct",
+      );
+    } else {
+      Get.to(() => CreateSuppliers(
+            page: "createProduct",
+          ));
+    }
+  }
+
   Widget saveButton(context) {
     return Obx(() {
       return productController.creatingProductLoad.value ||
@@ -723,19 +722,7 @@ class CreateProduct extends StatelessWidget {
           : InkWell(
               splashColor: Colors.transparent,
               onTap: () {
-                if (page == "create") {
-                  productController.saveProducts(
-                      "${shopController.currentShop.value!.id}",
-                      authController.usertype.value != "admin"
-                          ? "${Get.find<AttendantController>().attendant.value!.id}"
-                          : authController.currentUser.value!.attendantId!,
-                      context);
-                } else {
-                  productController.updateProduct(
-                      id: productModel.id,
-                      context: context,
-                      shopId: shopController.currentShop.value?.id);
-                }
+                productController.saveProducts(productData: productModel);
               },
               child: Container(
                 padding: EdgeInsets.all(10),

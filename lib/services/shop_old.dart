@@ -5,7 +5,7 @@ import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/services/apiurls.dart';
 import 'package:pointify/services/client.dart';
 
-class Shop {
+class ShopOld {
   createShop({required Map<String, dynamic> body}) async {
     var response = await DbBase()
         .databaseRequest(shop, DbBase().postRequestType, body: body);

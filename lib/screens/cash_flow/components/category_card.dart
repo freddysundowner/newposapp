@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:pointify/controllers/cashflow_controller.dart';
 import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
-import 'package:pointify/models/cashflow_category.dart';
 import 'package:pointify/screens/cash_flow/cash_at_bank.dart';
 import 'package:pointify/screens/cash_flow/cashflow_category_history.dart';
 import 'package:pointify/utils/colors.dart';
 import 'package:pointify/widgets/delete_dialog.dart';
 import 'package:get/get.dart';
+
+import '../../../Real/Models/schema.dart';
 
 Widget categoryCard(context, {required CashFlowCategory cashflowCategory}) {
   return Padding(

@@ -111,7 +111,7 @@ class FinancePage extends StatelessWidget {
                           padding: const EdgeInsets.only(right: 18.0),
                           child: financeCards(
                             title: "Sales",
-                            subtitle: "sales",
+                            subtitle: "services",
                             onPresssed: () {
                               Get.find<HomeController>().selectedWidget.value =
                                   AllSalesPage(
@@ -234,10 +234,10 @@ class FinancePage extends StatelessWidget {
                 Obx(() {
                   return financeCards(
                     title: "Sales",
-                    subtitle: "sales",
+                    subtitle: "services",
                     onPresssed: () {
                       salesController.salesInitialIndex.value = 0;
-                      salesController.getSales(onCredit: "", startingDate: "");
+                      salesController.getSales();
 
                       Get.to(() => AllSalesPage(
                             page: "financePage",

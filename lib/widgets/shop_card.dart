@@ -1,21 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:pointify/models/shop_model.dart';
 import 'package:pointify/screens/shop/shop_details.dart';
 import 'package:pointify/widgets/smalltext.dart';
 import 'package:get/get.dart';
 
+import '../Real/Models/schema.dart';
 import '../screens/stock/products_selection.dart';
 import '../utils/colors.dart';
 import 'bigtext.dart';
 
-Widget shopCard(
-    {required ShopModel shopModel, required page, required context}) {
+Widget shopCard({required Shop shopModel, required page, required context}) {
   return InkWell(
     onTap: () {
       if (page == "shop") {
         Get.to(() => ShopDetails(shopModel: shopModel));
       } else {
-        Get.to(() => ProductSelections(shopModel: shopModel));
+        Get.to(() => ProductSelections(toShop: shopModel));
       }
     },
     child: Container(
@@ -43,8 +42,7 @@ Widget shopCard(
           minorTitle(
               title: "Location- ${shopModel.location}", color: Colors.white),
           SizedBox(height: 10),
-          minorTitle(
-              title: "Type- ${shopModel.category?.title}", color: Colors.white)
+          // minorTitle(title: "Type- ${shopModel.category}", color: Colors.white)
         ],
       ),
     ),

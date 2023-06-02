@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:pointify/controllers/cashflow_controller.dart';
-import 'package:pointify/models/bank_model.dart';
 import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/cash_flow/cash_flow_manager.dart';
 import 'package:pointify/screens/cash_flow/cashflow_category_history.dart';
@@ -8,6 +7,7 @@ import 'package:pointify/utils/helper.dart';
 import 'package:pointify/widgets/no_items_found.dart';
 import 'package:get/get.dart';
 
+import '../../Real/Models/schema.dart';
 import '../../controllers/home_controller.dart';
 import '../../controllers/shop_controller.dart';
 import '../../utils/colors.dart';

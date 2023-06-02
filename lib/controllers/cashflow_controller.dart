@@ -1,20 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
-import 'package:pointify/controllers/AuthController.dart';
+import 'package:pointify/controllers/realm_controller.dart';
 import 'package:pointify/controllers/home_controller.dart';
-import 'package:pointify/controllers/shop_controller.dart';
-import 'package:pointify/models/bank_model.dart';
-import 'package:pointify/models/cashflow_category.dart';
 import 'package:pointify/screens/cash_flow/cash_flow_manager.dart';
-import 'package:pointify/utils/colors.dart';
 import 'package:pointify/widgets/alert.dart';
 import 'package:pointify/widgets/snackBars.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-
-import '../models/bank_transactions.dart';
-import '../models/cashflow_summary.dart';
-import '../screens/finance/components/date_picker.dart';
+import 'package:realm/realm.dart';
+import '../Real/Models/schema.dart';
 import '../services/transactions.dart';
 import '../widgets/loading_dialog.dart';
 
@@ -52,12 +45,11 @@ class CashflowController extends GetxController
     try {
       loadingCashAtBank.value = true;
       totalcashAtBank.value = 0;
-      var response = await Transactions().getCashAtBank(shopId);
+      RealmResults<BankModel> response =
+          await Transactions().getCashAtBank(shopId);
 
-      if (response["status"] == true) {
-        List jsonData = response["body"];
-        List<BankModel> fetchedData =
-            jsonData.map((e) => BankModel.fromJson(e)).toList();
+      if (response.isNotEmpty) {
+        List<BankModel> fetchedData = response.map((e) => e).toList();
         cashAtBanks.assignAll(fetchedData);
         for (int i = 0; i < cashAtBanks.length; i++) {
           totalcashAtBank.value += cashAtBanks[i].amount!;
@@ -153,7 +145,7 @@ class CashflowController extends GetxController
         "type": type,
         "name": textEditingControllerCategory.text,
         "shop": shopModel.id,
-        "admin": Get.find<AuthController>().currentUser.value!.id
+        "admin": Get.find<RealmController>().currentUser!.value!.id
       };
       var response = await Transactions().createCategory(body: body);
       if (response["status"] == true) {
@@ -171,11 +163,10 @@ class CashflowController extends GetxController
     try {
       loadingCashFlowCategories.value = true;
       cashflowTotal.value = 0;
-      var response = await Transactions().getCategory(shop: shopId, type: type);
-      if (response["status"] == true) {
-        List dataResponse = response["body"];
-        List<CashFlowCategory> cashflowCat =
-            dataResponse.map((e) => CashFlowCategory.fromJson(e)).toList();
+      RealmResults<CashFlowCategory> response =
+          await Transactions().getCategory(shop: shopId, type: type);
+      if (response.isNotEmpty) {
+        List<CashFlowCategory> cashflowCat = response.map((e) => e).toList();
         cashFlowCategories.assignAll(cashflowCat);
         getCategoriesTotal();
       } else {
@@ -192,11 +183,10 @@ class CashflowController extends GetxController
     try {
       loadingBankHistory.value = true;
       totalcashAtBankHistory.value = 0;
-      var response = await Transactions().getBakTransactions(id: id);
-      if (response["status"] == true) {
-        List dataResponse = response["body"];
-        List<BankTransactions> cashflowCat =
-            dataResponse.map((e) => BankTransactions.fromJson(e)).toList();
+      RealmResults<BankTransactions> response =
+          await Transactions().getBakTransactions(id: id);
+      if (response.isNotEmpty) {
+        List<BankTransactions> cashflowCat = response.map((e) => e).toList();
         bankTransactions.assignAll(cashflowCat);
         for (int i = 0; i < bankTransactions.length; i++) {
           totalcashAtBankHistory.value += bankTransactions[i].amount!;
@@ -215,11 +205,10 @@ class CashflowController extends GetxController
     try {
       loadingBankHistory.value = true;
       totalcashAtBankHistory.value = 0;
-      var response = await Transactions().getCategoryHistory(id: id);
-      if (response["status"] == true) {
-        List dataResponse = response["body"];
-        List<BankTransactions> cashflowCat =
-            dataResponse.map((e) => BankTransactions.fromJson(e)).toList();
+      RealmResults<BankTransactions> response =
+          await Transactions().CategoryHistory(id: id);
+      if (response.isNotEmpty) {
+        List<BankTransactions> cashflowCat = response.map((e) => e).toList();
         bankTransactions.assignAll(cashflowCat);
         for (int i = 0; i < bankTransactions.length; i++) {
           totalcashAtBankHistory.value += bankTransactions[i].amount!;
@@ -250,7 +239,7 @@ class CashflowController extends GetxController
     }
   }
 
-  deleteCategory(String? id) async {
+  deleteCategory(ObjectId? id) async {
     try {
       var response = await Transactions().deleteCategory(id: id);
       if (response["status"] == true) {
@@ -273,11 +262,10 @@ class CashflowController extends GetxController
   getSalesSummary({required shopId, required from, required to}) async {
     try {
       loadingCashflowSummry.value = true;
-      var response = await Transactions()
+      RealmResults<CashflowSummary> response = await Transactions()
           .getCashFlowSummary(id: shopId, from: from, to: to);
-      print(response);
-      if (response != null) {
-        cashflowSummary.value = CashflowSummary.fromJson(response);
+      if (response.isNotEmpty) {
+        cashflowSummary.value = response.first;
       } else {
         cashflowSummary.value = null;
       }

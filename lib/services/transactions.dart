@@ -1,10 +1,16 @@
 import 'dart:convert';
 
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:pointify/services/client.dart';
+import 'package:realm/realm.dart';
 
+import '../Real/Models/schema.dart';
+import '../controllers/realm_controller.dart';
 import 'apiurls.dart';
 
 class Transactions {
+  final RealmController realmService = Get.find<RealmController>();
   getProfitTransactions(shopId, startDate, endDate) async {
     var response = await DbBase().databaseRequest(
       "$transaction/salessummary/$shopId/$startDate/$endDate",
@@ -13,11 +19,10 @@ class Transactions {
     return jsonDecode(response);
   }
 
-  getCashAtBank(shopId) async {
-    var response = await DbBase().databaseRequest(
-        "$cashflow" + "banks/balances/$shopId/", DbBase().getRequestType);
-
-    return jsonDecode(response);
+  RealmResults<BankModel> getCashAtBank(shopId) {
+    RealmResults<BankModel> response =
+        realmService.realm.query<BankModel>(r'shop == $0', [shopId]);
+    return response;
   }
 
   createBank({required Map<String, dynamic> body}) async {
@@ -52,25 +57,26 @@ class Transactions {
     return data;
   }
 
-  getCategory({required shop, required type}) async {
-    var response = await DbBase().databaseRequest(
-        "${cashflow}" + "$shop/$type", DbBase().getRequestType);
-    var data = jsonDecode(response);
-    return data;
+  RealmResults<CashFlowCategory> getCategory({required shop, required type}) {
+    RealmResults<CashFlowCategory> response =
+        realmService.realm.query<CashFlowCategory>(r'shop == $0', [shop]);
+    return response;
   }
 
-  getBakTransactions({required id}) async {
-    var response = await DbBase().databaseRequest(
-        "${cashflow}" + "bank/bank/transactions/$id", DbBase().getRequestType);
-    var data = jsonDecode(response);
-    return data;
+  RealmResults<BankTransactions> getBakTransactions({required id}) {
+    RealmResults<BankTransactions> response =
+        realmService.realm.query<BankTransactions>(r'_id == $0', [id]);
+    return response;
   }
 
-  getCategoryHistory({required id}) async {
-    var response = await DbBase().databaseRequest(
-        "${cashflow}" + "category/category/$id", DbBase().getRequestType);
-    var data = jsonDecode(response);
-    return data;
+  RealmResults<BankTransactions> CategoryHistory({required id}) {
+    RealmResults<BankTransactions> response =
+        realmService.realm.query<BankTransactions>(r'_id == $0', [id]);
+    return response;
+    // var response = await DbBase().databaseRequest(
+    //     "${cashflow}" + "category/category/$id", DbBase().getRequestType);
+    // var data = jsonDecode(response);
+    // return data;
   }
 
   ediCategory({required Map<String, dynamic> body, required id}) async {
@@ -81,17 +87,17 @@ class Transactions {
     return data;
   }
 
-  deleteCategory({String? id}) async {
+  deleteCategory({ObjectId? id}) async {
     var response = await DbBase().databaseRequest(
         "${cashflow}" + "category/$id", DbBase().deleteRequestType);
     var data = jsonDecode(response);
     return data;
   }
 
-  getCashFlowSummary({required id, required from, required to}) async {
-    var response = await DbBase().databaseRequest(
-        "${cashflow}" + "salessummary/$id/$from/$to", DbBase().getRequestType);
-    var data = jsonDecode(response);
-    return data;
+  RealmResults<CashflowSummary> getCashFlowSummary(
+      {required id, required from, required to}) {
+    RealmResults<CashflowSummary> response =
+        realmService.realm.query<CashflowSummary>(r'_id == $0', [id]);
+    return response;
   }
 }

@@ -3,18 +3,18 @@ import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/attendant/create_attendant.dart';
-import 'package:pointify/widgets/attendant_card.dart';
+import 'package:pointify/widgets/user_card.dart';
 import 'package:pointify/widgets/no_items_found.dart';
 import 'package:get/get.dart';
 
 import '../../../../utils/colors.dart';
-import '../../controllers/attendant_controller.dart';
-import '../../models/attendant_model.dart';
+import '../../Real/Models/schema.dart';
+import '../../controllers/user_controller.dart';
 import '../../widgets/smalltext.dart';
 import '../attendant/attendant_details.dart';
 
 class AttendantsPage extends StatelessWidget {
-  AttendantController attendantController = Get.find<AttendantController>();
+  UserController attendantController = Get.find<UserController>();
   ShopController shopController = Get.find<ShopController>();
 
   @override
@@ -33,7 +33,7 @@ class AttendantsPage extends StatelessWidget {
                           ? const Center(
                               child: CircularProgressIndicator(),
                             )
-                          : attendantController.attendants.isEmpty
+                          : attendantController.users.isEmpty
                               ? noItemsFound(context, true)
                               : Container(
                                   padding: EdgeInsets.symmetric(
@@ -61,26 +61,25 @@ class AttendantsPage extends StatelessWidget {
                                                 textAlign: TextAlign.center)),
                                       ],
                                       rows: List.generate(
-                                          attendantController.attendants.length,
+                                          attendantController.users.length,
                                           (index) {
-                                        AttendantModel attendantModel =
-                                            attendantController.attendants
+                                        UserModel attendantModel =
+                                            attendantController.users
                                                 .elementAt(index);
                                         final y = attendantModel.fullnames;
-                                        final x = attendantModel.attendid;
 
                                         return DataRow(cells: [
                                           DataCell(Container(child: Text(y!))),
-                                          DataCell(Container(
-                                              child: Text(x.toString()))),
+                                          // DataCell(Container(
+                                          //     child: Text(x.toString()))),
                                           DataCell(
                                             InkWell(
                                               onTap: () {
                                                 Get.find<HomeController>()
                                                         .selectedWidget
                                                         .value =
-                                                    AttendantDetails(
-                                                        attendantModel:
+                                                    UserModelDetails(
+                                                        userModel:
                                                             attendantModel);
                                               },
                                               child: Align(
@@ -130,7 +129,7 @@ class AttendantsPage extends StatelessWidget {
                     Obx(() {
                       return attendantController.getAttendantsLoad.value
                           ? const Center(child: CircularProgressIndicator())
-                          : attendantController.attendants.length == 0
+                          : attendantController.users.length == 0
                               ? Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
@@ -145,14 +144,13 @@ class AttendantsPage extends StatelessWidget {
                               : ListView.builder(
                                   shrinkWrap: true,
                                   physics: const NeverScrollableScrollPhysics(),
-                                  itemCount:
-                                      attendantController.attendants.length,
+                                  itemCount: attendantController.users.length,
                                   itemBuilder: (context, index) {
-                                    AttendantModel attendantModel =
-                                        attendantController.attendants
+                                    UserModel attendantModel =
+                                        attendantController.users
                                             .elementAt(index);
                                     return attendantCard(
-                                        attendantModel: attendantModel);
+                                        userModel: attendantModel);
                                   });
                     })
                   ],

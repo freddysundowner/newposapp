@@ -1,36 +1,40 @@
 import 'package:flutter/material.dart';
-import 'package:pointify/controllers/AuthController.dart';
+import 'package:pointify/controllers/realm_controller.dart';
 import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
-import 'package:pointify/models/product_model.dart';
 import 'package:pointify/responsive/responsiveness.dart';
+import 'package:pointify/screens/product/product_history.dart';
 import 'package:pointify/screens/stock/stock_page.dart';
+import 'package:pointify/services/product.dart';
 import 'package:pointify/utils/constants.dart';
-import 'package:pointify/widgets/increament_widget.dart';
 import 'package:pointify/widgets/no_items_found.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
+import '../../Real/Models/schema.dart';
+import '../../controllers/AuthController.dart';
 import '../../controllers/product_controller.dart';
+import '../../controllers/user_controller.dart';
 import '../../utils/colors.dart';
 import '../../widgets/bigtext.dart';
 import '../../widgets/smalltext.dart';
 import 'count_history.dart';
 
-class CountingPage extends StatelessWidget {
-  CountingPage({Key? key}) : super(key: key) {
-    productController.searchProductQuantityController.text = "";
-    productController.getProductsByCount(
-        "${shopController.currentShop.value?.id}",
-        productController.selectedSortOrderCountSearch.value);
+class StockCount extends StatelessWidget {
+  StockCount({Key? key}) : super(key: key) {
+    productController.searchProductCountController.text = "";
+    productController.getProductsCount(type: "all");
   }
 
   ProductController productController = Get.find<ProductController>();
   ShopController shopController = Get.find<ShopController>();
   AuthController authController = Get.find<AuthController>();
+  UserController userController = Get.find<UserController>();
 
   @override
   Widget build(BuildContext context) {
+    print(
+        "productController.productsCount.length ${productController.productsCount.length}");
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -38,23 +42,24 @@ class CountingPage extends StatelessWidget {
         centerTitle: false,
         elevation: 0.3,
         titleSpacing: 0.0,
-        leading: Get.find<AuthController>().usertype.value == "attendant" &&
-                MediaQuery.of(context).size.width > 600
-            ? Container()
-            : IconButton(
-                onPressed: () {
-                  if (MediaQuery.of(context).size.width > 600) {
-                    Get.find<HomeController>().selectedWidget.value =
-                        StockPage();
-                  } else {
-                    Get.back();
-                  }
-                },
-                icon: Icon(
-                  Icons.arrow_back_ios,
-                  color: Colors.black,
-                ),
-              ),
+        leading:
+            Get.find<UserController>().user.value?.usertype == "attendant" &&
+                    MediaQuery.of(context).size.width > 600
+                ? Container()
+                : IconButton(
+                    onPressed: () {
+                      if (MediaQuery.of(context).size.width > 600) {
+                        Get.find<HomeController>().selectedWidget.value =
+                            StockPage();
+                      } else {
+                        Get.back();
+                      }
+                    },
+                    icon: Icon(
+                      Icons.arrow_back_ios,
+                      color: Colors.black,
+                    ),
+                  ),
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -69,7 +74,7 @@ class CountingPage extends StatelessWidget {
               ],
             ),
             MediaQuery.of(context).size.width > 600 &&
-                    Get.find<AuthController>().usertype.value == "admin"
+                    Get.find<UserController>().user.value?.usertype == "admin"
                 ? Padding(
                     padding: const EdgeInsets.only(right: 10.0),
                     child: InkWell(
@@ -143,7 +148,7 @@ class CountingPage extends StatelessWidget {
                                   rows: List.generate(
                                       productController.products.length,
                                       (index) {
-                                    ProductModel productBody = productController
+                                    Product productBody = productController
                                         .products
                                         .elementAt(index);
                                     final y = productBody.name;
@@ -185,7 +190,8 @@ class CountingPage extends StatelessWidget {
                                           IconButton(
                                               onPressed: () {
                                                 productController
-                                                    .increamentInitial(index);
+                                                    .products[index]
+                                                    .quantity = 34;
                                               },
                                               icon: Icon(Icons.add,
                                                   color: Colors.black,
@@ -204,7 +210,7 @@ class CountingPage extends StatelessWidget {
                                                 context: context,
                                                 builder: (_) {
                                                   return AlertDialog(
-                                                    title: Text(
+                                                    title: const Text(
                                                       "Confirm Product Count",
                                                       style: TextStyle(
                                                         color: Colors.black,
@@ -231,14 +237,12 @@ class CountingPage extends StatelessWidget {
                                                       ),
                                                       TextButton(
                                                         onPressed: () {
-                                                          Get.find<
-                                                                  ProductController>()
-                                                              .updateQuantity(
-                                                                  product:
-                                                                      productBody,
-                                                                  context:
-                                                                      context);
-                                                          Get.back();
+                                                          // Get.find<
+                                                          //         ProductController>()
+                                                          //     .updateQuantity(
+                                                          //         product:
+                                                          //             productBody);
+                                                          // Get.back();
                                                         },
                                                         child: Text(
                                                           "Okay".toUpperCase(),
@@ -295,7 +299,7 @@ class CountingPage extends StatelessWidget {
                   Expanded(
                     child: searchTextField(),
                   ),
-                  if (authController.usertype == "admin")
+                  if (userController.user.value?.usertype == "admin")
                     IconButton(
                         onPressed: () async {
                           productController.scanQR(
@@ -314,13 +318,13 @@ class CountingPage extends StatelessWidget {
                 children: [
                   Text('Items Available'),
                   Obx(() {
-                    return Text("${productController.products.length}");
+                    return Text("${productController.productsCount.length}");
                   })
                 ],
               ),
             ),
-            if (Get.find<AuthController>().currentUser.value != null &&
-                authController.usertype == "admin")
+            if (Get.find<RealmController>().currentUser!.value != null &&
+                userController.user.value?.usertype == "admin")
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Row(
@@ -329,7 +333,7 @@ class CountingPage extends StatelessWidget {
                     Text('Count History'),
                     InkWell(
                       onTap: () {
-                        Get.to(CountHistory());
+                        Get.to(() => CountHistory());
                       },
                       child:
                           minorTitle(title: "View", color: AppColors.mainColor),
@@ -347,26 +351,142 @@ class CountingPage extends StatelessWidget {
                 ],
               ),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Obx(() {
-              return productController.getProductCountLoad.value
-                  ? Center(
-                      child: CircularProgressIndicator(),
-                    )
-                  : ListView.builder(
-                      physics: NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemCount: productController.products.length,
-                      itemBuilder: (context, index) {
-                        ProductModel productBody =
-                            productController.products.elementAt(index);
-                        return incrementWidget(
-                            index: index,
-                            product: productBody,
-                            context: context);
-                      });
+              return ListView.builder(
+                  physics: const NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  itemCount: productController.productsCount.length,
+                  itemBuilder: (context, index) {
+                    ProductCountModel productCount =
+                        productController.productsCount.elementAt(index);
+                    return Padding(
+                      padding: const EdgeInsets.all(3.0),
+                      child: Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(productCount.product!.name!),
+                                      Text('System Count'),
+                                      Text('${productCount.product!.quantity}')
+                                    ],
+                                  ),
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text('Physical Count'),
+                                      Row(children: [
+                                        IconButton(
+                                            onPressed: () {
+                                              productController
+                                                  .decreamentInitial(index);
+                                            },
+                                            icon: const Icon(Icons.remove)),
+                                        Text('${productCount.quantity}'),
+                                        IconButton(
+                                            onPressed: () {
+                                              productController
+                                                  .increamentInitial(index);
+                                            },
+                                            icon: Icon(Icons.add))
+                                      ])
+                                    ],
+                                  ),
+                                  MediaQuery.of(context).size.width < 600
+                                      ? _incrementQuantityWidget(
+                                          productCountModel: productCount)
+                                      : Container(),
+                                ],
+                              ),
+                              MediaQuery.of(context).size.width > 600
+                                  ? Align(
+                                      alignment: Alignment.bottomRight,
+                                      child: Container(
+                                          width: 80,
+                                          child: _incrementQuantityWidget(
+                                              productCountModel: productCount)),
+                                    )
+                                  : Container(),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  });
             })
           ]),
+        ),
+      ),
+    );
+  }
+
+  Widget _incrementQuantityWidget(
+      {required ProductCountModel productCountModel}) {
+    return InkWell(
+      onTap: () {
+        showDialog(
+            context: Get.context!,
+            builder: (_) {
+              return AlertDialog(
+                title: const Text(
+                  "Confirm Product Count",
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Get.back();
+                    },
+                    child: Text(
+                      "Cancel".toUpperCase(),
+                      style: TextStyle(
+                        color: AppColors.mainColor,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Products().createProductCount(
+                          productCountModel: productCountModel);
+                      Get.back();
+                      productController.productsCount.refresh();
+                    },
+                    child: Text(
+                      "Okay".toUpperCase(),
+                      style: TextStyle(
+                        color: AppColors.mainColor,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            });
+      },
+      child: Container(
+        decoration: BoxDecoration(
+            color: Colors.blue[300], borderRadius: BorderRadius.circular(20)),
+        child: Padding(
+          padding: const EdgeInsets.all(4.0),
+          child: Row(
+            children: [Icon(Icons.check), Text('OK')],
+          ),
         ),
       ),
     );
@@ -387,10 +507,10 @@ class CountingPage extends StatelessWidget {
                               Constants().sortOrderCaunt.elementAt(index);
                           productController.selectedSortOrderCountSearch.value =
                               Constants().sortOrderCauntList.elementAt(index);
-                          productController.getProductsByCount(
-                              "${shopController.currentShop.value?.id}",
-                              productController
-                                  .selectedSortOrderCountSearch.value);
+                          productController.getProductsCount(
+                              type: Constants()
+                                  .sortOrderCauntList
+                                  .elementAt(index));
                           Navigator.pop(context);
                         },
                         child: Text(
@@ -418,21 +538,25 @@ class CountingPage extends StatelessWidget {
 
   Widget searchTextField() {
     return TextFormField(
-      controller: productController.searchProductQuantityController,
+      controller: productController.searchProductCountController,
       onChanged: (value) {
         if (value == "") {
-          productController.products.clear();
+          productController.getProductsCount(
+              type: "all",
+              text: productController.searchProductCountController.text);
         } else {
-          productController.searchProduct(
-              "${shopController.currentShop.value!.id}", "count");
+          productController.getProductsCount(
+              type: "search",
+              text: productController.searchProductCountController.text);
         }
       },
       decoration: InputDecoration(
         contentPadding: EdgeInsets.fromLTRB(10, 2, 10, 2),
         suffixIcon: IconButton(
           onPressed: () {
-            productController.searchProduct(
-                "${shopController.currentShop.value!.id}", "count");
+            productController.getProductsCount(
+                type: "search",
+                text: productController.searchProductCountController.text);
           },
           icon: Icon(Icons.search),
         ),

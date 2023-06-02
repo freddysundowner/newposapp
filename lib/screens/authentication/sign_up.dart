@@ -60,18 +60,16 @@ class SignUp extends StatelessWidget {
               ),
             ),
           ),
-          smallScreen: SingleChildScrollView(
-              child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          smallScreen: ListView(
             children: [
               Container(
-                height: 200,
+                height: 100,
                 child: Header(200, true, "assets/images/team.svg"),
               ),
               SizedBox(height: 40),
               signUpForm(context)
             ],
-          ))),
+          )),
     );
   }
 
@@ -95,6 +93,7 @@ class SignUp extends StatelessWidget {
             child: Column(
               children: [
                 Container(
+                  decoration: ThemeHelper().inputBoxDecorationShaddow(),
                   child: TextFormField(
                     controller: authController.nameController,
                     validator: (value) {
@@ -110,7 +109,6 @@ class SignUp extends StatelessWidget {
                         : ThemeHelper().textInputDecorationDesktop(
                             'Username*', 'Enter your username'),
                   ),
-                  decoration: ThemeHelper().inputBoxDecorationShaddow(),
                 ),
                 SizedBox(height: 20.0),
                 Container(
@@ -152,6 +150,7 @@ class SignUp extends StatelessWidget {
                 ),
                 SizedBox(height: 20.0),
                 Container(
+                  decoration: ThemeHelper().inputBoxDecorationShaddow(),
                   child: TextFormField(
                     controller: authController.passwordController,
                     keyboardType: TextInputType.text,
@@ -168,30 +167,31 @@ class SignUp extends StatelessWidget {
                       return null;
                     },
                   ),
-                  decoration: ThemeHelper().inputBoxDecorationShaddow(),
                 ),
                 SizedBox(height: 20.0),
-                authController.signuserLoad.value
-                    ? Center(
-                        child: CircularProgressIndicator(),
-                      )
-                    : ElevatedButton(
-                        style: ThemeHelper().buttonStyle(),
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(40, 10, 40, 10),
-                          child: Text(
-                            "Register".toUpperCase(),
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
+                Obx(
+                  () => authController.signuserLoad.value
+                      ? Center(
+                          child: CircularProgressIndicator(),
+                        )
+                      : ElevatedButton(
+                          style: ThemeHelper().buttonStyle(),
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(40, 10, 40, 10),
+                            child: Text(
+                              "Register".toUpperCase(),
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
                             ),
                           ),
+                          onPressed: () {
+                            authController.signUser(context);
+                          },
                         ),
-                        onPressed: () {
-                          authController.signUser(context);
-                        },
-                      ),
+                ),
                 SizedBox(height: 30.0),
               ],
             ),

@@ -158,7 +158,7 @@ class AttendantLogin extends StatelessWidget {
                             ),
                           ),
                           onPressed: () {
-                            authController.loginAttendant(context);
+                            authController.login(context);
                           },
                         ),
                       );

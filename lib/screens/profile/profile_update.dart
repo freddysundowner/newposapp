@@ -11,7 +11,7 @@ import '../../widgets/shopWidget.dart';
 
 class ProfileUpdate extends StatelessWidget {
   ProfileUpdate({Key? key}) : super(key: key) {
-    authController.assignDataToTextFields();
+    // authController.assignDataToTextFields();
   }
   AuthController authController = Get.find<AuthController>();
 
@@ -145,7 +145,7 @@ class ProfileUpdate extends StatelessWidget {
           : InkWell(
               splashColor: Colors.transparent,
               onTap: () {
-                authController.updateAdmin(context);
+                // authController.updateAdmin(context);
               },
               child: Container(
                 padding: EdgeInsets.all(10),

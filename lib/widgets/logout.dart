@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pointify/main.dart';
 
 import '../controllers/AuthController.dart';
 import '../utils/colors.dart';
@@ -23,9 +24,8 @@ logoutAccountDialog(context) {
                 child: majorTitle(
                     title: "Cancel", color: AppColors.mainColor, size: 16.0)),
             TextButton(
-                onPressed: () {
-                  Get.back();
-                  Get.find<AuthController>().logout();
+                onPressed: () async {
+                  await appController.logOut();
                 },
                 child: majorTitle(
                     title: "Logout", color: AppColors.mainColor, size: 16.0))

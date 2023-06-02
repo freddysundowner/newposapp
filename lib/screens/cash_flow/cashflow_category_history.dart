@@ -1,15 +1,12 @@
-// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 import 'package:flutter/material.dart';
 import 'package:pointify/controllers/cashflow_controller.dart';
 import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/controllers/sales_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
-import 'package:pointify/models/bank_transactions.dart';
 import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/cash_flow/cash_at_bank.dart';
 import 'package:pointify/screens/cash_flow/cashflow_categories.dart';
 import 'package:pointify/utils/helper.dart';
-import 'package:pointify/widgets/loading_dialog.dart';
 import 'package:pointify/widgets/no_items_found.dart';
 import 'package:pointify/widgets/pdf/history_pdf.dart';
 import 'package:pointify/widgets/pdf/sales_pdf.dart';
@@ -17,7 +14,7 @@ import 'package:pointify/widgets/snackBars.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
-import '../../models/receipt.dart';
+import '../../Real/Models/schema.dart';
 import '../../utils/colors.dart';
 import '../../widgets/sales_card.dart';
 
@@ -37,7 +34,7 @@ class CashCategoryHistory extends StatelessWidget {
       required this.id,
       required this.page})
       : super(key: key) {
-    if (title == "sales") {
+    if (title == "services") {
       salesController.getSales(total: "true");
     } else if (page == "cashflowcategory") {
       cashflowController.getCategoryHistory(id);
@@ -117,7 +114,7 @@ class CashCategoryHistory extends StatelessWidget {
       ),
       smallScreen: Helper(
         widget: Obx(() {
-          if (title == "sales") {
+          if (title == "services") {
             return salesController.loadingSales.value
                 ? Center(
                     child: CircularProgressIndicator(),
@@ -141,7 +138,7 @@ class CashCategoryHistory extends StatelessWidget {
             height: kToolbarHeight,
             color: Colors.white,
             child: Row(
-              mainAxisAlignment: title == "sales"
+              mainAxisAlignment: title == "services"
                   ? MainAxisAlignment.spaceBetween
                   : MainAxisAlignment.center,
               children: [
@@ -161,11 +158,11 @@ class CashCategoryHistory extends StatelessWidget {
                           color: Colors.green.withOpacity(0.8),
                           borderRadius: BorderRadius.circular(20)),
                       child: Obx(() => Text(
-                          "${shopController.currentShop.value!.currency!} ${title == "sales" ? salesController.allSalesTotal : cashflowController.totalcashAtBankHistory.value}")),
+                          "${shopController.currentShop.value!.currency!} ${title == "services" ? salesController.allSalesTotal : cashflowController.totalcashAtBankHistory.value}")),
                     )
                   ],
                 ),
-                if (title == "sales")
+                if (title == "services")
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -182,7 +179,7 @@ class CashCategoryHistory extends StatelessWidget {
                             color: Colors.red.withOpacity(0.8),
                             borderRadius: BorderRadius.circular(20)),
                         child: Obx(() => Text(
-                            "${shopController.currentShop.value!.currency!} ${title == "sales" ? salesController.totalSalesReturned : cashflowController.totalcashAtBankHistory.value}")),
+                            "${shopController.currentShop.value!.currency!} ${title == "services" ? salesController.totalSalesReturned : cashflowController.totalcashAtBankHistory.value}")),
                       )
                     ],
                   ),
@@ -195,7 +192,7 @@ class CashCategoryHistory extends StatelessWidget {
   }
 
   ListView _sales() {
-    if (title == "sales") {
+    if (title == "services") {
       return ListView.builder(
           shrinkWrap: true,
           itemCount: salesController.allSales.length,
@@ -353,7 +350,7 @@ class CashCategoryHistory extends StatelessWidget {
                   contentPadding: const EdgeInsets.all(10),
                   content: const CircularProgressIndicator(),
                   barrierDismissible: false);
-              if (title == "sales") {
+              if (title == "services") {
                 if (salesController.allSales.isEmpty) {
                   showSnackBar(
                       message: "No Items to download", color: Colors.black);

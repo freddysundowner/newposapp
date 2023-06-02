@@ -2,15 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:pointify/controllers/shop_controller.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import '../models/invoice_items.dart';
-import '../models/purchase_return.dart';
+import 'package:pointify/functions/functions.dart';
+import 'package:pointify/screens/purchases/invoice_screen.dart';
+import '../Real/Models/schema.dart';
 import '../utils/colors.dart';
 import 'delete_dialog.dart';
 
-Widget returnedIvoiceItemsCard(
-    {required context, PurchaseReturn? purchaseReturn}) {
-  ShopController shopController = Get.find<ShopController>();
+Widget returnedIvoiceItemsCard({required context, InvoiceItem? invoiceItem}) {
   return InkWell(
+    onTap: () {
+      Get.to(() => InvoiceScreen(
+          invoice: invoiceItem.invoice, type: "returns", from: "supplierpage"));
+    },
     child: Padding(
       padding: const EdgeInsets.only(top: 3.0),
       child: Card(
@@ -41,28 +44,30 @@ Widget returnedIvoiceItemsCard(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "${purchaseReturn!.productModel!.name}",
+                      "${invoiceItem!.product!.name}",
                       style: const TextStyle(
                           color: Colors.black, fontWeight: FontWeight.w600),
                     ),
                     SizedBox(height: 3),
                     Text(
-                      "Qty ${purchaseReturn.count} @ ${shopController.currentShop.value?.currency}.${purchaseReturn.saleOrderItemModel?.price}  =  ${shopController.currentShop.value?.currency}.${purchaseReturn.saleOrderItemModel!.price! * purchaseReturn.count!}",
+                      "Qty ${invoiceItem.invoice!.returneditems.fold(0, (previousValue, element) => previousValue + element.itemCount!)}, ${htmlPrice(invoiceItem.invoice!.returneditems.fold(0, (previousValue, element) => previousValue + (element.itemCount! * element.price!)))}",
                       style: const TextStyle(
                           color: Colors.grey, fontWeight: FontWeight.w600),
                     ),
                     SizedBox(height: 3),
                     Row(
                       children: [
-                        Text(
-                          DateFormat().format(purchaseReturn.createdAt!),
-                          style: TextStyle(color: Colors.grey),
-                        ),
+                        if (invoiceItem.createdAt != null)
+                          Text(
+                            DateFormat().format(invoiceItem.createdAt!),
+                            style: TextStyle(color: Colors.grey),
+                          ),
                         SizedBox(width: 20),
-                        Text(
-                          "By-${purchaseReturn.attendant!.fullnames}",
-                          style: TextStyle(color: Colors.grey),
-                        ),
+                        if (invoiceItem.attendantid != null)
+                          Text(
+                            "By-${invoiceItem.attendantid!.fullnames}",
+                            style: TextStyle(color: Colors.grey),
+                          ),
                       ],
                     ),
                   ],

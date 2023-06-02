@@ -5,9 +5,6 @@ import 'package:pointify/controllers/purchase_controller.dart';
 import 'package:pointify/controllers/sales_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/controllers/supplierController.dart';
-import 'package:pointify/models/invoice_items.dart';
-import 'package:pointify/models/purchase_return.dart';
-import 'package:pointify/models/supplier.dart';
 import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/customers/customers_page.dart';
 import 'package:pointify/screens/suppliers/edit_suppliere.dart';
@@ -21,9 +18,9 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../Real/Models/schema.dart';
 import '../../controllers/AuthController.dart';
-import '../../controllers/attendant_controller.dart';
-import '../../models/invoice.dart';
+import '../../controllers/user_controller.dart';
 import '../../utils/colors.dart';
 import '../../widgets/purchase_card.dart';
 import '../../widgets/snackBars.dart';
@@ -31,17 +28,16 @@ import '../cash_flow/payment_history.dart';
 import '../stock/purchase_order_item.dart';
 
 class SupplierInfoPage extends StatelessWidget {
-  final SupplierModel supplierModel;
+  final Supplier supplierModel;
 
   SupplierInfoPage({Key? key, required this.supplierModel}) : super(key: key) {
     supplierController.initialPage.value = 0;
-    purchaseController.getPurchase(
-        onCredit: "true", supplier: supplierModel.id);
+    purchaseController.getPurchase(onCredit: true, supplier: supplierModel);
   }
 
   SupplierController supplierController = Get.find<SupplierController>();
   ShopController shopController = Get.find<ShopController>();
-  AttendantController attendantController = Get.find<AttendantController>();
+  UserController attendantController = Get.find<UserController>();
   ShopController createShopController = Get.find<ShopController>();
   AuthController authController = Get.find<AuthController>();
   PurchaseController purchaseController = Get.find<PurchaseController>();
@@ -109,10 +105,7 @@ class SupplierInfoPage extends StatelessWidget {
                       title:
                           "Are you sure you want to delete ${supplierModel.fullName}",
                       function: () {
-                        supplierController.deleteSuppler(
-                            context: context,
-                            id: supplierModel.id,
-                            shopId: shopController.currentShop.value?.id);
+                        supplierController.deleteSuppler(supplierModel);
                       });
                 },
                 icon: Icon(
@@ -167,7 +160,7 @@ class SupplierInfoPage extends StatelessWidget {
                                   launchMessage(
                                       number: supplierModel.phoneNumber,
                                       message:
-                                          "Aquick reminde that you owe our shop please pay your debt ");
+                                          "A quick reminde that you owe our shop please pay your debt ");
                                 },
                                 icon: Icon(Icons.message),
                                 color: Colors.white),
@@ -176,7 +169,7 @@ class SupplierInfoPage extends StatelessWidget {
                                   launchWhatsApp(
                                       number: supplierModel.phoneNumber,
                                       message:
-                                          "Aquick reminde that you owe our shop please pay your debt ");
+                                          "A quick reminde that you owe our shop please pay your debt ");
                                 },
                                 icon: Icon(Icons.whatshot),
                                 color: Colors.white),
@@ -224,10 +217,7 @@ class SupplierInfoPage extends StatelessWidget {
                         title:
                             "Are you sure you want to delete ${supplierModel.fullName}",
                         function: () {
-                          supplierController.deleteSuppler(
-                              context: context,
-                              id: supplierModel.id,
-                              shopId: shopController.currentShop.value?.id);
+                          supplierController.deleteSuppler(supplierModel);
                         });
                   },
                   icon: Icon(Icons.delete)),
@@ -239,57 +229,80 @@ class SupplierInfoPage extends StatelessWidget {
   Widget customerInfoBody(context) {
     return SizedBox(
       height: MediaQuery.of(context).size.height * 0.9,
-      child: Column(
-        children: [
-          Container(
-            color: Colors.white,
-            width: double.infinity,
-            height: kToolbarHeight,
-            child: Obx(() => DefaultTabController(
-                  length: supplierController.tabs.length,
-                  initialIndex: supplierController.initialPage.value,
-                  child: TabBar(
-                      controller: supplierController.tabController,
-                      unselectedLabelColor: Colors.grey,
-                      labelColor: Colors.purple,
-                      indicatorColor: Colors.purple,
-                      indicatorWeight: 3,
-                      onTap: (index) {
-                        supplierController.initialPage.value = index;
-                        if (index == 0) {
-                          purchaseController.getPurchase(
-                              onCredit: "true", supplier: supplierModel.id);
-                        } else if (index == 1) {
-                          purchaseController.getPurchase(
-                            supplier: supplierModel.id,
-                            onCredit: "",
-                          );
-                        } else {
-                          supplierController.getSupplierReturns(
-                            supplierId: supplierModel.id,
-                            returned: "true",
-                          );
-                        }
-                      },
-                      tabs: supplierController.tabs),
-                )),
-          ),
-          Expanded(
-            flex: 1,
-            child: Container(
-              color: Colors.white,
-              child: TabBarView(
-                physics: const NeverScrollableScrollPhysics(),
-                controller: supplierController.tabController,
-                children: [
-                  CreditInfo(supplierModel: supplierModel),
-                  Purchase(id: supplierModel.id),
-                  ReturnedPurchases(id: supplierModel.id)
-                ],
-              ),
-            ),
-          )
-        ],
+      child: Container(
+        color: Colors.white,
+        width: double.infinity,
+        height: kToolbarHeight,
+        child: DefaultTabController(
+          initialIndex: 0,
+          length: 3,
+          child: Builder(builder: (context) {
+            return Column(
+              children: [
+                TabBar(
+                    controller: DefaultTabController.of(context),
+                    onTap: (index) {
+                      supplierController.initialPage.value = index;
+                      if (index == 0) {
+                        purchaseController.getPurchase(
+                            onCredit: true, supplier: supplierModel);
+                      } else if (index == 1) {
+                        purchaseController.getPurchase(
+                          supplier: supplierModel,
+                          onCredit: false,
+                        );
+                      } else {
+                        purchaseController.getReturns(
+                          supplier: supplierModel,
+                        );
+                      }
+                    },
+                    tabs: const [
+                      Tab(
+                          child: Row(children: [
+                        Text(
+                          "Pending",
+                          style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black),
+                        )
+                      ])),
+                      Tab(
+                          child: Text(
+                        "Invoices",
+                        style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black),
+                      )),
+                      Tab(
+                          child: Text(
+                        "Returns",
+                        style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black),
+                      )),
+                    ]),
+                Expanded(
+                  flex: 1,
+                  child: Container(
+                    color: Colors.white,
+                    child: TabBarView(
+                      physics: const NeverScrollableScrollPhysics(),
+                      children: [
+                        CreditInfo(supplierModel: supplierModel),
+                        Purchase(id: supplierModel.id),
+                        ReturnedPurchases(id: supplierModel.id)
+                      ],
+                    ),
+                  ),
+                )
+              ],
+            );
+          }),
+        ),
       ),
     );
   }
@@ -479,100 +492,91 @@ class ReturnedPurchases extends StatelessWidget {
 
   ReturnedPurchases({Key? key, required this.id}) : super(key: key);
 
-  SupplierController supplierController = Get.find<SupplierController>();
   ShopController createShopController = Get.find<ShopController>();
+  PurchaseController purchaseController = Get.find<PurchaseController>();
 
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      return supplierController.getSupplierReturnsLoad.value
-          ? const Center(child: CircularProgressIndicator())
-          : supplierController.supplierReturns.isEmpty
-              ? Container(
-                  margin: const EdgeInsets.only(top: 50),
-                  child: const Text(
-                    "No entries",
-                    textAlign: TextAlign.center,
-                  ))
-              : MediaQuery.of(context).size.width > 600
-                  ? SingleChildScrollView(
-                      child: Container(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                        width: double.infinity,
-                        child: Theme(
-                          data: Theme.of(context)
-                              .copyWith(dividerColor: Colors.grey),
-                          child: DataTable(
-                            decoration: BoxDecoration(
-                                border: Border.all(
-                              width: 1,
-                              color: Colors.black,
-                            )),
-                            columnSpacing: 30.0,
-                            columns: const [
-                              DataColumn(
-                                  label: Text('Name',
-                                      textAlign: TextAlign.center)),
-                              DataColumn(
-                                  label:
-                                      Text('Qty', textAlign: TextAlign.center)),
-                              DataColumn(
-                                  label: Text('Total',
-                                      textAlign: TextAlign.center)),
-                              DataColumn(
-                                  label: Text('Date',
-                                      textAlign: TextAlign.center)),
-                            ],
-                            rows: List.generate(
-                                supplierController.supplierReturns.length,
-                                (index) {
-                              PurchaseReturn saleOrder = supplierController
-                                  .supplierReturns
-                                  .elementAt(index);
-                              // final y = saleOrder.product!.name;
-                              // final x = saleOrder.itemCount;
-                              final z = saleOrder.saleOrderItemModel?.total;
-                              final a = saleOrder.createdAt!;
+      return purchaseController.currentInvoiceReturns.isEmpty
+          ? Container(
+              margin: const EdgeInsets.only(top: 50),
+              child: const Text(
+                "No entries",
+                textAlign: TextAlign.center,
+              ))
+          : MediaQuery.of(context).size.width > 600
+              ? SingleChildScrollView(
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                    width: double.infinity,
+                    child: Theme(
+                      data:
+                          Theme.of(context).copyWith(dividerColor: Colors.grey),
+                      child: DataTable(
+                        decoration: BoxDecoration(
+                            border: Border.all(
+                          width: 1,
+                          color: Colors.black,
+                        )),
+                        columnSpacing: 30.0,
+                        columns: const [
+                          DataColumn(
+                              label: Text('Name', textAlign: TextAlign.center)),
+                          DataColumn(
+                              label: Text('Qty', textAlign: TextAlign.center)),
+                          DataColumn(
+                              label:
+                                  Text('Total', textAlign: TextAlign.center)),
+                          DataColumn(
+                              label: Text('Date', textAlign: TextAlign.center)),
+                        ],
+                        rows: List.generate(
+                            purchaseController.purchasedItems.length, (index) {
+                          Invoice saleOrder = purchaseController.purchasedItems
+                              .elementAt(index);
+                          // final y = saleOrder.product!.name;
+                          // final x = saleOrder.itemCount;
+                          final z = saleOrder.total;
+                          final a = saleOrder.createdAt!;
 
-                              return DataRow(cells: [
-                                // DataCell(Container(child: Text(y!))),
-                                // DataCell(Container(child: Text(x.toString()))),
-                                DataCell(Container(child: Text(z.toString()))),
-                                DataCell(Container(
-                                    child: Text(
-                                        DateFormat("dd-MM-yyyy").format(a)))),
-                              ]);
-                            }),
-                          ),
-                        ),
+                          return DataRow(cells: [
+                            // DataCell(Container(child: Text(y!))),
+                            // DataCell(Container(child: Text(x.toString()))),
+                            DataCell(Container(child: Text(z.toString()))),
+                            DataCell(Container(
+                                child:
+                                    Text(DateFormat("dd-MM-yyyy").format(a)))),
+                          ]);
+                        }),
                       ),
-                    )
-                  : ListView.builder(
-                      itemCount: supplierController.supplierReturns.length,
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemBuilder: (context, index) {
-                        PurchaseReturn purchaseReturn =
-                            supplierController.supplierReturns.elementAt(index);
-                        return InkWell(
-                          onTap: () {
-                            // showBottomSheet(context, purchaseOrder, supplier);
-                          },
-                          child: returnedIvoiceItemsCard(
-                            context: context,
-                            purchaseReturn: purchaseReturn,
-                          ),
-                        );
-                      });
+                    ),
+                  ),
+                )
+              : ListView.builder(
+                  itemCount: purchaseController.currentInvoiceReturns.length,
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemBuilder: (context, index) {
+                    InvoiceItem purchaseReturn = purchaseController
+                        .currentInvoiceReturns
+                        .elementAt(index);
+                    return InkWell(
+                      onTap: () {
+                        // showBottomSheet(context, purchaseOrder, supplier);
+                      },
+                      child: returnedIvoiceItemsCard(
+                          context: context, invoiceItem: purchaseReturn),
+                    );
+                  });
     });
   }
 }
 
 class CreditInfo extends StatelessWidget {
-  final SupplierModel supplierModel;
+  final Supplier supplierModel;
   SupplierController supplierController = Get.find<SupplierController>();
-  AttendantController attendantController = Get.find<AttendantController>();
+  UserController attendantController = Get.find<UserController>();
   ShopController createShopController = Get.find<ShopController>();
   AuthController authController = Get.find<AuthController>();
   PurchaseController purchaseController = Get.find<PurchaseController>();
@@ -582,173 +586,166 @@ class CreditInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      return purchaseController.getPurchaseLoad.value
-          ? const Center(child: CircularProgressIndicator())
-          : purchaseController.creditPurchases.isEmpty
-              ? Center(
-                  child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
-                    Center(
-                      child: Text(
-                        "No entries found.",
-                        style: TextStyle(color: Colors.black),
-                      ),
-                    ),
-                    Center(
-                      child: Text(
-                        "For now",
-                        style: TextStyle(color: Colors.grey),
-                      ),
-                    ),
-                  ],
-                ))
-              : MediaQuery.of(context).size.width > 600
-                  ? SingleChildScrollView(
-                      child: Container(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                        width: double.infinity,
-                        child: Theme(
-                          data: Theme.of(context)
-                              .copyWith(dividerColor: Colors.grey),
-                          child: DataTable(
-                            decoration: BoxDecoration(
-                                border: Border.all(
-                              width: 1,
-                              color: Colors.black,
-                            )),
-                            columnSpacing: 30.0,
-                            columns: const [
-                              DataColumn(
-                                  label: Text('Receipt Number',
-                                      textAlign: TextAlign.center)),
-                              DataColumn(
-                                  label: Text('Balance',
-                                      textAlign: TextAlign.center)),
-                              DataColumn(
-                                  label: Text('Total',
-                                      textAlign: TextAlign.center)),
-                              DataColumn(
-                                  label: Text('Date',
-                                      textAlign: TextAlign.center)),
-                              DataColumn(
-                                  label: Text('', textAlign: TextAlign.center)),
-                            ],
-                            rows: List.generate(
-                                purchaseController.creditPurchases.length,
-                                (index) {
-                              Invoice purchaseOrder = purchaseController
-                                  .creditPurchases
-                                  .elementAt(index);
-                              final y = purchaseOrder.receiptNumber;
-                              final x = purchaseOrder.balance;
-                              final z = purchaseOrder.total;
-                              final a = purchaseOrder.createdAt!;
+      return purchaseController.purchasedItems.isEmpty
+          ? Center(
+              child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: const [
+                Center(
+                  child: Text(
+                    "No entries found.",
+                    style: TextStyle(color: Colors.black),
+                  ),
+                ),
+                Center(
+                  child: Text(
+                    "For now",
+                    style: TextStyle(color: Colors.grey),
+                  ),
+                ),
+              ],
+            ))
+          : MediaQuery.of(context).size.width > 600
+              ? SingleChildScrollView(
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                    width: double.infinity,
+                    child: Theme(
+                      data:
+                          Theme.of(context).copyWith(dividerColor: Colors.grey),
+                      child: DataTable(
+                        decoration: BoxDecoration(
+                            border: Border.all(
+                          width: 1,
+                          color: Colors.black,
+                        )),
+                        columnSpacing: 30.0,
+                        columns: const [
+                          DataColumn(
+                              label: Text('Receipt Number',
+                                  textAlign: TextAlign.center)),
+                          DataColumn(
+                              label:
+                                  Text('Balance', textAlign: TextAlign.center)),
+                          DataColumn(
+                              label:
+                                  Text('Total', textAlign: TextAlign.center)),
+                          DataColumn(
+                              label: Text('Date', textAlign: TextAlign.center)),
+                          DataColumn(
+                              label: Text('', textAlign: TextAlign.center)),
+                        ],
+                        rows: List.generate(
+                            purchaseController.creditPurchases.length, (index) {
+                          Invoice purchaseOrder = purchaseController
+                              .creditPurchases
+                              .elementAt(index);
+                          final y = purchaseOrder.receiptNumber;
+                          final x = purchaseOrder.balance;
+                          final z = purchaseOrder.total;
+                          final a = purchaseOrder.createdAt!;
 
-                              return DataRow(cells: [
-                                DataCell(Container(child: Text(y!))),
-                                DataCell(Container(child: Text(x.toString()))),
-                                DataCell(Container(child: Text(z.toString()))),
-                                DataCell(Container(
-                                    child: Text(
-                                        DateFormat("dd-MM-yyyy").format(a)))),
-                                DataCell(Align(
-                                  alignment: Alignment.topRight,
-                                  child: Container(
-                                    child: PopupMenuButton(
-                                      itemBuilder: (ctx) => [
-                                        PopupMenuItem(
-                                          child: ListTile(
-                                            leading: Icon(Icons.list),
-                                            onTap: () {
-                                              Navigator.pop(context);
-                                              if (MediaQuery.of(context)
-                                                      .size
-                                                      .width >
-                                                  600) {
-                                                Get.find<HomeController>()
-                                                        .selectedWidget
-                                                        .value =
-                                                    PurchaseOrderItems(
-                                                        id: purchaseOrder.id);
-                                              } else {
-                                                Get.to(() => PurchaseOrderItems(
-                                                    id: purchaseOrder.id));
-                                              }
-                                            },
-                                            title: Text('View Purchases'),
-                                          ),
-                                        ),
-                                        PopupMenuItem(
-                                          child: ListTile(
-                                            leading: Icon(Icons.payment),
-                                            onTap: () {
-                                              Navigator.pop(context);
-                                            },
-                                            title: Text('Pay'),
-                                          ),
-                                        ),
-                                        PopupMenuItem(
-                                          child: ListTile(
-                                            leading: Icon(Icons.wallet),
-                                            onTap: () {
-                                              Navigator.pop(context);
-                                              if (MediaQuery.of(context)
-                                                      .size
-                                                      .width >
-                                                  600) {
-                                                Get.find<HomeController>()
+                          return DataRow(cells: [
+                            DataCell(Container(child: Text(y!))),
+                            DataCell(Container(child: Text(x.toString()))),
+                            DataCell(Container(child: Text(z.toString()))),
+                            DataCell(Container(
+                                child:
+                                    Text(DateFormat("dd-MM-yyyy").format(a)))),
+                            DataCell(Align(
+                              alignment: Alignment.topRight,
+                              child: Container(
+                                child: PopupMenuButton(
+                                  itemBuilder: (ctx) => [
+                                    PopupMenuItem(
+                                      child: ListTile(
+                                        leading: Icon(Icons.list),
+                                        onTap: () {
+                                          Navigator.pop(context);
+                                          if (MediaQuery.of(context)
+                                                  .size
+                                                  .width >
+                                              600) {
+                                            Get.find<HomeController>()
                                                     .selectedWidget
-                                                    .value = PaymentHistory(
-                                                  id: purchaseOrder.id!,
-                                                );
-                                              } else {
-                                                Get.to(() => PaymentHistory(
-                                                      id: purchaseOrder.id!,
-                                                    ));
-                                              }
-                                            },
-                                            title: Text('Payment History'),
-                                          ),
-                                        ),
-                                        PopupMenuItem(
-                                          child: ListTile(
-                                            leading:
-                                                Icon(Icons.file_copy_outlined),
-                                            onTap: () async {
-                                              Navigator.pop(context);
-                                            },
-                                            title: Text('Generate Report'),
-                                          ),
-                                        ),
-                                      ],
-                                      icon: Icon(Icons.more_vert),
+                                                    .value =
+                                                PurchaseOrderItems(
+                                                    id: purchaseOrder.id);
+                                          } else {
+                                            Get.to(() => PurchaseOrderItems(
+                                                id: purchaseOrder.id));
+                                          }
+                                        },
+                                        title: Text('View Purchases'),
+                                      ),
                                     ),
-                                  ),
-                                )),
-                              ]);
-                            }),
-                          ),
-                        ),
+                                    PopupMenuItem(
+                                      child: ListTile(
+                                        leading: Icon(Icons.payment),
+                                        onTap: () {
+                                          Navigator.pop(context);
+                                        },
+                                        title: Text('Pay'),
+                                      ),
+                                    ),
+                                    PopupMenuItem(
+                                      child: ListTile(
+                                        leading: Icon(Icons.wallet),
+                                        onTap: () {
+                                          Navigator.pop(context);
+                                          // if (MediaQuery.of(context)
+                                          //         .size
+                                          //         .width >
+                                          //     600) {
+                                          //   Get.find<HomeController>()
+                                          //       .selectedWidget
+                                          //       .value = PaymentHistory(
+                                          //     id: purchaseOrder.id!,
+                                          //   );
+                                          // } else {
+                                          //   Get.to(() => PaymentHistory(
+                                          //         id: purchaseOrder.id!,
+                                          //       ));
+                                          // }
+                                        },
+                                        title: Text('Payment History'),
+                                      ),
+                                    ),
+                                    PopupMenuItem(
+                                      child: ListTile(
+                                        leading: Icon(Icons.file_copy_outlined),
+                                        onTap: () async {
+                                          Navigator.pop(context);
+                                        },
+                                        title: Text('Generate Report'),
+                                      ),
+                                    ),
+                                  ],
+                                  icon: Icon(Icons.more_vert),
+                                ),
+                              ),
+                            )),
+                          ]);
+                        }),
                       ),
-                    )
-                  : ListView.builder(
-                      itemCount: purchaseController.creditPurchases.length,
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemBuilder: (context, index) {
-                        Invoice purchaseOrder =
-                            purchaseController.creditPurchases.elementAt(index);
+                    ),
+                  ),
+                )
+              : ListView.builder(
+                  itemCount: purchaseController.purchasedItems.length,
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  itemBuilder: (context, index) {
+                    Invoice purchaseOrder =
+                        purchaseController.purchasedItems.elementAt(index);
 
-                        return InvoiceCard(invoice: purchaseOrder, tab:"credit");
-                      });
+                    return InvoiceCard(invoice: purchaseOrder, tab: "credit");
+                  });
     });
   }
 }
 
-Widget CreditHistoryCard(
-    context, Invoice salesBody, SupplierModel customerModel) {
+Widget CreditHistoryCard(context, Invoice salesBody, Supplier customerModel) {
   return InkWell(
     onTap: () {
       showBottomSheet(context, salesBody, customerModel);
@@ -793,7 +790,7 @@ Widget CreditHistoryCard(
 showBottomSheet(
   BuildContext context,
   Invoice salesBody,
-  SupplierModel customerModel,
+  Supplier customerModel,
 ) {
   SalesController salesController = Get.find<SalesController>();
   return showModalBottomSheet<void>(
@@ -842,17 +839,17 @@ showBottomSheet(
                   leading: Icon(Icons.wallet),
                   onTap: () {
                     Navigator.pop(context);
-                    if (MediaQuery.of(context).size.width > 600) {
-                      Get.find<HomeController>().selectedWidget.value =
-                          PaymentHistory(
-                        id: salesBody.id!,
-                      );
-                    } else {
-                      Get.to(() => PaymentHistory(
-                            id: salesBody.id!,
-                            type: "purchase",
-                          ));
-                    }
+                    // if (MediaQuery.of(context).size.width > 600) {
+                    //   Get.find<HomeController>().selectedWidget.value =
+                    //       PaymentHistory(
+                    //     id: salesBody.id!,
+                    //   );
+                    // } else {
+                    //   Get.to(() => PaymentHistory(
+                    //         id: salesBody.id!,
+                    //         type: "purchase",
+                    //       ));
+                    // }
                   },
                   title: Text('Payment History'),
                 ),
@@ -860,8 +857,8 @@ showBottomSheet(
                   leading: Icon(Icons.file_copy_outlined),
                   onTap: () async {
                     Navigator.pop(context);
-                    await salesController.getPaymentHistory(
-                        id: salesBody.id!, type: "");
+                    // await salesController.getPaymentHistory(
+                    //     id: salesBody.id!, type: "");
 
                     PaymentHistoryPdf(
                         shop:
@@ -929,7 +926,7 @@ showAmountDialog(context, Invoice salesBody) {
                     int.parse(supplierController.amountController.text)) {
                 } else {
                   purchaseController.paySupplierCredit(
-                      salesBody: salesBody,
+                      invoice: salesBody,
                       amount: supplierController.amountController.text);
                 }
               },

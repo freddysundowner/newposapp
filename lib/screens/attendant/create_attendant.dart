@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:pointify/controllers/attendant_controller.dart';
+import 'package:pointify/controllers/user_controller.dart';
 import 'package:pointify/controllers/home_controller.dart';
-import 'package:pointify/models/roles_model.dart';
 import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/home/attendants_page.dart';
 import 'package:get/get.dart';
 import 'package:switcher_button/switcher_button.dart';
 
+import '../../Real/Models/schema.dart';
 import '../../controllers/shop_controller.dart';
 import '../../utils/colors.dart';
 import '../../widgets/attendant_user_inputs.dart';
@@ -18,8 +18,8 @@ class CreateAttendant extends StatelessWidget {
     attendantController.passwordController.clear();
   }
 
-  AttendantController attendantController = Get.find<AttendantController>();
-  ShopController shopController = Get.find<ShopController>();
+  final UserController attendantController = Get.find<UserController>();
+  final ShopController shopController = Get.find<ShopController>();
 
   @override
   Widget build(BuildContext context) {

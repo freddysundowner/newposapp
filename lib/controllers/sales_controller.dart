@@ -1,51 +1,53 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:pointify/controllers/AuthController.dart';
 import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
-import 'package:pointify/models/customer_model.dart';
-import 'package:pointify/models/payment_history.dart';
-import 'package:pointify/models/product_model.dart';
-import 'package:pointify/models/receipt.dart';
+import 'package:pointify/controllers/user_controller.dart';
+import 'package:pointify/controllers/wallet_controller.dart';
+import 'package:pointify/screens/cash_flow/payment_history.dart';
 import 'package:pointify/screens/cash_flow/wallet_page.dart';
-import 'package:pointify/screens/home/home_page.dart';
-import 'package:pointify/screens/sales/all_sales_page.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:pointify/screens/customers/customers_page.dart';
+import 'package:pointify/screens/purchases/invoice_screen.dart';
+import 'package:pointify/screens/sales/components/sales_receipt.dart';
+import 'package:pointify/widgets/alert.dart';
+import 'package:realm/realm.dart';
 
-import '../models/invoice_items.dart';
-import '../models/receipt_item.dart';
-import '../models/sales_summary.dart';
+import '../Real/Models/schema.dart';
+import '../functions/functions.dart';
+import '../services/customer.dart';
+import '../services/payment.dart';
+import '../services/product.dart';
 import '../services/sales.dart';
 import '../services/transactions.dart';
 import '../utils/colors.dart';
 import '../widgets/loading_dialog.dart';
 import '../widgets/snackBars.dart';
 import 'CustomerController.dart';
-import 'attendant_controller.dart';
 
 class SalesController extends GetxController
     with GetSingleTickerProviderStateMixin {
   late TabController tabController;
-  final GlobalKey<State> _keyLoader = new GlobalKey<State>();
   TextEditingController textEditingSellingPrice = TextEditingController();
   TextEditingController textEditingReturnProduct = TextEditingController();
   TextEditingController textEditingCredit = TextEditingController();
+  TextEditingController amountPaid = TextEditingController();
   RxList<SalesModel> allSales = RxList([]);
   RxnInt allSalesTotal = RxnInt(0);
   RxnInt totalSalesReturned = RxnInt(0);
-  RxList<SalesModel> salesReturned = RxList([]);
   RxList<SalesModel> todaySales = RxList([]);
+  RxList<SalesReturn> returns = RxList([]);
+  Rxn<SalesModel> currentReceipt = Rxn(null);
+  RxList<ReceiptItem> currentReceiptReturns = RxList([]);
+  RxList<ReceiptItem> productSales = RxList([]);
   RxList<SalesModel> creditSales = RxList([]);
   RxList<PayHistory> paymenHistory = RxList([]);
   Rxn<SalesSummary> profitModel = Rxn(null);
 
-  RxInt grandTotal = RxInt(0);
-  RxInt changeTotal = RxInt(0);
-  RxInt balance = RxInt(0);
   RxInt totalSalesByDate = RxInt(0);
   RxInt salesInitialIndex = RxInt(0);
-  var selecteProduct = ProductModel().obs;
+  Rxn<Product> selecteProduct = Rxn(null);
   RxBool saveSaleLoad = RxBool(false);
   RxBool getSalesByLoad = RxBool(false);
   RxBool getPaymentHistoryLoad = RxBool(false);
@@ -53,210 +55,256 @@ class SalesController extends GetxController
   RxBool salesOrderItemLoad = RxBool(false);
   RxBool salesOnCreditLoad = RxBool(false);
   RxBool loadingSales = RxBool(false);
-  RxString selectedPaymentMethod = RxString("Cash");
-  RxList paymentMethods = RxList(["Cash", "Credit", "Wallet"]);
-  Rxn<CustomerModel> selectedCustomer = Rxn(null);
-  RxList<ReceiptItem> saleItem = RxList([]);
+  RxList paymentMethods = RxList(["Cash", "Credit"]);
+  Rxn<SalesModel> receipt = Rxn(null);
 
   RxList<InvoiceItem> salesHistory = RxList([]);
-
-  var dueDate = new DateFormat('MMMM/dd/yyyy hh:mm a')
-      .parse(new DateFormat('MMMM/dd/yyyy hh:mm a').format(DateTime.now()))
-      .toIso8601String()
-      .obs;
 
   RxString activeItem = RxString("All Sales");
 
   changesaleItem(ReceiptItem value) {
-    var index = saleItem
-        .indexWhere((element) => element.product!.id == value.product!.id);
-    if (index == -1) {
-      saleItem.add(value);
-      index = saleItem
+    var index = -1;
+    if (receipt.value != null) {
+      index = receipt.value!.items
           .indexWhere((element) => element.product!.id == value.product!.id);
-    } else {
-      if (saleItem[index].quantity! >= saleItem[index].quantity! + 1) {
-        var data = int.parse(saleItem[index].quantity.toString()) + 1;
-        saleItem[index].quantity = data;
+    }
+    if (index == -1) {
+      if (receipt.value == null) {
+        receipt.value =
+            SalesModel(ObjectId(), items: [value], paymentMethod: "Cash");
+      } else {
+        receipt.value = SalesModel(receipt.value!.id,
+            items: [...receipt.value!.items, value]);
       }
+      index =
+          receipt.value!.items.indexWhere((element) => element.id == value.id);
+    } else {
+      ReceiptItem receiptItem = receipt.value!.items[index];
+      var newqty =
+          int.parse(receipt.value!.items[index].quantity.toString()) + 1;
+      if (newqty > receiptItem.product!.quantity!) {
+        return;
+      }
+      receipt.value?.items[index].quantity = newqty;
     }
     calculateAmount(index);
-
-    saleItem.refresh();
-    saleItem.reversed;
+    receipt.refresh();
   }
 
   decrementItem(index) {
-    if (saleItem[index].quantity! > 1) {
-      saleItem[index].quantity = saleItem[index].quantity! - 1;
-      saleItem.refresh();
+    if (receipt.value!.items[index].quantity! > 1) {
+      receipt.value?.items[index].quantity =
+          receipt.value!.items[index].quantity! - 1;
+      receipt.refresh();
     }
     calculateAmount(index);
   }
 
   incrementItem(index) {
-    saleItem[index].quantity = saleItem[index].quantity! + 1;
-    calculateAmount(index);
-  }
+    var increment = (receipt.value!.items[index].quantity! + 1);
+    receipt.value?.items[index].quantity =
+        increment > receipt.value!.items[index].product!.quantity!
+            ? receipt.value!.items[index].quantity
+            : increment;
+    receipt.refresh();
 
-  removeFromList(index) {
-    saleItem.removeAt(index);
-    saleItem.refresh();
     calculateAmount(index);
   }
 
   calculateAmount(index) {
-    grandTotal.value = 0;
-    if (saleItem.isNotEmpty) {
-      saleItem[index].price =
-          saleItem[index].price! - saleItem[index].discount!;
-      saleItem[index].total =
-          saleItem[index].quantity! * saleItem[index].price!;
-    }
-    if (saleItem.isNotEmpty) {
-      for (var element in saleItem) {
-        grandTotal.value += element.total!;
-      }
+    receipt.value!.grandTotal = 0;
+    receipt.value!.creditTotal = 0;
+    amountPaid.text = "0";
+
+    receipt.value!.grandTotal = receipt.value!.items.fold(
+        0,
+        (previousValue, element) =>
+            previousValue! + (element.product!.selling! * element.quantity!));
+
+    amountPaid.text = receipt.value!.grandTotal.toString();
+
+    receipt.value!.creditTotal =
+        receipt.value!.grandTotal! - int.parse(amountPaid.text);
+    if (index == -1) {
+      return;
     }
 
-    grandTotal.refresh();
-    saleItem.refresh();
+    receipt.value?.items[index].total =
+        receipt.value!.items[index].product!.selling! *
+            receipt.value!.items[index!].quantity!;
+    receipt.refresh();
   }
 
-  saveSale({screen, required attendantsUID, required context}) {
-    String size = MediaQuery.of(context).size.width > 600 ? "large" : "small";
-    if (selectedPaymentMethod.value == "Credit") {
-      if (selectedCustomer.value == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("please select customer to sell to")));
-      } else {
-        showSaleDatePicker(
-            context: context,
-            shopId: Get.find<ShopController>().currentShop.value?.id,
-            size: size,
-            attendantsId: attendantsUID,
-            screen: screen);
-      }
-    } else if (selectedPaymentMethod.value == "Wallet" &&
-        selectedCustomer.value == null) {
-      showSnackBar(
-          message: "please select customer to sell to",
-          color: Colors.redAccent);
-    } else if (selectedPaymentMethod.value == "Wallet" &&
-        selectedCustomer.value != null &&
-        selectedCustomer.value!.walletBalance! < grandTotal.value) {
-      showDialog(
-          context: context,
-          builder: (_) {
-            return AlertDialog(
-              title: const Text("Deposit For customer"),
-              content: const Text(
-                  "Wallet  balance insufficient!! deposit for customer"),
-              actions: [
-                TextButton(
-                    onPressed: () {
-                      Get.back();
-                    },
-                    child: Text(
-                      "Cancel".capitalize!,
-                      style: TextStyle(color: AppColors.mainColor),
-                    )),
-                TextButton(
-                    onPressed: () {
-                      Get.back();
-                      if (MediaQuery.of(context).size.width > 600) {
-                        Get.find<HomeController>().selectedWidget.value =
-                            WalletPage(
-                          customerModel: selectedCustomer.value!,
-                          page: "makesale",
-                        );
-                      } else {
-                        Get.to(() => WalletPage(
-                              customerModel: selectedCustomer.value!,
-                              page: "makesale",
-                            ));
-                      }
-                    },
-                    child: Text(
-                      "Okay".capitalize!,
-                      style: TextStyle(color: AppColors.mainColor),
-                    ))
-              ],
-            );
-          });
-    } else {
-      Navigator.pop(context);
-      saveSaleData(
-          attendantId: attendantsUID,
-          type: "noncredit",
-          size: size,
-          context: context,
-          screen: screen);
-    }
+  removeFromList(index) {
+    receipt.value?.items.removeAt(index);
+    receipt.refresh();
+    calculateAmount(-1);
   }
 
-  saveSaleData(
-      {required attendantId,
-      required type,
-      required context,
-      required size,
-      required screen}) async {
-    try {
-      LoadingDialog.showLoadingDialog(
-          context: context, title: "Creating Sale", key: _keyLoader);
-      var creditTotal = 0;
-      if (selectedPaymentMethod.value == "Credit" ||
-          selectedPaymentMethod.value == "Wallet") {
-        creditTotal = changeTotal.value.abs();
+  saveSale({screen}) {
+    String size =
+        MediaQuery.of(Get.context!).size.width > 600 ? "large" : "small";
+    if (_paymentType(receipt.value!) == "Credit") {
+      if (receipt.value?.customerId == null) {
+        generalAlert(
+            title: "Error!", message: "please select customer to sell to");
+        return;
       }
-      var receipt = {
-        "attendantId": attendantId,
-        "paymentMethod": selectedPaymentMethod.value,
-        "shop": Get.find<ShopController>().currentShop.value?.id,
-        "creditTotal": creditTotal,
-        "total": grandTotal.value,
-        if (selectedCustomer.value != null)
-          "customerId": selectedCustomer.value!.id,
-        "duedate": type == "noncredit" ? "" : dueDate.value
-      };
-      print(receipt);
-      var receiptitems =
-          saleItem.map((element) => element.toJson(element)).toList();
-      var sale = {
-        "sale": receipt,
-        "receiptitems": receiptitems,
-      };
-      print(sale);
-
-      var response = await Sales().createSales(sale);
-      print(response);
-
-      Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
-      if (response["status"] == true) {
-        saleItem.value = [];
-        grandTotal.value = 0;
-        balance.value = 0;
-        textEditingCredit.text = "0";
-        selectedPaymentMethod.value == "Cash";
-
-        Get.find<AuthController>()
-            .init(Get.find<AuthController>().usertype.value);
-        if (size == "large") {
-          if (screen == "allSales") {
-            Get.find<HomeController>().selectedWidget.value =
-                AllSalesPage(page: "AttendantLanding");
-          } else {
-            Get.find<HomeController>().selectedWidget.value = HomePage();
-          }
-        } else if (screen == "admin") {
-          Get.back();
-        } else {
-          Get.back();
-        }
+      if ((receipt.value!.customerId!.walletBalance == null ||
+          receipt.value!.customerId!.walletBalance! <
+              receipt.value!.grandTotal!)) {
+        showDialog(
+            context: Get.context!,
+            builder: (_) {
+              return AlertDialog(
+                content: const Text(
+                    "Customer Credit balance is insufficient!! credit the account?"),
+                actions: [
+                  TextButton(
+                      onPressed: () {
+                        Get.back();
+                      },
+                      child: Text(
+                        "Cancel".capitalize!,
+                        style: TextStyle(color: AppColors.mainColor),
+                      )),
+                  TextButton(
+                      onPressed: () {
+                        Get.back();
+                        if (MediaQuery.of(Get.context!).size.width > 600) {
+                          Get.find<HomeController>().selectedWidget.value =
+                              WalletPage(
+                            customerModel: receipt.value!.customerId!,
+                            page: "makesale",
+                          );
+                        } else {
+                          Get.to(() => WalletPage(
+                                customerModel: receipt.value!.customerId!,
+                                page: "makesale",
+                              ));
+                        }
+                      },
+                      child: Text(
+                        "Credit".capitalize!,
+                        style: TextStyle(color: AppColors.mainColor),
+                      )),
+                  TextButton(
+                      onPressed: () {
+                        if (receipt.value?.dueDate == null) {
+                          showSaleDatePicker(
+                              context: Get.context!,
+                              shopId: Get.find<ShopController>()
+                                  .currentShop
+                                  .value
+                                  ?.id,
+                              size: size,
+                              attendantsId:
+                                  Get.find<UserController>().user.value?.id,
+                              screen: screen);
+                        } else {
+                          Get.back();
+                          saveReceipt();
+                        }
+                      },
+                      child: Text(
+                        "Continue anyway",
+                        style: TextStyle(color: AppColors.mainColor),
+                      ))
+                ],
+              );
+            });
+        return;
       } else {
-        showSnackBar(message: response["message"], color: Colors.red);
+        Get.back();
+        saveReceipt();
       }
-    } catch (e) {}
+      return;
+    }
+
+    Get.back();
+    saveReceipt();
+  }
+
+  _onCredit(SalesModel salesModel) => _paymentType(salesModel) == "Credit";
+
+  void saveReceipt() {
+    final DateTime now = DateTime.now();
+    final DateFormat formatter = DateFormat('yyyy-MM-dd');
+    final String formatted = formatter.format(now);
+    SalesModel receiptData = receipt.value!;
+    receiptData.shop = Get.find<ShopController>().currentShop.value;
+    receiptData.attendantId = Get.find<UserController>().user.value;
+    receiptData.receiptNumber = getRandomString(10);
+    receiptData.date = formatted;
+    receiptData.createdAt = DateTime.now();
+    receiptData.quantity = receiptData.items.length;
+    receiptData.paymentMethod = _paymentType(receiptData);
+
+    //debit customer wallet
+    if (_onCredit(receiptData)) {
+      var walletbalanace = (receiptData.customerId!.walletBalance ?? 0);
+      if (receiptData.creditTotal == 0) {
+        receiptData.creditTotal = receiptData.grandTotal! * -1;
+      }
+      var amountPaid = 0;
+      if (receiptData.creditTotal!.abs() > walletbalanace) {
+        amountPaid = receiptData.creditTotal!;
+        receiptData.creditTotal = (walletbalanace + receiptData.creditTotal!);
+      } else {
+        receiptData.creditTotal = 0;
+        amountPaid = receiptData.grandTotal!;
+      }
+      Get.find<WalletController>().WalletTransaction(
+          customerModel: receiptData.customerId!,
+          amount: amountPaid,
+          type: "usage",
+          salesModel: receiptData);
+    }
+
+    //save purchase invoice
+    Sales().createSale(receiptData);
+    if (_onCredit(receiptData)) {
+      var amountPaid = receiptData.grandTotal! - receiptData.creditTotal!.abs();
+      if (amountPaid > 0) {
+        PayHistory paymentHistory = PayHistory(ObjectId(),
+            attendant: Get.find<UserController>().user.value,
+            amountPaid: amountPaid,
+            balance: receiptData.creditTotal,
+            receipt: receipt.value);
+        Payment().createPayHistory(paymentHistory);
+      }
+    }
+
+    //update product quantities
+    for (var element in receiptData.items) {
+      var itemsqtybalance = element.product!.quantity! - element.quantity!;
+      Products().updateProductPart(
+          product: element.product!, quantity: itemsqtybalance);
+      //create product history
+      ProductHistoryModel productHistoryModel = ProductHistoryModel(ObjectId(),
+          quantity: element.product!.quantity!,
+          customer: receipt.value?.customerId,
+          shop: receiptData.shop!.id.toString(),
+          product: element.product,
+          type: "purchases");
+      Products().createProductHistory(productHistoryModel);
+    }
+    Get.back();
+    Get.to(() => SalesReceipt(
+          salesModel: receiptData,
+          type: "",
+        ));
+    receipt.value = null;
+    refresh();
+  }
+
+  _paymentType(SalesModel salesModel) {
+    if (salesModel.creditTotal! < 0) {
+      return salesModel.paymentMethod != "Wallet"
+          ? "Credit"
+          : salesModel.paymentMethod;
+    }
+    return salesModel.paymentMethod ?? "Cash";
   }
 
   showSaleDatePicker(
@@ -276,7 +324,7 @@ class SalesController extends GetxController
                       padding: const EdgeInsets.all(3.0),
                       child: Text(
                         "Select Due date".capitalize!,
-                        style: TextStyle(
+                        style: const TextStyle(
                             color: Colors.black, fontWeight: FontWeight.bold),
                       ),
                     ),
@@ -286,10 +334,12 @@ class SalesController extends GetxController
                       child: CupertinoDatePicker(
                         mode: CupertinoDatePickerMode.dateAndTime,
                         onDateTimeChanged: (value) {
-                          dueDate.value = new DateFormat('MMMM/dd/yyyy hh:mm a')
-                              .parse(new DateFormat('MMMM/dd/yyyy hh:mm a')
-                                  .format(value))
-                              .toIso8601String();
+                          receipt.value!.dueDate =
+                              DateFormat('MMMM/dd/yyyy hh:mm a')
+                                  .parse(DateFormat('MMMM/dd/yyyy hh:mm a')
+                                      .format(value))
+                                  .toIso8601String();
+                          receipt.refresh();
                         },
                         initialDateTime: DateTime.now(),
                         minimumYear: 2022,
@@ -313,12 +363,15 @@ class SalesController extends GetxController
                         TextButton(
                           onPressed: () {
                             Get.back();
-                            saveSaleData(
-                                type: "credit",
-                                attendantId: attendantsId,
-                                size: size,
-                                context: context,
-                                screen: screen);
+                            if (receipt.value!.dueDate == null) {
+                              receipt.value!.dueDate =
+                                  DateFormat('MMMM/dd/yyyy hh:mm a')
+                                      .parse(DateFormat('MMMM/dd/yyyy hh:mm a')
+                                          .format(DateTime.now()))
+                                      .toIso8601String();
+                            }
+                            Get.back();
+                            saveReceipt();
                           },
                           child: Text(
                             "Ok".toUpperCase(),
@@ -334,104 +387,27 @@ class SalesController extends GetxController
             ));
   }
 
-  showDepositAllertDialog(context) {
-    showDialog(
-        context: context,
-        builder: (_) {
-          return AlertDialog(
-            title: const Text(
-              "Wallet Amount is insufficient",
-              style: TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            content: Text("Would you like to deposit for customer?"),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Get.back();
-                },
-                child: Text(
-                  "Cancel".toUpperCase(),
-                  style: TextStyle(
-                    color: AppColors.mainColor,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              TextButton(
-                onPressed: () {
-                  Get.back();
-                },
-                child: Text(
-                  "Okay".toUpperCase(),
-                  style: TextStyle(
-                    color: AppColors.mainColor,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ],
-          );
-        });
+  getSalesBySaleId({ObjectId? id}) async {
+    SalesModel? receipt = Sales().getSalesBySaleId(id!);
+    currentReceipt.value = receipt;
   }
 
-  getSalesBySaleId({String? uid, String? productId}) async {
-    try {
-      salesOrderItemLoad.value = true;
-      var response = await Sales().getSalesBySaleId(uid ?? "", productId ?? "");
-      if (response != null) {
-        List fetchedProducts = response["body"];
-        List<InvoiceItem> singleProduct =
-            fetchedProducts.map((e) => InvoiceItem.fromJson(e)).toList();
-        salesHistory.assignAll(singleProduct);
-      } else {
-        salesHistory.value = [];
-      }
-      salesOrderItemLoad.value = false;
-    } catch (e) {
-      salesOrderItemLoad.value = false;
-    }
+  getSalesByProductId({Product? product}) async {
+    productSales.clear();
+    RealmResults<ReceiptItem>? receipt = Sales().getSalesByProductId(product!);
+    productSales.addAll(receipt!.map((e) => e).toList());
+    print(productSales.length);
   }
 
   getSales(
       {onCredit = false,
-      String? startingDate = "",
-      String? customer = "",
+      String? date = "",
+      CustomerModel? customer,
       String total = ""}) async {
-    try {
-      loadingSales.value = true;
-      var response = await Sales().getSales(
-          onCredit: onCredit,
-          date: startingDate,
-          customer: customer ?? "",
-          total: total);
-      if (response["status"] == true) {
-        List data = response["body"];
-        List<SalesModel> saleData =
-            data.map((e) => SalesModel.fromJson(e)).toList();
-
-        if (onCredit == true) {
-          creditSales.value = saleData;
-        }
-        if (startingDate!.isNotEmpty) {
-          todaySales.value = saleData;
-        } else {
-          if (total.isNotEmpty) {
-            allSalesTotal.value = response["totalSales"];
-            totalSalesReturned.value = response["totalSalesReturned"];
-          }
-          allSales.assignAll(saleData);
-        }
-      } else {
-        allSales.value = [];
-      }
-      loadingSales.value = false;
-    } catch (e) {
-      allSales.clear();
-      loadingSales.value = false;
-    }
+    RealmResults<SalesModel> sales =
+        Sales().getSales(date: date, onCredit: onCredit, customer: customer);
+    allSales.clear();
+    allSales.addAll(sales.map((e) => e).toList());
   }
 
   getProfitTransaction(
@@ -441,7 +417,7 @@ class SalesController extends GetxController
           shopId,
           DateFormat("yyyy-MM-dd").format(start),
           DateFormat("yyyy-MM-dd").format(end));
-      profitModel.value = SalesSummary.fromJson(response);
+      profitModel.value = null; //SalesSummary.fromJson(response);
     } catch (e) {
       print(e);
     }
@@ -453,19 +429,59 @@ class SalesController extends GetxController
     super.onInit();
   }
 
-  void returnSale(InvoiceItem sale, int quatity) async {
-    try {
-      salesOrderItemLoad.value = true;
-      var response = await Sales().retunSale(sale.id, quatity);
-      if (response["status"] != false) {
-        getSalesBySaleId(uid: sale.sale!.id);
-      } else {
-        showSnackBar(message: response["message"], color: Colors.red);
-      }
-      salesOrderItemLoad.value = false;
-    } catch (e) {
-      salesOrderItemLoad.value = false;
+  void returnSale(ReceiptItem receiptItem, int quatity) async {
+    var amount = quatity * receiptItem.price!; // amount to be returned
+    ReceiptItem returnedReceipt = ReceiptItem(ObjectId(),
+        quantity: quatity,
+        product: receiptItem.product,
+        total: amount,
+        discount: receiptItem.discount,
+        price: receiptItem.price,
+        type: "return",
+        receipt: currentReceipt.value,
+        customerId: currentReceipt.value!.customerId);
+    Sales().createSaleReceiptItem(returnedReceipt);
+    //refund to the wallet if its was a wallet sale
+    //if it was credit sale return the paid amount to the wallet
+    if (_onCredit(currentReceipt.value!)) {
+      //what was already paid
+      var totalPaid = (amount - currentReceipt.value!.creditTotal!.abs());
+      var totalRemoveFromWallet =
+          totalPaid + currentReceipt.value!.creditTotal!.abs();
+
+      Get.find<WalletController>().WalletTransaction(
+          customerModel: currentReceipt.value!.customerId!,
+          newbalance:
+              _onCredit(currentReceipt.value!) ? totalRemoveFromWallet : amount,
+          amount: amount,
+          type: "deposit",
+          salesModel: currentReceipt.value!);
     }
+
+    //increate product quantity
+    Products().updateProductPart(
+        product: receiptItem.product!,
+        quantity: receiptItem.product!.quantity! + quatity);
+
+    //update receit item sold items qty and total
+    var newqty = receiptItem.quantity! - quatity;
+    Sales().updateReceiptItem(
+        receiptItem: receiptItem,
+        quantity: newqty,
+        total: newqty * receiptItem.price!);
+
+    // update receipt qty returned and re-calculate the total
+    Sales().updateReceipt(
+        receipt: currentReceipt.value!,
+        total: currentReceipt.value!.items.fold(
+            0,
+            (previousValue, element) =>
+                previousValue! + (element.quantity! * element.price!)),
+        returnedquantity: quatity,
+        creditBalance: (currentReceipt.value!.creditTotal!.abs() - amount) * -1,
+        returnedItems: returnedReceipt);
+    getSalesBySaleId(id: currentReceipt.value!.id);
+    currentReceipt.refresh();
   }
 
   totalSales() {
@@ -476,23 +492,23 @@ class SalesController extends GetxController
     return subTotal;
   }
 
-  payCredit({required SalesModel salesBody, required String amount}) async {
-    try {
-      Map<String, dynamic> body = {
-        "customerId": salesBody.customerId!.id,
-        "amount": int.parse(amount),
-        "type": "sale"
-      };
-      var response =
-          await Sales().createPayment(body: body, saleId: salesBody.id);
-      if (response["status"] = true) {
-        Get.find<CustomerController>().amountController.clear();
-        salesBody.creditTotal! - int.parse(amount);
-        salesHistory.refresh();
-      }
-    } catch (e) {
-      print(e);
-    }
+  payCredit({required SalesModel salesBody, required int amount}) async {
+    var newbalance = salesBody.creditTotal!.abs() - amount;
+    Sales().updateReceipt(receipt: salesBody, creditBalance: -newbalance);
+    PayHistory payHistory = PayHistory(ObjectId(),
+        attendant: Get.find<UserController>().user.value,
+        amountPaid: amount,
+        balance: newbalance,
+        receipt: salesBody,
+        createdAt: DateTime.now());
+    Payment().createPayHistory(payHistory);
+
+    //deduct from wallet debt
+    Customer().updateCustomerWalletbalance(salesBody.customerId!,
+        amount: (salesBody.customerId!.walletBalance ?? 0) + amount);
+
+    getSalesBySaleId(id: salesBody.id);
+    currentReceipt.refresh();
   }
 
   getPaymentHistory({required String id, required type}) async {
@@ -502,7 +518,7 @@ class SalesController extends GetxController
       if (response != null) {
         List rawData = response;
         List<PayHistory> pay =
-            rawData.map((e) => PayHistory.fromJson(e)).toList();
+            []; //rawData.map((e) => PayHistory.fromJson(e)).toList();
         paymenHistory.assignAll(pay);
       } else {
         paymenHistory.value = [];
@@ -514,13 +530,25 @@ class SalesController extends GetxController
     }
   }
 
-  void getSalesByDate(shopId, startDate, endDate) async {
-    var response = await Sales().getSalesByDate(shopId, startDate, endDate);
-    totalSalesByDate.value = 0;
-    if (response.length > 0) {
-      totalSalesByDate.value = response[0]["totalSales"];
+  void getSalesByDate(date) {
+    RealmResults<SalesModel> response = Sales().getSales(date: date);
+    totalSalesByDate.value = response.fold(
+        0, (previousValue, element) => previousValue + element.grandTotal!);
+    todaySales.addAll(response.map((e) => e).toList());
+  }
+
+  void getReturns({CustomerModel? customerModel, SalesModel? salesModel}) {
+    currentReceiptReturns.clear();
+    RealmResults<ReceiptItem> response = Sales()
+        .getReturns(salesModel: salesModel, customerModel: customerModel);
+    List<ReceiptItem> salesReturn = response.map((e) => e).toList();
+    for (var e in salesReturn) {
+      if (currentReceiptReturns
+              .indexWhere((element) => element.receipt!.id == e.receipt!.id) ==
+          -1) {
+        print(e.receipt!.id);
+        currentReceiptReturns.add(e);
+      }
     }
-    totalSalesByDate.refresh();
-    return response;
   }
 }

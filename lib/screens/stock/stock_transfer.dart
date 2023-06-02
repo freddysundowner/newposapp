@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
-import 'package:pointify/models/shop_model.dart';
 import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/stock/products_selection.dart';
 import 'package:pointify/screens/stock/stock_page.dart';
@@ -9,6 +8,7 @@ import 'package:pointify/screens/stock/transfer_history.dart';
 import 'package:pointify/widgets/shop_card.dart';
 import 'package:get/get.dart';
 
+import '../../Real/Models/schema.dart';
 import '../../controllers/AuthController.dart';
 import '../../utils/colors.dart';
 import '../../widgets/bigtext.dart';
@@ -16,7 +16,7 @@ import '../../widgets/smalltext.dart';
 
 class StockTransfer extends StatelessWidget {
   StockTransfer({Key? key}) : super(key: key) {
-    shopController.getShops(adminId: authController.currentUser.value?.id);
+    shopController.getShops();
   }
 
   ShopController shopController = Get.find<ShopController>();
@@ -137,12 +137,11 @@ class StockTransfer extends StatelessWidget {
                                     rows: List.generate(
                                         shopController.allShops.length,
                                         (index) {
-                                      ShopModel shopModel = shopController
-                                          .allShops
+                                      Shop shopModel = shopController.allShops
                                           .elementAt(index);
                                       final y = shopModel.name;
                                       final x = shopModel.location;
-                                      final z = shopModel.category!.title;
+                                      // final z = shopModel.category;
 
                                       return DataRow(cells: [
                                         DataCell(Container(
@@ -150,9 +149,9 @@ class StockTransfer extends StatelessWidget {
                                         DataCell(Container(
                                             width: 75,
                                             child: Text(x.toString()))),
-                                        DataCell(Container(
-                                            width: 75,
-                                            child: Text(z.toString()))),
+                                        // DataCell(Container(
+                                        //     width: 75,
+                                        //     child: Text(z.toString()))),
                                         DataCell(
                                           InkWell(
                                             onTap: () {
@@ -160,9 +159,10 @@ class StockTransfer extends StatelessWidget {
                                                       .selectedWidget
                                                       .value =
                                                   ProductSelections(
-                                                      shopModel: shopModel);
+                                                      toShop: shopModel);
                                             },
                                             child: Align(
+                                              alignment: Alignment.topRight,
                                               child: Center(
                                                 child: Container(
                                                   padding: EdgeInsets.all(5),
@@ -174,7 +174,7 @@ class StockTransfer extends StatelessWidget {
                                                           BorderRadius.circular(
                                                               3)),
                                                   width: 75,
-                                                  child: Text(
+                                                  child: const Text(
                                                     "Select",
                                                     style: TextStyle(
                                                         color: Colors.white),
@@ -182,7 +182,6 @@ class StockTransfer extends StatelessWidget {
                                                   ),
                                                 ),
                                               ),
-                                              alignment: Alignment.topRight,
                                             ),
                                           ),
                                         ),
@@ -219,10 +218,7 @@ class StockTransfer extends StatelessWidget {
                             controller: shopController.searchController,
                             onChanged: (value) {
                               if (value != "") {
-                                shopController.getShops(
-                                    adminId:
-                                        authController.currentUser.value?.id,
-                                    name: value);
+                                shopController.getShops();
                               }
                             },
                             decoration: InputDecoration(
@@ -243,10 +239,10 @@ class StockTransfer extends StatelessWidget {
                   SizedBox(height: 10),
                   Obx(() {
                     return shopController.gettingShopsLoad.value
-                        ? Align(
+                        ? const Align(
                             alignment: Alignment.center,
                             child: CircularProgressIndicator())
-                        : shopController.allShops.length == 0
+                        : shopController.allShops.isEmpty
                             ? Center(
                                 child: majorTitle(
                                     title: "You do not have shop yet",
@@ -255,11 +251,19 @@ class StockTransfer extends StatelessWidget {
                               )
                             : ListView.builder(
                                 shrinkWrap: true,
-                                physics: NeverScrollableScrollPhysics(),
-                                itemCount: shopController.allShops.length,
+                                physics: const NeverScrollableScrollPhysics(),
+                                itemCount: shopController.allShops
+                                    .where((element) =>
+                                        element.id !=
+                                        shopController.currentShop.value!.id)
+                                    .length,
                                 itemBuilder: (context, index) {
-                                  ShopModel shopModel =
-                                      shopController.allShops.elementAt(index);
+                                  List<Shop> shops = shopController.allShops
+                                      .where((element) =>
+                                          element.id !=
+                                          shopController.currentShop.value!.id)
+                                      .toList();
+                                  Shop shopModel = shops.elementAt(index);
                                   return shopCard(
                                       shopModel: shopModel,
                                       page: "stockTransfer",

@@ -1,24 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:pointify/controllers/product_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
-import 'package:pointify/models/product_model.dart';
 import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/stock/stock_transfer.dart';
-import 'package:pointify/screens/stock/view_purchases.dart';
+import 'package:pointify/screens/purchases/all_purchases.dart';
 import 'package:pointify/utils/helper.dart';
 import 'package:get/get.dart';
 
 import '../../controllers/home_controller.dart';
+import '../../functions/functions.dart';
 import '../../utils/colors.dart';
 import '../../widgets/bigtext.dart';
 import '../../widgets/normal_text.dart';
 import '../../widgets/smalltext.dart';
 import '../home/home_page.dart';
-import '../product/counting_page.dart';
+import '../product/stock_counts.dart';
 import '../product/create_product.dart';
 import '../product/products_page.dart';
 import 'badstocks.dart';
-import 'create_purchase.dart';
+import '../purchases/create_purchase.dart';
 
 class StockPage extends StatelessWidget {
   StockPage({Key? key}) : super(key: key);
@@ -44,7 +44,7 @@ class StockPage extends StatelessWidget {
                 )),
           ),
           body: Container(
-            padding: EdgeInsets.all(20),
+            padding: const EdgeInsets.all(20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -62,7 +62,7 @@ class StockPage extends StatelessWidget {
                 SizedBox(
                   height: 20,
                 ),
-                Container(
+                SizedBox(
                   height: MediaQuery.of(context).size.height * 0.2,
                   child: ListView(
                     scrollDirection: Axis.horizontal,
@@ -77,7 +77,7 @@ class StockPage extends StatelessWidget {
                             Get.find<HomeController>().selectedWidget.value =
                                 CreateProduct(
                               page: "create",
-                              productModel: ProductModel(),
+                              productModel: null,
                             );
                           },
                           color: Colors.amberAccent,
@@ -98,7 +98,7 @@ class StockPage extends StatelessWidget {
                           icon: Icons.remove_red_eye_rounded,
                           onPresssed: () {
                             Get.find<HomeController>().selectedWidget.value =
-                                ViewPurchases();
+                                AllPurchases();
                           },
                           color: Colors.white),
                       stockContainerDesktop(
@@ -107,7 +107,7 @@ class StockPage extends StatelessWidget {
                           icon: Icons.calculate_outlined,
                           onPresssed: () {
                             Get.find<HomeController>().selectedWidget.value =
-                                CountingPage();
+                                StockCount();
                           },
                           color: Colors.amberAccent),
                       stockContainerDesktop(
@@ -145,7 +145,7 @@ class StockPage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     stockValueCard(type: "small"),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                     majorTitle(
                         title: "Stock Actions",
                         color: Colors.black,
@@ -157,7 +157,7 @@ class StockPage extends StatelessWidget {
                         onPresssed: () {
                           Get.to(() => CreateProduct(
                                 page: "create",
-                                productModel: ProductModel(),
+                                productModel: null,
                               ));
                         },
                         color: Colors.amberAccent),
@@ -174,7 +174,7 @@ class StockPage extends StatelessWidget {
                         subtitle: "View purchased items",
                         icon: Icons.remove_red_eye_rounded,
                         onPresssed: () {
-                          Get.to(() => ViewPurchases());
+                          Get.to(() => AllPurchases());
                         },
                         color: Colors.white),
                     stockContainers(
@@ -182,7 +182,7 @@ class StockPage extends StatelessWidget {
                         subtitle: "Tally with physical count",
                         icon: Icons.calculate_outlined,
                         onPresssed: () {
-                          Get.to(() => CountingPage());
+                          Get.to(() => StockCount());
                         },
                         color: Colors.amberAccent),
                     stockContainers(
@@ -334,8 +334,7 @@ class StockPage extends StatelessWidget {
                 Spacer(),
                 Obx(() {
                   return normalText(
-                      title:
-                          "${shopController.currentShop.value?.currency}.${productController.totalSale.value}",
+                      title: htmlPrice(productController.stockValue.value),
                       color: Colors.black,
                       size: 14.0);
                 })
@@ -349,8 +348,8 @@ class StockPage extends StatelessWidget {
                 Spacer(),
                 Obx(() {
                   return normalText(
-                      title:
-                          "${shopController.currentShop.value?.currency}.${productController.totalProfit.value}",
+                      title: htmlPrice(
+                          productController.totalProfitEstimate.value),
                       color: Colors.black,
                       size: 14.0);
                 })
@@ -382,7 +381,7 @@ class StockPage extends StatelessWidget {
               },
               child: Center(
                 child: Container(
-                  padding: EdgeInsets.all(10),
+                  padding: const EdgeInsets.all(10),
                   width: type == "small" ? double.infinity : 200,
                   decoration: BoxDecoration(
                       border: Border.all(width: 3, color: AppColors.mainColor),
@@ -395,7 +394,7 @@ class StockPage extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
           ],
         ),
       ),

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:pointify/controllers/sales_controller.dart';
-import 'package:pointify/models/product_model.dart';
 import 'package:get/get.dart';
 
+import '../../../Real/Models/schema.dart';
 import '../../../widgets/snackBars.dart';
 
-showEditDialogPrice({required ProductModel productModel, required index}) {
+showEditDialogPrice({required Product productModel, required index}) {
   SalesController salesController = Get.find<SalesController>();
   showDialog(
       context: Get.context!,

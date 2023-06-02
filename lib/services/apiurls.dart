@@ -34,7 +34,7 @@ const category = "${BASE_URL}category/";
 const attendant = BASE_URL + "attendant/";
 //roles
 const roles = BASE_URL + "roles";
-//sales
+//services
 const sales = BASE_URL + "sale/";
 const salesbydate = "${BASE_URL}sale/salesbydate/";
 const singleSaleItems = "${sales}getsale";

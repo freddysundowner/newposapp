@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:pointify/controllers/home_controller.dart';
-import 'package:pointify/models/product_model.dart';
 import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/customers/customers_page.dart';
 import 'package:pointify/screens/product/create_product.dart';
 import 'package:pointify/screens/sales/create_sale.dart';
-import 'package:pointify/screens/stock/create_purchase.dart';
+import 'package:pointify/screens/purchases/create_purchase.dart';
 import 'package:get/get.dart';
 
 import '../../../../utils/colors.dart';
@@ -49,7 +48,7 @@ class CreateCustomer extends StatelessWidget {
                   Get.find<HomeController>().selectedWidget.value =
                       CreateProduct(
                     page: "create",
-                    productModel: ProductModel(),
+                    productModel: null,
                   );
                 }
                 if (page == "createPurchase") {
@@ -149,10 +148,7 @@ class CreateCustomer extends StatelessWidget {
               splashColor: Colors.transparent,
               hoverColor: Colors.transparent,
               onTap: () {
-                customersController.createCustomer(
-                    shopId: shopController.currentShop.value?.id,
-                    context: context,
-                    page: page);
+                customersController.createCustomer(page: page);
               },
               child: Center(
                 child: Container(

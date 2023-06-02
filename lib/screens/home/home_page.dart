@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:pointify/controllers/attendant_controller.dart';
+import 'package:pointify/controllers/user_controller.dart';
 import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
-import 'package:pointify/models/receipt.dart';
-import 'package:pointify/models/shop_model.dart';
+import 'package:pointify/functions/functions.dart';
 import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/sales/components/sales_table.dart';
 import 'package:pointify/screens/sales/create_sale.dart';
@@ -15,8 +14,10 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:pointify/widgets/shop_list_bottomsheet.dart';
 
+import '../../Real/Models/schema.dart';
 import '../../controllers/AuthController.dart';
 import '../../controllers/sales_controller.dart';
+import '../../services/sales.dart';
 import '../../utils/colors.dart';
 import '../../widgets/bigtext.dart';
 import '../../widgets/normal_text.dart';
@@ -29,12 +30,15 @@ import '../stock/stock_page.dart';
 class HomePage extends StatelessWidget {
   ShopController shopController = Get.find<ShopController>();
   SalesController salesController = Get.put(SalesController());
-  AttendantController attendantController = Get.put(AttendantController());
+  UserController attendantController = Get.put(UserController());
 
   AuthController authController = Get.find<AuthController>();
-
+  final DateTime now = DateTime.now();
+  final DateFormat formatter = DateFormat('yyyy-MM-dd');
   @override
   Widget build(BuildContext context) {
+    final String formatted = formatter.format(now);
+    salesController.getSalesByDate(formatted);
     return ResponsiveWidget(
         largeScreen: SingleChildScrollView(
           child: Container(
@@ -87,9 +91,6 @@ class HomePage extends StatelessWidget {
                                         shopController.currentShop.value =
                                             element;
                                         Get.back();
-
-                                        await authController.init(
-                                            authController.usertype.value);
                                       },
                                       title: Text(element.name!),
                                     ),
@@ -274,12 +275,9 @@ class HomePage extends StatelessWidget {
         ),
         smallScreen: RefreshIndicator(
           onRefresh: () async {
-            await shopController.getShops(
-                adminId: authController.currentUser.value!.id);
+            await shopController.getShops();
 
-            await authController.init(authController.usertype.value);
-
-            await Get.find<AttendantController>().getAttendantRoles();
+            await Get.find<UserController>().getAttendantRoles();
           },
           child: Scaffold(
               body: SingleChildScrollView(
@@ -305,9 +303,7 @@ class HomePage extends StatelessWidget {
                       }),
                       InkWell(
                         onTap: () async {
-                          await shopController.getShops(
-                            adminId: authController.currentUser.value?.id,
-                          );
+                          await shopController.getShops();
                           showShopModalBottomSheet(context);
                         },
                         child: Container(
@@ -401,8 +397,7 @@ class HomePage extends StatelessWidget {
                       InkWell(
                           onTap: () {
                             salesController.salesInitialIndex.value = 0;
-                            salesController.getSales(
-                                onCredit: "", startingDate: "");
+                            salesController.getSales();
 
                             Get.to(() => AllSalesPage(
                                   page: "homePage",
@@ -487,8 +482,7 @@ class HomePage extends StatelessWidget {
                 return salesController.getSalesByLoad.value
                     ? minorTitle(title: "Calculating...", color: Colors.white)
                     : normalText(
-                        title:
-                            "${shopController.currentShop.value?.currency ?? "KES"}.${salesController.totalSalesByDate.value}",
+                        title: htmlPrice(salesController.totalSalesByDate),
                         color: Colors.white,
                         size: 14.0);
               }),
@@ -499,20 +493,15 @@ class HomePage extends StatelessWidget {
               if (MediaQuery.of(context).size.width > 600) {
                 salesController.salesInitialIndex.value = 2;
                 salesController.activeItem.value = "Today";
-                salesController.getSales(
-                    onCredit: "",
-                    startingDate:
-                        DateFormat("yyyy-MM-dd").format(DateTime.now()));
+                salesController.getSales();
                 ;
                 Get.find<HomeController>().selectedWidget.value = AllSalesPage(
                   page: "homePage",
                 );
               } else {
                 salesController.salesInitialIndex.value = 2;
-                salesController.getSales(
-                    onCredit: "",
-                    startingDate:
-                        DateFormat("yyyy-MM-dd").format(DateTime.now()));
+                salesController.getSalesByDate(
+                    DateFormat("yyyy-MM-dd").format(DateTime.now()));
                 Get.to(() => AllSalesPage(
                       page: "homePage",
                     ));
@@ -527,19 +516,27 @@ class HomePage extends StatelessWidget {
   }
 
   Widget salesListView() {
-    return ListView.builder(
-        physics: const NeverScrollableScrollPhysics(),
-        itemCount: salesController.allSales.isEmpty
-            ? 0
-            : salesController.allSales.length > 4
-                ? 4
-                : salesController.allSales.length,
-        shrinkWrap: true,
-        scrollDirection: Axis.vertical,
-        itemBuilder: (context, index) {
-          SalesModel salesModel = salesController.allSales.elementAt(index);
+    return StreamBuilder(
+        stream: Sales().getSales().changes,
+        builder: (context, snapshot) {
+          final data = snapshot.data;
+          if (data == null) {
+            return minorTitle(
+                title: "This shop doesn't have products yet",
+                color: Colors.black);
+          } else {
+            final results = data.results;
+            return ListView.builder(
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: results.realm.isClosed ? 0 : results.length,
+                shrinkWrap: true,
+                scrollDirection: Axis.vertical,
+                itemBuilder: (context, index) {
+                  SalesModel salesModel = results.elementAt(index);
 
-          return SalesCard(salesModel: salesModel);
+                  return SalesCard(salesModel: salesModel);
+                });
+          }
         });
   }
 }

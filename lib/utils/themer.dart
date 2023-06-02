@@ -61,7 +61,7 @@ class ThemeHelper {
   BoxDecoration buttonBoxDecoration(BuildContext context,
       [String color1 = "", String color2 = ""]) {
     Color c1 = Theme.of(context).primaryColor;
-    Color c2 = Theme.of(context).accentColor;
+    Color c2 = Theme.of(context).primaryColorDark;
     return BoxDecoration(
       boxShadow: [
         BoxShadow(color: Colors.black26, offset: Offset(0, 4), blurRadius: 5.0)

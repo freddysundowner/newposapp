@@ -3,11 +3,11 @@ import 'package:get/get.dart';
 import 'package:pointify/controllers/AuthController.dart';
 import 'package:pointify/controllers/plan_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
-import 'package:pointify/models/plan.dart';
 import 'package:pointify/utils/colors.dart';
 import 'package:pointify/widgets/shop_list_bottomsheet.dart';
 import 'package:pointify/widgets/smalltext.dart';
 
+import '../../Real/Models/schema.dart';
 import '../../widgets/bigtext.dart';
 
 class ExtendUsage extends StatelessWidget {
@@ -47,9 +47,7 @@ class ExtendUsage extends StatelessWidget {
                     }),
                     InkWell(
                       onTap: () async {
-                        await shopController.getShops(
-                          adminId: authController.currentUser.value?.id,
-                        );
+                        await shopController.getShops();
                         showShopModalBottomSheet(context);
                       },
                       child: Container(

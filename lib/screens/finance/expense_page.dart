@@ -1,7 +1,6 @@
 import 'package:f_datetimerangepicker/f_datetimerangepicker.dart';
 import 'package:flutter/material.dart';
-import 'package:pointify/controllers/AuthController.dart';
-import 'package:pointify/controllers/attendant_controller.dart';
+import 'package:pointify/controllers/user_controller.dart';
 import 'package:pointify/controllers/expense_controller.dart';
 import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
@@ -13,7 +12,8 @@ import 'package:pointify/widgets/snackBars.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
-import '../../models/expense_model.dart';
+import '../../Real/Models/schema.dart';
+import '../../controllers/AuthController.dart';
 import '../../utils/colors.dart';
 import '../../utils/dates.dart';
 import '../../widgets/bigtext.dart';
@@ -29,9 +29,7 @@ class ExpensePage extends StatelessWidget {
       shopId: "${shopController.currentShop.value?.id}",
       startingDate: DateTime.parse(startDate),
       endingDate: DateTime.parse(endDate),
-      attendant: authController.usertype.value == "admin"
-          ? ""
-          : Get.find<AttendantController>().attendant.value!.id,
+      attendant: '',
     );
   }
 
@@ -325,7 +323,7 @@ class ExpensePage extends StatelessWidget {
       backgroundColor: Colors.white,
       elevation: 0.3,
       centerTitle: false,
-      leading: Get.find<AuthController>().usertype == "attendant" &&
+      leading: Get.find<UserController>().user.value?.usertype == "attendant" &&
               MediaQuery.of(context).size.width > 600
           ? null
           : IconButton(
@@ -345,7 +343,7 @@ class ExpensePage extends StatelessWidget {
       title: majorTitle(title: "Expenses", color: Colors.black, size: 16.0),
       actions: [
         dateChoser(context),
-        if (Get.find<AuthController>().usertype.value == "admin")
+        if (Get.find<UserController>().user.value?.usertype == "admin")
           InkWell(
             onTap: () {
               if (expenseController.expenses.isEmpty) {

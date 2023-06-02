@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/controllers/sales_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
-import 'package:pointify/models/customer_model.dart';
-import 'package:pointify/models/payment_history.dart';
 import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/customers/customer_info_page.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+
+import '../../Real/Models/schema.dart';
 
 class PaymentHistory extends StatelessWidget {
   final String id;

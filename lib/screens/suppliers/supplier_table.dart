@@ -3,8 +3,8 @@ import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/screens/customers/customer_info_page.dart';
 import 'package:get/get.dart';
 
-import '../../../models/customer_model.dart';
 import '../../../utils/colors.dart';
+import '../../Real/Models/schema.dart';
 
 Widget supplierTable({required customers, required context}) {
   return SingleChildScrollView(

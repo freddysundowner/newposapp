@@ -16,6 +16,7 @@ class AdminLogin extends StatelessWidget {
   AuthController authController = Get.find<AuthController>();
   HomeController homeController = Get.find<HomeController>();
 
+  final AuthController appController = Get.find<AuthController>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -185,9 +186,7 @@ class AdminLogin extends StatelessWidget {
                           ..onTap = () {
                             Get.to(SignUp());
                           },
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Theme.of(context).accentColor),
+                        style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ])),
                   ),

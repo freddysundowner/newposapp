@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:pointify/controllers/home_controller.dart';
-import 'package:pointify/models/stockTransferHistoryModel.dart';
 import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/stock/stock_transfer.dart';
 import 'package:pointify/screens/stock/transfer_history_view.dart';
@@ -10,13 +9,13 @@ import 'package:pointify/widgets/transfer_history_card.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
+import '../../Real/Models/schema.dart';
 import '../../controllers/shop_controller.dart';
 import '../../controllers/stock_transfer_controller.dart';
 
 class TransferHistory extends StatelessWidget {
   TransferHistory({Key? key}) : super(key: key) {
-    stockTransferController.gettingTransferHistory(
-        shopId: createShopController.currentShop.value!.id, type: "in");
+    stockTransferController.gettingTransferHistory(type: "in");
   }
 
   ShopController createShopController = Get.find<ShopController>();
@@ -62,13 +61,9 @@ class TransferHistory extends StatelessWidget {
                 unselectedLabelColor: Colors.grey,
                 onTap: (value) {
                   if (value == 0) {
-                    stockTransferController.gettingTransferHistory(
-                        shopId: createShopController.currentShop.value!.id,
-                        type: "in");
+                    stockTransferController.gettingTransferHistory(type: "in");
                   } else {
-                    stockTransferController.gettingTransferHistory(
-                        shopId: createShopController.currentShop.value!.id,
-                        type: "out");
+                    stockTransferController.gettingTransferHistory(type: "out");
                   }
                 },
                 tabs: [
@@ -130,13 +125,9 @@ class TransferHistory extends StatelessWidget {
                       onTap: (value) {
                         if (value == 0) {
                           stockTransferController.gettingTransferHistory(
-                              shopId:
-                                  createShopController.currentShop.value!.id,
                               type: "in");
                         } else {
                           stockTransferController.gettingTransferHistory(
-                              shopId:
-                                  createShopController.currentShop.value!.id,
                               type: "out");
                         }
                       },
@@ -172,7 +163,7 @@ class INWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Obx(() {
       return stockTransferController.gettingTransferHistoryLoad.value
-          ? Column(
+          ? const Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Center(
@@ -180,7 +171,7 @@ class INWidget extends StatelessWidget {
                 ),
               ],
             )
-          : stockTransferController.transferHistory.length == 0
+          : stockTransferController.transferHistory.isEmpty
               ? noItemsFound(context, true)
               : MediaQuery.of(context).size.width > 600
                   ? SingleChildScrollView(

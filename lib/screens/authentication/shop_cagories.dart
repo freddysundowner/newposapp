@@ -2,10 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:pointify/controllers/AuthController.dart';
 import 'package:pointify/controllers/shop_controller.dart';
-import 'package:pointify/services/shop.dart';
 import 'package:pointify/utils/colors.dart';
+
+import '../../controllers/AuthController.dart';
 
 //ignore: must_be_immutable
 class ShopCategories extends StatelessWidget {
@@ -84,7 +84,7 @@ class ShopCategories extends StatelessWidget {
                   margin:
                       const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
                   child: Text(
-                    item.title.capitalize!,
+                    item.title!,
                     style: TextStyle(fontSize: 15, color: AppColors.mainColor),
                   ),
                 ),

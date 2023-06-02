@@ -2,47 +2,46 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:pointify/controllers/AuthController.dart';
-import 'package:pointify/controllers/attendant_controller.dart';
+import 'package:pointify/controllers/realm_controller.dart';
 import 'package:pointify/controllers/home_controller.dart';
-import 'package:pointify/controllers/purchase_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
-import 'package:pointify/models/badstock.dart';
-import 'package:pointify/screens/product/products_page.dart';
+import 'package:pointify/controllers/user_controller.dart';
 import 'package:pointify/screens/stock/stock_page.dart';
 import 'package:pointify/services/category.dart';
 import 'package:pointify/utils/colors.dart';
 import 'package:pointify/widgets/snackBars.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:realm/realm.dart';
 
-import '../models/product_category_model.dart';
-import '../models/product_count_model.dart';
-import '../models/product_model.dart';
+import '../Real/Models/schema.dart';
 import '../screens/sales/all_sales_page.dart';
 import '../services/product.dart';
 import '../widgets/loading_dialog.dart';
 
 class ProductController extends GetxController {
   GlobalKey<State> _keyLoader = new GlobalKey<State>();
-  RxList<ProductModel> products = RxList([]);
+  RxList<Product> products = RxList([]);
+  RxList<ProductCountModel> productsCount = RxList([]);
   RxList selectedSupplier = RxList([]);
-  RxList<ProductCountModel> countHistoryList = RxList([]);
+  RxList<ProductHistoryModel> productHistoryList = RxList([]);
+  RxList<ProductCountModel> countHistory = RxList([]);
+  RxList<InvoiceItem> productInvoices = RxList([]);
   RxBool showBadStockWidget = RxBool(false);
   RxBool saveBadstockLoad = RxBool(false);
-  Rxn<ProductModel> selectedBadStock = Rxn(null);
+  Rxn<Product> selectedBadStock = Rxn(null);
   RxList<BadStock> badstocks = RxList([]);
 
-  RxList<ProductCategoryModel> productCategory = RxList([]);
-  RxString categoryName = RxString("");
-  RxString categoryId = RxString("");
+  RxList<ProductCategory> productCategory = RxList([]);
+  Rxn<ProductCategory> categoryId = Rxn(null);
   RxString selectedMeasure = RxString("Kg");
   RxBool creatingProductLoad = RxBool(false);
   RxBool getProductLoad = RxBool(false);
   RxBool updateProductLoad = RxBool(false);
   RxBool getProductCountLoad = RxBool(false);
   RxBool loadingCountHistory = RxBool(false);
-  RxInt totalSale = RxInt(0);
-  RxInt totalProfit = RxInt(0);
+  RxInt stockValue = RxInt(0);
+  RxInt totalProfitEstimate = RxInt(0);
   RxString selectedSortOrder = RxString("All");
   RxString selectedSortOrderCount = RxString("All");
   RxString selectedSortOrderSearch = RxString("all");
@@ -51,7 +50,6 @@ class ProductController extends GetxController {
   RxString supplierId = RxString("");
 
   RxInt initialProductValue = RxInt(0);
-  RxString quantityType = RxString("increment");
 
   TextEditingController itemNameController = TextEditingController();
   TextEditingController buyingPriceController = TextEditingController();
@@ -63,10 +61,9 @@ class ProductController extends GetxController {
   TextEditingController descriptionController = TextEditingController();
   TextEditingController category = TextEditingController();
   TextEditingController searchProductController = TextEditingController();
-  TextEditingController searchProductQuantityController =
-      TextEditingController();
+  TextEditingController searchProductCountController = TextEditingController();
 
-  saveProducts(String shopId, String attendantId, context) async {
+  saveProducts({Product? productData}) async {
     var name = itemNameController.text;
     var qty = qtyController.text;
     var buying = buyingPriceController.text;
@@ -79,7 +76,7 @@ class ProductController extends GetxController {
         qty.isEmpty ||
         buying.isEmpty ||
         selling.isEmpty ||
-        categoryName.value == "") {
+        categoryId.value == null) {
       showSnackBar(
           message: "Please fill all fields marked by *", color: Colors.red);
     } else if (int.parse(buying) > int.parse(selling)) {
@@ -101,76 +98,60 @@ class ProductController extends GetxController {
     } else {
       try {
         creatingProductLoad.value = true;
-        Map<String, dynamic> body = {
-          "name": name,
-          "quantity": int.parse(qty),
-          "buyingPrice": int.parse(buying),
-          "sellingPrice": selling.toString(),
-          "minSellingPrice": minSelling == "" ? selling : minSelling,
-          "shop": shopId,
-          "attendant": attendantId,
-          "unit": selectedMeasure.value,
-          "category": categoryId.value,
-          "stockLevel": reorder == "" ? 0 : int.parse(reorder),
-          "discount": discount == "" ? 0 : int.parse(discount),
-          "description": description == null ? "" : description,
-          "supplier": supplierName.value == "None" ? "" : supplierId.value,
-          "type": "stockin"
-        };
-        var response = await Products().createProduct(body);
-        if (response["status"] == false) {
-          showSnackBar(message: response["status"], color: Colors.red);
+        final DateTime now = DateTime.now();
+        final DateFormat formatter = DateFormat('yyyy-MM-dd');
+        final String formatted = formatter.format(now);
+        Product product = Product(
+            productData != null ? productData.id : ObjectId(),
+            name: name,
+            quantity: int.parse(qty),
+            buyingPrice: int.parse(buying),
+            selling: int.parse(selling),
+            minPrice:
+                minSelling == "" ? int.parse(selling) : int.parse(minSelling),
+            shop: Get.find<ShopController>().currentShop.value,
+            attendant: Get.find<UserController>().user.value,
+            unit: selectedMeasure.value,
+            category: categoryId.value,
+            stockLevel: reorder == "" ? 0 : int.parse(reorder),
+            discount: discount == "" ? 0 : int.parse(discount),
+            description: description.isEmpty ? "" : description,
+            supplier: supplierName.value == "None" ? "" : supplierId.value,
+            date: formatted,
+            deleted: false,
+            createdAt: DateTime.now());
+        if (productData == null) {
+          await Products().createProduct(product);
         } else {
-          clearControllers();
-          if (MediaQuery.of(context).size.width > 600) {
-            Get.find<HomeController>().selectedWidget.value = StockPage();
-          } else {
-            Get.back();
-          }
-          await getProductsBySort(type: "all");
+          await Products().updateProduct(product: product);
         }
+        if (MediaQuery.of(Get.context!).size.width > 600) {
+          Get.find<HomeController>().selectedWidget.value = StockPage();
+        } else {
+          Get.back();
+        }
+        await getProductsBySort(type: "all");
         creatingProductLoad.value = false;
       } catch (e) {
+        print(e);
         creatingProductLoad.value = false;
       }
     }
   }
 
-  createCategory(
-      {required String shopId, required BuildContext context}) async {
-    try {
-      LoadingDialog.showLoadingDialog(
-          context: context, title: "Creating category...", key: _keyLoader);
-      Map<String, dynamic> body = {"name": category.text, "shop": shopId};
-      var response = await Categories().createProductCategory(body: body);
-      Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
-      if (response["status"] == true) {
-        category.text = "";
-        getProductCategory(shopId: shopId);
-      } else {
-        showSnackBar(message: response["message"], color: AppColors.mainColor);
-      }
-    } catch (e) {
-      Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
-    }
-  }
-
-  getProductCategory({required shopId}) async {
-    try {
-      productCategory.clear();
-      var response = await Categories().getProductCategories(shopId);
-      if (response["status"] == true) {
-        List categoriesResponse = response["body"];
-        List<ProductCategoryModel> categoriesData = categoriesResponse
-            .map((e) => ProductCategoryModel.fromJson(e))
-            .toList();
-        categoryName.value = categoriesData[0].name!;
-        categoryId.value = categoriesData[0].id!;
-        productCategory.assignAll(categoriesData);
-      } else {
-        productCategory.value = [];
-      }
-    } catch (e) {}
+  createCategory({required Shop shop, required BuildContext context}) async {
+    // try {
+    LoadingDialog.showLoadingDialog(
+        context: context, title: "Creating category...", key: _keyLoader);
+    ProductCategory productCategoryModel =
+        ProductCategory(ObjectId(), name: category.text, shop: shop);
+    var response =
+        await Categories().createProductCategory(productCategoryModel);
+    // showSnackBar(message: response["message"], color: AppColors.mainColor);
+    // } catch (e) {
+    //   print(e);
+    Get.back();
+    // }
   }
 
   clearControllers() {
@@ -186,68 +167,56 @@ class ProductController extends GetxController {
     selectedSupplier.clear();
   }
 
-  getProductsBySort({required String type}) async {
-    try {
-      getProductLoad.value = true;
-      var response = await Products().getProductsBySort(
-          Get.find<ShopController>().currentShop.value!.id!, type);
-      print(response);
-      products.clear();
-      if (response != null) {
-        totalSale.value = 0;
-        totalProfit.value = 0;
-        List fetchedProducts = response["body"];
-        List<ProductModel> listProducts =
-            fetchedProducts.map((e) => ProductModel.fromJson(e)).toList();
-        for (int i = 0; i < listProducts.length; i++) {
-          totalSale.value += (int.parse("${listProducts[i].buyingPrice!}")) *
-              int.parse("${listProducts[i].quantity}");
-
-          totalProfit.value += ((int.parse(listProducts[i].sellingPrice![0]) -
-                  listProducts[i].buyingPrice!) *
-              int.parse("${listProducts[i].quantity}"));
-        }
-        products.assignAll(listProducts);
-      } else {
-        products.value = [];
-      }
-      getProductLoad.value = false;
-    } catch (e) {
-      getProductLoad.value = false;
-    }
+  getProductsBySort({required String type, String text = ""}) {
+    RealmResults<Product> allproducts =
+        Products().getProductsBySort(type: type, text: text);
+    stockValue.value = allproducts.fold(
+        0, (sum, item) => sum + (item.selling! * item.quantity!));
+    var totalBuyingTotal = allproducts.fold(
+        0, (sum, item) => sum + (item.buyingPrice! * item.quantity!));
+    totalProfitEstimate.value = stockValue.value - totalBuyingTotal;
+    products.value = allproducts.map((e) => e).toList();
+    products.refresh();
   }
 
-  searchProduct(String shopId, String type) async {
-    try {
-      getProductLoad.value = true;
-      var response = await Products().searchProduct(
-          shopId,
-          type == "count"
-              ? searchProductQuantityController.text.trim()
-              : searchProductController.text.trim());
-      if (response != null) {
-        totalSale.value = 0;
-        totalProfit.value = 0;
-        List fetchedProducts = response["body"];
-        List<ProductModel> listProducts =
-            fetchedProducts.map((e) => ProductModel.fromJson(e)).toList();
-        for (int i = 0; i < listProducts.length; i++) {
-          totalSale.value += (int.parse("${listProducts[i].buyingPrice!}")) *
-              int.parse("${listProducts[i].quantity}");
-          totalProfit.value += ((int.parse(listProducts[i].sellingPrice![0]) -
-                  listProducts[i].buyingPrice!) *
-              int.parse("${listProducts[i].quantity}"));
-        }
-        products.assignAll(listProducts);
-      } else {
-        products.value = [];
-      }
-      getProductLoad.value = false;
-      return products.value;
-    } catch (e) {
-      getProductLoad.value = false;
-      return null;
+  getProductsCount({required String type, String text = ""}) {
+    productsCount.clear();
+    RealmResults<Product> allproducts =
+        Products().getProductsBySort(type: type, text: text);
+    print("getProductsCount ${allproducts.length}");
+    List<Product> products = allproducts.map((e) => e).toList();
+    print("products ${products.length}");
+    for (var element in products) {
+      ProductCountModel productCountModel = ProductCountModel(ObjectId(),
+          product: element,
+          initialquantity: element.quantity,
+          quantity: element.quantity,
+          createdAt: DateTime.now(),
+          attendantId: Get.find<UserController>().user.value,
+          shopId: Get.find<ShopController>().currentShop.value);
+      productsCount.add(productCountModel);
     }
+    productsCount.refresh();
+    print("products ${productsCount.length}");
+  }
+
+  getCountHistory() {
+    countHistory.clear();
+    RealmResults<ProductCountModel> productCountHistoryResponse =
+        Products().getProductCountHistory();
+    countHistory.addAll(productCountHistoryResponse.map((e) => e).toList());
+    print(countHistory.length);
+  }
+
+  increamentInitial(index) {
+    productsCount[index].quantity = productsCount[index].quantity! + 1;
+    productsCount.refresh();
+  }
+
+  decreamentInitial(index) {
+    if (productsCount[index].quantity == 0) return;
+    productsCount[index].quantity = productsCount[index].quantity! - 1;
+    productsCount.refresh();
   }
 
   Future<void> scanQR(
@@ -257,90 +226,24 @@ class ProductController extends GetxController {
       barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
           '#ff6666', 'Cancel', true, ScanMode.BARCODE);
       if (type == "count") {
-        searchProductQuantityController.text = barcodeScanRes;
+        searchProductCountController.text = barcodeScanRes;
       } else {
         searchProductController.text = barcodeScanRes;
       }
 
-      searchProduct(shopId, type);
+      getProductsBySort(type: "all");
     } on PlatformException {
       showSnackBar(
           message: 'Failed to get platform version.', color: Colors.red);
     }
   }
 
-  deleteProduct(
-      {required id, required BuildContext context, required shopId}) async {
-    try {
-      getProductLoad.value = true;
-      var response = await Products().deleteProduct(id: id);
-      if (response["status"] == true) {
-        await getProductsBySort(type: "all");
-      } else {
-        showSnackBar(message: response["message"], color: AppColors.mainColor);
-      }
-
-      getProductLoad.value = false;
-    } catch (e) {
-      getProductLoad.value = false;
-    }
+  deleteProduct({required product}) async {
+    await Products().updateProductPart(product: product, deleted: true);
+    getProductsBySort(type: "all");
   }
 
-  updateProduct(
-      {required id, required BuildContext context, required shopId}) async {
-    try {
-      updateProductLoad.value = true;
-      if (itemNameController.text == "" ||
-          qtyController.text == "" ||
-          sellingPriceController.text == "" ||
-          buyingPriceController.text == "") {
-        showSnackBar(message: "Please fill all the fields", color: Colors.red);
-      } else {
-        Map<String, dynamic> body = {
-          "name": itemNameController.text,
-          "quantity": int.parse(qtyController.text),
-          "buyingPrice": int.parse(buyingPriceController.text),
-          "sellingPrice": sellingPriceController.text,
-          "minSellingPrice": minsellingPriceController.text,
-          "measureUnit": selectedMeasure.value,
-          "category": categoryId.value,
-          "stockLevel": reOrderController.text,
-          "discount": int.parse(discountController.text),
-          "description": descriptionController.text,
-          "supplier": supplierName.value == "None" ? "" : supplierId.value,
-        };
-        var response = await Products().updateProduct(id: id, body: body);
-        if (response["status"] == true) {
-          clearControllers();
-          await getProductsBySort(type: "all");
-          var stockinProducts = Get.find<PurchaseController>().saleItem;
-          int index = stockinProducts.indexWhere((e) =>
-              products.indexWhere((element) => element.id == e.id) != -1);
-          if (index != -1) {
-            Get.find<PurchaseController>().saleItem.removeAt(index);
-            Get.find<PurchaseController>().saleItem.add(products[index]);
-            Get.find<PurchaseController>().saleItem.refresh();
-            Get.find<PurchaseController>().calculateAmount(index);
-          }
-          stockinProducts.refresh();
-          Get.find<PurchaseController>().saleItem.refresh();
-          if (MediaQuery.of(context).size.width > 600) {
-            Get.find<HomeController>().selectedWidget.value = ProductPage();
-          } else {
-            Get.back();
-          }
-        } else {
-          showSnackBar(
-              message: response["message"], color: AppColors.mainColor);
-        }
-        updateProductLoad.value = false;
-      }
-    } catch (e) {
-      updateProductLoad.value = false;
-    }
-  }
-
-  assignTextFields(ProductModel productModel) {
+  assignTextFields(Product productModel) {
     itemNameController.text = productModel.name!;
     qtyController.text = productModel.quantity!.toString();
     buyingPriceController.text = productModel.buyingPrice!.toString();
@@ -348,8 +251,7 @@ class ProductController extends GetxController {
     reOrderController.text = productModel.stockLevel!.toString();
     discountController.text = productModel.discount!.toString();
     descriptionController.text = productModel.description!;
-    categoryName.value = productModel.category!.name!;
-    categoryId.value = productModel.category!.id!;
+    categoryId.value = productModel.category;
     minsellingPriceController.text = productModel.minPrice.toString();
     selectedMeasure.value = productModel.unit!;
   }
@@ -368,8 +270,8 @@ class ProductController extends GetxController {
       products.clear();
       if (response != null) {
         List fetchedProducts = response["products"];
-        List<ProductModel> listProducts =
-            fetchedProducts.map((e) => ProductModel.fromJson(e)).toList();
+        List<Product> listProducts =
+            []; //fetchedProducts.map((e) => ProductModel.fromJson(e)).toList();
         products.assignAll(listProducts);
       } else {
         products.value = [];
@@ -381,94 +283,63 @@ class ProductController extends GetxController {
     }
   }
 
-  increamentInitial(index) {
-    quantityType.value = "increment";
-    products[index].quantity = int.parse("${products[index].quantity}") + 1;
-    products.refresh();
+  updateQuantity({required Product product, required int quantity}) async {
+    final DateTime now = DateTime.now();
+    final DateFormat formatter = DateFormat('yyyy-MM-dd');
+    final String formatted = formatter.format(now);
+
+    ProductHistoryModel productCountModel = ProductHistoryModel(ObjectId(),
+        product: product,
+        quantity: quantity,
+        shop: Get.find<ShopController>().currentShop.value!.id!.toString(),
+        createdAt: DateTime.now(),
+        type: "count");
+    await Products().updateProductCount(productCountModel);
+    await Products().updateProductPart(
+        product: product,
+        quantity: quantity,
+        counted: true,
+        counteddate: formatted,
+        updatedAt: DateTime.now());
   }
 
-  decreamentInitial(index) {
-    quantityType.value = "decrement";
-    if (products[index].quantity! > 0) {
-      products[index].quantity = int.parse("${products[index].quantity}") - 1;
-    }
-    products.refresh();
-  }
-
-  updateQuantity({required ProductModel product, required context}) async {
-    try {
-      Map<String, dynamic> body = {
-        "quantity": product.quantity,
-        "shop": Get.find<ShopController>().currentShop.value!.id,
-        "attendantId": Get.find<AuthController>().usertype.value == "admin"
-            ? Get.find<AuthController>().currentUser.value?.id
-            : Get.find<AttendantController>().attendant.value?.id,
-        "product": product.id,
-      };
-      var res = await Products().updateProductCount(body);
-    } catch (e) {
-      print(e);
-    }
-  }
-
-  getProductCount(shopId) async {
-    try {
-      loadingCountHistory.value = true;
-      countHistoryList.clear();
-      var response = await Products().getProductCount(shopId);
-      print(response);
-      if (response != null) {
-        List history = response["body"];
-        List<ProductCountModel> countHistory =
-            history.map((e) => ProductCountModel.fromJson(e)).toList();
-
-        countHistoryList.assignAll(countHistory);
-      } else {
-        countHistoryList.value = [];
-      }
-      loadingCountHistory.value = false;
-    } catch (e) {
-      print(e);
-      loadingCountHistory.value = false;
-    }
+  getProductHistory(String type, {ObjectId? transferId}) async {
+    // try {
+    //   loadingCountHistory.value = true;
+    productHistoryList.clear();
+    RealmResults<ProductHistoryModel> response =
+        Products().getProductHistory(type, transferId: transferId);
+    print(response.length);
+    productHistoryList.addAll(response.map((e) => e).toList());
+    // loadingCountHistory.value = false;
+    // } catch (e) {
+    //   print(e);
+    //   loadingCountHistory.value = false;
+    // }
   }
 
   saveBadStock({required page, required context}) async {
     try {
       saveBadstockLoad.value = true;
-      Map<String, dynamic> body = {
-        "product": selectedBadStock.value?.id,
-        "quantity": qtyController.text,
-        "description": itemNameController.text,
-        "attendantId": Get.find<AuthController>().usertype.value == "admin"
-            ? Get.find<AuthController>().currentUser.value!.id
-            : Get.find<AttendantController>().attendant.value!.id,
-        "shop": Get.find<ShopController>().currentShop.value?.id!
-      };
+      BadStock badStock = BadStock(ObjectId(),
+          description: itemNameController.text,
+          quantity: int.parse(qtyController.text),
+          createdAt: DateTime.now(),
+          product: selectedBadStock.value,
+          attendantId: Get.find<UserController>().user.value,
+          shop: Get.find<ShopController>().currentShop.value);
 
-      var response = await Products().saveBadStock(body: body);
+      Products().saveBadStock(badStock);
+      Products().updateProductPart(
+          product: selectedBadStock.value!,
+          quantity: selectedBadStock.value!.quantity! -
+              int.parse(qtyController.text));
 
-      if (response["status"] == true) {
-        showBadStockWidget.value = false;
-        selectedBadStock.value = null;
-        qtyController.clear();
-        itemNameController.clear();
-        if (MediaQuery.of(context).size.width > 600) {
-          if (page == "sales") {
-            Get.find<HomeController>().selectedWidget.value =
-                AllSalesPage(page: "badstock");
-          } else {
-            Get.find<HomeController>().selectedWidget.value = StockPage();
-          }
-        }
-
-        getBadStock(
-            product: "",
-            shopId: Get.find<ShopController>().currentShop.value?.id!,
-            attendant: Get.find<AuthController>().usertype.value == "admin"
-                ? ""
-                : Get.find<AttendantController>().attendant.value?.id);
-      }
+      getBadStock(
+          shopId: Get.find<ShopController>().currentShop.value!.id,
+          attendant: '',
+          product: null);
+      showBadStockWidget.value = false;
       saveBadstockLoad.value = false;
     } catch (e) {
       saveBadstockLoad.value = false;
@@ -476,21 +347,24 @@ class ProductController extends GetxController {
     }
   }
 
-  getBadStock({required shopId, String? attendant, String? product}) async {
+  getBadStock({required shopId, String? attendant, Product? product}) async {
     try {
       saveBadstockLoad.value = true;
       badstocks.clear();
-      var response = await Products().getBadStock(shopId, attendant, product);
-      if (response["status"] == true) {
-        List responseData = response["body"];
-        List<BadStock> jsonData =
-            responseData.map((e) => BadStock.fromJson(e)).toList();
-        badstocks.addAll(jsonData);
-      }
+      RealmResults<BadStock> response =
+          Products().getBadStock(shopId, attendant, product);
+      badstocks.addAll(response.map((e) => e).toList());
       saveBadstockLoad.value = false;
     } catch (e) {
       saveBadstockLoad.value = false;
       print(e);
     }
+  }
+
+  getProductPurchaseHistory(Product product) {
+    productInvoices.clear();
+    RealmResults<InvoiceItem> productsHistory =
+        Products().getProductPurchaseHistory(product: product);
+    productInvoices.addAll(productsHistory.map((e) => e).toList());
   }
 }

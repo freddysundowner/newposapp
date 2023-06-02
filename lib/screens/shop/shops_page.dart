@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:pointify/controllers/AuthController.dart';
 import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
-import 'package:pointify/models/shop_model.dart';
 import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/shop/create_shop.dart';
 import 'package:pointify/widgets/no_items_found.dart';
 import 'package:get/get.dart';
 
+import '../../Real/Models/schema.dart';
+import '../../controllers/AuthController.dart';
 import '../../utils/colors.dart';
 import '../../widgets/shop_card.dart';
 import '../../widgets/smalltext.dart';
-import '../shop/shop_details.dart';
+import 'shop_details.dart';
 
 class ShopsPage extends StatelessWidget {
   ShopController shopController = Get.find<ShopController>();
@@ -78,19 +78,18 @@ class ShopsPage extends StatelessWidget {
                                   ],
                                   rows: List.generate(
                                       shopController.allShops.length, (index) {
-                                    ShopModel shopModel = shopController
-                                        .allShops
+                                    Shop shopModel = shopController.allShops
                                         .elementAt(index);
                                     final y = shopModel.name;
                                     final x = shopModel.location;
-                                    final z = shopModel.category!.title;
+                                    // final z = shopModel.category;
 
                                     return DataRow(cells: [
                                       DataCell(Container(child: Text(y!))),
                                       DataCell(
                                           Container(child: Text(x.toString()))),
-                                      DataCell(
-                                          Container(child: Text(z.toString()))),
+                                      // DataCell(
+                                      //     Container(child: Text(z.toString()))),
                                       DataCell(
                                         InkWell(
                                           onTap: () {
@@ -163,7 +162,7 @@ class ShopsPage extends StatelessWidget {
                           physics: NeverScrollableScrollPhysics(),
                           itemCount: shopController.allShops.length,
                           itemBuilder: (context, index) {
-                            ShopModel shopModel =
+                            Shop shopModel =
                                 shopController.allShops.elementAt(index);
                             return shopCard(
                                 shopModel: shopModel,
@@ -215,8 +214,7 @@ class ShopsPage extends StatelessWidget {
     return TextFormField(
       controller: shopController.searchController,
       onChanged: (value) {
-        shopController.getShops(
-            adminId: authController.currentUser.value?.id, name: value);
+        shopController.getShops(name: value);
       },
       decoration: InputDecoration(
         contentPadding: EdgeInsets.fromLTRB(10, 5, 10, 5),
@@ -225,7 +223,6 @@ class ShopsPage extends StatelessWidget {
             if (shopController.searchController.text == "") {
             } else {
               shopController.getShops(
-                  adminId: authController.currentUser.value?.id,
                   name: shopController.searchController.text);
             }
           },

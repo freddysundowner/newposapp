@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:pointify/controllers/shop_controller.dart';
-import 'package:pointify/models/roles_model.dart';
 import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/utils/helper.dart';
 import 'package:get/get.dart';
 
 import '../../../../utils/colors.dart';
-import '../../controllers/AuthController.dart';
-import '../../controllers/attendant_controller.dart';
+import '../../Real/Models/schema.dart';
+import '../../controllers/user_controller.dart';
 import '../../controllers/home_controller.dart';
-import '../../models/attendant_model.dart';
 import '../../widgets/attendant_user_inputs.dart';
 import '../../widgets/bigtext.dart';
 import '../../widgets/delete_dialog.dart';
@@ -17,16 +15,15 @@ import '../../widgets/smalltext.dart';
 import '../../widgets/switchingButton.dart';
 import '../home/attendants_page.dart';
 
-class AttendantDetails extends StatelessWidget {
-  AttendantModel attendantModel;
+class UserModelDetails extends StatelessWidget {
+  UserModel userModel;
 
-  AttendantDetails({Key? key, required this.attendantModel}) : super(key: key) {
-    attendantController.getAttendantsById(attendantModel.id);
-    attendantController.nameController.text = attendantModel.fullnames!;
+  UserModelDetails({Key? key, required this.userModel}) : super(key: key) {
+    attendantController.getAttendantsById(userModel.id);
+    attendantController.nameController.text = userModel.fullnames!;
   }
 
-  AttendantController attendantController = Get.find<AttendantController>();
-  AuthController authController = Get.find<AuthController>();
+  UserController attendantController = Get.find<UserController>();
   ShopController shopController = Get.find<ShopController>();
 
   @override
@@ -138,9 +135,7 @@ class AttendantDetails extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             majorTitle(
-                title: attendantModel.fullnames,
-                color: Colors.black,
-                size: 16.0),
+                title: userModel.fullnames, color: Colors.black, size: 16.0),
             if (MediaQuery.of(context).size.width > 600)
               Obx(() {
                 return attendantController.creatingAttendantsLoad.value
@@ -149,10 +144,10 @@ class AttendantDetails extends StatelessWidget {
                       )
                     : InkWell(
                         onTap: () {
-                          attendantController.updateAttedant(
-                              id: attendantModel.id,
-                              rolesData: attendantModel.roles!,
-                              context: context);
+                          // attendantController.updateAttedant(
+                          //     id: userModel.id,
+                          //     rolesData: userModel.roles!,
+                          //     context: context);
                         },
                         child: Container(
                           padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
@@ -179,10 +174,10 @@ class AttendantDetails extends StatelessWidget {
     return InkWell(
       splashColor: Colors.transparent,
       onTap: () {
-        attendantController.updateAttedant(
-            id: attendantModel.id,
-            rolesData: attendantModel.roles!,
-            context: context);
+        // attendantController.updateAttedant(
+        //     id: userModel.id,
+        //     rolesData: userModel.roles!,
+        //     context: context);
       },
       child: Container(
         padding: EdgeInsets.all(10),
@@ -206,7 +201,7 @@ class AttendantDetails extends StatelessWidget {
             context: context,
             onPressed: () {
               attendantController.deleteAttendant(
-                  id: attendantModel.id,
+                  id: userModel.id,
                   context: context,
                   shopId: shopController.currentShop.value?.id);
             });
@@ -257,7 +252,7 @@ class AttendantDetails extends StatelessWidget {
             child: InkWell(
               onTap: () {
                 showUpdatePasswordDialog(
-                    context: context, attendantModel: attendantModel);
+                    context: context, userModel: userModel);
               },
               child: majorTitle(
                   title: "Update Password",
@@ -290,20 +285,20 @@ class AttendantDetails extends StatelessWidget {
                       RolesModel role = attendantController.rolesFromApi[int];
                       return switchingButtons(
                           title: role.name,
-                          value: attendantModel.roles!.indexWhere(
+                          value: userModel.roles!.indexWhere(
                                       (element) => element.key == role.key) !=
                                   -1
                               ? true
                               : false,
                           function: () {
-                            if (attendantModel.roles!.indexWhere(
-                                    (element) => element.key == role.key) ==
-                                -1) {
-                              attendantModel.roles!.add(role);
-                            } else {
-                              attendantModel.roles!.removeWhere(
-                                  (element) => element.key == role.key);
-                            }
+                            // if (userModel.roles!.indexWhere(
+                            //         (element) => element.key == role.key) ==
+                            //     -1) {
+                            //   userModel.roles!.add(role);
+                            // } else {
+                            //   userModel.roles!.removeWhere(
+                            //       (element) => element.key == role.key);
+                            // }
                           });
                     }),
               ),
@@ -313,8 +308,8 @@ class AttendantDetails extends StatelessWidget {
 }
 
 showUpdatePasswordDialog(
-    {required BuildContext context, required AttendantModel attendantModel}) {
-  AttendantController attendantController = Get.find<AttendantController>();
+    {required BuildContext context, required UserModel userModel}) {
+  UserController attendantController = Get.find<UserController>();
   showDialog(
       context: context,
       builder: (_) {
@@ -346,7 +341,7 @@ showUpdatePasswordDialog(
                 onPressed: () {
                   Get.back();
                   attendantController.updatePassword(
-                      id: attendantModel.id, context: context);
+                      id: userModel.id, context: context);
                 },
                 child: majorTitle(
                     title: "Okay", color: AppColors.mainColor, size: 13.0))

@@ -1,43 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:pointify/controllers/shop_controller.dart';
 import 'package:get/get.dart';
-import 'package:pointify/models/product_model.dart';
-import 'package:pointify/models/receipt_item.dart';
+import 'package:pointify/functions/functions.dart';
 import 'package:pointify/widgets/alert.dart';
 
+import '../../../Real/Models/schema.dart';
 import '../../../controllers/purchase_controller.dart';
-import '../../../controllers/sales_controller.dart';
 
-Widget productCard(
-    {required ProductModel product, required type, Function? function}) {
-  PurchaseController purchaseController = Get.find<PurchaseController>();
-  ShopController shopController = Get.find<ShopController>();
+Widget productListItemCard(
+    {required Product product, required type, Function? function}) {
   return Padding(
     padding: const EdgeInsets.fromLTRB(0, 3, 0, 0),
     child: InkWell(
       onTap: () {
-        if (type == "product") {
-          if (product.quantity! <= 0) {
-            generalAlert(title: "Alert", message: "Product out of stock");
-          } else {
-            Get.back();
-          }
-        } else if (type == "purchase") {
-          purchaseController.changesaleItem(product);
-          Get.back();
-        } else if (type == "badstock") {
-          if (product.quantity! <= 0) {
-            generalAlert(title: "Alert", message: "Product out of stock");
+        print(type);
+        if (type == "purchase") {
+          function!(product);
+        } else {
+          if (product.quantity == 0) {
+            generalAlert(title: "Error", message: "Out of stock");
             return;
           }
           function!(product);
-        } else {
-          if (product.quantity! <= 0) {
-            generalAlert(title: "Alert", message: "Product out of stock");
-          } else {
-            print("b");
-            function!(product);
-          }
         }
       },
       child: Card(
@@ -56,7 +40,7 @@ Widget productCard(
                 height: 5,
               ),
               Text(
-                "@ ${product.sellingPrice![0]} ${shopController.currentShop.value?.currency}, ${product.quantity} Left",
+                "@ ${htmlPrice(product.buyingPrice)}, ${product.quantity} Left",
                 style: const TextStyle(
                     color: Colors.grey,
                     fontSize: 14,

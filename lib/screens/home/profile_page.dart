@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pointify/controllers/realm_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/responsive/responsiveness.dart';
 import 'package:get/get.dart';
@@ -15,7 +16,9 @@ import '../profile/profile_update.dart';
 
 class ProfilePage extends StatelessWidget {
   ProfilePage({Key? key}) : super(key: key);
-  AuthController authController = Get.find<AuthController>();
+  // AuthController authController = Get.find<AuthController>();
+  RealmController authController =
+      Get.put(RealmController()); //<RealmService>();
   ShopController createShopController = Get.find<ShopController>();
 
   @override
@@ -71,20 +74,16 @@ class ProfilePage extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           minorTitle(
-                              title: authController.currentUser.value!.name,
+                              title: authController
+                                  .currentUser!.value!.profile.name,
                               color: Colors.black,
                               size: 18),
                           SizedBox(height: 20),
                           minorTitle(
-                              title: authController.currentUser.value!.email,
+                              title: authController
+                                  .currentUser!.value!.profile.email,
                               color: Colors.black,
                               size: 18),
-                          SizedBox(height: 20),
-                          minorTitle(
-                              title:
-                                  authController.currentUser.value!.phonenumber,
-                              color: Colors.black,
-                              size: 18)
                         ],
                       )
                     ],
@@ -111,8 +110,8 @@ class ProfilePage extends StatelessWidget {
                   accountCardDesktop(
                       title: "Password Setting",
                       onPressed: () {
-                        showPasswordResetDialog(
-                            context, "${authController.currentUser.value?.id}");
+                        showPasswordResetDialog(context,
+                            "${authController.currentUser!.value?.id}");
                       }),
                   SizedBox(height: 10),
                   accountCardDesktop(title: "Subscriptions", onPressed: () {}),
@@ -123,9 +122,9 @@ class ProfilePage extends StatelessWidget {
                         deleteDialog(
                             context: context,
                             onPressed: () {
-                              authController.deleteAdmin(
-                                  context: context,
-                                  id: authController.currentUser.value?.id);
+                              // authController.deleteAdmin(
+                              //     context: context,
+                              //     id: authController.currentUser.value?.id);
                             });
                       }),
                 ],
@@ -154,25 +153,17 @@ class ProfilePage extends StatelessWidget {
                           Obx(() {
                             return profileItems(
                                 title: "Email",
-                                subtitle:
-                                    authController.currentUser.value?.email,
+                                subtitle: authController
+                                    .currentUser!.value?.profile.email,
                                 icon: Icons.email);
                           }),
                           SizedBox(height: 15),
                           Obx(() {
                             return profileItems(
                                 title: "Username",
-                                subtitle:
-                                    authController.currentUser.value?.name,
-                                icon: Icons.person);
-                          }),
-                          SizedBox(height: 15),
-                          Obx(() {
-                            return profileItems(
-                                title: "Mobile",
                                 subtitle: authController
-                                    .currentUser.value?.phonenumber,
-                                icon: Icons.phone_android_sharp);
+                                    .currentUser!.value?.profile.name,
+                                icon: Icons.person);
                           }),
                         ],
                       ),
@@ -194,8 +185,8 @@ class ProfilePage extends StatelessWidget {
                           title: "Password Settings",
                           icon: Icons.lock,
                           onPressed: () {
-                            showPasswordResetDialog(context,
-                                "${authController.currentUser.value?.id}");
+                            // showPasswordResetDialog(context,
+                            //     "${authController.currentUser.value?.id}");
                           }),
                       accountCard(
                           title: "Delete Account",
@@ -204,9 +195,9 @@ class ProfilePage extends StatelessWidget {
                             deleteDialog(
                                 context: context,
                                 onPressed: () {
-                                  authController.deleteAdmin(
-                                      context: context,
-                                      id: authController.currentUser.value?.id);
+                                  // authController.deleteAdmin(
+                                  //     context: context,
+                                  //     id: authController.currentUser.value?.id);
                                 });
                           }),
                     ],
@@ -411,8 +402,8 @@ showPasswordResetDialog(BuildContext context, String id) {
                                 color: Colors.red);
                           } else {
                             Get.back();
-                            authController.updateUserPasswords(
-                                authController.currentUser.value?.id, context);
+                            // authController.updateUserPasswords(
+                            //     authController.currentUser.value?.id, context);
                           }
                         },
                         child: majorTitle(

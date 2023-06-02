@@ -2,10 +2,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:pointify/controllers/home_controller.dart';
-import 'package:pointify/models/roles_model.dart';
 import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/customers/customers_page.dart';
-import 'package:pointify/screens/product/counting_page.dart';
+import 'package:pointify/screens/product/stock_counts.dart';
 import 'package:pointify/screens/product/products_page.dart';
 import 'package:pointify/screens/sales/all_sales_page.dart';
 import 'package:pointify/screens/shop/other_shop.dart';
@@ -14,27 +13,27 @@ import 'package:pointify/widgets/no_items_found.dart';
 import 'package:get/get.dart';
 
 import '../../controllers/AuthController.dart';
-import '../../controllers/attendant_controller.dart';
+import '../../controllers/user_controller.dart';
 import '../../controllers/shop_controller.dart';
 import '../../utils/colors.dart';
 import '../../widgets/bigtext.dart';
 import '../finance/expense_page.dart';
-import '../stock/view_purchases.dart';
+import '../purchases/all_purchases.dart';
 
 class AttendantLanding extends StatelessWidget {
   AttendantLanding({Key? key}) : super(key: key);
   AuthController authController = Get.find<AuthController>();
-  AttendantController attendantController = Get.find<AttendantController>();
+  UserController attendantController = Get.find<UserController>();
   ShopController createShopController = Get.find<ShopController>();
   HomeController homeController = Get.find<HomeController>();
 
   Future<void> _refreshUser() async {
-    await attendantController
-        .getAttendantsById(attendantController.attendant.value!.id);
+    // await attendantController
+    //     .getAttendantsById(attendantController.attendant.value!.id);
   }
 
   List<String> roles = [
-    "sales",
+    "services",
     "stockin",
     "customers",
     "Suppliers",
@@ -76,25 +75,25 @@ class AttendantLanding extends StatelessWidget {
                         SizedBox(height: 15),
                         attendantDetails(context),
                         SizedBox(height: 15),
-                        ListView(
-                          shrinkWrap: true,
-                          children: attendantController.attendant.value
-                                      ?.getDisplayRoles() ==
-                                  null
-                              ? []
-                              : attendantController.attendant.value!
-                                  .getDisplayRoles()!
-                                  .where((e) =>
-                                      roles.indexWhere(
-                                          (element) => element == e.key) !=
-                                      -1)
-                                  .map((e) => sideMenu(e.name))
-                                  .toList(),
-                        ),
+                        // ListView(
+                        //   shrinkWrap: true,
+                        //   children: attendantController.attendant.value
+                        //               ?.getDisplayRoles() ==
+                        //           null
+                        //       ? []
+                        //       : attendantController.attendant.value!
+                        //           .getDisplayRoles()!
+                        //           .where((e) =>
+                        //               roles.indexWhere(
+                        //                   (element) => element == e.key) !=
+                        //               -1)
+                        //           .map((e) => sideMenu(e.name))
+                        //           .toList(),
+                        // ),
                         SizedBox(height: 10),
                         InkWell(
                           onTap: () {
-                            authController.logout();
+                            authController.logOut();
                           },
                           child: majorTitle(
                               title: "Logout", color: Colors.black, size: 16),
@@ -114,17 +113,17 @@ class AttendantLanding extends StatelessWidget {
                     elevation: 0.0,
                     automaticallyImplyLeading: false,
                     backgroundColor: Colors.white,
-                    title: Obx(() {
-                      return Text(
-                        attendantController.attendant.value?.shop == null
-                            ? ""
-                            : "${attendantController.attendant.value?.shop!.name}"
-                                .capitalize!,
-                        style: TextStyle(
-                          color: AppColors.mainColor,
-                        ),
-                      );
-                    }),
+                    // title: Obx(() {
+                    //   return Text(
+                    //     attendantController.attendant.value?.shop == null
+                    //         ? ""
+                    //         : "${attendantController.attendant.value?.shop!.name}"
+                    //             .capitalize!,
+                    //     style: TextStyle(
+                    //       color: AppColors.mainColor,
+                    //     ),
+                    //   );
+                    // }),
                     actions: [
                       IconButton(
                         onPressed: () {
@@ -137,7 +136,7 @@ class AttendantLanding extends StatelessWidget {
                       ),
                       IconButton(
                         onPressed: () {
-                          authController.logout();
+                          authController.logOut();
                         },
                         icon: Icon(
                           Icons.logout_outlined,
@@ -165,75 +164,75 @@ class AttendantLanding extends StatelessWidget {
                     SizedBox(height: 15),
                     attendantDetails(context),
                     SizedBox(height: 5),
-                    Expanded(
-                        child: Obx(() => Container(
-                              margin: EdgeInsets.symmetric(horizontal: 20),
-                              child: GridView.builder(
-                                  shrinkWrap: true,
-                                  gridDelegate:
-                                      const SliverGridDelegateWithFixedCrossAxisCount(
-                                          crossAxisCount: 2,
-                                          crossAxisSpacing: 8,
-                                          childAspectRatio: 1.4),
-                                  itemCount: attendantController
-                                      .attendant.value!
-                                      .getDisplayRoles()
-                                      ?.length,
-                                  itemBuilder: (context, index) {
-                                    RolesModel e = attendantController
-                                        .attendant.value!
-                                        .getDisplayRoles()![index];
-                                    return InkWell(
-                                      onTap: () {
-                                        if (e.key == "expenses") {
-                                          Get.to(() => ExpensePage());
-                                        } else if (e.key == "add_products") {
-                                          Get.to(() => ProductPage());
-                                        } else if (e.key == "sales") {
-                                          Get.to(() => AllSalesPage(
-                                              page: "AtedantLanding"));
-                                        } else if (e.key == "stockin") {
-                                          Get.to(() => ViewPurchases());
-                                        } else if (e.key == "customers") {
-                                          Get.to(CustomersPage());
-                                        } else if (e.key == "Suppliers") {
-                                          Get.to(SuppliersPage());
-                                        } else if (e.key == "stock_balance") {
-                                          Get.to(() => ViewOtherShop());
-                                        } else if (e.key == "count_stock") {
-                                          Get.to(() => CountingPage());
-                                        }
-                                      },
-                                      child: Center(
-                                        child: Material(
-                                          elevation: 10,
-                                          color: Colors.transparent,
-                                          child: Container(
-                                            height: 100,
-                                            padding: EdgeInsets.all(12),
-                                            decoration: BoxDecoration(
-                                              color: setColor(index),
-                                              borderRadius:
-                                                  BorderRadius.circular(10),
-                                            ),
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                SizedBox(width: 5),
-                                                Text(
-                                                  e.name.capitalize!,
-                                                  style: TextStyle(
-                                                      color: Colors.white),
-                                                )
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    );
-                                  }),
-                            )))
+                    // Expanded(
+                    //     child: Obx(() => Container(
+                    //           margin: EdgeInsets.symmetric(horizontal: 20),
+                    //           child: GridView.builder(
+                    //               shrinkWrap: true,
+                    //               gridDelegate:
+                    //                   const SliverGridDelegateWithFixedCrossAxisCount(
+                    //                       crossAxisCount: 2,
+                    //                       crossAxisSpacing: 8,
+                    //                       childAspectRatio: 1.4),
+                    //               itemCount: attendantController
+                    //                   .attendant.value!
+                    //                   .getDisplayRoles()
+                    //                   ?.length,
+                    //               itemBuilder: (context, index) {
+                    //                 RolesModel e = attendantController
+                    //                     .attendant.value!
+                    //                     .getDisplayRoles()![index];
+                    //                 return InkWell(
+                    //                   onTap: () {
+                    //                     if (e.key == "expenses") {
+                    //                       Get.to(() => ExpensePage());
+                    //                     } else if (e.key == "add_products") {
+                    //                       Get.to(() => ProductPage());
+                    //                     } else if (e.key == "services") {
+                    //                       Get.to(() => AllSalesPage(
+                    //                           page: "AtedantLanding"));
+                    //                     } else if (e.key == "stockin") {
+                    //                       Get.to(() => ViewPurchases());
+                    //                     } else if (e.key == "customers") {
+                    //                       Get.to(CustomersPage());
+                    //                     } else if (e.key == "Suppliers") {
+                    //                       Get.to(SuppliersPage());
+                    //                     } else if (e.key == "stock_balance") {
+                    //                       Get.to(() => ViewOtherShop());
+                    //                     } else if (e.key == "count_stock") {
+                    //                       Get.to(() => CountingPage());
+                    //                     }
+                    //                   },
+                    //                   child: Center(
+                    //                     child: Material(
+                    //                       elevation: 10,
+                    //                       color: Colors.transparent,
+                    //                       child: Container(
+                    //                         height: 100,
+                    //                         padding: EdgeInsets.all(12),
+                    //                         decoration: BoxDecoration(
+                    //                           color: setColor(index),
+                    //                           borderRadius:
+                    //                               BorderRadius.circular(10),
+                    //                         ),
+                    //                         child: Row(
+                    //                           mainAxisAlignment:
+                    //                               MainAxisAlignment.center,
+                    //                           children: [
+                    //                             SizedBox(width: 5),
+                    //                             Text(
+                    //                               e.name.capitalize!,
+                    //                               style: TextStyle(
+                    //                                   color: Colors.white),
+                    //                             )
+                    //                           ],
+                    //                         ),
+                    //                       ),
+                    //                     ),
+                    //                   ),
+                    //                 );
+                    //               }),
+                    //         )))
                   ],
                 ))));
   }
@@ -260,25 +259,25 @@ class AttendantLanding extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Obx(() {
-          return Text(
-            "Welcome ${attendantController.attendant.value?.fullnames}"
-                .capitalize!,
-            style: TextStyle(color: Colors.amber, fontWeight: FontWeight.bold),
-          );
-        }),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text("ID:", style: TextStyle(color: Colors.grey)),
-            Obx(() {
-              return Text(
-                "${attendantController.attendant.value?.attendid}",
-                style: TextStyle(color: Colors.grey),
-              );
-            })
-          ],
-        ),
+        // Obx(() {
+        //   return Text(
+        //     "Welcome ${attendantController.attendant.value?.fullnames}"
+        //         .capitalize!,
+        //     style: TextStyle(color: Colors.amber, fontWeight: FontWeight.bold),
+        //   );
+        // }),
+        // Row(
+        //   mainAxisAlignment: MainAxisAlignment.center,
+        //   children: [
+        //     Text("ID:", style: TextStyle(color: Colors.grey)),
+        //     Obx(() {
+        //       return Text(
+        //         "${attendantController.attendant.value?.attendid}",
+        //         style: TextStyle(color: Colors.grey),
+        //       );
+        //     })
+        //   ],
+        // ),
       ],
     );
   }
@@ -287,11 +286,11 @@ class AttendantLanding extends StatelessWidget {
     return Obx(() => InkWell(
           onTap: () {
             attendantController.activeItem.value = title;
-            if (title.toString().trim() == "sales") {
+            if (title.toString().trim() == "services") {
               homeController.selectedWidget.value =
                   AllSalesPage(page: "AttendantLanding");
             } else if (title.toString().trim() == "Stockin") {
-              homeController.selectedWidget.value = ViewPurchases();
+              homeController.selectedWidget.value = AllPurchases();
             } else if (title.toString().trim() == "Manage Customers") {
               homeController.selectedWidget.value = CustomersPage();
             } else if (title.toString().trim() == "Manage suppliers") {
@@ -303,7 +302,7 @@ class AttendantLanding extends StatelessWidget {
             } else if (title.toString().trim() == "Stock balance") {
               homeController.selectedWidget.value = ViewOtherShop();
             } else if (title.toString().trim() == "Count stock") {
-              homeController.selectedWidget.value = CountingPage();
+              homeController.selectedWidget.value = StockCount();
             }
           },
           child: Container(

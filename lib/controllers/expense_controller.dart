@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:pointify/controllers/AuthController.dart';
-import 'package:pointify/controllers/attendant_controller.dart';
 import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/screens/finance/expense_page.dart';
 import 'package:pointify/widgets/loading_dialog.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
-import '../models/expense_model.dart';
+import '../Real/Models/schema.dart';
 import '../services/expense.dart';
 import '../utils/colors.dart';
 import '../widgets/snackBars.dart';
@@ -52,13 +50,13 @@ class ExpenseController extends GetxController {
           textEditingControllerName.text = "";
           textEditingControllerAmount.text = "";
           selectedExpense.value = "";
-          getExpenseByDate(
-              shopId: "${shopId}",
-              startingDate: startdate.value,
-              endingDate: enddate.value,
-              attendant: Get.find<AuthController>().usertype.value == "admin"
-                  ? ""
-                  : Get.find<AttendantController>().attendant.value!.id);
+          // getExpenseByDate(
+          //     shopId: "${shopId}",
+          //     startingDate: startdate.value,
+          //     endingDate: enddate.value,
+          //     attendant: Get.find<UserController>().user.value?.usertype == "admin"
+          //         ? ""
+          //         : Get.find<AttendantController>().attendant.value!.id);
 
           if (MediaQuery.of(context).size.width > 600) {
             Get.find<HomeController>().selectedWidget.value = ExpensePage();
@@ -93,7 +91,7 @@ class ExpenseController extends GetxController {
       if (response["status"] == true) {
         List fetchedList = response["body"];
         List<ExpenseModel> expenseBody =
-            fetchedList.map((e) => ExpenseModel.fromJson(e)).toList();
+            []; //fetchedList.map((e) => ExpenseModel.fromJson(e)).toList();
         for (var i = 0; i < expenseBody.length; i++) {
           totalExpenses.value += int.parse("${expenseBody[i].amount}");
         }

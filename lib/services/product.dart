@@ -1,32 +1,114 @@
 import 'dart:convert';
 
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:intl/intl.dart';
 import 'package:pointify/services/apiurls.dart';
+import 'package:realm/realm.dart';
 
+import '../Real/Models/schema.dart';
+import '../controllers/realm_controller.dart';
+import '../controllers/shop_controller.dart';
 import 'client.dart';
 
 class Products {
-  createProduct(Map<String, dynamic> body) async {
-    var response = await DbBase()
-        .databaseRequest(product, DbBase().postRequestType, body: body);
+  final RealmController realmService = Get.find<RealmController>();
 
-    return jsonDecode(response);
+  createProduct(Product body, {String? type = ""}) async {
+    print("creating ${body.name}");
+    realmService.realm
+        .write<Product>(() => realmService.realm.add<Product>(body));
   }
 
-  getProductsBySort(String shopId, String type) async {
-    var response = await DbBase().databaseRequest(
-        type == "all"
-            ? product + "shop/${shopId}"
-            : product + "${type}/${shopId}",
-        DbBase().getRequestType);
-    var data = jsonDecode(response);
-    return data;
+  updateProduct({required Product product}) async {
+    realmService.realm.write<Product>(
+        () => realmService.realm.add<Product>(product, update: true));
   }
 
-  searchProduct(String shopId, String text) async {
-    var response = await DbBase().databaseRequest(
-        product + "search/${shopId}/${text}", DbBase().getRequestType);
-    var data = jsonDecode(response);
-    return data;
+  updateProductPart(
+      {required Product product,
+      int? quantity,
+      bool deleted = false,
+      bool counted = false,
+      DateTime? updatedAt,
+      String? counteddate,
+      String? type = ""}) async {
+    realmService.realm.write(() {
+      if (quantity != null) {
+        product.quantity = quantity;
+      }
+      if (counted) {
+        product.counted = counted;
+      }
+      if (updatedAt != null) {
+        product.updatedAt = updatedAt;
+      }
+      if (counteddate != null) {
+        product.counteddate = counteddate;
+      }
+
+      if (deleted) {
+        product.deleted = deleted;
+      }
+    });
+  }
+
+  createProductHistory(ProductHistoryModel body) {
+    realmService.realm.write<ProductHistoryModel>(
+        () => realmService.realm.add<ProductHistoryModel>(body));
+  }
+
+  RealmResults<Product> getProductsBySort(
+      {String? type = "all", String? text = ""}) {
+    String filter = " AND deleted == false";
+    print(type);
+    if (type == "quantity") {
+      filter += " AND TRUEPREDICATE SORT(quantity DESC)";
+    } else if (type == "outofstock") {
+      filter += " AND quantity == 0";
+    } else if (type == "runninglow") {
+      filter += " AND quantity < stockLevel";
+    } else if (type == "highestbuying") {
+      filter += " AND TRUEPREDICATE SORT(buyingPrice DESC)";
+    } else if (type == "highestselling") {
+      filter += " AND TRUEPREDICATE SORT(selling DESC)";
+    }
+    // filter += ' AND deleted == null OR deleted == false';
+    print(filter);
+    RealmResults<Product> products = realmService.realm.query<Product>(
+        'shop == \$0$filter', [Get.find<ShopController>().currentShop.value]);
+
+    if (type == "search") {
+      var newproducts = products.query("name BEGINSWITH \$0", [text!]);
+      return newproducts;
+    }
+
+    //count products filter
+    final DateTime now = DateTime.now();
+    final DateFormat formatter = DateFormat('yyyy-MM-dd');
+    final String formatted = formatter.format(now);
+    if (type == "countedtoday") {
+      var newproducts = products.query("counteddate == \$0", [formatted]);
+      print(newproducts.length);
+      return newproducts;
+    }
+    if (type == "notcountedtoday") {
+      var newproducts = products.query("counteddate != \$0", [formatted]);
+      return newproducts;
+    }
+    if (type == "nevercounted") {
+      var newproducts = products.query("counteddate == NULL");
+      return newproducts;
+    }
+    print("last ${products.length}");
+    return products;
+  }
+
+  Product? getProductByName(String text, Shop shop) {
+    RealmResults<Product> products = realmService.realm
+        .query<Product>('shop == \$0 AND deleted == false', [shop]);
+    products.query(r'name == $0', [text]);
+    return products.isNotEmpty ? products.first : null;
   }
 
   deleteProduct({required id}) async {
@@ -35,20 +117,18 @@ class Products {
     return jsonDecode(response);
   }
 
-  getProductHistory(
-      {required productId, required String type, required stockId}) async {
-    var response = await DbBase().databaseRequest(
-        "${productHistory}?type=${type}&stockId=${stockId}&product=$productId",
-        DbBase().getRequestType);
-    var data = jsonDecode(response);
-    return data;
+  getProductPurchaseHistory({Product? product}) {
+    RealmResults<InvoiceItem> invoices = realmService.realm.query<InvoiceItem>(
+        'product == \$0  AND TRUEPREDICATE SORT(createdAt DESC)', [product]);
+    return invoices;
   }
 
-  updateProduct({required id, required Map<String, dynamic> body}) async {
-    var response = await DbBase().databaseRequest(
-        product + "update/${id}", DbBase().patchRequestType,
-        body: body);
-    return jsonDecode(response);
+  getProductCountHistory({Shop? shop}) {
+    RealmResults<ProductCountModel> productCountHistory = realmService.realm
+        .query<ProductCountModel>(
+            'shopId == \$0  AND TRUEPREDICATE SORT(createdAt DESC)',
+            [Get.find<ShopController>().currentShop.value]);
+    return productCountHistory;
   }
 
   getProductCountInShop(String shopId, String type, startDate, endDate) async {
@@ -60,20 +140,26 @@ class Products {
     return data;
   }
 
-  updateProductCount(Map<String, dynamic> body) async {
-    var response = await DbBase().databaseRequest(
-        product + "increasecount/", DbBase().postRequestType,
-        body: body);
-
-    var data = jsonDecode(response);
-    return data;
+  updateProductCount(ProductHistoryModel productCountModel) async {
+    realmService.realm.write<ProductHistoryModel>(
+        () => realmService.realm.add<ProductHistoryModel>(productCountModel));
   }
 
-  getProductCount(id) async {
-    var response = await DbBase().databaseRequest(
-        product + "productcount?shop=${id}", DbBase().getRequestType);
-    var data = jsonDecode(response);
-    return data;
+  RealmResults<ProductHistoryModel> getProductHistory(String type,
+      {ObjectId? transferId}) {
+    if (transferId != null) {
+      RealmResults<ProductHistoryModel> results = realmService.realm
+          .query<ProductHistoryModel>(
+              'stockTransferHistory == \$0', [transferId]);
+      var resultsResponse = results.query("type == \$0", [type]);
+      print("resultsResponse $resultsResponse");
+      return resultsResponse;
+    }
+    RealmResults<ProductHistoryModel> results = realmService.realm.query<
+            ProductHistoryModel>(
+        'shop =="${Get.find<ShopController>().currentShop.value!.id.toString()}"');
+    var resultsResponse = results.query("type == \$0", [type]);
+    return resultsResponse;
   }
 
   transferProducts({required Map<String, dynamic> body}) async {
@@ -83,35 +169,60 @@ class Products {
     return data;
   }
 
-  getTransHistory({required shopId, required type}) async {
-    var response = await DbBase().databaseRequest(
-        "${stocktransfer}?shop=$shopId&type=$type", DbBase().getRequestType);
-    var data = jsonDecode(response);
-    return data;
+  createProductStockTransferHistory(
+      StockTransferHistory stockTransferHistory) async {
+    realmService.realm.write<StockTransferHistory>(() =>
+        realmService.realm.add<StockTransferHistory>(stockTransferHistory));
   }
 
-  getTransHistoryItems({required shopId, required type}) async {
-    var response = await DbBase().databaseRequest(
-        "${stocktransfer}?shop=$shopId&type=$type", DbBase().getRequestType);
-    var data = jsonDecode(response);
-    return data;
+  RealmResults<StockTransferHistory> getTransHistory(
+      {required Shop shop, required type}) {
+    if (type == "in") {
+      RealmResults<StockTransferHistory> history =
+          realmService.realm.query<StockTransferHistory>('to == \$0', [shop]);
+      return history;
+    }
+    RealmResults<StockTransferHistory> history =
+        realmService.realm.query<StockTransferHistory>('from == \$0', [shop]);
+    print(history.length);
+    return history;
+  }
+
+  RealmResults<ProductHistoryModel> getProductTransferHistory(
+      {required Product product}) {
+    RealmResults<ProductHistoryModel> history = realmService.realm
+        .query<ProductHistoryModel>('product == \$0', [product]);
+    return history;
   }
 
   getProductSaleHistory(productId) {}
 
-  saveBadStock({required Map<String, dynamic> body}) async {
-    var response = await DbBase()
-        .databaseRequest(badstock, DbBase().postRequestType, body: body);
-    var data = jsonDecode(response);
-    return data;
+  saveBadStock(BadStock badStock) async {
+    realmService.realm
+        .write<BadStock>(() => realmService.realm.add<BadStock>(badStock));
   }
 
-  getBadStock(shopId, attendant, product) async {
-    var response = await DbBase().databaseRequest(
-      "${badstock}shop?shop=$shopId&attendant=$attendant&product=$product",
-      DbBase().getRequestType,
-    );
-    var data = jsonDecode(response);
-    return data;
+  RealmResults<BadStock> getBadStock(shopId, attendant, Product? product) {
+    RealmResults<BadStock> products = realmService.realm.query<BadStock>(
+        'shop == \$0 AND TRUEPREDICATE SORT(createdAt DESC)',
+        [Get.find<ShopController>().currentShop.value]);
+    if (product != null) {
+      return products.query("product == \$0", [product]);
+    }
+    return products;
+  }
+
+  void createProductCount({required ProductCountModel productCountModel}) {
+    realmService.realm.write<ProductCountModel>(
+        () => realmService.realm.add<ProductCountModel>(productCountModel));
+    final DateTime now = DateTime.now();
+    final DateFormat formatter = DateFormat('yyyy-MM-dd');
+    final String formatted = formatter.format(now);
+    updateProductPart(
+        product: productCountModel.product!,
+        quantity: productCountModel.quantity,
+        counted: true,
+        counteddate: formatted,
+        updatedAt: DateTime.now());
   }
 }

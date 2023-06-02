@@ -7,10 +7,10 @@ import 'package:pointify/widgets/pdf/payment_history_pdf.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
+import '../Real/Models/schema.dart';
 import '../controllers/CustomerController.dart';
 import '../controllers/home_controller.dart';
 import '../controllers/purchase_controller.dart';
-import '../models/invoice.dart';
 import '../screens/cash_flow/payment_history.dart';
 
 Widget CreditPurchaseHistoryCard(context, Invoice salesBody) {
@@ -94,15 +94,15 @@ showBottomSheet(BuildContext context, Invoice salesBody) {
                   leading: Icon(Icons.wallet),
                   onTap: () {
                     Navigator.pop(context);
-                    if (MediaQuery.of(context).size.width > 600) {
-                      Get.find<HomeController>().selectedWidget.value =
-                          PaymentHistory(
-                        id: salesBody.id!,
-                      );
-                    } else {
-                      Get.to(() =>
-                          PaymentHistory(id: salesBody.id!, type: "purchase"));
-                    }
+                    // if (MediaQuery.of(context).size.width > 600) {
+                    //   Get.find<HomeController>().selectedWidget.value =
+                    //       PaymentHistory(
+                    //     id: salesBody.id!,
+                    //   );
+                    // } else {
+                    //   Get.to(() =>
+                    //       PaymentHistory(id: salesBody.id!, type: "purchase"));
+                    // }
                   },
                   title: Text('Payment History'),
                 ),
@@ -110,8 +110,8 @@ showBottomSheet(BuildContext context, Invoice salesBody) {
                   leading: Icon(Icons.file_copy_outlined),
                   onTap: () async {
                     Navigator.pop(context);
-                    await salesController.getPaymentHistory(
-                        id: salesBody.id!, type: "purchase");
+                    // await salesController.getPaymentHistory(
+                    //     id: salesBody.id!, type: "purchase");
 
                     PaymentHistoryPdf(
                         shop:
@@ -179,7 +179,7 @@ showAmountDialog(context, Invoice salesBody) {
                     int.parse(customerController.amountController.text)) {
                   Get.find<PurchaseController>().paySupplierCredit(
                     amount: customerController.amountController.text,
-                    salesBody: salesBody,
+                    invoice: salesBody,
                   );
                 } else {
                   generalAlert(

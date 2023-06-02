@@ -1,6 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'package:pointify/controllers/AuthController.dart';
-import 'package:pointify/controllers/attendant_controller.dart';
+import 'package:intl/intl.dart';
+import 'package:pointify/controllers/user_controller.dart';
 import 'package:pointify/controllers/sales_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/responsive/responsiveness.dart';
@@ -8,22 +10,41 @@ import 'package:pointify/utils/helper.dart';
 import 'package:pointify/widgets/bigtext.dart';
 import 'package:pointify/widgets/side_menu.dart';
 import 'package:get/get.dart';
-
+import '../../controllers/AuthController.dart';
+import '../../controllers/realm_controller.dart';
 import '../../controllers/home_controller.dart';
 import '../../utils/colors.dart';
 
-class Home extends StatelessWidget {
+class Home extends StatefulWidget {
   Home({Key? key}) : super(key: key);
-  HomeController homeControler = Get.put(HomeController());
-  SalesController salesController = Get.put(SalesController());
-  ShopController shopController = Get.put(ShopController());
-  AttendantController attendantController = Get.find<AttendantController>();
-  AuthController authController = Get.find<AuthController>();
 
   @override
-  Widget build(BuildContext context) {
-    attendantController.getAttendantRoles();
+  State<Home> createState() => _HomeState();
+}
 
+class _HomeState extends State<Home> {
+  HomeController homeControler = Get.put(HomeController());
+
+  SalesController salesController = Get.put(SalesController());
+
+  ShopController shopController = Get.put(ShopController());
+
+  UserController userController = Get.find<UserController>();
+
+  AuthController authController = Get.find<AuthController>();
+
+  final RealmController realmService = Get.put(RealmController());
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    userController.getUser();
+  }
+
+  // StreamController streamController = Get.find<StreamController>();
+  @override
+  Widget build(BuildContext context) {
+    userController.getAttendantRoles();
     return ResponsiveWidget(
         largeScreen: Obx(() => Scaffold(
               backgroundColor: Colors.white,
@@ -58,8 +79,11 @@ class Home extends StatelessWidget {
                 children: [
                   InkWell(
                     onTap: () {
+                      final DateTime now = DateTime.now();
+                      final DateFormat formatter = DateFormat('yyyy-MM-dd');
+                      final String formatted = formatter.format(now);
+                      salesController.getSalesByDate(formatted);
                       homeControler.selectedIndex.value = 0;
-                      authController.init(authController.usertype.value);
                     },
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
@@ -79,8 +103,7 @@ class Home extends StatelessWidget {
                   InkWell(
                     onTap: () {
                       homeControler.selectedIndex.value = 1;
-                      shopController.getShops(
-                          adminId: authController.currentUser.value?.id);
+                      shopController.getShops();
                     },
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
@@ -99,7 +122,7 @@ class Home extends StatelessWidget {
                     onTap: () {
                       homeControler.selectedIndex.value = 2;
 
-                      attendantController.getAttendantsByShopId(
+                      userController.getAttendantsByShopId(
                           shopId: shopController.currentShop.value?.id);
                     },
                     child: Column(
