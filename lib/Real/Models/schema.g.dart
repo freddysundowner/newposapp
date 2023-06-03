@@ -839,6 +839,7 @@ class BadStock extends _BadStock
     ObjectId? id, {
     String? description,
     int? quantity,
+    int? date,
     DateTime? createdAt,
     DateTime? updatedAt,
     Product? product,
@@ -848,6 +849,7 @@ class BadStock extends _BadStock
     RealmObjectBase.set(this, '_id', id);
     RealmObjectBase.set(this, 'description', description);
     RealmObjectBase.set(this, 'quantity', quantity);
+    RealmObjectBase.set(this, 'date', date);
     RealmObjectBase.set(this, 'createdAt', createdAt);
     RealmObjectBase.set(this, 'updatedAt', updatedAt);
     RealmObjectBase.set(this, 'product', product);
@@ -873,6 +875,11 @@ class BadStock extends _BadStock
   int? get quantity => RealmObjectBase.get<int>(this, 'quantity') as int?;
   @override
   set quantity(int? value) => RealmObjectBase.set(this, 'quantity', value);
+
+  @override
+  int? get date => RealmObjectBase.get<int>(this, 'date') as int?;
+  @override
+  set date(int? value) => RealmObjectBase.set(this, 'date', value);
 
   @override
   DateTime? get createdAt =>
@@ -923,6 +930,7 @@ class BadStock extends _BadStock
           mapTo: '_id', optional: true, primaryKey: true),
       SchemaProperty('description', RealmPropertyType.string, optional: true),
       SchemaProperty('quantity', RealmPropertyType.int, optional: true),
+      SchemaProperty('date', RealmPropertyType.int, optional: true),
       SchemaProperty('createdAt', RealmPropertyType.timestamp, optional: true),
       SchemaProperty('updatedAt', RealmPropertyType.timestamp, optional: true),
       SchemaProperty('product', RealmPropertyType.object,
@@ -1513,6 +1521,7 @@ class ExpenseModel extends _ExpenseModel
     String? shop,
     String? name,
     UserModel? attendantId,
+    int? date,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -1522,6 +1531,7 @@ class ExpenseModel extends _ExpenseModel
     RealmObjectBase.set(this, 'shop', shop);
     RealmObjectBase.set(this, 'name', name);
     RealmObjectBase.set(this, 'attendantId', attendantId);
+    RealmObjectBase.set(this, 'date', date);
     RealmObjectBase.set(this, 'createdAt', createdAt);
     RealmObjectBase.set(this, 'updatedAt', updatedAt);
   }
@@ -1562,6 +1572,11 @@ class ExpenseModel extends _ExpenseModel
       RealmObjectBase.set(this, 'attendantId', value);
 
   @override
+  int? get date => RealmObjectBase.get<int>(this, 'date') as int?;
+  @override
+  set date(int? value) => RealmObjectBase.set(this, 'date', value);
+
+  @override
   DateTime? get createdAt =>
       RealmObjectBase.get<DateTime>(this, 'createdAt') as DateTime?;
   @override
@@ -1596,6 +1611,7 @@ class ExpenseModel extends _ExpenseModel
       SchemaProperty('name', RealmPropertyType.string, optional: true),
       SchemaProperty('attendantId', RealmPropertyType.object,
           optional: true, linkTarget: 'UserModel'),
+      SchemaProperty('date', RealmPropertyType.int, optional: true),
       SchemaProperty('createdAt', RealmPropertyType.timestamp, optional: true),
       SchemaProperty('updatedAt', RealmPropertyType.timestamp, optional: true),
     ]);
@@ -2431,6 +2447,7 @@ class SalesModel extends _SalesModel
     int? totalDiscount,
     int? quantity,
     String? paymentMethod,
+    int? dated,
     String? date,
     String? dueDate,
     DateTime? createdAt,
@@ -2449,6 +2466,7 @@ class SalesModel extends _SalesModel
     RealmObjectBase.set(this, 'totalDiscount', totalDiscount);
     RealmObjectBase.set(this, 'quantity', quantity);
     RealmObjectBase.set(this, 'paymentMethod', paymentMethod);
+    RealmObjectBase.set(this, 'dated', dated);
     RealmObjectBase.set(this, 'date', date);
     RealmObjectBase.set(this, 'dueDate', dueDate);
     RealmObjectBase.set(this, 'createdAt', createdAt);
@@ -2545,6 +2563,11 @@ class SalesModel extends _SalesModel
       RealmObjectBase.set(this, 'paymentMethod', value);
 
   @override
+  int? get dated => RealmObjectBase.get<int>(this, 'dated') as int?;
+  @override
+  set dated(int? value) => RealmObjectBase.set(this, 'dated', value);
+
+  @override
   String? get date => RealmObjectBase.get<String>(this, 'date') as String?;
   @override
   set date(String? value) => RealmObjectBase.set(this, 'date', value);
@@ -2601,6 +2624,7 @@ class SalesModel extends _SalesModel
       SchemaProperty('totalDiscount', RealmPropertyType.int, optional: true),
       SchemaProperty('quantity', RealmPropertyType.int, optional: true),
       SchemaProperty('paymentMethod', RealmPropertyType.string, optional: true),
+      SchemaProperty('dated', RealmPropertyType.int, optional: true),
       SchemaProperty('date', RealmPropertyType.string, optional: true),
       SchemaProperty('dueDate', RealmPropertyType.string, optional: true),
       SchemaProperty('createdAt', RealmPropertyType.timestamp, optional: true),
@@ -2617,7 +2641,10 @@ class ReceiptItem extends _ReceiptItem
     SalesModel? receipt,
     CustomerModel? customerId,
     int? quantity,
+    Shop? shop,
     String? type,
+    String? date,
+    int? soldOn,
     int? total,
     int? discount,
     int? price,
@@ -2629,7 +2656,10 @@ class ReceiptItem extends _ReceiptItem
     RealmObjectBase.set(this, 'receipt', receipt);
     RealmObjectBase.set(this, 'customerId', customerId);
     RealmObjectBase.set(this, 'quantity', quantity);
+    RealmObjectBase.set(this, 'shop', shop);
     RealmObjectBase.set(this, 'type', type);
+    RealmObjectBase.set(this, 'date', date);
+    RealmObjectBase.set(this, 'soldOn', soldOn);
     RealmObjectBase.set(this, 'total', total);
     RealmObjectBase.set(this, 'discount', discount);
     RealmObjectBase.set(this, 'price', price);
@@ -2671,9 +2701,24 @@ class ReceiptItem extends _ReceiptItem
   set quantity(int? value) => RealmObjectBase.set(this, 'quantity', value);
 
   @override
+  Shop? get shop => RealmObjectBase.get<Shop>(this, 'shop') as Shop?;
+  @override
+  set shop(covariant Shop? value) => RealmObjectBase.set(this, 'shop', value);
+
+  @override
   String? get type => RealmObjectBase.get<String>(this, 'type') as String?;
   @override
   set type(String? value) => RealmObjectBase.set(this, 'type', value);
+
+  @override
+  String? get date => RealmObjectBase.get<String>(this, 'date') as String?;
+  @override
+  set date(String? value) => RealmObjectBase.set(this, 'date', value);
+
+  @override
+  int? get soldOn => RealmObjectBase.get<int>(this, 'soldOn') as int?;
+  @override
+  set soldOn(int? value) => RealmObjectBase.set(this, 'soldOn', value);
 
   @override
   int? get total => RealmObjectBase.get<int>(this, 'total') as int?;
@@ -2726,7 +2771,11 @@ class ReceiptItem extends _ReceiptItem
       SchemaProperty('customerId', RealmPropertyType.object,
           optional: true, linkTarget: 'CustomerModel'),
       SchemaProperty('quantity', RealmPropertyType.int, optional: true),
+      SchemaProperty('shop', RealmPropertyType.object,
+          optional: true, linkTarget: 'Shop'),
       SchemaProperty('type', RealmPropertyType.string, optional: true),
+      SchemaProperty('date', RealmPropertyType.string, optional: true),
+      SchemaProperty('soldOn', RealmPropertyType.int, optional: true),
       SchemaProperty('total', RealmPropertyType.int, optional: true),
       SchemaProperty('discount', RealmPropertyType.int, optional: true),
       SchemaProperty('price', RealmPropertyType.int, optional: true),

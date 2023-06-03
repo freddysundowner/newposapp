@@ -151,5 +151,6 @@ class StockTransferController extends GetxController {
     RealmResults<ProductHistoryModel> response =
         Products().getProductTransferHistory(product: product);
     productTransferHistory.addAll(response.map((e) => e).toList());
+    print(productTransferHistory.length);
   }
 }

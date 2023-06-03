@@ -66,20 +66,22 @@ Widget expenseCard({required context, required ExpenseModel expense}) {
                       SizedBox(height: 3),
                       Row(
                         children: [
-                          Expanded(
-                            flex: 6,
-                            child: Text(
-                              "${DateFormat("yyyy-MM-dd hh:mm a").format(expense.updatedAt!)}",
-                              style: TextStyle(color: Colors.grey),
+                          if (expense.createdAt != null)
+                            Expanded(
+                              flex: 6,
+                              child: Text(
+                                DateFormat("yyyy-MM-dd hh:mm a")
+                                    .format(expense.createdAt!),
+                                style: TextStyle(color: Colors.grey),
+                              ),
                             ),
-                          ),
                           Expanded(
                             flex: 3,
                             child: Text(
                               expense.attendantId == null
                                   ? ""
                                   : "By-${expense.attendantId!.fullnames}",
-                              style: TextStyle(
+                              style: const TextStyle(
                                   color: Color.fromRGBO(158, 158, 158, 1)),
                             ),
                           ),

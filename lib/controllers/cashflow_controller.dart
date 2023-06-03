@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pointify/controllers/realm_controller.dart';
 import 'package:pointify/controllers/home_controller.dart';
+import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/screens/cash_flow/cash_flow_manager.dart';
 import 'package:pointify/widgets/alert.dart';
 import 'package:pointify/widgets/snackBars.dart';
@@ -139,43 +140,23 @@ class CashflowController extends GetxController
     textEditingControllerAmount.clear();
   }
 
-  void createCategory(type, shopModel, context) async {
-    try {
-      Map<String, dynamic> body = {
-        "type": type,
-        "name": textEditingControllerCategory.text,
-        "shop": shopModel.id,
-        "admin": Get.find<RealmController>().currentUser!.value!.id
-      };
-      var response = await Transactions().createCategory(body: body);
-      if (response["status"] == true) {
-        textEditingControllerCategory.clear();
-        getCategory(type, shopModel.id);
-      } else {
-        showSnackBar(message: response["message"], color: Colors.red);
-      }
-    } catch (e) {
-      print(e);
-    }
+  void createCategory(type) async {
+    CashFlowCategory cashFlowCategory = CashFlowCategory(ObjectId(),
+        name: textEditingControllerCategory.text,
+        shop: Get.find<ShopController>().currentShop.value!.id.toString(),
+        type: type);
+    await Transactions().createCategory(cashFlowCategory);
   }
 
-  void getCategory(type, shopId) async {
-    try {
-      loadingCashFlowCategories.value = true;
-      cashflowTotal.value = 0;
-      RealmResults<CashFlowCategory> response =
-          await Transactions().getCategory(shop: shopId, type: type);
-      if (response.isNotEmpty) {
-        List<CashFlowCategory> cashflowCat = response.map((e) => e).toList();
-        cashFlowCategories.assignAll(cashflowCat);
-        getCategoriesTotal();
-      } else {
-        cashFlowCategories.value = [];
-      }
-      loadingCashFlowCategories.value = false;
-    } catch (e) {
-      loadingCashFlowCategories.value = false;
-      print(e);
+  void getCategory(type, shopId) {
+    RealmResults<CashFlowCategory> response =
+        Transactions().getCategory(shop: shopId, type: type);
+    if (response.isNotEmpty) {
+      List<CashFlowCategory> cashflowCat = response.map((e) => e).toList();
+      cashFlowCategories.assignAll(cashflowCat);
+      // getCategoriesTotal();
+    } else {
+      cashFlowCategories.value = [];
     }
   }
 

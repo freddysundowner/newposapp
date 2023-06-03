@@ -51,6 +51,8 @@ class RealmController extends GetxController {
         SalesReturn.schema,
         DepositModel.schema,
         ProductCountModel.schema,
+        CashFlowCategory.schema,
+        ExpenseModel.schema,
       ]));
       realm.subscriptions.update((mutableSubscriptions) {
         mutableSubscriptions.add(realm.all<Shop>());
@@ -72,6 +74,8 @@ class RealmController extends GetxController {
         mutableSubscriptions.add(realm.all<SalesReturn>());
         mutableSubscriptions.add(realm.all<DepositModel>());
         mutableSubscriptions.add(realm.all<ProductCountModel>());
+        mutableSubscriptions.add(realm.all<CashFlowCategory>());
+        mutableSubscriptions.add(realm.all<ExpenseModel>());
       });
     }
   }

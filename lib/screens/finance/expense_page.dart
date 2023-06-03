@@ -23,13 +23,9 @@ import 'create_expense.dart';
 
 class ExpensePage extends StatelessWidget {
   ExpensePage({Key? key}) : super(key: key) {
-    var startDate = converTimeToMonth()["startDate"];
-    var endDate = converTimeToMonth()["endDate"];
     expenseController.getExpenseByDate(
-      shopId: "${shopController.currentShop.value?.id}",
-      startingDate: DateTime.parse(startDate),
-      endingDate: DateTime.parse(endDate),
-      attendant: '',
+      fromDate: expenseController.startdate.value,
+      toDate: expenseController.enddate.value,
     );
   }
 
@@ -173,29 +169,24 @@ class ExpensePage extends StatelessWidget {
                     height: 10,
                   ),
                   Obx(() {
-                    return expenseController.getExpenseByDateLoad.value
+                    return expenseController.expenses.isEmpty
                         ? Center(
-                            child: CircularProgressIndicator(),
+                            child: majorTitle(
+                                title: "No Entries found",
+                                color: Colors.grey,
+                                size: 13.0),
                           )
-                        : expenseController.expenses.length == 0
-                            ? Center(
-                                child: majorTitle(
-                                    title: "No Entries found",
-                                    color: Colors.grey,
-                                    size: 13.0),
-                              )
-                            : ListView.builder(
-                                itemCount: expenseController.expenses.length,
-                                physics: NeverScrollableScrollPhysics(),
-                                shrinkWrap: true,
-                                itemBuilder: (context, index) {
-                                  ExpenseModel expenseModel = expenseController
-                                      .expenses
-                                      .elementAt(index);
+                        : ListView.builder(
+                            itemCount: expenseController.expenses.length,
+                            physics: const NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            itemBuilder: (context, index) {
+                              ExpenseModel expenseModel =
+                                  expenseController.expenses.elementAt(index);
 
-                                  return expenseCard(
-                                      context: context, expense: expenseModel);
-                                });
+                              return expenseCard(
+                                  context: context, expense: expenseModel);
+                            });
                   }),
                 ],
               ),
@@ -264,9 +255,8 @@ class ExpensePage extends StatelessWidget {
           expenseController.startdate.value = start;
           expenseController.enddate.value = end;
           expenseController.getExpenseByDate(
-            shopId: "${shopController.currentShop.value?.id}",
-            startingDate: expenseController.startdate.value,
-            endingDate: expenseController.enddate.value,
+            fromDate: expenseController.startdate.value,
+            toDate: expenseController.enddate.value,
           );
         }).showPicker(context);
   }

@@ -168,6 +168,7 @@ class ProductController extends GetxController {
   }
 
   getProductsBySort({required String type, String text = ""}) {
+    products.clear();
     RealmResults<Product> allproducts =
         Products().getProductsBySort(type: type, text: text);
     stockValue.value = allproducts.fold(
@@ -176,7 +177,6 @@ class ProductController extends GetxController {
         0, (sum, item) => sum + (item.buyingPrice! * item.quantity!));
     totalProfitEstimate.value = stockValue.value - totalBuyingTotal;
     products.value = allproducts.map((e) => e).toList();
-    products.refresh();
   }
 
   getProductsCount({required String type, String text = ""}) {
@@ -325,6 +325,7 @@ class ProductController extends GetxController {
           description: itemNameController.text,
           quantity: int.parse(qtyController.text),
           createdAt: DateTime.now(),
+          date: DateTime.now().millisecondsSinceEpoch,
           product: selectedBadStock.value,
           attendantId: Get.find<UserController>().user.value,
           shop: Get.find<ShopController>().currentShop.value);
@@ -352,7 +353,7 @@ class ProductController extends GetxController {
       saveBadstockLoad.value = true;
       badstocks.clear();
       RealmResults<BadStock> response =
-          Products().getBadStock(shopId, attendant, product);
+          Products().getBadStock(product: product);
       badstocks.addAll(response.map((e) => e).toList());
       saveBadstockLoad.value = false;
     } catch (e) {

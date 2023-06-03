@@ -261,6 +261,9 @@ class BadStockPage extends StatelessWidget {
                           );
                         });
                   } else {
+                    productController.getProductsBySort(
+                      type: "all",
+                    );
                     Get.to(() => ProductsScreen(
                           type: "badstock",
                           function: (Product product) {

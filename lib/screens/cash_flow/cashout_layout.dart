@@ -247,11 +247,8 @@ class CashOutLayout extends StatelessWidget {
                                                 "Please enter category name",
                                             color: Colors.black);
                                       } else {
-                                        cashFlowController.createCategory(
-                                            "cash-out",
-                                            createShopController
-                                                .currentShop.value,
-                                            context);
+                                        cashFlowController
+                                            .createCategory("cash-out");
                                       }
                                     },
                                     child: Text(

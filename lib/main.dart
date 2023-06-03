@@ -52,32 +52,6 @@ class MyApp extends StatelessWidget {
                 highlightColor: Colors.transparent,
                 splashFactory: NoSplash.splashFactory),
             initialBinding: AuthBinding(),
-            // home: FutureBuilder(
-            //     future: authController.getUserType(),
-            //     builder: (BuildContext context, AsyncSnapshot snapshot) {
-            //       // if (snapshot.connectionState == ConnectionState.waiting) {
-            //       //   return const Center(child: CircularProgressIndicator());
-            //       // }
-            //       if (snapshot.hasError) {
-            //         return Landing();
-            //       }
-            //       if (snapshot.hasData) {
-            //         if (snapshot.data[0] == "admin") {
-            //           AdminModel userModel = snapshot.data[1];
-            //           if (userModel.shops!.isEmpty) {
-            //             return CreateShop(
-            //               page: "home",
-            //             );
-            //           } else {
-            //             return Home();
-            //           }
-            //         }
-            //
-            //         return AttendantLanding();
-            //       } else {
-            //         return Landing();
-            //       }
-            //     }),
             home: Authenticate(),
           );
         });

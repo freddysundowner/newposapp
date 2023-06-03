@@ -262,10 +262,8 @@ class CashInLayout extends StatelessWidget {
                                     ),
                                     TextButton(
                                       onPressed: () {
-                                        cashflowController.createCategory(
-                                            "cash-in",
-                                            shopController.currentShop.value,
-                                            context);
+                                        cashflowController
+                                            .createCategory("cash-in");
                                         Navigator.pop(context);
                                       },
                                       child: Text(

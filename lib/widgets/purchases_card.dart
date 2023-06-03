@@ -2,10 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:pointify/controllers/user_controller.dart';
 import 'package:pointify/controllers/purchase_controller.dart';
 import 'package:pointify/functions/functions.dart';
+import 'package:pointify/services/product.dart';
+import 'package:pointify/widgets/alert.dart';
 import 'package:pointify/widgets/smalltext.dart';
 import 'package:get/get.dart';
 
 import '../Real/Models/schema.dart';
+import '../utils/colors.dart';
+import '../utils/themer.dart';
 import 'bigtext.dart';
 import 'normal_text.dart';
 
@@ -13,6 +17,8 @@ Widget purchasesItemCard({required InvoiceItem invoiceItem, required index}) {
   PurchaseController purchaseController = Get.find<PurchaseController>();
   UserController attendantController = Get.find<UserController>();
   UserController userController = Get.find<UserController>();
+  TextEditingController buyingProceController = TextEditingController();
+  TextEditingController sellingPriceController = TextEditingController();
   return Padding(
     padding: const EdgeInsets.all(10.0),
     child: Card(
@@ -71,8 +77,94 @@ Widget purchasesItemCard({required InvoiceItem invoiceItem, required index}) {
                               attendantController.checkRole("edit_entries")))
                         InkWell(
                             onTap: () {
-                              // Get.to(() => CreateProduct(
-                              //     page: "edit", productModel: productModel));
+                              buyingProceController.text =
+                                  invoiceItem.product!.buyingPrice!.toString();
+                              sellingPriceController.text =
+                                  invoiceItem.product!.selling.toString();
+
+                              showDialog(
+                                  context: Get.context!,
+                                  builder: (_) {
+                                    return AlertDialog(
+                                      title: const Text("Edit product prices?"),
+                                      content: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Container(
+                                            decoration: ThemeHelper()
+                                                .inputBoxDecorationShaddow(),
+                                            child: TextFormField(
+                                              keyboardType:
+                                                  TextInputType.number,
+                                              controller: buyingProceController,
+                                              decoration: ThemeHelper()
+                                                  .textInputDecorationDesktop(
+                                                      'Buying Price',
+                                                      'Enter buyinng price'),
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            height: 20,
+                                          ),
+                                          Container(
+                                            decoration: ThemeHelper()
+                                                .inputBoxDecorationShaddow(),
+                                            child: TextFormField(
+                                              keyboardType:
+                                                  TextInputType.number,
+                                              controller:
+                                                  sellingPriceController,
+                                              decoration: ThemeHelper()
+                                                  .textInputDecorationDesktop(
+                                                      'Selling Price',
+                                                      'Enter selling price'),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      actions: [
+                                        TextButton(
+                                            onPressed: () {
+                                              Get.back();
+                                            },
+                                            child: Text(
+                                              "Cancel".toUpperCase(),
+                                              style: TextStyle(
+                                                  color: AppColors.mainColor),
+                                            )),
+                                        TextButton(
+                                            onPressed: () {
+                                              var buyingprice = int.parse(
+                                                  buyingProceController.text);
+                                              var sellingprice = int.parse(
+                                                  sellingPriceController.text);
+                                              if (buyingprice > sellingprice) {
+                                                generalAlert(
+                                                    title: "Erro",
+                                                    message:
+                                                        "Buying price cannot be more than selling price");
+                                                return;
+                                              }
+                                              Products().updateProductPart(
+                                                  product: invoiceItem.product!,
+                                                  buyingPrice: buyingprice,
+                                                  sellingPrice: sellingprice);
+                                              invoiceItem.price = buyingprice;
+
+                                              Get.back();
+                                              purchaseController
+                                                  .calculateAmount(index);
+                                              purchaseController.invoice
+                                                  .refresh();
+                                            },
+                                            child: Text(
+                                              "Update".toUpperCase(),
+                                              style: TextStyle(
+                                                  color: AppColors.mainColor),
+                                            ))
+                                      ],
+                                    );
+                                  });
                             },
                             child: Text(
                               "Edit Price",

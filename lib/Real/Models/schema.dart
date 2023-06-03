@@ -131,6 +131,7 @@ class _BadStock {
   ObjectId? id;
   String? description;
   int? quantity;
+  int? date;
   DateTime? createdAt;
   DateTime? updatedAt;
   _Product? product;
@@ -230,6 +231,7 @@ class _ExpenseModel {
   String? shop;
   String? name;
   _UserModel? attendantId;
+  int? date;
   DateTime? createdAt;
   DateTime? updatedAt;
 }
@@ -366,6 +368,7 @@ class _SalesModel {
   int? totalDiscount;
   int? quantity;
   String? paymentMethod;
+  int? dated;
   String? date;
   String? dueDate;
   DateTime? createdAt;
@@ -381,7 +384,10 @@ class _ReceiptItem {
   _SalesModel? receipt;
   _CustomerModel? customerId;
   int? quantity;
+  _Shop? shop;
   String? type;
+  String? date;
+  int? soldOn;
   int? total;
   int? discount;
   @Ignored()

@@ -49,17 +49,15 @@ class Transactions {
     return data;
   }
 
-  createCategory({required Map<String, dynamic> body}) async {
-    var response = await DbBase().databaseRequest(
-        "${cashflow}" + "category", DbBase().postRequestType,
-        body: body);
-    var data = jsonDecode(response);
-    return data;
+  createCategory(CashFlowCategory cashFlowCategory) {
+    realmService.realm.write<CashFlowCategory>(
+        () => realmService.realm.add<CashFlowCategory>(cashFlowCategory));
   }
 
   RealmResults<CashFlowCategory> getCategory({required shop, required type}) {
-    RealmResults<CashFlowCategory> response =
-        realmService.realm.query<CashFlowCategory>(r'shop == $0', [shop]);
+    RealmResults<CashFlowCategory> response = realmService.realm
+        .query<CashFlowCategory>(r'shop == $0', [shop.toString()]);
+    print("response ${response.length}");
     return response;
   }
 

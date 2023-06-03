@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pointify/controllers/sales_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
+import 'package:pointify/main.dart';
 import 'package:realm/realm.dart';
 
 import '../Real/Models/schema.dart';
@@ -25,6 +26,10 @@ class UserController extends GetxController {
   getUser() async {
     print("getUser");
     RealmResults<UserModel> userdata = await Users.getUserUser();
+    if (userdata.length == 0) {
+      await appController.logOut();
+      return;
+    }
     print("getUser ${userdata.length}");
     user.value = userdata.first;
     print("getUser ${userdata.first}");

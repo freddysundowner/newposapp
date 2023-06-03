@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:pointify/controllers/AuthController.dart';
+import 'package:pointify/controllers/expense_controller.dart';
 import 'package:pointify/controllers/user_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
+import 'package:pointify/functions/functions.dart';
 import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/sales/create_sale.dart';
 import 'package:pointify/screens/stock/badstocks.dart';
@@ -17,6 +19,7 @@ import '../../controllers/sales_controller.dart';
 import '../../utils/colors.dart';
 import '../../widgets/bigtext.dart';
 import '../../widgets/normal_text.dart';
+import '../finance/components/date_picker.dart';
 import '../finance/finance_page.dart';
 import '../finance/profit_page.dart';
 import '../home/home_page.dart';
@@ -26,10 +29,11 @@ class AllSalesPage extends StatelessWidget {
   final page;
 
   AllSalesPage({Key? key, required this.page}) : super(key: key) {
-    final DateTime now = DateTime.now();
-    final DateFormat formatter = DateFormat('yyyy-MM-dd');
-    final String formatted = formatter.format(now);
-    salesController.getSales(date: formatted);
+    salesController.salesInitialIndex.value = 0;
+    // final DateTime now = DateTime.now();
+    // final DateFormat formatter = DateFormat('yyyy-MM-dd');
+    // final String formatted = formatter.format(now);
+    // salesController.getSales(date: formatted);
   }
 
   SalesController salesController = Get.find<SalesController>();
@@ -58,7 +62,19 @@ class AllSalesPage extends StatelessWidget {
               title: Row(
                 children: [
                   if (usercontroller.user.value?.usertype == "admin")
-                    majorTitle(title: "Sales", color: Colors.black, size: 18.0),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        majorTitle(
+                            title: "Sales", color: Colors.black, size: 18.0),
+                        Obx(
+                          () => Text(
+                            "${DateFormat("yyyy-MM-dd").format(Get.find<ExpenseController>().startdate.value)} - ${DateFormat("yyyy-MM-dd").format(Get.find<ExpenseController>().enddate.value)}",
+                            style: TextStyle(color: Colors.blue, fontSize: 13),
+                          ),
+                        )
+                      ],
+                    ),
                   const Spacer(),
                   if (usercontroller.user.value?.usertype == "attendant")
                     PopupMenuButton(
@@ -134,6 +150,36 @@ class AllSalesPage extends StatelessWidget {
                       ),
                     ),
               actions: [
+                InkWell(
+                    onTap: () async {
+                      final picked = await showDateRangePicker(
+                        context: context,
+                        lastDate: DateTime(2079),
+                        firstDate: DateTime(2019),
+                      );
+                      salesController.getSales(
+                          fromDate: picked!.start, toDate: picked.end);
+                    },
+                    child: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      child: Center(
+                        child: Row(
+                          children: [
+                            Text(
+                              "Filter",
+                              style: TextStyle(
+                                  color: AppColors.mainColor,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            Icon(
+                              Icons.filter_list_alt,
+                              color: AppColors.mainColor,
+                              size: 20,
+                            )
+                          ],
+                        ),
+                      ),
+                    )),
                 if (usercontroller.user.value?.usertype == "admin")
                   IconButton(
                       onPressed: () {
@@ -158,14 +204,17 @@ class AllSalesPage extends StatelessWidget {
                 onTap: (value) {
                   salesController.salesInitialIndex.value = value;
                   if (value == 0) {
-                    salesController.getSales(date: "");
+                    salesController.getSales(
+                        fromDate: Get.find<ExpenseController>().startdate.value,
+                        toDate: Get.find<ExpenseController>().enddate.value);
                   } else if (value == 1) {
-                    salesController.getSales(onCredit: true);
+                    salesController.getSales(
+                        fromDate: Get.find<ExpenseController>().startdate.value,
+                        toDate: Get.find<ExpenseController>().enddate.value,
+                        onCredit: true);
                   } else {
                     final DateTime now = DateTime.now();
-                    final DateFormat formatter = DateFormat('yyyy-MM-dd');
-                    final String formatted = formatter.format(now);
-                    salesController.getSales(date: formatted);
+                    salesController.getSales(fromDate: now, toDate: now);
                   }
                 },
                 tabs: const [
@@ -231,7 +280,7 @@ class AllSales extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           salesTable(context, "services"),
-                          SizedBox(
+                          const SizedBox(
                             height: 10,
                           ),
                           Align(
@@ -247,11 +296,11 @@ class AllSales extends StatelessWidget {
                                       const SizedBox(
                                         width: 10,
                                       ),
-                                      Text(
-                                          "${shopController.currentShop.value?.currency} ${salesController.totalSales()}"),
+                                      Text(htmlPrice(
+                                          salesController.totalSales())),
                                     ],
                                   ),
-                                  Divider(
+                                  const Divider(
                                     thickness: 2,
                                     color: Colors.black,
                                   )
@@ -259,7 +308,7 @@ class AllSales extends StatelessWidget {
                               ),
                             ),
                           ),
-                          SizedBox(height: 60),
+                          const SizedBox(height: 60),
                         ],
                       ),
                     )

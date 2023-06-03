@@ -221,12 +221,7 @@ class CreateExpense extends StatelessWidget {
               Center(
                 child: InkWell(
                   onTap: () {
-                    // expenseController.saveExpense(
-                    //     attendantId: authController.usertype.value == "admin"
-                    //         ? authController.currentUser.value!.id
-                    //         : attendantController.attendant.value!.id,
-                    //     shopId: shopController.currentShop.value!.id,
-                    //     context: context);
+                    expenseController.saveExpense();
                   },
                   child: Container(
                       padding: EdgeInsets.only(
@@ -278,8 +273,7 @@ class CreateExpense extends StatelessWidget {
               TextButton(
                 onPressed: () {
                   Navigator.pop(context);
-                  cashflowController.createCategory(
-                      "cash-out", shopController.currentShop.value, context);
+                  cashflowController.createCategory("cash-out");
                 },
                 child: Text(
                   "Save now".toUpperCase(),

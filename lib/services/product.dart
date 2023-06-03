@@ -14,6 +14,7 @@ import 'client.dart';
 class Products {
   final RealmController realmService = Get.find<RealmController>();
 
+  final ShopController shopController = Get.find<ShopController>();
   createProduct(Product body, {String? type = ""}) async {
     print("creating ${body.name}");
     realmService.realm
@@ -28,12 +29,20 @@ class Products {
   updateProductPart(
       {required Product product,
       int? quantity,
+      int? buyingPrice,
+      int? sellingPrice,
       bool deleted = false,
       bool counted = false,
       DateTime? updatedAt,
       String? counteddate,
       String? type = ""}) async {
     realmService.realm.write(() {
+      if (buyingPrice != null) {
+        product.buyingPrice = buyingPrice;
+      }
+      if (sellingPrice != null) {
+        product.selling = sellingPrice;
+      }
       if (quantity != null) {
         product.quantity = quantity;
       }
@@ -191,7 +200,8 @@ class Products {
   RealmResults<ProductHistoryModel> getProductTransferHistory(
       {required Product product}) {
     RealmResults<ProductHistoryModel> history = realmService.realm
-        .query<ProductHistoryModel>('product == \$0', [product]);
+        .query<ProductHistoryModel>(
+            "type == 'transfer' AND product == \$0", [product]);
     return history;
   }
 
@@ -202,7 +212,15 @@ class Products {
         .write<BadStock>(() => realmService.realm.add<BadStock>(badStock));
   }
 
-  RealmResults<BadStock> getBadStock(shopId, attendant, Product? product) {
+  RealmResults<BadStock> getBadStock(
+      {DateTime? fromDate, DateTime? toDate, Product? product}) {
+    if (fromDate != null && toDate != null) {
+      RealmResults<BadStock> returns = realmService.realm.query<BadStock>(
+          'date > ${fromDate.millisecondsSinceEpoch} AND date < ${toDate.millisecondsSinceEpoch} AND shop == \$0',
+          [shopController.currentShop.value]);
+      print("returns ${returns.length}");
+      return returns;
+    }
     RealmResults<BadStock> products = realmService.realm.query<BadStock>(
         'shop == \$0 AND TRUEPREDICATE SORT(createdAt DESC)',
         [Get.find<ShopController>().currentShop.value]);

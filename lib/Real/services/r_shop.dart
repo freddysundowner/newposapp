@@ -18,9 +18,8 @@ class RShop {
 
   getShop({String name = ""}) {
     print(name);
-    RealmResults<Shop> shops = realmService.realm.query<Shop>(
-        r'owner == $0 OR name BEGINSWITH $0',
-        [realmService.currentUser!.value!.id, name]);
+    RealmResults<Shop> shops = realmService.realm
+        .query<Shop>(r'owner == $0', [realmService.currentUser!.value!.id]);
     if (name.isNotEmpty) {
       RealmResults<Shop> shopsFiltered =
           shops.query('name BEGINSWITH \$0', [name]);

@@ -43,7 +43,6 @@ class PurchaseController extends GetxController {
     if (invoice.value!.balance! > 0 && invoice.value!.supplier == null) {
       generalAlert(title: "Error", message: "please select supplier");
     } else {
-      Navigator.pop(context);
       Invoice invoiceData = invoice.value!;
       invoiceData.shop = shopController.currentShop.value;
       invoiceData.attendantId = Get.find<UserController>().user.value;
@@ -94,7 +93,6 @@ class PurchaseController extends GetxController {
         Products().createProductHistory(productHistoryModel);
       }
       invoice.value = null;
-      refresh();
       Get.back();
     }
   }
@@ -182,6 +180,8 @@ class PurchaseController extends GetxController {
     invoice.value?.items[index].total =
         invoice.value!.items[index].product!.buyingPrice! *
             invoice.value!.items[index!].itemCount!;
+
+    print(invoice.value!.items[index].product!.buyingPrice);
     invoice.refresh();
   }
 

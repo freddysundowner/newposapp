@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:pointify/controllers/expense_controller.dart';
 import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/controllers/user_controller.dart';
@@ -35,6 +36,7 @@ class SalesController extends GetxController
   TextEditingController amountPaid = TextEditingController();
   RxList<SalesModel> allSales = RxList([]);
   RxnInt allSalesTotal = RxnInt(0);
+  RxnInt totalbadStock = RxnInt(0);
   RxnInt totalSalesReturned = RxnInt(0);
   RxList<SalesModel> todaySales = RxList([]);
   RxList<SalesReturn> returns = RxList([]);
@@ -43,7 +45,8 @@ class SalesController extends GetxController
   RxList<ReceiptItem> productSales = RxList([]);
   RxList<SalesModel> creditSales = RxList([]);
   RxList<PayHistory> paymenHistory = RxList([]);
-  Rxn<SalesSummary> profitModel = Rxn(null);
+  Rxn<SalesSummary> salesSummary = Rxn(null);
+  RxInt grossProfit = RxInt(0);
 
   RxInt totalSalesByDate = RxInt(0);
   RxInt salesInitialIndex = RxInt(0);
@@ -61,6 +64,26 @@ class SalesController extends GetxController
   RxList<InvoiceItem> salesHistory = RxList([]);
 
   RxString activeItem = RxString("All Sales");
+
+  getFinanceSummary({
+    String? date = "",
+    DateTime? fromDate,
+    DateTime? toDate,
+  }) {
+    RealmResults<ReceiptItem> sales =
+        Sales().getSaleReceipts(date: date, fromDate: fromDate, toDate: toDate);
+    grossProfit.value = sales.fold(
+        0,
+        (previousValue, element) =>
+            previousValue +
+            ((element.price! * element.quantity!) -
+                (element.quantity! * element.product!.buyingPrice!)));
+
+    Get.find<ExpenseController>().getExpenseByDate(
+      fromDate: fromDate,
+      toDate: toDate,
+    );
+  }
 
   changesaleItem(ReceiptItem value) {
     var index = -1;
@@ -228,14 +251,11 @@ class SalesController extends GetxController
   _onCredit(SalesModel salesModel) => _paymentType(salesModel) == "Credit";
 
   void saveReceipt() {
-    final DateTime now = DateTime.now();
-    final DateFormat formatter = DateFormat('yyyy-MM-dd');
-    final String formatted = formatter.format(now);
     SalesModel receiptData = receipt.value!;
     receiptData.shop = Get.find<ShopController>().currentShop.value;
     receiptData.attendantId = Get.find<UserController>().user.value;
     receiptData.receiptNumber = getRandomString(10);
-    receiptData.date = formatted;
+    receiptData.dated = DateTime.now().millisecondsSinceEpoch;
     receiptData.createdAt = DateTime.now();
     receiptData.quantity = receiptData.items.length;
     receiptData.paymentMethod = _paymentType(receiptData);
@@ -401,26 +421,41 @@ class SalesController extends GetxController
 
   getSales(
       {onCredit = false,
-      String? date = "",
+      DateTime? fromDate,
+      DateTime? toDate,
       CustomerModel? customer,
       String total = ""}) async {
-    RealmResults<SalesModel> sales =
-        Sales().getSales(date: date, onCredit: onCredit, customer: customer);
+    RealmResults<SalesModel> sales = Sales().getSales(
+        fromDate: fromDate,
+        toDate: toDate,
+        onCredit: onCredit,
+        customer: customer);
     allSales.clear();
     allSales.addAll(sales.map((e) => e).toList());
   }
 
-  getProfitTransaction(
-      {required start, required end, required type, required shopId}) async {
-    try {
-      var response = await Transactions().getProfitTransactions(
-          shopId,
-          DateFormat("yyyy-MM-dd").format(start),
-          DateFormat("yyyy-MM-dd").format(end));
-      profitModel.value = null; //SalesSummary.fromJson(response);
-    } catch (e) {
-      print(e);
-    }
+  getProfitTransaction({
+    DateTime? fromDate,
+    DateTime? toDate,
+  }) async {
+    RealmResults<ReceiptItem> sales =
+        Sales().getSaleReceipts(fromDate: fromDate, toDate: toDate);
+    allSalesTotal.value = sales.fold(
+        0,
+        (previousValue, element) =>
+            previousValue! + (element.price! * element.quantity!));
+
+    getFinanceSummary(fromDate: fromDate, toDate: toDate);
+
+    RealmResults<BadStock> badstock =
+        Products().getBadStock(fromDate: fromDate, toDate: toDate);
+    totalbadStock.value = badstock.fold(
+        0,
+        (previousValue, element) =>
+            previousValue! +
+            (element.product!.buyingPrice! * element.quantity!));
+    Get.find<ExpenseController>()
+        .getExpenseByDate(fromDate: fromDate, toDate: toDate);
   }
 
   @override
@@ -530,8 +565,9 @@ class SalesController extends GetxController
     }
   }
 
-  void getSalesByDate(date) {
-    RealmResults<SalesModel> response = Sales().getSales(date: date);
+  void getSalesByDate({DateTime? fromDate, DateTime? toDate}) {
+    RealmResults<SalesModel> response =
+        Sales().getSales(fromDate: fromDate, toDate: toDate);
     totalSalesByDate.value = response.fold(
         0, (previousValue, element) => previousValue + element.grandTotal!);
     todaySales.addAll(response.map((e) => e).toList());
@@ -540,7 +576,7 @@ class SalesController extends GetxController
   void getReturns({CustomerModel? customerModel, SalesModel? salesModel}) {
     currentReceiptReturns.clear();
     RealmResults<ReceiptItem> response = Sales()
-        .getReturns(salesModel: salesModel, customerModel: customerModel);
+        .getSaleReceipts(salesModel: salesModel, customerModel: customerModel);
     List<ReceiptItem> salesReturn = response.map((e) => e).toList();
     for (var e in salesReturn) {
       if (currentReceiptReturns

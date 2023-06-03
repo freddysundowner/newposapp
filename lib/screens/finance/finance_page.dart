@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:pointify/controllers/expense_controller.dart';
 import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/cash_flow/cash_flow_manager.dart';
-import 'package:pointify/screens/finance/components/date_picker.dart';
 import 'package:pointify/screens/finance/profit_page.dart';
 import 'package:pointify/utils/helper.dart';
 import 'package:get/get.dart';
@@ -12,7 +12,6 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 
 import '../../controllers/sales_controller.dart';
 import '../../utils/colors.dart';
-import '../../utils/dates.dart';
 import '../../widgets/bigtext.dart';
 import '../../widgets/normal_text.dart';
 import '../../widgets/smalltext.dart';
@@ -26,13 +25,9 @@ class FinancePage extends StatelessWidget {
   ExpenseController expenseController = Get.find<ExpenseController>();
 
   FinancePage({Key? key}) : super(key: key) {
-    var startDate = converTimeToMonth()["startDate"];
-    var endDate = converTimeToMonth()["endDate"];
-    salesController.getProfitTransaction(
-        start: DateTime.parse(startDate),
-        end: DateTime.parse(endDate),
-        type: "finance",
-        shopId: shopController.currentShop.value?.id);
+    salesController.getFinanceSummary(
+        fromDate: expenseController.startdate.value,
+        toDate: expenseController.enddate.value);
   }
 
   @override
@@ -83,10 +78,10 @@ class FinancePage extends StatelessWidget {
                                 },
                                 color: Colors.amber.shade100,
                                 icon: Icons.query_stats,
-                                amount: salesController.profitModel.value ==
+                                amount: salesController.salesSummary.value ==
                                         null
                                     ? 0
-                                    : "${salesController.profitModel.value?.grossProfit}"),
+                                    : "${salesController.salesSummary.value?.grossProfit}"),
                           )),
                       Obx(() {
                         return Padding(
@@ -100,9 +95,9 @@ class FinancePage extends StatelessWidget {
                             },
                             color: Colors.purple.shade100,
                             icon: Icons.show_chart,
-                            amount: salesController.profitModel.value == null
+                            amount: salesController.salesSummary.value == null
                                 ? 0
-                                : "${salesController.profitModel.value?.totalExpense}",
+                                : "${salesController.salesSummary.value?.totalExpense}",
                           ),
                         );
                       }),
@@ -121,9 +116,9 @@ class FinancePage extends StatelessWidget {
                             },
                             color: Colors.blue.shade100,
                             icon: Icons.sell_rounded,
-                            amount: salesController.profitModel.value == null
+                            amount: salesController.salesSummary.value == null
                                 ? 0
-                                : "${salesController.profitModel.value?.sales}",
+                                : "${salesController.salesSummary.value?.sales}",
                           ),
                         );
                       }),
@@ -213,9 +208,7 @@ class FinancePage extends StatelessWidget {
                       },
                       color: Colors.amber.shade100,
                       icon: Icons.query_stats,
-                      amount: salesController.profitModel.value == null
-                          ? 0
-                          : "${salesController.profitModel.value?.grossProfit}");
+                      amount: "${salesController.grossProfit}");
                 }),
                 Obx(() {
                   return financeCards(
@@ -226,9 +219,7 @@ class FinancePage extends StatelessWidget {
                     },
                     color: Colors.purple.shade100,
                     icon: Icons.show_chart,
-                    amount: salesController.profitModel.value == null
-                        ? 0
-                        : "${salesController.profitModel.value?.totalExpense}",
+                    amount: expenseController.totalExpenses.value,
                   );
                 }),
                 Obx(() {
@@ -245,9 +236,9 @@ class FinancePage extends StatelessWidget {
                     },
                     color: Colors.blue.shade100,
                     icon: Icons.sell_rounded,
-                    amount: salesController.profitModel.value == null
+                    amount: salesController.salesSummary.value == null
                         ? 0
-                        : "${salesController.profitModel.value?.sales}",
+                        : "${salesController.salesSummary.value?.sales}",
                   );
                 }),
                 InkWell(
@@ -324,7 +315,18 @@ class FinancePage extends StatelessWidget {
           color: Colors.black,
         ),
       ),
-      title: majorTitle(title: "Financial", color: Colors.black, size: 16.0),
+      title: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          majorTitle(title: "Financial", color: Colors.black, size: 16.0),
+          Obx(
+            () => Text(
+              "${DateFormat("yyyy-MM-dd").format(Get.find<ExpenseController>().startdate.value)} - ${DateFormat("yyyy-MM-dd").format(Get.find<ExpenseController>().enddate.value)}",
+              style: TextStyle(color: Colors.blue, fontSize: 13),
+            ),
+          )
+        ],
+      ),
       actions: [
         InkWell(
             onTap: () async {
@@ -336,11 +338,8 @@ class FinancePage extends StatelessWidget {
               expenseController.startdate.value = picked!.start;
               expenseController.enddate.value = picked.end;
 
-              salesController.getProfitTransaction(
-                  start: expenseController.startdate.value,
-                  end: expenseController.enddate.value,
-                  type: "finance",
-                  shopId: shopController.currentShop.value?.id);
+              salesController.getFinanceSummary(
+                  fromDate: picked.start, toDate: picked.end);
             },
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 20),

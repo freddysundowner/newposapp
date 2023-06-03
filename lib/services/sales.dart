@@ -2,8 +2,6 @@ import 'dart:convert';
 
 import 'package:get/get.dart';
 import 'package:pointify/Real/Models/schema.dart';
-import 'package:pointify/controllers/AuthController.dart';
-import 'package:pointify/controllers/user_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/services/apiurls.dart';
 import 'package:realm/realm.dart';
@@ -71,7 +69,8 @@ class Sales {
 
   RealmResults<SalesModel> getSales(
       {onCredit = false,
-      String? date = "",
+      DateTime? fromDate,
+      DateTime? toDate,
       CustomerModel? customer,
       String total = ""}) {
     String filter = "";
@@ -85,14 +84,15 @@ class Sales {
       return invoices;
     }
     RealmResults<SalesModel> invoices = realmService.realm.query<SalesModel>(
-        'shop == \$0 ${filter} AND TRUEPREDICATE SORT(createdAt DESC)',
+        'shop == \$0 $filter AND TRUEPREDICATE SORT(createdAt DESC)',
         [shopController.currentShop.value]);
-    if (date!.isEmpty) {
+    if (fromDate == null) {
       return invoices;
     }
     if (invoices.isNotEmpty) {
-      RealmResults<SalesModel> dateinvoices = invoices
-          .query(r'date == $0 AND TRUEPREDICATE SORT(createdAt DESC)', [date]);
+      print("haha ");
+      RealmResults<SalesModel> dateinvoices = invoices.query(
+          'dated > ${fromDate.millisecondsSinceEpoch} AND dated < ${toDate!.millisecondsSinceEpoch} AND TRUEPREDICATE SORT(createdAt DESC)');
       return dateinvoices;
     }
     return invoices;
@@ -109,8 +109,24 @@ class Sales {
     return invoices;
   }
 
-  RealmResults<ReceiptItem> getReturns(
-      {CustomerModel? customerModel, SalesModel? salesModel}) {
+  RealmResults<ReceiptItem> getSaleReceipts(
+      {CustomerModel? customerModel,
+      SalesModel? salesModel,
+      String? date,
+      DateTime? fromDate,
+      DateTime? toDate}) {
+    if (fromDate != null && toDate != null) {
+      RealmResults<ReceiptItem> returns = realmService.realm.query<ReceiptItem>(
+          'soldOn > ${fromDate.millisecondsSinceEpoch} AND soldOn < ${toDate.millisecondsSinceEpoch} AND shop == \$0',
+          [shopController.currentShop.value]);
+      return returns;
+    }
+    if (date!.isNotEmpty) {
+      RealmResults<ReceiptItem> returns = realmService.realm.query<ReceiptItem>(
+          "date == '$date' AND shop == \$0",
+          [shopController.currentShop.value]);
+      return returns;
+    }
     if (customerModel != null) {
       RealmResults<ReceiptItem> returns = realmService.realm
           .query<ReceiptItem>('customerId == \$0 ', [customerModel]);
@@ -122,20 +138,10 @@ class Sales {
   }
 
   RealmResults<SalesModel> getCustomerReturns(CustomerModel customerModel) {
-    print("getReturns");
     RealmResults<SalesModel> receipts = realmService.realm
         .query<SalesModel>('customer == \$0 ', [customerModel]);
-    print("getReturns ${receipts.length}");
     return receipts;
   }
-
-  // getSales({required onCredit, required date, required customer, total}) async {
-  //   var response = await DbBase().databaseRequest(
-  //       "${sales}allsales/${Get.find<ShopController>().currentShop.value?.id}?attendant=${Get.find<UserController>().user.value?.usertype == "admin" ? "" : Get.find<UserController>().user.value!.id}&oncredit=$onCredit&startdate=${date ?? ""}&total=$total&customer=$customer",
-  //       DbBase().getRequestType);
-  //   var data = jsonDecode(response);
-  //   return data;
-  // }
 
   retunSale(SalesReturn salesReturn) async {
     realmService.realm.write<SalesReturn>(

@@ -202,9 +202,7 @@ class CashInUi extends StatelessWidget {
                                   onPressed: () {
                                     Navigator.pop(context);
                                     cashflowController.createCategory(
-                                        type == "in" ? "cash-in" : "cash-out",
-                                        createShopController.currentShop.value,
-                                        context);
+                                        type == "in" ? "cash-in" : "cash-out");
                                   },
                                   child: Text(
                                     "Save now".toUpperCase(),

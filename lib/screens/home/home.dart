@@ -80,9 +80,8 @@ class _HomeState extends State<Home> {
                   InkWell(
                     onTap: () {
                       final DateTime now = DateTime.now();
-                      final DateFormat formatter = DateFormat('yyyy-MM-dd');
-                      final String formatted = formatter.format(now);
-                      salesController.getSalesByDate(formatted);
+                      salesController.getSalesByDate(
+                          fromDate: now, toDate: now);
                       homeControler.selectedIndex.value = 0;
                     },
                     child: Column(

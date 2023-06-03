@@ -97,24 +97,22 @@ class CreateProduct extends StatelessWidget {
         body: ResponsiveWidget(
           largeScreen: Align(
             alignment: Alignment.center,
-            child: SingleChildScrollView(
-              child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  padding: EdgeInsets.only(left: 50, right: 150, top: 20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      productDetailsCard(context),
-                      SizedBox(height: 20),
-                      Center(child: saveButton(context))
-                    ],
-                  )),
-            ),
+            child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                padding: EdgeInsets.only(left: 50, right: 150, top: 20),
+                child: ListView(
+                  children: [
+                    productDetailsCard(context),
+                    SizedBox(height: 20),
+                    Center(child: saveButton(context))
+                  ],
+                )),
           ),
           smallScreen: SingleChildScrollView(
+            physics: BouncingScrollPhysics(),
             child: Padding(
               padding: const EdgeInsets.only(left: 8.0, right: 8.0, top: 5.0),
               child: productDetailsCard(context),
@@ -140,7 +138,6 @@ class CreateProduct extends StatelessWidget {
 
   Widget productDetailsCard(context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SizedBox(height: 10),
         Text("Item Name *"),

@@ -20,11 +20,7 @@ class ProductsScreen extends StatelessWidget {
   final type;
   Function? function;
 
-  ProductsScreen({Key? key, required this.type, this.function}) {
-    productController.getProductsBySort(
-      type: "all",
-    );
-  }
+  ProductsScreen({Key? key, required this.type, this.function}) {}
   UserController attendantController = Get.find<UserController>();
   PurchaseController purchaseController = Get.find<PurchaseController>();
   ProductController productController = Get.find<ProductController>();
