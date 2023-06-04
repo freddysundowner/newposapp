@@ -5,12 +5,9 @@ import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/controllers/user_controller.dart';
 import 'package:pointify/controllers/wallet_controller.dart';
-import 'package:pointify/screens/cash_flow/payment_history.dart';
 import 'package:pointify/screens/cash_flow/wallet_page.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:pointify/screens/customers/customers_page.dart';
-import 'package:pointify/screens/purchases/invoice_screen.dart';
 import 'package:pointify/screens/sales/components/sales_receipt.dart';
 import 'package:pointify/widgets/alert.dart';
 import 'package:realm/realm.dart';
@@ -21,11 +18,7 @@ import '../services/customer.dart';
 import '../services/payment.dart';
 import '../services/product.dart';
 import '../services/sales.dart';
-import '../services/transactions.dart';
 import '../utils/colors.dart';
-import '../widgets/loading_dialog.dart';
-import '../widgets/snackBars.dart';
-import 'CustomerController.dart';
 
 class SalesController extends GetxController
     with GetSingleTickerProviderStateMixin {
@@ -36,6 +29,7 @@ class SalesController extends GetxController
   TextEditingController amountPaid = TextEditingController();
   RxList<SalesModel> allSales = RxList([]);
   RxnInt allSalesTotal = RxnInt(0);
+  RxnInt netProfit = RxnInt(0);
   RxnInt totalbadStock = RxnInt(0);
   RxnInt totalSalesReturned = RxnInt(0);
   RxList<SalesModel> todaySales = RxList([]);
@@ -47,6 +41,12 @@ class SalesController extends GetxController
   RxList<PayHistory> paymenHistory = RxList([]);
   Rxn<SalesSummary> salesSummary = Rxn(null);
   RxInt grossProfit = RxInt(0);
+  var filterStartDate =
+      DateTime.parse(DateFormat("yyy-MM-dd").format(DateTime.now())).obs;
+  var filterEnndStartDate = DateTime.parse(
+          DateFormat("yyy-MM-dd").format(DateTime.now().add(Duration(days: 1))))
+      .obs;
+  TextEditingController searchProductController = TextEditingController();
 
   RxInt totalSalesByDate = RxInt(0);
   RxInt salesInitialIndex = RxInt(0);
@@ -424,9 +424,11 @@ class SalesController extends GetxController
       DateTime? fromDate,
       DateTime? toDate,
       CustomerModel? customer,
-      String total = ""}) async {
+      String total = "",
+      String receipt = ""}) async {
     RealmResults<SalesModel> sales = Sales().getSales(
         fromDate: fromDate,
+        receipt: receipt,
         toDate: toDate,
         onCredit: onCredit,
         customer: customer);
@@ -566,11 +568,15 @@ class SalesController extends GetxController
   }
 
   void getSalesByDate({DateTime? fromDate, DateTime? toDate}) {
+    print(fromDate);
+    print(toDate);
+    todaySales.clear();
     RealmResults<SalesModel> response =
         Sales().getSales(fromDate: fromDate, toDate: toDate);
     totalSalesByDate.value = response.fold(
         0, (previousValue, element) => previousValue + element.grandTotal!);
     todaySales.addAll(response.map((e) => e).toList());
+    print("todaySales ${todaySales.length}");
   }
 
   void getReturns({CustomerModel? customerModel, SalesModel? salesModel}) {

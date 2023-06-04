@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:pointify/controllers/realm_controller.dart';
 import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/screens/cash_flow/cash_flow_manager.dart';
 import 'package:pointify/widgets/alert.dart';
-import 'package:pointify/widgets/snackBars.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:realm/realm.dart';
@@ -146,6 +144,8 @@ class CashflowController extends GetxController
         shop: Get.find<ShopController>().currentShop.value!.id.toString(),
         type: type);
     await Transactions().createCategory(cashFlowCategory);
+    getCategory(
+        type, Get.find<ShopController>().currentShop.value!.id.toString());
   }
 
   void getCategory(type, shopId) {

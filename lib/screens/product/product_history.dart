@@ -326,7 +326,7 @@ class BadStockPage extends StatelessWidget {
           ? Center(
               child: CircularProgressIndicator(),
             )
-          : productController.badstocks.length == 0
+          : productController.badstocks.isEmpty
               ? Center(
                   child: Text("There are no iems to display"),
                 )

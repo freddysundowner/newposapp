@@ -26,8 +26,10 @@ class FinancePage extends StatelessWidget {
 
   FinancePage({Key? key}) : super(key: key) {
     salesController.getFinanceSummary(
-        fromDate: expenseController.startdate.value,
-        toDate: expenseController.enddate.value);
+      fromDate: DateTime.parse(DateFormat("yyy-MM-dd").format(DateTime.now())),
+      toDate: DateTime.parse(DateFormat("yyy-MM-dd")
+          .format(DateTime.now().add(Duration(days: 1)))),
+    );
   }
 
   @override
@@ -204,6 +206,12 @@ class FinancePage extends StatelessWidget {
                       title: "Profits",
                       subtitle: "Gross & Net profits",
                       onPresssed: () {
+                        salesController.getProfitTransaction(
+                          fromDate: DateTime.parse(
+                              DateFormat("yyy-MM-dd").format(DateTime.now())),
+                          toDate: DateTime.parse(DateFormat("yyy-MM-dd")
+                              .format(DateTime.now().add(Duration(days: 1)))),
+                        );
                         Get.to(() => ProfitPage());
                       },
                       color: Colors.amber.shade100,
@@ -236,9 +244,7 @@ class FinancePage extends StatelessWidget {
                     },
                     color: Colors.blue.shade100,
                     icon: Icons.sell_rounded,
-                    amount: salesController.salesSummary.value == null
-                        ? 0
-                        : "${salesController.salesSummary.value?.sales}",
+                    amount: "${salesController.totalSalesByDate.value}",
                   );
                 }),
                 InkWell(
@@ -315,52 +321,42 @@ class FinancePage extends StatelessWidget {
           color: Colors.black,
         ),
       ),
-      title: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          majorTitle(title: "Financial", color: Colors.black, size: 16.0),
-          Obx(
-            () => Text(
-              "${DateFormat("yyyy-MM-dd").format(Get.find<ExpenseController>().startdate.value)} - ${DateFormat("yyyy-MM-dd").format(Get.find<ExpenseController>().enddate.value)}",
-              style: TextStyle(color: Colors.blue, fontSize: 13),
-            ),
-          )
-        ],
-      ),
+      title: majorTitle(
+          title: "Financial Statement", color: Colors.black, size: 16.0),
       actions: [
-        InkWell(
-            onTap: () async {
-              final picked = await showDateRangePicker(
-                context: context,
-                lastDate: DateTime(2079),
-                firstDate: DateTime(2019),
-              );
-              expenseController.startdate.value = picked!.start;
-              expenseController.enddate.value = picked.end;
-
-              salesController.getFinanceSummary(
-                  fromDate: picked.start, toDate: picked.end);
-            },
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              child: Center(
-                child: Row(
-                  children: [
-                    Text(
-                      "Filter",
-                      style: TextStyle(
-                          color: AppColors.mainColor,
-                          fontWeight: FontWeight.bold),
-                    ),
-                    Icon(
-                      Icons.filter_list_alt,
-                      color: AppColors.mainColor,
-                      size: 20,
-                    )
-                  ],
-                ),
-              ),
-            ))
+        // InkWell(
+        //     onTap: () async {
+        //       final picked = await showDateRangePicker(
+        //         context: context,
+        //         lastDate: DateTime(2079),
+        //         firstDate: DateTime(2019),
+        //       );
+        //       salesController.filterStartDate.value = picked!.start;
+        //       salesController.filterEnndStartDate.value = picked.end;
+        //
+        //       salesController.getFinanceSummary(
+        //           fromDate: picked.start, toDate: picked.end);
+        //     },
+        //     child: Container(
+        //       padding: EdgeInsets.symmetric(horizontal: 20),
+        //       child: Center(
+        //         child: Row(
+        //           children: [
+        //             Text(
+        //               "Filter",
+        //               style: TextStyle(
+        //                   color: AppColors.mainColor,
+        //                   fontWeight: FontWeight.bold),
+        //             ),
+        //             Icon(
+        //               Icons.filter_list_alt,
+        //               color: AppColors.mainColor,
+        //               size: 20,
+        //             )
+        //           ],
+        //         ),
+        //       ),
+        //     ))
       ],
     );
   }

@@ -348,12 +348,17 @@ class ProductController extends GetxController {
     }
   }
 
-  getBadStock({required shopId, String? attendant, Product? product}) async {
+  getBadStock(
+      {required shopId,
+      String? attendant,
+      Product? product,
+      DateTime? fromDate,
+      DateTime? toDate}) async {
     try {
       saveBadstockLoad.value = true;
       badstocks.clear();
-      RealmResults<BadStock> response =
-          Products().getBadStock(product: product);
+      RealmResults<BadStock> response = Products()
+          .getBadStock(product: product, fromDate: fromDate, toDate: toDate);
       badstocks.addAll(response.map((e) => e).toList());
       saveBadstockLoad.value = false;
     } catch (e) {

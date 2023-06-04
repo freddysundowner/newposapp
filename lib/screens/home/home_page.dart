@@ -34,9 +34,13 @@ class HomePage extends StatelessWidget {
 
   AuthController authController = Get.find<AuthController>();
   final DateTime now = DateTime.now();
+
+  var fromDate = DateTime.parse(DateFormat("yyy-MM-dd").format(DateTime.now()));
+  var toDate = DateTime.parse(
+      DateFormat("yyy-MM-dd").format(DateTime.now().add(Duration(days: 1))));
   @override
   Widget build(BuildContext context) {
-    salesController.getSalesByDate(fromDate: now, toDate: now);
+    salesController.getSalesByDate(fromDate: fromDate, toDate: toDate);
     return ResponsiveWidget(
         largeScreen: SingleChildScrollView(
           child: Container(
@@ -499,7 +503,7 @@ class HomePage extends StatelessWidget {
               } else {
                 salesController.salesInitialIndex.value = 2;
                 salesController.getSalesByDate(
-                    fromDate: DateTime.now(), toDate: DateTime.now());
+                    fromDate: fromDate, toDate: toDate);
                 Get.to(() => AllSalesPage(
                       page: "homePage",
                     ));

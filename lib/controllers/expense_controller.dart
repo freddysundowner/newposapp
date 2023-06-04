@@ -14,8 +14,11 @@ import '../services/expense.dart';
 
 class ExpenseController extends GetxController {
   final GlobalKey<State> _keyLoader = new GlobalKey<State>();
-  var startdate = DateTime.now().obs;
-  var enddate = DateTime.now().add(Duration(days: 1)).obs;
+  var filterStartDate =
+      DateTime.parse(DateFormat("yyy-MM-dd").format(DateTime.now())).obs;
+  var filterEnndStartDate = DateTime.parse(
+          DateFormat("yyy-MM-dd").format(DateTime.now().add(Duration(days: 1))))
+      .obs;
   RxBool getExpenseByDateLoad = RxBool(false);
   RxInt totalExpenses = RxInt(0);
   RxList<ExpenseModel> expenses = RxList([]);
@@ -53,8 +56,8 @@ class ExpenseController extends GetxController {
         textEditingControllerAmount.clear();
         selectedExpense.value = '';
         getExpenseByDate(
-          fromDate: startdate.value,
-          toDate: enddate.value,
+          fromDate: filterStartDate.value,
+          toDate: filterEnndStartDate.value,
         );
         Get.back();
       } catch (e) {
@@ -71,8 +74,9 @@ class ExpenseController extends GetxController {
     expenses.clear();
     if (fromDate == null) {
       fromDate =
-          DateTime.parse(DateFormat("yyy-MM-dd").format(startdate.value));
-      toDate = DateTime.parse(DateFormat("yyy-MM-dd").format(enddate.value));
+          DateTime.parse(DateFormat("yyy-MM-dd").format(filterStartDate.value));
+      toDate = DateTime.parse(
+          DateFormat("yyy-MM-dd").format(filterEnndStartDate.value));
     }
 
     RealmResults<ExpenseModel> response = await Expense().getExpenseByDate(

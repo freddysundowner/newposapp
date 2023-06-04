@@ -19,7 +19,6 @@ import '../../controllers/sales_controller.dart';
 import '../../utils/colors.dart';
 import '../../widgets/bigtext.dart';
 import '../../widgets/normal_text.dart';
-import '../finance/components/date_picker.dart';
 import '../finance/finance_page.dart';
 import '../finance/profit_page.dart';
 import '../home/home_page.dart';
@@ -28,13 +27,7 @@ import 'components/sales_table.dart';
 class AllSalesPage extends StatelessWidget {
   final page;
 
-  AllSalesPage({Key? key, required this.page}) : super(key: key) {
-    salesController.salesInitialIndex.value = 0;
-    // final DateTime now = DateTime.now();
-    // final DateFormat formatter = DateFormat('yyyy-MM-dd');
-    // final String formatted = formatter.format(now);
-    // salesController.getSales(date: formatted);
-  }
+  AllSalesPage({Key? key, required this.page}) : super(key: key);
 
   SalesController salesController = Get.find<SalesController>();
   ShopController shopController = Get.find<ShopController>();
@@ -47,6 +40,66 @@ class AllSalesPage extends StatelessWidget {
     return ResponsiveWidget(
       largeScreen: _body(context),
       smallScreen: _body(context),
+    );
+  }
+
+  DateTime? fromDate;
+  DateTime? toDate;
+
+  Widget searchWidget() {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      child: Row(
+        children: [
+          Expanded(
+            child: TextFormField(
+              controller: salesController.searchProductController,
+              onChanged: (value) {
+                if (value == "") {
+                  salesController.getSales(
+                      onCredit: salesController.salesInitialIndex.value == 1);
+                } else {
+                  salesController.getSales(
+                      receipt: salesController.searchProductController.text,
+                      onCredit: salesController.salesInitialIndex.value == 1);
+                }
+              },
+              decoration: InputDecoration(
+                contentPadding: EdgeInsets.fromLTRB(10, 2, 0, 2),
+                suffixIcon: IconButton(
+                  onPressed: () {
+                    salesController.getSales(
+                        receipt: salesController.searchProductController.text,
+                        onCredit: salesController.salesInitialIndex.value == 1);
+                  },
+                  icon: Icon(Icons.search),
+                ),
+                hintText: "Search by receipt number",
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+            ),
+          ),
+          if (salesController.salesInitialIndex.value != 2)
+            IconButton(
+                onPressed: () async {
+                  final picked = await showDateRangePicker(
+                    context: Get.context!,
+                    lastDate: DateTime(2079),
+                    firstDate: DateTime(2019),
+                  );
+                  fromDate = picked!.start;
+                  toDate = picked.end;
+                  salesController.getSales(
+                      fromDate: picked.start, toDate: picked.end);
+                },
+                icon: Icon(Icons.date_range))
+        ],
+      ),
     );
   }
 
@@ -67,12 +120,14 @@ class AllSalesPage extends StatelessWidget {
                       children: [
                         majorTitle(
                             title: "Sales", color: Colors.black, size: 18.0),
-                        Obx(
-                          () => Text(
-                            "${DateFormat("yyyy-MM-dd").format(Get.find<ExpenseController>().startdate.value)} - ${DateFormat("yyyy-MM-dd").format(Get.find<ExpenseController>().enddate.value)}",
-                            style: TextStyle(color: Colors.blue, fontSize: 13),
-                          ),
-                        )
+                        if (toDate != null)
+                          Obx(
+                            () => Text(
+                              "${DateFormat("yyyy-MM-dd").format(fromDate!)} - ${DateFormat("yyyy-MM-dd").format(toDate!)}",
+                              style:
+                                  TextStyle(color: Colors.blue, fontSize: 13),
+                            ),
+                          )
                       ],
                     ),
                   const Spacer(),
@@ -150,36 +205,6 @@ class AllSalesPage extends StatelessWidget {
                       ),
                     ),
               actions: [
-                InkWell(
-                    onTap: () async {
-                      final picked = await showDateRangePicker(
-                        context: context,
-                        lastDate: DateTime(2079),
-                        firstDate: DateTime(2019),
-                      );
-                      salesController.getSales(
-                          fromDate: picked!.start, toDate: picked.end);
-                    },
-                    child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 20),
-                      child: Center(
-                        child: Row(
-                          children: [
-                            Text(
-                              "Filter",
-                              style: TextStyle(
-                                  color: AppColors.mainColor,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                            Icon(
-                              Icons.filter_list_alt,
-                              color: AppColors.mainColor,
-                              size: 20,
-                            )
-                          ],
-                        ),
-                      ),
-                    )),
                 if (usercontroller.user.value?.usertype == "admin")
                   IconButton(
                       onPressed: () {
@@ -203,15 +228,13 @@ class AllSalesPage extends StatelessWidget {
                 labelColor: AppColors.mainColor,
                 onTap: (value) {
                   salesController.salesInitialIndex.value = value;
+                  toDate = null;
+                  fromDate = null;
                   if (value == 0) {
-                    salesController.getSales(
-                        fromDate: Get.find<ExpenseController>().startdate.value,
-                        toDate: Get.find<ExpenseController>().enddate.value);
+                    salesController.getSales();
                   } else if (value == 1) {
                     salesController.getSales(
-                        fromDate: Get.find<ExpenseController>().startdate.value,
-                        toDate: Get.find<ExpenseController>().enddate.value,
-                        onCredit: true);
+                        fromDate: fromDate, toDate: toDate, onCredit: true);
                   } else {
                     final DateTime now = DateTime.now();
                     salesController.getSales(fromDate: now, toDate: now);
@@ -225,15 +248,22 @@ class AllSalesPage extends StatelessWidget {
               ),
             ),
             widget: Obx(
-              () => TabBarView(
-                controller: salesController.tabController,
-                physics: NeverScrollableScrollPhysics(),
+              () => Column(
                 children: [
-                  salesController.salesInitialIndex.value == 0
-                      ? AllSales()
-                      : salesController.salesInitialIndex.value == 1
-                          ? AllSales()
-                          : AllSales()
+                  searchWidget(),
+                  Expanded(
+                    child: TabBarView(
+                      controller: salesController.tabController,
+                      physics: NeverScrollableScrollPhysics(),
+                      children: [
+                        salesController.salesInitialIndex.value == 0
+                            ? AllSales()
+                            : salesController.salesInitialIndex.value == 1
+                                ? AllSales()
+                                : AllSales()
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -256,67 +286,62 @@ class AllSales extends StatelessWidget {
       return salesController.allSales.isEmpty;
     }
     if (salesController.salesInitialIndex.value == 2) {
-      return salesController.allSales.isEmpty;
+      return salesController.todaySales.isEmpty;
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      return salesController.loadingSales.value
-          ? const Center(
-              child: CircularProgressIndicator(),
+      return _checkEmptyView()
+          ? Center(
+              child: normalText(
+                  title: "No entries found", color: Colors.black, size: 14.0),
             )
-          : _checkEmptyView()
-              ? Center(
-                  child: normalText(
-                      title: "No entries found",
-                      color: Colors.black,
-                      size: 14.0),
-                )
-              : MediaQuery.of(context).size.width > 600
-                  ? SingleChildScrollView(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          salesTable(context, "services"),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          Align(
-                            alignment: Alignment.bottomRight,
-                            child: Container(
-                              width: 200,
-                              padding: EdgeInsets.only(right: 10),
-                              child: Column(
+          : MediaQuery.of(context).size.width > 600
+              ? SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      salesTable(context, "services"),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Align(
+                        alignment: Alignment.bottomRight,
+                        child: Container(
+                          width: 200,
+                          padding: EdgeInsets.only(right: 10),
+                          child: Column(
+                            children: [
+                              Row(
                                 children: [
-                                  Row(
-                                    children: [
-                                      const Text("Total Sales:"),
-                                      const SizedBox(
-                                        width: 10,
-                                      ),
-                                      Text(htmlPrice(
-                                          salesController.totalSales())),
-                                    ],
+                                  const Text("Total Sales:"),
+                                  const SizedBox(
+                                    width: 10,
                                   ),
-                                  const Divider(
-                                    thickness: 2,
-                                    color: Colors.black,
-                                  )
+                                  Text(htmlPrice(salesController.totalSales())),
                                 ],
                               ),
-                            ),
+                              const Divider(
+                                thickness: 2,
+                                color: Colors.black,
+                              )
+                            ],
                           ),
-                          const SizedBox(height: 60),
-                        ],
+                        ),
                       ),
-                    )
-                  : _sales();
+                      const SizedBox(height: 60),
+                    ],
+                  ),
+                )
+              : _sales();
     });
   }
 
   _sales() {
+    print(
+        "salesController.salesInitialIndex.value ${salesController.salesInitialIndex.value}");
     if (salesController.salesInitialIndex.value == 0) {
       return ListView.builder(
           shrinkWrap: true,
@@ -338,9 +363,9 @@ class AllSales extends StatelessWidget {
     if (salesController.salesInitialIndex.value == 2) {
       return ListView.builder(
           shrinkWrap: true,
-          itemCount: salesController.allSales.length,
+          itemCount: salesController.todaySales.length,
           itemBuilder: (context, index) {
-            SalesModel salesModel = salesController.allSales.elementAt(index);
+            SalesModel salesModel = salesController.todaySales.elementAt(index);
             return SalesCard(salesModel: salesModel);
           });
     }

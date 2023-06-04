@@ -72,8 +72,12 @@ class Sales {
       DateTime? fromDate,
       DateTime? toDate,
       CustomerModel? customer,
+      String receipt = "",
       String total = ""}) {
     String filter = "";
+    // if (receipt.isNotEmpty) {
+    //   filter = " AND receiptNumber BEGINSWITH '$receipt' ";
+    // }
     if (onCredit) {
       filter += " AND creditTotal < 0";
     }
@@ -83,12 +87,21 @@ class Sales {
           [customer]);
       return invoices;
     }
+    print(filter);
     RealmResults<SalesModel> invoices = realmService.realm.query<SalesModel>(
         'shop == \$0 $filter AND TRUEPREDICATE SORT(createdAt DESC)',
         [shopController.currentShop.value]);
+    print("ii ${receipt}");
+    print("ii ${invoices.length}");
     if (fromDate == null) {
+      if (receipt.isNotEmpty) {
+        var ii = invoices.query("receiptNumber BEGINSWITH \$0 ", [receipt]);
+        print("ii ii ${ii.length}");
+        return ii;
+      }
       return invoices;
     }
+
     if (invoices.isNotEmpty) {
       print("haha ");
       RealmResults<SalesModel> dateinvoices = invoices.query(

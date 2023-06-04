@@ -20,7 +20,6 @@ import '../../controllers/expense_controller.dart';
 import '../../controllers/product_controller.dart';
 import '../../controllers/sales_controller.dart';
 import '../../controllers/shop_controller.dart';
-import '../finance/components/date_picker.dart';
 import 'cash_at_bank.dart';
 import 'cash_in_layout.dart';
 import 'cashflow_categories.dart';
@@ -97,8 +96,8 @@ class CashFlowManager extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   cashInHandWidget(context, "small"),
-                  cashFlowCategory(context),
-                  dataTable(),
+                  // cashFlowCategory(context),
+                  // dataTable(),
                 ],
               ),
             ),
@@ -178,10 +177,8 @@ class CashFlowManager extends StatelessWidget {
                       Row(
                         children: [
                           Obx(
-                            () => Text(cashFlowController.fromDate.value != null
-                                ? DateFormat("dd-MM-yyyy")
-                                    .format(cashFlowController.fromDate.value)
-                                : ""),
+                            () => Text(DateFormat("dd-MM-yyyy")
+                                .format(cashFlowController.fromDate.value)),
                           ),
                         ],
                       ),
@@ -189,10 +186,8 @@ class CashFlowManager extends StatelessWidget {
                       Row(
                         children: [
                           Obx(
-                            () => Text(cashFlowController.fromDate.value != null
-                                ? DateFormat("dd-MM-yyyy")
-                                    .format(cashFlowController.toDate.value)
-                                : ""),
+                            () => Text(DateFormat("dd-MM-yyyy")
+                                .format(cashFlowController.toDate.value)),
                           ),
                         ],
                       ),
@@ -257,51 +252,49 @@ class CashFlowManager extends StatelessWidget {
           ),
           SizedBox(height: 10),
           Obx(() {
-            return cashFlowController.loadingCashflowSummry.value
-                ? cashFlowloadingShimmer()
-                : Padding(
-                    padding: const EdgeInsets.only(left: 30.0, right: 30),
-                    child: InkWell(
-                      onTap: () {
-                        if (type == "small") {
-                          Get.to(() => CashAtBank());
-                        } else {
-                          Get.find<HomeController>().selectedWidget.value =
-                              CashAtBank();
-                        }
-                      },
-                      splashColor: Theme.of(context).splashColor,
-                      child: Container(
-                        padding: EdgeInsets.only(
-                            left: 20, right: 20, top: 10, bottom: 10),
-                        decoration: BoxDecoration(
-                            color: Colors.grey.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(10)),
-                        child: Column(
-                          children: [
-                            Text(
-                              "Cash At Bank",
-                              style: TextStyle(color: Colors.black54),
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  shopController.currentShop.value!.currency!,
-                                  style: TextStyle(color: Colors.black54),
-                                ),
-                                SizedBox(width: 3),
-                                Text(
-                                  "${cashFlowController.cashflowSummary.value!.totalbanked!} /=",
-                                  style: TextStyle(color: Colors.black),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
+            return Padding(
+              padding: const EdgeInsets.only(left: 30.0, right: 30),
+              child: InkWell(
+                onTap: () {
+                  if (type == "small") {
+                    Get.to(() => CashAtBank());
+                  } else {
+                    Get.find<HomeController>().selectedWidget.value =
+                        CashAtBank();
+                  }
+                },
+                splashColor: Theme.of(context).splashColor,
+                child: Container(
+                  padding:
+                      EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
+                  decoration: BoxDecoration(
+                      color: Colors.grey.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(10)),
+                  child: Column(
+                    children: [
+                      Text(
+                        "Cash At Bank",
+                        style: TextStyle(color: Colors.black54),
                       ),
-                    ),
-                  );
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            shopController.currentShop.value!.currency!,
+                            style: TextStyle(color: Colors.black54),
+                          ),
+                          SizedBox(width: 3),
+                          Text(
+                            "0 /=",
+                            style: TextStyle(color: Colors.black),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
           }),
           SizedBox(height: 15),
           Row(

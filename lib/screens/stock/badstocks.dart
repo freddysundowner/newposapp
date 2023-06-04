@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:pointify/controllers/AuthController.dart';
 import 'package:pointify/controllers/user_controller.dart';
 import 'package:pointify/controllers/home_controller.dart';
@@ -21,12 +22,7 @@ import '../../widgets/no_items_found.dart';
 class BadStockPage extends StatelessWidget {
   final page;
 
-  BadStockPage({Key? key, required this.page}) : super(key: key) {
-    productController.getBadStock(
-        shopId: shopController.currentShop.value!.id,
-        attendant: '',
-        product: null);
-  }
+  BadStockPage({Key? key, required this.page}) : super(key: key) {}
 
   ProductController productController = Get.find<ProductController>();
   ShopController shopController = Get.find<ShopController>();
@@ -116,7 +112,27 @@ class BadStockPage extends StatelessWidget {
                   ),
                 ),
               ),
-            )
+            ),
+            IconButton(
+                onPressed: () async {
+                  final picked = await showDateRangePicker(
+                    context: Get.context!,
+                    lastDate: DateTime(2079),
+                    firstDate: DateTime(2019),
+                  );
+                  Get.find<ProductController>().getBadStock(
+                      shopId: shopController.currentShop.value!.id,
+                      attendant: '',
+                      product: null,
+                      fromDate: DateTime.parse(
+                          DateFormat("yyy-MM-dd").format(picked!.start)),
+                      toDate: DateTime.parse(DateFormat("yyy-MM-dd")
+                          .format(picked.end.add(Duration(days: 1)))));
+                },
+                icon: Icon(
+                  Icons.date_range,
+                  color: AppColors.mainColor,
+                )),
           ],
         ),
         body: ResponsiveWidget(
@@ -175,11 +191,20 @@ class BadStockPage extends StatelessWidget {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Text(
-                                        badstock.product!.name!.capitalize!,
-                                        style: const TextStyle(
-                                            color: Colors.black,
-                                            fontWeight: FontWeight.w500),
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            child: Text(
+                                              badstock
+                                                  .product!.name!.capitalize!,
+                                              style: const TextStyle(
+                                                  color: Colors.black,
+                                                  fontWeight: FontWeight.w500),
+                                            ),
+                                          ),
+                                          Text(DateFormat("yyyy-MM-dd H:mm a")
+                                              .format(badstock.createdAt!))
+                                        ],
                                       ),
                                       SizedBox(
                                         height: 5,
