@@ -8,6 +8,7 @@ import 'package:pointify/widgets/smalltext.dart';
 import 'package:get/get.dart';
 
 import '../Real/Models/schema.dart';
+import '../functions/functions.dart';
 import '../screens/product/create_product.dart';
 import '../screens/product/product_history.dart';
 import '../utils/colors.dart';
@@ -54,7 +55,7 @@ Widget productCard({required Product product}) {
                           color: Colors.white),
                       SizedBox(height: 5),
                       minorTitle(
-                          title: "By ~ ${product.attendant?.fullnames}",
+                          title: "By ~ ${product.attendant?.username}",
                           color: Colors.white),
                     ],
                   )
@@ -111,9 +112,7 @@ showProductModal(context, Product product) {
                       Get.to(() => ProductHistory(product: product));
                     },
                     title: const Text('Product History')),
-              if (userController.user.value?.usertype == "admin" ||
-                  (userController.user.value?.usertype == "attendant" &&
-                      userController.checkRole("edit_entries")))
+              if (checkPermission(category: "products", permission: "edit"))
                 ListTile(
                     leading: Icon(Icons.edit),
                     onTap: () {
@@ -123,7 +122,7 @@ showProductModal(context, Product product) {
                             productModel: product,
                           ));
                     },
-                    title: Text('Edit')),
+                    title: const Text('Edit')),
               if (userController.user.value?.usertype == "admin")
                 ListTile(
                     leading: Icon(Icons.code),
@@ -137,9 +136,7 @@ showProductModal(context, Product product) {
                               .name!);
                     },
                     title: const Text('Generate Barcode')),
-              if (userController.user.value?.usertype == "admin" ||
-                  (userController.user.value?.usertype == "attendant" &&
-                      userController.checkRole("edit_entries")))
+              if (checkPermission(category: "products", permission: "delete"))
                 ListTile(
                     leading: Icon(Icons.delete),
                     onTap: () {

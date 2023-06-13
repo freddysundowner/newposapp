@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -6,12 +8,15 @@ import 'package:pointify/Real/Models/schema.dart';
 import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/controllers/user_controller.dart';
 import 'package:pointify/screens/authentication/landing.dart';
+import 'package:pointify/screens/home/home_page.dart';
+import 'package:pointify/services/apiurls.dart';
 import 'package:pointify/services/users.dart';
 import 'package:realm/realm.dart';
 
 import '../controllers/realm_controller.dart';
 import '../screens/home/home.dart';
 import '../screens/shop/create_shop.dart';
+import '../widgets/alert.dart';
 import '../widgets/snackBars.dart';
 import 'home_controller.dart';
 
@@ -19,7 +24,6 @@ class AuthController extends GetxController {
   RxString id = RxString("");
   Rxn<Uri> baseUrl = Rxn(null);
   Rxn<App> app = Rxn(null);
-  Rxn<User?> currentUser = Rxn(null);
   ShopController shopController = Get.put(ShopController());
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
@@ -51,7 +55,8 @@ class AuthController extends GetxController {
         loginuserLoad.value = true;
         await logInUserEmailPassword(
             emailController.text, passwordController.text);
-        await Get.find<UserController>().getUser();
+        await Get.find<UserController>().getUser(type: "login");
+
         Get.offAll(() => Home());
       } catch (e) {
         showSnackBar(message: "wrong username or password", color: Colors.red);
@@ -64,6 +69,53 @@ class AuthController extends GetxController {
     }
   }
 
+  attendantLogin(context) async {
+    LoginAttendantLoad.value = true;
+    var email = "${attendantUidController.text}@gmail.com";
+    var password = attendantPasswordController.text;
+    var uid = int.parse(attendantUidController.text);
+
+    Get.find<RealmController>().auth();
+    RealmResults<UserModel> users = Users.getUserUser(uid: uid);
+    if (users.isNotEmpty) {
+      UserModel userModel = users.first;
+      print("after c ${users.length}");
+      if (userModel.loggedin == null) {
+        print("after c c ${users.length}");
+
+        await registerUserEmailPassword(email, password);
+        User? loggedInUser = await logInUserEmailPassword(email, password);
+        var uid = userModel.UNID;
+        final updatedCustomUserData = {
+          "uid": uid,
+          "authId": loggedInUser.id,
+          "loggedin": true,
+        };
+        loggedInUser.functions
+            .call("createAttendantMeta", [updatedCustomUserData]).then((value) {
+          print("going in now");
+
+          attendantUidController.clear();
+          attendantPasswordController.clear();
+          Get.find<UserController>().currentAttendant.value = users.first;
+          Get.to(() => HomePage);
+        });
+        await loggedInUser.refreshCustomData();
+      } else {
+        try {
+          await logInUserEmailPassword(email, password);
+          Get.to(() => HomePage);
+        } catch (e) {
+          showSnackBar(message: "wrong password", color: Colors.red);
+        }
+      }
+    } else {
+      generalAlert(title: "Error", message: "UID supplied does not exist");
+    }
+    LoginAttendantLoad.value = false;
+    print(users.length);
+  }
+
   signUser(context) async {
     if (signupkey.currentState!.validate()) {
       try {
@@ -74,7 +126,10 @@ class AuthController extends GetxController {
             emailController.text, passwordController.text);
         Users.createUser(UserModel(
           ObjectId.fromHexString(loggedInUser.id),
+          Random().nextInt(098459),
           usertype: "admin",
+          deleted: false,
+          authId: loggedInUser.id,
           fullnames: nameController.text,
         ));
         clearDataFromTextFields();
@@ -109,7 +164,7 @@ class AuthController extends GetxController {
   Future<User> logInUserEmailPassword(String email, String password) async {
     User loggedInUser =
         await app.value!.logIn(Credentials.emailPassword(email, password));
-    currentUser.value = loggedInUser;
+    Get.find<RealmController>().currentUser?.value = loggedInUser;
     Get.find<RealmController>().auth();
     return loggedInUser;
   }
@@ -120,7 +175,7 @@ class AuthController extends GetxController {
     await authProvider.registerUser(email, password);
     User loggedInUser =
         await app.value!.logIn(Credentials.emailPassword(email, password));
-    currentUser.value = loggedInUser;
+    Get.find<RealmController>().currentUser?.value = loggedInUser;
     return loggedInUser;
   }
 

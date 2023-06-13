@@ -9,6 +9,8 @@ import 'package:realm/realm.dart';
 import '../Real/Models/schema.dart';
 import '../controllers/realm_controller.dart';
 import '../controllers/shop_controller.dart';
+import '../functions/functions.dart';
+import '../main.dart';
 import 'client.dart';
 
 class Products {
@@ -16,7 +18,6 @@ class Products {
 
   final ShopController shopController = Get.find<ShopController>();
   createProduct(Product body, {String? type = ""}) async {
-    print("creating ${body.name}");
     realmService.realm
         .write<Product>(() => realmService.realm.add<Product>(body));
   }
@@ -70,7 +71,6 @@ class Products {
   RealmResults<Product> getProductsBySort(
       {String? type = "all", String? text = ""}) {
     String filter = " AND deleted == false";
-    print(type);
     if (type == "quantity") {
       filter += " AND TRUEPREDICATE SORT(quantity DESC)";
     } else if (type == "outofstock") {
@@ -82,14 +82,12 @@ class Products {
     } else if (type == "highestselling") {
       filter += " AND TRUEPREDICATE SORT(selling DESC)";
     }
-    // filter += ' AND deleted == null OR deleted == false';
-    print(filter);
     RealmResults<Product> products = realmService.realm.query<Product>(
         'shop == \$0$filter', [Get.find<ShopController>().currentShop.value]);
 
     if (type == "search") {
       var newproducts = products.query("name BEGINSWITH \$0", [text!]);
-      return newproducts;
+      return _attendantFilter(newproducts);
     }
 
     //count products filter
@@ -98,19 +96,25 @@ class Products {
     final String formatted = formatter.format(now);
     if (type == "countedtoday") {
       var newproducts = products.query("counteddate == \$0", [formatted]);
-      print(newproducts.length);
-      return newproducts;
+      return _attendantFilter(newproducts);
     }
     if (type == "notcountedtoday") {
       var newproducts = products.query("counteddate != \$0", [formatted]);
-      return newproducts;
+      return _attendantFilter(newproducts);
     }
     if (type == "nevercounted") {
       var newproducts = products.query("counteddate == NULL");
-      return newproducts;
+      return _attendantFilter(newproducts);
     }
-    print("last ${products.length}");
-    return products;
+    return _attendantFilter(products);
+  }
+
+  _attendantFilter(RealmResults<Product> data) {
+    if (userController.switcheduser.value != null) {
+      return data
+          .query("attendant == \$0 ", [userController.switcheduser.value!]);
+    }
+    return data;
   }
 
   Product? getProductByName(String text, Shop shop) {

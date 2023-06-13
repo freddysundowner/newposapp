@@ -26,7 +26,7 @@ Widget shopCard({required Shop shopModel, required page, required context}) {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Icon(
                 Icons.shopping_basket,
@@ -35,12 +35,24 @@ Widget shopCard({required Shop shopModel, required page, required context}) {
               SizedBox(
                 width: 10,
               ),
-              majorTitle(title: shopModel.name, color: Colors.white, size: 14.0)
+              majorTitle(
+                  title: shopModel.name!.capitalize,
+                  color: Colors.white,
+                  size: 14.0)
             ],
           ),
           SizedBox(height: 10),
-          minorTitle(
-              title: "Location- ${shopModel.location}", color: Colors.white),
+          Row(
+            children: [
+              minorTitle(
+                  title: "Location- ${shopModel.location}",
+                  color: Colors.white),
+              SizedBox(
+                width: 20,
+              ),
+              minorTitle(title: "${shopModel.type?.title}", color: Colors.white)
+            ],
+          ),
           SizedBox(height: 10),
           // minorTitle(title: "Type- ${shopModel.category}", color: Colors.white)
         ],

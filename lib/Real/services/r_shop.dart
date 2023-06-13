@@ -17,7 +17,6 @@ class RShop {
   }
 
   getShop({String name = ""}) {
-    print(name);
     RealmResults<Shop> shops = realmService.realm
         .query<Shop>(r'owner == $0', [realmService.currentUser!.value!.id]);
     if (name.isNotEmpty) {
@@ -25,13 +24,11 @@ class RShop {
           shops.query('name BEGINSWITH \$0', [name]);
       return shopsFiltered;
     }
-    print("shops ${shops.length}");
     return shops;
   }
 
   RealmResults<ShopTypes> getShopTypes() {
     RealmResults<ShopTypes> shopTypes = realmService.realm.all();
-    print(shopTypes);
     return shopTypes;
   }
 

@@ -112,6 +112,7 @@ class SignUp extends StatelessWidget {
                 ),
                 SizedBox(height: 20.0),
                 Container(
+                  decoration: ThemeHelper().inputBoxDecorationShaddow(),
                   child: TextFormField(
                     controller: authController.emailController,
                     decoration: ResponsiveWidget.isSmallScreen(context)
@@ -127,10 +128,10 @@ class SignUp extends StatelessWidget {
                       return null;
                     },
                   ),
-                  decoration: ThemeHelper().inputBoxDecorationShaddow(),
                 ),
                 SizedBox(height: 20.0),
                 Container(
+                  decoration: ThemeHelper().inputBoxDecorationShaddow(),
                   child: TextFormField(
                     controller: authController.phoneController,
                     decoration: ResponsiveWidget.isSmallScreen(context)
@@ -146,9 +147,8 @@ class SignUp extends StatelessWidget {
                       return null;
                     },
                   ),
-                  decoration: ThemeHelper().inputBoxDecorationShaddow(),
                 ),
-                SizedBox(height: 20.0),
+                const SizedBox(height: 20.0),
                 Container(
                   decoration: ThemeHelper().inputBoxDecorationShaddow(),
                   child: TextFormField(
@@ -180,7 +180,7 @@ class SignUp extends StatelessWidget {
                             padding: const EdgeInsets.fromLTRB(40, 10, 40, 10),
                             child: Text(
                               "Register".toUpperCase(),
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white,
@@ -192,7 +192,7 @@ class SignUp extends StatelessWidget {
                           },
                         ),
                 ),
-                SizedBox(height: 30.0),
+                const SizedBox(height: 30.0),
               ],
             ),
           ),

@@ -10,6 +10,7 @@ import 'package:switcher_button/switcher_button.dart';
 
 import '../../Real/Models/schema.dart';
 import '../../Real/services/r_shop.dart';
+import '../../data/interests.dart';
 import '../../utils/colors.dart';
 import '../../widgets/bigtext.dart';
 import '../../widgets/shop_widget.dart';
@@ -20,6 +21,7 @@ class CreateShop extends StatelessWidget {
 
   CreateShop({Key? key, required this.page}) : super(key: key) {
     shopController.clearTextFields();
+    Interests();
   }
 
   ShopController shopController = Get.find<ShopController>();

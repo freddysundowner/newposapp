@@ -146,30 +146,32 @@ class WalletPage extends StatelessWidget {
             ),
           ),
           SizedBox(height: 10),
-          InkWell(
-            onTap: () {
-              showDepositDialog(
-                  context: context,
-                  customerModel: customerModel,
-                  title: "Deposit",
-                  page: page,
-                  size: MediaQuery.of(context).size.width <= 600
-                      ? "small"
-                      : "large");
-            },
-            child: Container(
-              padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(15),
-                  color: type == "large" ? AppColors.mainColor : Colors.white),
-              child: Text(
-                "Make Deposit",
-                style: TextStyle(
-                    color: type == "large" ? Colors.white : Colors.black,
-                    fontWeight: FontWeight.bold),
+          if (checkPermission(category: "customers", permission: "deposit"))
+            InkWell(
+              onTap: () {
+                showDepositDialog(
+                    context: context,
+                    customerModel: customerModel,
+                    title: "Deposit",
+                    page: page,
+                    size: MediaQuery.of(context).size.width <= 600
+                        ? "small"
+                        : "large");
+              },
+              child: Container(
+                padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(15),
+                    color:
+                        type == "large" ? AppColors.mainColor : Colors.white),
+                child: Text(
+                  "Make Deposit",
+                  style: TextStyle(
+                      color: type == "large" ? Colors.white : Colors.black,
+                      fontWeight: FontWeight.bold),
+                ),
               ),
-            ),
-          )
+            )
         ],
       ),
     );

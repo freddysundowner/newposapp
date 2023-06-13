@@ -22,6 +22,7 @@ import '../../controllers/CustomerController.dart';
 import '../../controllers/AuthController.dart';
 import '../../controllers/user_controller.dart';
 import '../../controllers/supplierController.dart';
+import '../../functions/functions.dart';
 import '../../utils/colors.dart';
 import '../../widgets/delete_dialog.dart';
 import '../../widgets/snackBars.dart';
@@ -168,11 +169,10 @@ class CustomerInfoPage extends StatelessWidget {
                       Center(
                           child: Text(
                         customerModel.fullName!,
-                        style: TextStyle(
+                        style: const TextStyle(
                             color: Colors.white, fontWeight: FontWeight.bold),
                       )),
-                      SizedBox(height: 5),
-                      SizedBox(height: 10),
+                      SizedBox(height: 15),
                       Container(
                         width: double.infinity,
                         padding:
@@ -223,7 +223,7 @@ class CustomerInfoPage extends StatelessWidget {
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(50),
                                     color: Colors.white.withOpacity(0.2)),
-                                child: Row(
+                                child: const Row(
                                   children: [
                                     Icon(Icons.credit_card,
                                         color: Colors.white),
@@ -261,16 +261,17 @@ class CustomerInfoPage extends StatelessWidget {
                     Get.to(() => EditCustomer(customerModel: customerModel));
                   },
                   icon: Icon(Icons.edit)),
-              IconButton(
-                  onPressed: () {
-                    generalAlert(
-                        title:
-                            "Are you sure you want to delete ${customerModel.fullName}",
-                        function: () {
-                          customerController.deleteCustomer(customerModel);
-                        });
-                  },
-                  icon: Icon(Icons.delete)),
+              if (checkPermission(category: "customers", permission: "manage"))
+                IconButton(
+                    onPressed: () {
+                      generalAlert(
+                          title:
+                              "Are you sure you want to delete ${customerModel.fullName}",
+                          function: () {
+                            customerController.deleteCustomer(customerModel);
+                          });
+                    },
+                    icon: Icon(Icons.delete)),
             ],
           )),
     );
@@ -305,7 +306,7 @@ class CustomerInfoPage extends StatelessWidget {
                         );
                       }
                     },
-                    tabs: [
+                    tabs: const [
                       Tab(
                           child: Text(
                         "Credit",

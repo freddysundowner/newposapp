@@ -3,6 +3,7 @@ import 'package:pointify/controllers/user_controller.dart';
 import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/functions/functions.dart';
+import 'package:pointify/main.dart';
 import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/sales/components/sales_table.dart';
 import 'package:pointify/screens/sales/create_sale.dart';
@@ -59,7 +60,7 @@ class HomePage extends StatelessWidget {
                             title: "Current Shop",
                             color: Colors.black,
                             size: 20.0),
-                        SizedBox(height: 5),
+                        const SizedBox(height: 5),
                         Obx(() {
                           return minorTitle(
                               title: shopController.currentShop.value == null
@@ -290,9 +291,35 @@ class HomePage extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // SizedBox(height: 50),
-                  majorTitle(
-                      title: "Current Shop", color: Colors.black, size: 20.0),
-                  SizedBox(height: 5),
+                  Row(
+                    children: [
+                      majorTitle(
+                          title: "Current Shop",
+                          color: Colors.black,
+                          size: 20.0),
+                      if (userController.user.value?.usertype == "attendant")
+                        Spacer(),
+                      if (userController.user.value?.usertype == "attendant")
+                        Row(
+                          children: [
+                            IconButton(
+                                onPressed: () {
+                                  userController.getUser();
+                                  userController.user.refresh();
+                                },
+                                icon: const Icon(Icons.refresh)),
+                            IconButton(
+                                onPressed: () async {
+                                  await authController.logOut();
+                                },
+                                icon: const Icon(
+                                  Icons.logout,
+                                  color: Colors.red,
+                                )),
+                          ],
+                        )
+                    ],
+                  ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -303,23 +330,26 @@ class HomePage extends StatelessWidget {
                                 : shopController.currentShop.value!.name,
                             color: AppColors.mainColor);
                       }),
-                      InkWell(
-                        onTap: () async {
-                          await shopController.getShops();
-                          showShopModalBottomSheet(context);
-                        },
-                        child: Container(
-                          padding: EdgeInsets.all(5),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(50),
-                            border: Border.all(
-                                color: AppColors.mainColor, width: 2),
+                      if (checkPermission(
+                          category: 'shop', permission: "switch"))
+                        InkWell(
+                          onTap: () async {
+                            await shopController.getShops();
+                            showShopModalBottomSheet(context);
+                          },
+                          child: Container(
+                            padding: EdgeInsets.all(5),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(50),
+                              border: Border.all(
+                                  color: AppColors.mainColor, width: 2),
+                            ),
+                            child: minorTitle(
+                                title: "Switch Shop",
+                                color: AppColors.mainColor),
                           ),
-                          child: minorTitle(
-                              title: "Change Shop", color: AppColors.mainColor),
                         ),
-                      )
                     ],
                   ),
                   SizedBox(height: 20),
@@ -332,60 +362,72 @@ class HomePage extends StatelessWidget {
                   SizedBox(height: 20),
                   Container(
                     width: double.infinity,
-                    padding: EdgeInsets.all(15),
+                    padding: const EdgeInsets.all(15),
                     decoration: BoxDecoration(
                         color: AppColors.mainColor,
                         borderRadius: BorderRadius.circular(20)),
-                    child: GridView.count(
-                      crossAxisCount: 3,
-                      crossAxisSpacing: 10,
-                      mainAxisSpacing: 10,
-                      shrinkWrap: true,
-                      physics: ScrollPhysics(),
-                      children: [
-                        gridItems(
-                            title: "Sell",
-                            iconData: Icons.sell_rounded,
-                            isSmallScreen: true,
-                            function: () {
-                              Get.to(() => CreateSale());
-                            }),
-                        gridItems(
-                            title: "Finance",
-                            isSmallScreen: true,
-                            iconData: Icons.request_quote_outlined,
-                            function: () {
-                              Get.to(() => FinancePage());
-                            }),
-                        gridItems(
-                            title: "Stock",
-                            isSmallScreen: true,
-                            iconData: Icons.production_quantity_limits,
-                            function: () {
-                              Get.to(() => StockPage());
-                            }),
-                        gridItems(
-                            title: "Suppliers",
-                            iconData: Icons.people_alt,
-                            isSmallScreen: true,
-                            function: () {
-                              Get.to(() => SuppliersPage());
-                            }),
-                        gridItems(
-                            title: "Customers",
-                            iconData: Icons.people_outline_outlined,
-                            isSmallScreen: true,
-                            function: () {
-                              Get.to(() => CustomersPage());
-                            }),
-                        gridItems(
-                            title: "Usage",
-                            iconData: Icons.data_usage,
-                            isSmallScreen: true,
-                            function: () {
-                              Get.to(() => ExtendUsage());
-                            }),
-                      ],
+                    child: Obx(
+                      () => GridView.count(
+                        crossAxisCount: 3,
+                        crossAxisSpacing: 10,
+                        mainAxisSpacing: 10,
+                        shrinkWrap: true,
+                        physics: const ScrollPhysics(),
+                        children: [
+                          if (checkPermission(
+                              category: "sales", permission: "add"))
+                            gridItems(
+                                title: "Sell",
+                                iconData: Icons.sell_rounded,
+                                isSmallScreen: true,
+                                function: () {
+                                  Get.to(() => CreateSale());
+                                }),
+                          if (checkPermission(
+                              category: "accounts", group: true))
+                            gridItems(
+                                title: "Finance",
+                                isSmallScreen: true,
+                                iconData: Icons.request_quote_outlined,
+                                function: () {
+                                  Get.to(() => FinancePage());
+                                }),
+                          if (checkPermission(category: "stocks", group: true))
+                            gridItems(
+                                title: "Stock",
+                                isSmallScreen: true,
+                                iconData: Icons.production_quantity_limits,
+                                function: () {
+                                  Get.to(() => StockPage());
+                                }),
+                          if (checkPermission(
+                              category: "suppliers", group: true))
+                            gridItems(
+                                title: "Suppliers",
+                                iconData: Icons.people_alt,
+                                isSmallScreen: true,
+                                function: () {
+                                  Get.to(() => SuppliersPage());
+                                }),
+                          if (checkPermission(
+                              category: "customers", group: true))
+                            gridItems(
+                                title: "Customers",
+                                iconData: Icons.people_outline_outlined,
+                                isSmallScreen: true,
+                                function: () {
+                                  Get.to(() => CustomersPage());
+                                }),
+                          if (checkPermission(category: "usage", group: true))
+                            gridItems(
+                                title: "Usage",
+                                iconData: Icons.data_usage,
+                                isSmallScreen: true,
+                                function: () {
+                                  Get.to(() => ExtendUsage());
+                                }),
+                        ],
+                      ),
                     ),
                   ),
                   SizedBox(height: 20),

@@ -101,6 +101,7 @@ class AttendantLogin extends StatelessWidget {
           child: Column(
             children: [
               Container(
+                decoration: ThemeHelper().inputBoxDecorationShaddow(),
                 child: TextFormField(
                   controller: authController.attendantUidController,
                   validator: (value) {
@@ -112,14 +113,14 @@ class AttendantLogin extends StatelessWidget {
                   keyboardType: TextInputType.number,
                   decoration: ResponsiveWidget.isSmallScreen(context)
                       ? ThemeHelper()
-                          .textInputDecoration('UserId', 'Enter your UserID')
+                          .textInputDecoration('User Id', 'Enter your UserID')
                       : ThemeHelper().textInputDecorationDesktop(
                           'UserId', 'Enter your UserID'),
                 ),
-                decoration: ThemeHelper().inputBoxDecorationShaddow(),
               ),
               SizedBox(height: 20.0),
               Container(
+                decoration: ThemeHelper().inputBoxDecorationShaddow(),
                 child: TextFormField(
                   controller: authController.attendantPasswordController,
                   obscureText: true,
@@ -135,7 +136,6 @@ class AttendantLogin extends StatelessWidget {
                       : ThemeHelper().textInputDecorationDesktop(
                           'Password', 'Enter your password'),
                 ),
-                decoration: ThemeHelper().inputBoxDecorationShaddow(),
               ),
               SizedBox(height: 25.0),
               Obx(() {
@@ -150,7 +150,7 @@ class AttendantLogin extends StatelessWidget {
                           child: Padding(
                             padding: EdgeInsets.fromLTRB(40, 10, 40, 10),
                             child: Text(
-                              'Sign In'.toUpperCase(),
+                              'Next'.toUpperCase(),
                               style: TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
@@ -158,7 +158,7 @@ class AttendantLogin extends StatelessWidget {
                             ),
                           ),
                           onPressed: () {
-                            authController.login(context);
+                            authController.attendantLogin(context);
                           },
                         ),
                       );

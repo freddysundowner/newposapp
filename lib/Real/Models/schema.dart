@@ -11,6 +11,7 @@ class _Invoice {
   _UserModel? attendantId;
   int? balance;
   int? total;
+  int? dated;
   String? receiptNumber;
   bool? onCredit;
   int? productCount;
@@ -18,6 +19,15 @@ class _Invoice {
   late List<_InvoiceItem> returneditems;
   DateTime? createdAt;
   DateTime? updatedAt;
+}
+
+@RealmModel()
+class _CashOutGroup {
+  @PrimaryKey()
+  @MapTo("_id")
+  ObjectId? id;
+  String? name;
+  String? key;
 }
 
 @RealmModel()
@@ -57,10 +67,16 @@ class _UserModel {
   @PrimaryKey()
   @MapTo("_id")
   ObjectId? id;
+  String? username;
+  bool? loggedin;
+  bool? deleted;
   String? fullnames;
   String? phonenumber;
+  String? authId;
+  late int UNID;
   _Shop? shop;
   late List<_RolesModel> roles;
+  String? permisions;
   late String? usertype;
 }
 
@@ -158,6 +174,7 @@ class _BankTransactions {
   ObjectId? id;
   String? shop;
   String? category;
+  _CashOutGroup? group;
   int? amount;
   DateTime? createdAt;
 }
@@ -170,21 +187,25 @@ class _CashFlowCategory {
   String? name;
   int? amount;
   String? type;
+  String? key;
   String? shop;
   DateTime? createdAt;
 }
 
 @RealmModel()
-class _CashflowSummary {
-  int? totalExpenses;
-  int? cashinhand;
-  int? totalbanked;
-  int? totalSales;
-  int? totalpurchases;
-  int? totalwallet;
-  int? creditTotal;
-  int? totalcashin;
-  int? totalcashout;
+class _CashFlowTransaction {
+  @PrimaryKey()
+  @MapTo("_id")
+  ObjectId? id;
+  _CashFlowCategory? cashFlowCategory;
+  @Ignored()
+  _CashOutGroup? cashOutGroup;
+  _BankModel? bank;
+  int? amount;
+  String? type;
+  String? description;
+  _Shop? shop;
+  int? date;
 }
 
 @RealmModel()
@@ -217,6 +238,7 @@ class _DepositModel {
   String? recieptNumber;
   String? type;
   _UserModel? attendant;
+  int? date;
   DateTime? createdAt;
   DateTime? updatedAt;
 }
@@ -315,29 +337,6 @@ class _ProductHistoryModel {
   _Shop? toShop;
   _CustomerModel? customer;
   DateTime? createdAt;
-}
-
-@RealmModel()
-class _ProductTransferHistories {
-  _Product? product;
-  int? quantity;
-  DateTime? createdAt;
-}
-
-@RealmModel()
-class _ProfitModel {
-  late List<_BadStock> profit;
-  late List<_BadStock> totalsales;
-  late List<_BadStock> badstock;
-  late List<_BadStock> expense;
-  int? shopProfit;
-}
-
-@RealmModel()
-class _ProfitSummary {
-  int? profit;
-  int? sales;
-  int? expenses;
 }
 
 @RealmModel()

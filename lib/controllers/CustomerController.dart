@@ -34,6 +34,8 @@ class CustomerController extends GetxController
   RxList<CustomerModel> customers = RxList([]);
   RxList<SalesModel> customerSales = RxList([]);
   Rxn<CustomerModel> customer = Rxn(null);
+  RxInt walletDebtsTotal = RxInt(0);
+  RxInt walletbalancessTotal = RxInt(0);
 
   RxString activeItem = RxString("All");
   RxString customerActiveItem = RxString("Credit");
@@ -101,6 +103,26 @@ class CustomerController extends GetxController
   getCustomerById(CustomerModel customerModel) async {
     CustomerModel response = Customer().getCustomersById(customerModel);
     customer.value = response;
+    refresh();
+  }
+
+  getCustomerWallets({
+    bool debtors = false,
+    DateTime? fromDate,
+    DateTime? toDate,
+  }) async {
+    RealmResults<DepositModel> response = Customer().getCustomerWallets(
+        debtors: debtors, fromDate: fromDate, toDate: toDate);
+    walletDebtsTotal.value = 0;
+    walletbalancessTotal.value = 0;
+    if (debtors) {
+      walletDebtsTotal.value = response.fold(
+          0, (previousValue, element) => previousValue + element.amount!);
+    } else {
+      walletbalancessTotal.value = response.fold(
+          0, (previousValue, element) => previousValue + element.amount!);
+    }
+
     refresh();
   }
 

@@ -456,6 +456,7 @@ class SalesController extends GetxController
         (previousValue, element) =>
             previousValue! +
             (element.product!.buyingPrice! * element.quantity!));
+
     Get.find<ExpenseController>()
         .getExpenseByDate(fromDate: fromDate, toDate: toDate);
   }
@@ -568,15 +569,12 @@ class SalesController extends GetxController
   }
 
   void getSalesByDate({DateTime? fromDate, DateTime? toDate}) {
-    print(fromDate);
-    print(toDate);
     todaySales.clear();
     RealmResults<SalesModel> response =
         Sales().getSales(fromDate: fromDate, toDate: toDate);
     totalSalesByDate.value = response.fold(
         0, (previousValue, element) => previousValue + element.grandTotal!);
     todaySales.addAll(response.map((e) => e).toList());
-    print("todaySales ${todaySales.length}");
   }
 
   void getReturns({CustomerModel? customerModel, SalesModel? salesModel}) {

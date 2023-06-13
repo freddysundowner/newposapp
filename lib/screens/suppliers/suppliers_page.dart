@@ -17,6 +17,7 @@ import '../../Real/Models/schema.dart';
 import '../../controllers/CustomerController.dart';
 import '../../controllers/supplierController.dart';
 import '../../controllers/user_controller.dart';
+import '../../functions/functions.dart';
 import '../../services/supplier.dart';
 import '../../utils/colors.dart';
 import '../../widgets/bigtext.dart';
@@ -78,36 +79,38 @@ class SuppliersPage extends StatelessWidget {
             ],
           ),
           actions: [
-            InkWell(
-              onTap: () {
-                if (types == "large") {
-                  Get.find<HomeController>().selectedWidget.value =
-                      CreateSuppliers(
-                    page: "suppliersPage",
-                  );
-                } else {
-                  Get.to(() => CreateSuppliers(
-                        page: "suppliersPage",
-                      ));
-                }
-              },
-              child: Padding(
-                padding: const EdgeInsets.all(10),
-                child: Container(
-                  padding: EdgeInsets.fromLTRB(5, 2, 5, 2),
-                  decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: (BorderRadius.circular(10)),
-                      border: Border.all(color: AppColors.mainColor, width: 1)),
-                  child: Center(
-                    child: majorTitle(
-                        title: "Add Supplier",
-                        color: AppColors.mainColor,
-                        size: 12.0),
+            if (checkPermission(category: "suppliers", permission: "manage"))
+              InkWell(
+                onTap: () {
+                  if (types == "large") {
+                    Get.find<HomeController>().selectedWidget.value =
+                        CreateSuppliers(
+                      page: "suppliersPage",
+                    );
+                  } else {
+                    Get.to(() => CreateSuppliers(
+                          page: "suppliersPage",
+                        ));
+                  }
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: Container(
+                    padding: EdgeInsets.fromLTRB(5, 2, 5, 2),
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: (BorderRadius.circular(10)),
+                        border:
+                            Border.all(color: AppColors.mainColor, width: 1)),
+                    child: Center(
+                      child: majorTitle(
+                          title: "Add Supplier",
+                          color: AppColors.mainColor,
+                          size: 12.0),
+                    ),
                   ),
                 ),
-              ),
-            )
+              )
           ],
           bottom: TabBar(
             indicatorColor: AppColors.mainColor,

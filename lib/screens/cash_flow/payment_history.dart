@@ -131,9 +131,9 @@ class PaymentHistory extends StatelessWidget {
                                       style: const TextStyle(
                                         color: Colors.black,
                                       )),
-                                  if (payHistory.attendant?.fullnames != null)
+                                  if (payHistory.attendant?.username != null)
                                     Text(
-                                        "by: ${payHistory.attendant!.fullnames}",
+                                        "by: ${payHistory.attendant!.username}",
                                         style: const TextStyle(
                                           color: Colors.black,
                                         )),

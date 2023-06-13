@@ -22,10 +22,11 @@ class Expense {
     DateTime? fromDate,
     DateTime? toDate,
   }) {
+    print("getExpenseByDate");
     RealmResults<ExpenseModel> expenses = realmService.realm.query<
             ExpenseModel>(
-        'date > ${fromDate!.millisecondsSinceEpoch} AND date < ${toDate!.millisecondsSinceEpoch}',
-        [customer]);
+        'shop == \$0 AND date > ${fromDate!.millisecondsSinceEpoch} AND date < ${toDate!.millisecondsSinceEpoch}',
+        [shopController.currentShop.value!.id.toString()]);
     print("expenses ${expenses.length}");
     return expenses;
   }

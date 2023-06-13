@@ -27,6 +27,7 @@ import 'realm_controller.dart';
 class PurchaseController extends GetxController {
   Rxn<Invoice> invoice = Rxn(null);
   RxList<Invoice> purchasedItems = RxList([]);
+  RxInt purchasedTotal = RxInt(0);
   RxList<Invoice> creditPurchases = RxList([]);
   Rxn<Invoice> currentInvoice = Rxn(null);
   RxList<InvoiceItem> currentInvoiceReturns = RxList([]);
@@ -49,6 +50,7 @@ class PurchaseController extends GetxController {
       invoiceData.receiptNumber = getRandomString(10);
       invoiceData.onCredit = invoiceData.balance! > 0;
       invoiceData.createdAt = DateTime.now();
+      invoiceData.dated = DateTime.now().millisecondsSinceEpoch;
       invoiceData.productCount = invoiceData.items.length;
 
       if (_onCredit(invoiceData)) {
@@ -97,14 +99,20 @@ class PurchaseController extends GetxController {
     }
   }
 
-  getPurchase({
-    Supplier? supplier,
-    bool? onCredit,
-  }) async {
+  getPurchase(
+      {Supplier? supplier,
+      bool? onCredit,
+      DateTime? fromDate,
+      DateTime? toDate}) async {
     purchasedItems.clear();
-    RealmResults<Invoice> invoices =
-        Purchases().getPurchase(supplier: supplier, onCredit: onCredit);
+    RealmResults<Invoice> invoices = Purchases().getPurchase(
+        supplier: supplier,
+        onCredit: onCredit,
+        fromDate: fromDate,
+        toDate: toDate);
     purchasedItems.addAll(invoices.map((e) => e).toList());
+    purchasedTotal.value = purchasedItems.fold(
+        0, (previousValue, element) => previousValue + element.total!);
   }
 
   getIvoiceById(Invoice invoice) {

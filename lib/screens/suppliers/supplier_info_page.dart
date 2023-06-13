@@ -21,6 +21,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../Real/Models/schema.dart';
 import '../../controllers/AuthController.dart';
 import '../../controllers/user_controller.dart';
+import '../../functions/functions.dart';
 import '../../utils/colors.dart';
 import '../../widgets/purchase_card.dart';
 import '../../widgets/snackBars.dart';
@@ -143,11 +144,10 @@ class SupplierInfoPage extends StatelessWidget {
                       Center(
                           child: Text(
                         supplierModel.fullName!,
-                        style: TextStyle(
+                        style: const TextStyle(
                             color: Colors.white, fontWeight: FontWeight.bold),
                       )),
-                      SizedBox(height: 5),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 15),
                       Container(
                         width: double.infinity,
                         padding:
@@ -211,16 +211,17 @@ class SupplierInfoPage extends StatelessWidget {
                     Get.to(() => EditSupplier(supplierModel: supplierModel));
                   },
                   icon: Icon(Icons.edit)),
-              IconButton(
-                  onPressed: () {
-                    generalAlert(
-                        title:
-                            "Are you sure you want to delete ${supplierModel.fullName}",
-                        function: () {
-                          supplierController.deleteSuppler(supplierModel);
-                        });
-                  },
-                  icon: Icon(Icons.delete)),
+              if (checkPermission(category: "suppliers", permission: "manage"))
+                IconButton(
+                    onPressed: () {
+                      generalAlert(
+                          title:
+                              "Are you sure you want to delete ${supplierModel.fullName}",
+                          function: () {
+                            supplierController.deleteSuppler(supplierModel);
+                          });
+                    },
+                    icon: Icon(Icons.delete)),
             ],
           )),
     );

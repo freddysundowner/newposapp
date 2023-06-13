@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:pointify/controllers/CustomerController.dart';
+import 'package:pointify/controllers/expense_controller.dart';
 import 'package:pointify/controllers/home_controller.dart';
+import 'package:pointify/controllers/purchase_controller.dart';
+import 'package:pointify/controllers/sales_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/screens/cash_flow/cash_flow_manager.dart';
 import 'package:pointify/widgets/alert.dart';
@@ -8,21 +12,32 @@ import 'package:intl/intl.dart';
 import 'package:realm/realm.dart';
 import '../Real/Models/schema.dart';
 import '../services/transactions.dart';
+import '../services/users.dart';
 import '../widgets/loading_dialog.dart';
 
 class CashflowController extends GetxController
     with GetTickerProviderStateMixin {
   final GlobalKey<State> _keyLoader = new GlobalKey<State>();
   RxList<CashFlowCategory> cashFlowCategories = RxList([]);
-  RxList<BankTransactions> bankTransactions = RxList([]);
-  Rxn<CashFlowCategory> selectedCashFlowCategories = Rxn(null);
+  // RxList<CashFlowCategory> cashOutGroups = RxList([]);
+  // RxList<BankTransactions> bankTransactions = RxList([]);
+  RxList<CashFlowTransaction> cashflowTransactions = RxList([]);
+  RxList<CashFlowTransaction> categoryCashflowTransactions = RxList([]);
+  RxList<CashFlowTransaction> cashOutflowOtherTransactions = RxList([]);
+  RxList<CashFlowTransaction> cashInflowOtherTransactions = RxList([]);
+  RxList<CashFlowTransaction> cashflowOtherTransactions = RxList([]);
+  Rxn<CashFlowCategory> selectedcashOutGroups = Rxn(null);
+  Rxn<CashFlowCategory> selectedcashFlowCategory = Rxn(null);
   Rxn<BankModel> selectedBank = Rxn(null);
-  Rxn<CashflowSummary> cashflowSummary = Rxn(null);
   RxInt totalcashAtBank = RxInt(0);
   RxInt totalcashAtBankHistory = RxInt(0);
   RxInt cashflowTotal = RxInt(0);
   RxInt initialPage = RxInt(0);
 
+  RxInt purchasedItemsTotal = RxInt(0);
+  RxInt cashatHand = RxInt(0);
+  RxInt totalCashIn = RxInt(0);
+  RxInt totalCashOut = RxInt(0);
   RxList categories = RxList([]);
   RxBool loadingCashAtBank = RxBool(false);
   RxBool gettingBankName = RxBool(false);
@@ -40,26 +55,19 @@ class CashflowController extends GetxController
 
   TextEditingController textEditingControllerCategory = TextEditingController();
 
-  fetchCashAtBank(shopId) async {
-    try {
-      loadingCashAtBank.value = true;
-      totalcashAtBank.value = 0;
-      RealmResults<BankModel> response =
-          await Transactions().getCashAtBank(shopId);
+  fetchCashAtBank() {
+    totalcashAtBank.value = 0;
+    RealmResults<BankModel> response = Transactions().getCashAtBank();
 
-      if (response.isNotEmpty) {
-        List<BankModel> fetchedData = response.map((e) => e).toList();
-        cashAtBanks.assignAll(fetchedData);
-        for (int i = 0; i < cashAtBanks.length; i++) {
-          totalcashAtBank.value += cashAtBanks[i].amount!;
-        }
-      } else {
-        cashAtBanks.value = [];
+    print("vvv ${response.length}");
+    if (response.isNotEmpty) {
+      List<BankModel> fetchedData = response.map((e) => e).toList();
+      cashAtBanks.assignAll(fetchedData);
+      for (int i = 0; i < cashAtBanks.length; i++) {
+        totalcashAtBank.value += cashAtBanks[i].amount!;
       }
-      loadingCashAtBank.value = false;
-    } catch (e) {
-      loadingCashAtBank.value = false;
-      print(e);
+    } else {
+      cashAtBanks.value = [];
     }
   }
 
@@ -69,21 +77,22 @@ class CashflowController extends GetxController
     super.onInit();
   }
 
-  createBankNames({required shopId, required context}) async {
+  createBankNames() {
     try {
-      Map<String, dynamic> body = {
-        "name": textEditingControllerBankName.text,
-        "category": selectedCashFlowCategories.value!.id,
-        "shop": shopId,
-      };
-
-      LoadingDialog.showLoadingDialog(
-          context: context, key: _keyLoader, title: "adding bank");
-      var response = await Transactions().createBank(body: body);
-      Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
-      if (response["status"] == true) {
-        textEditingControllerBankName.clear();
-        fetchCashAtBank(shopId);
+      BankModel bankModel = BankModel(
+        ObjectId(),
+        shop: Get.find<ShopController>().currentShop.value!.id.toString(),
+        name: textEditingControllerBankName.text,
+      );
+      var response =
+          Transactions().getBankByName(textEditingControllerBankName.text);
+      print("response ${response.length}");
+      if (response.isNotEmpty) {
+        generalAlert(
+            title: "Error", message: "${bankModel.name} already exists");
+      } else {
+        Transactions().createBank(bankModel);
+        fetchCashAtBank();
       }
     } catch (e) {
       Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
@@ -92,45 +101,37 @@ class CashflowController extends GetxController
   }
 
   createTransaction({
-    required shopId,
-    required context,
     required type,
-    DateTime? date,
   }) async {
-    try {
-      LoadingDialog.showLoadingDialog(
-          context: context, key: _keyLoader, title: "Confirming");
-      Map<String, dynamic> body = {
-        "shop": shopId,
-        "bank": selectedBank.value == null ? "" : selectedBank.value!.id,
-        "amount": textEditingControllerAmount.text,
-        "type": type,
-        "from": date != null ? DateFormat("yyyy-MM-dd").format(date) : "",
-        "category": selectedCashFlowCategories.value!.id,
-      };
-      var response = await Transactions().createTransaction(body: body);
-      print(response);
-      Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
-      if (response["status"] == true) {
-        selectedBank.value = null;
-        if (MediaQuery.of(context).size.width > 600) {
-          Get.find<HomeController>().selectedWidget.value = CashFlowManager();
-        } else {
-          Get.back();
-        }
-        clearInputs();
-        getSalesSummary(
-          shopId: shopId,
-          from: DateFormat("yyyy-MM-dd").format(date!),
-          to: DateFormat("yyyy-MM-dd").format(date),
-        );
-      } else {
-        generalAlert(title: "Error", message: response["message"]);
-      }
-    } catch (e) {
-      print(e);
-      generalAlert(title: "Error", message: e.toString());
+    var amount = int.parse(textEditingControllerAmount.text);
+    CashFlowTransaction cashFlowTransaction = CashFlowTransaction(ObjectId(),
+        shop: Get.find<ShopController>().currentShop.value,
+        amount: amount,
+        description: textEditingControllerName.text,
+        cashFlowCategory: selectedcashOutGroups.value,
+        bank: selectedcashOutGroups.value!.key! == "bank"
+            ? selectedBank.value!
+            : null,
+        type: type,
+        date: DateTime.now().millisecondsSinceEpoch);
+
+    if (selectedcashOutGroups.value != null &&
+        selectedcashOutGroups.value!.key! == "bank") {
+      Transactions().updateBank(
+          bankModel: selectedBank.value!,
+          amount: (selectedBank.value!.amount ?? 0) + amount);
     }
+    Transactions().updateCashFlowCategory(
+        cashFlowCategory: selectedcashOutGroups.value!,
+        amount: (selectedcashOutGroups.value!.amount ?? 0) + amount);
+    Transactions().createTransaction(cashFlowTransaction);
+    getCashFlowTransactions(
+      fromDate: DateTime.parse(DateFormat("yyyy-MM-dd").format(fromDate.value)),
+      toDate: DateTime.parse(DateFormat("yyyy-MM-dd").format(toDate.value))
+          .add(const Duration(days: 1)),
+    );
+    Get.back();
+    textEditingControllerAmount.clear();
   }
 
   clearInputs() {
@@ -142,15 +143,16 @@ class CashflowController extends GetxController
     CashFlowCategory cashFlowCategory = CashFlowCategory(ObjectId(),
         name: textEditingControllerCategory.text,
         shop: Get.find<ShopController>().currentShop.value!.id.toString(),
-        type: type);
+        type: type,
+        amount: 0,
+        key: textEditingControllerCategory.text.toLowerCase().trim());
     await Transactions().createCategory(cashFlowCategory);
-    getCategory(
-        type, Get.find<ShopController>().currentShop.value!.id.toString());
+    getCategory(type);
   }
 
-  void getCategory(type, shopId) {
+  void getCategory(type) {
     RealmResults<CashFlowCategory> response =
-        Transactions().getCategory(shop: shopId, type: type);
+        Transactions().getCategory(type: type);
     if (response.isNotEmpty) {
       List<CashFlowCategory> cashflowCat = response.map((e) => e).toList();
       cashFlowCategories.assignAll(cashflowCat);
@@ -160,101 +162,101 @@ class CashflowController extends GetxController
     }
   }
 
-  void getBankTransactions(id) async {
-    try {
-      loadingBankHistory.value = true;
-      totalcashAtBankHistory.value = 0;
-      RealmResults<BankTransactions> response =
-          await Transactions().getBakTransactions(id: id);
-      if (response.isNotEmpty) {
-        List<BankTransactions> cashflowCat = response.map((e) => e).toList();
-        bankTransactions.assignAll(cashflowCat);
-        for (int i = 0; i < bankTransactions.length; i++) {
-          totalcashAtBankHistory.value += bankTransactions[i].amount!;
+  getCategoryHistory(CashFlowCategory cashFlowCategory,
+      {BankModel? bankModel}) async {
+    RealmResults<CashFlowTransaction> response = Transactions().CategoryHistory(
+        cashFlowCategory: cashFlowCategory, bankModel: bankModel);
+    List<CashFlowTransaction> cashflowCat = response.map((e) => e).toList();
+    categoryCashflowTransactions.assignAll(cashflowCat);
+  }
+
+  getCashFlowTransactions({
+    String? group,
+    String? type,
+    DateTime? fromDate,
+    DateTime? toDate,
+  }) async {
+    totalcashAtBankHistory.value = 0;
+    cashflowTransactions.clear();
+    cashInflowOtherTransactions.clear();
+    cashOutflowOtherTransactions.clear();
+    RealmResults<CashFlowTransaction> response = Transactions()
+        .getCashFlowTransaction(
+            group: group, type: type, fromDate: fromDate, toDate: toDate);
+    List<CashFlowTransaction> cashflowCat = response.map((e) => e).toList();
+    cashflowTransactions.assignAll(cashflowCat);
+    List<CashFlowTransaction> bankTrans = [];
+    for (var element in cashflowTransactions) {
+      if (element.bank != null) {
+        bankTrans.add(element);
+      } else {
+        if (element.type == "cash-out") {
+          cashOutflowOtherTransactions.add(element);
+        } else if (element.type == "cash-in") {
+          cashInflowOtherTransactions.add(element);
         }
-      } else {
-        bankTransactions.value = [];
+        cashflowOtherTransactions.add(element);
       }
-      loadingBankHistory.value = false;
-    } catch (e) {
-      loadingBankHistory.value = false;
-      print(e);
     }
+    totalcashAtBankHistory.value = bankTrans.fold(
+        0, (previousValue, element) => previousValue + element.amount!);
   }
 
-  getCategoryHistory(id) async {
+  void editCategory(CashFlowCategory cashFlowCategory) {
     try {
-      loadingBankHistory.value = true;
-      totalcashAtBankHistory.value = 0;
-      RealmResults<BankTransactions> response =
-          await Transactions().CategoryHistory(id: id);
-      if (response.isNotEmpty) {
-        List<BankTransactions> cashflowCat = response.map((e) => e).toList();
-        bankTransactions.assignAll(cashflowCat);
-        for (int i = 0; i < bankTransactions.length; i++) {
-          totalcashAtBankHistory.value += bankTransactions[i].amount!;
-        }
-      } else {
-        bankTransactions.value = [];
-      }
-      loadingBankHistory.value = false;
+      Transactions().updateCashFlowCategory(
+          cashFlowCategory: cashFlowCategory,
+          name: textEditingControllerCategory.text);
+      int index = cashFlowCategories
+          .indexWhere((element) => element.id == cashFlowCategory.id);
+      cashFlowCategories[index].name = textEditingControllerCategory.text;
+      cashFlowCategories.refresh();
+      textEditingControllerCategory.clear();
     } catch (e) {
-      loadingBankHistory.value = false;
       print(e);
     }
   }
 
-  void editCategory(id) async {
+  deleteCategory(CashFlowCategory? cashFlowCategory) async {
     try {
-      Map<String, dynamic> body = {"name": textEditingControllerCategory.text};
-      var response = await Transactions().ediCategory(body: body, id: id);
-      if (response["status"] == true) {
-        int index =
-            cashFlowCategories.indexWhere((element) => element.id == id);
-        cashFlowCategories[index].name = textEditingControllerCategory.text;
-        cashFlowCategories.refresh();
-        textEditingControllerCategory.clear();
-      }
+      cashFlowCategories
+          .removeWhere((element) => element.id == cashFlowCategory!.id);
+
+      cashflowTransactions.removeWhere(
+          (element) => element.cashFlowCategory!.id == cashFlowCategory!.id);
+      // cashFlowCategories.refresh();
+      Transactions().deleteCategory(cashFlowCategory: cashFlowCategory);
+      // getCategory(cashFlowCategory!.type);
     } catch (e) {
       print(e);
     }
   }
 
-  deleteCategory(ObjectId? id) async {
-    try {
-      var response = await Transactions().deleteCategory(id: id);
-      if (response["status"] == true) {
-        cashFlowCategories.removeWhere((element) => element.id == id);
-        cashFlowCategories.refresh();
-        getCategoriesTotal();
-      }
-    } catch (e) {
-      print(e);
-    }
-  }
+  getCashflowSummary({required shopId, required from, required to}) async {
+    SalesController salesController = Get.find<SalesController>();
+    ExpenseController expenseController = Get.find<ExpenseController>();
+    PurchaseController purchaseController = Get.find<PurchaseController>();
+    salesController.getProfitTransaction(fromDate: from, toDate: to);
+    purchaseController.getPurchase(fromDate: from, toDate: to, onCredit: false);
 
-  void getCategoriesTotal() {
-    cashflowTotal.value = 0;
-    for (int i = 0; i < cashFlowCategories.length; i++) {
-      cashflowTotal.value += cashFlowCategories[i].amount!;
-    }
-  }
+    purchasedItemsTotal.value = purchaseController.purchasedItems
+        .fold(0, (previousValue, element) => previousValue + element.total!);
+    Get.find<CustomerController>()
+        .getCustomerWallets(debtors: true, fromDate: from, toDate: to);
+    Get.find<CustomerController>()
+        .getCustomerWallets(debtors: false, fromDate: from, toDate: to);
+    getCashFlowTransactions(fromDate: from, toDate: to);
 
-  getSalesSummary({required shopId, required from, required to}) async {
-    try {
-      loadingCashflowSummry.value = true;
-      RealmResults<CashflowSummary> response = await Transactions()
-          .getCashFlowSummary(id: shopId, from: from, to: to);
-      if (response.isNotEmpty) {
-        cashflowSummary.value = response.first;
-      } else {
-        cashflowSummary.value = null;
-      }
-      loadingCashflowSummry.value = false;
-    } catch (e) {
-      loadingCashflowSummry.value = false;
-      print(e);
-    }
+    totalCashIn.value = salesController.allSalesTotal.value! +
+        cashInflowOtherTransactions.fold(
+            0, (previousValue, element) => previousValue + element.amount!);
+
+    totalCashOut.value = totalcashAtBankHistory.value +
+        expenseController.totalExpenses.value +
+        purchaseController.purchasedTotal.value +
+        cashOutflowOtherTransactions.fold(
+            0, (previousValue, element) => previousValue + element.amount!);
+    cashatHand.value = totalCashIn.value - totalCashOut.value;
   }
 
   @override

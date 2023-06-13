@@ -40,8 +40,7 @@ class AllPurchases extends StatelessWidget {
         elevation: 0.3,
         centerTitle: false,
         titleSpacing: 0.4,
-        leading: usercontroller.user.value?.usertype == "attendant" &&
-                MediaQuery.of(context).size.width > 600
+        leading: MediaQuery.of(context).size.width > 600
             ? null
             : IconButton(
                 onPressed: () {
@@ -52,7 +51,7 @@ class AllPurchases extends StatelessWidget {
                     Get.back();
                   }
                 },
-                icon: Icon(
+                icon: const Icon(
                   Icons.arrow_back_ios,
                   color: Colors.black,
                 ),
@@ -70,40 +69,20 @@ class AllPurchases extends StatelessWidget {
                       title: "${shopController.currentShop.value?.name}",
                       color: Colors.grey)
                 ],
-              ),
-              Spacer(),
-              if (usercontroller.user.value?.usertype == "attendant")
-                InkWell(
-                    onTap: () {
-                      if (MediaQuery.of(context).size.width > 600) {
-                        Get.find<HomeController>().selectedWidget.value =
-                            CreatePurchase();
-                      } else {
-                        Get.to(() => CreatePurchase());
-                      }
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.only(right: 15.0),
-                      child: majorTitle(
-                          title: "Create Purchase",
-                          color: AppColors.mainColor,
-                          size: 18.0),
-                    )),
+              )
             ],
           ),
         ),
         actions: [
-          if (usercontroller.user.value?.usertype == "admin")
-            InkWell(
-                onTap: () {
-                  PurchasesPdf(
-                      sales: purchaseController.purchasedItems.value,
-                      type: "type");
-                },
-                child: Icon(
-                  Icons.download,
-                  color: Colors.black,
-                ))
+          InkWell(
+              onTap: () {
+                PurchasesPdf(
+                    sales: purchaseController.purchasedItems, type: "type");
+              },
+              child: Icon(
+                Icons.download,
+                color: Colors.black,
+              ))
         ],
       ),
       body: ResponsiveWidget(
@@ -136,7 +115,7 @@ class AllPurchases extends StatelessWidget {
                                   )),
                                   columnSpacing: 30.0,
                                   columns: [
-                                    DataColumn(
+                                    const DataColumn(
                                         label: Text('Receipt Number',
                                             textAlign: TextAlign.center)),
                                     DataColumn(
@@ -233,9 +212,12 @@ class AllPurchases extends StatelessWidget {
             builder: (context, snapshot) {
               final data = snapshot.data;
 
-              if (data == null) {
+              if (data == null || data.results.isEmpty) {
                 return const Center(
-                  child: Text("No purchase Entries Found"),
+                  child: Text(
+                    "No purchases yet",
+                    style: TextStyle(color: Colors.black),
+                  ),
                 );
               }
 

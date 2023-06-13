@@ -106,7 +106,7 @@ class CountHistory extends StatelessWidget {
                               final x = productBody.quantity;
                               final z = productBody.createdAt!;
                               // final a =
-                              //     productBody.attendantId!.fullnames ?? "";
+                              //     productBody.attendantId!.username ?? "";
 
                               return DataRow(cells: [
                                 DataCell(Container(child: Text(y!))),

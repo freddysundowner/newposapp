@@ -71,7 +71,7 @@ Widget WalletUsageCard(
                   children: [
                     Text("By"),
                     Text(
-                      " ${depositBody.attendant?.fullnames}",
+                      " ${depositBody.attendant?.username}",
                       style: TextStyle(
                         color: depositBody.type == "usage"
                             ? Colors.red

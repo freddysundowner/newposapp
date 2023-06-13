@@ -229,7 +229,7 @@ class BadStockPage extends StatelessWidget {
                                           Align(
                                             alignment: Alignment.bottomRight,
                                             child: Text(
-                                              "By: ${badstock.attendantId!.fullnames}",
+                                              "By: ${badstock.attendantId!.username}",
                                               style: const TextStyle(
                                                   color: Colors.black,
                                                   fontSize: 15),

@@ -132,51 +132,16 @@ class SupplierController extends GetxController
     addressController.text = supplierModel.location ?? "";
   }
 
-  updateSupplier(BuildContext context, ObjectId id) async {
-    try {
-      LoadingDialog.showLoadingDialog(
-          context: context, title: "Updating supplier...", key: _keyLoader);
-      Map<String, dynamic> body = {
-        if (nameController.text != "") "fullName": nameController.text,
-        if (phoneController.text != "") "phoneNumber": phoneController.text,
-        if (genderController.text != "") "gender": genderController.text,
-        if (emailController.text != "") "email": emailController.text,
-        if (addressController.text != "") "address": addressController.text
-      };
-      var response = await SupplierService().updateSupplier(body: body, id: id);
-      Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
-      if (response["status"] == true) {
-        clearTexts();
-        // supplier.value = ;//SupplierModel.fromJson(response["body"]);
-        int index = suppliers.indexWhere((element) => element.id == id);
-        suppliers[index] = supplier.value!;
-        suppliers.refresh();
-      } else {
-        showSnackBar(message: response["message"], color: AppColors.mainColor);
-      }
-    } catch (e) {
-      Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
-    }
+  updateSupplier(Supplier supplier) async {
+    SupplierService().updateSupplier(supplier,
+        fullname: nameController.text,
+        phoneNumber: phoneController.text,
+        emailAddress: emailController.text,
+        location: addressController.text);
   }
 
   deleteSuppler(Supplier supplier) {
     SupplierService().deleteSupplier(supplier);
     Get.back();
-  }
-
-  returnOrderToSupplier({required uid, purchaseId}) async {
-    try {
-      LoadingDialog.showLoadingDialog(
-          context: Get.context!,
-          title: "returning order to  supplier...",
-          key: _keyLoader);
-      await Purchases().returnOrderToSupplier(uid);
-      Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
-      quantityController.text = "";
-      showSnackBar(
-          message: "Product Has been Returned", color: AppColors.mainColor);
-    } catch (e) {
-      Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
-    } finally {}
   }
 }

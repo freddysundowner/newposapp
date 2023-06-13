@@ -59,6 +59,7 @@ class WalletController extends GetxController with GetTickerProviderStateMixin {
         attendant: Get.find<UserController>().user.value,
         createdAt: DateTime.now(),
         type: type,
+        date: DateTime.now().millisecondsSinceEpoch,
         receipt: salesModel,
         amount: amount);
 

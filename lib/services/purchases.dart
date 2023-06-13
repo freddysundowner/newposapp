@@ -4,15 +4,15 @@ import 'package:get/get.dart';
 import 'package:pointify/Real/Models/schema.dart';
 import 'package:pointify/controllers/user_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
-import 'package:pointify/screens/cash_flow/payment_history.dart';
 import 'package:pointify/services/apiurls.dart';
 import 'package:pointify/services/client.dart';
 import 'package:pointify/services/payment.dart';
-import 'package:pointify/services/product.dart';
 import 'package:pointify/services/supplier.dart';
 import 'package:realm/realm.dart';
 
 import '../controllers/realm_controller.dart';
+import '../functions/functions.dart';
+import '../main.dart';
 
 class Purchases {
   final RealmController realmService = Get.find<RealmController>();
@@ -22,32 +22,52 @@ class Purchases {
         .write<Invoice>(() => realmService.realm.add<Invoice>(invoice));
   }
 
-  RealmResults<Invoice> getPurchase({Supplier? supplier, bool? onCredit}) {
+  RealmResults<Invoice> getPurchase(
+      {Supplier? supplier,
+      bool? onCredit,
+      DateTime? fromDate,
+      DateTime? toDate}) {
     if (supplier != null) {
       RealmResults<Invoice> invoices = realmService.realm.query<Invoice>(
           r'supplier == $0 AND TRUEPREDICATE SORT(createdAt DESC)', [supplier]);
       if (onCredit == true) {
-        return invoices
+        RealmResults<Invoice> ic = invoices
             .query("balance < 0  AND TRUEPREDICATE SORT(createdAt DESC)");
+        return _attendantFilter(ic);
       }
-      return invoices;
+      return _attendantFilter(invoices);
     }
     RealmResults<Invoice> invoices = realmService.realm.query<Invoice>(
         r'shop == $0 AND TRUEPREDICATE SORT(createdAt DESC)',
         [shopController.currentShop.value]);
-    return invoices;
+
+    if (fromDate != null) {
+      RealmResults<Invoice> invoicesResponse = invoices.query(
+          'dated > ${fromDate.millisecondsSinceEpoch} AND dated < ${toDate!.millisecondsSinceEpoch} AND TRUEPREDICATE SORT(createdAt DESC)');
+      return _attendantFilter(invoicesResponse);
+    }
+    return _attendantFilter(invoices);
+  }
+
+  _attendantFilter(RealmResults<Invoice> data) {
+    if (userController.switcheduser.value != null) {
+      return data
+          .query("attendantId == \$0 ", [userController.switcheduser.value!]);
+    }
+    if (checkPermission(category: "suppliers", permission: "all_purchases") ||
+        userController.user.value!.usertype == "admin") {
+      return data;
+    }
+    if (userController.user.value != null &&
+        userController.user.value!.usertype == "attendant") {
+      return data.query("attendantId == \$0 ", [userController.user.value!]);
+    }
+    return data;
   }
 
   getIvoiceById(Invoice? invoice) {
     Invoice? invoices = realmService.realm.find(invoice!.id);
     return invoices;
-  }
-
-  returnOrderToSupplier(uid) async {
-    var response = await DbBase()
-        .databaseRequest("${purchases}returns/$uid", DbBase().patchRequestType);
-    var data = jsonDecode(response);
-    return data;
   }
 
   createPayment(Invoice invoice, int amount) {
@@ -112,10 +132,26 @@ class Purchases {
     if (supplier != null) {
       RealmResults<InvoiceItem> returns =
           realmService.realm.query<InvoiceItem>('supplier == \$0 ', [supplier]);
-      return returns;
+      return _attendantReturnsFilter(returns);
     }
     RealmResults<InvoiceItem> returns =
         realmService.realm.query<InvoiceItem>('invoice == \$0 ', [invoice]);
-    return returns;
+    return _attendantReturnsFilter(returns);
+  }
+
+  _attendantReturnsFilter(RealmResults<InvoiceItem> data) {
+    if (userController.switcheduser.value != null) {
+      return data
+          .query("attendantId == \$0 ", [userController.switcheduser.value!]);
+    }
+    if (checkPermission(category: "suppliers", permission: "all_purchases") ||
+        userController.user.value!.usertype == "admin") {
+      return data;
+    }
+    if (userController.user.value != null &&
+        userController.user.value!.usertype == "attendant") {
+      return data.query("attendantId == \$0 ", [userController.user.value!]);
+    }
+    return data;
   }
 }

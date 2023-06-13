@@ -19,9 +19,7 @@ cashFlowCategoryDialog(context, {required CashFlowCategory cashflowCategory}) {
             Get.back();
             Get.find<HomeController>().selectedWidget.value =
                 CashCategoryHistory(
-              title: cashflowCategory.name,
-              subtitle: "All records",
-              id: cashflowCategory.id,
+              cashFlowCategory: cashflowCategory,
               page: "cashflowcategory",
             );
           },
@@ -89,7 +87,7 @@ cashFlowCategoryDialog(context, {required CashFlowCategory cashflowCategory}) {
                                         .text
                                         .isNotEmpty) {
                                       cashflowController
-                                          .editCategory(cashflowCategory.id);
+                                          .editCategory(cashflowCategory);
                                     }
                                   },
                                   child: Text(
@@ -116,7 +114,7 @@ cashFlowCategoryDialog(context, {required CashFlowCategory cashflowCategory}) {
             deleteDialog(
                 context: context,
                 onPressed: () {
-                  cashflowController.deleteCategory(cashflowCategory.id);
+                  cashflowController.deleteCategory(cashflowCategory);
                 });
           },
           title: Text("Delete"),

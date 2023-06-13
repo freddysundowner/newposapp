@@ -72,9 +72,8 @@ Widget purchasesItemCard({required InvoiceItem invoiceItem, required index}) {
                           color: Colors.grey,
                           size: 14.0),
                       SizedBox(width: 10),
-                      if (userController.user.value?.usertype == "admin" ||
-                          (userController.user.value?.usertype == "attendant" &&
-                              attendantController.checkRole("edit_entries")))
+                      if (checkPermission(
+                          category: "stocks", permission: "edit_price"))
                         InkWell(
                             onTap: () {
                               buyingProceController.text =
@@ -166,7 +165,7 @@ Widget purchasesItemCard({required InvoiceItem invoiceItem, required index}) {
                                     );
                                   });
                             },
-                            child: Text(
+                            child: const Text(
                               "Edit Price",
                               style: TextStyle(color: Colors.red),
                             )),

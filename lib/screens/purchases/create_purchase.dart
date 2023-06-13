@@ -613,9 +613,7 @@ class CreatePurchase extends StatelessWidget {
             titleSpacing: 0.0,
             elevation: 0.3,
             centerTitle: false,
-            leading: Get.find<UserController>().user.value?.usertype ==
-                        "attendant" &&
-                    MediaQuery.of(context).size.width > 600
+            leading: MediaQuery.of(context).size.width > 600
                 ? Container()
                 : IconButton(
                     onPressed: () {
@@ -642,37 +640,38 @@ class CreatePurchase extends StatelessWidget {
               ],
             ),
             actions: [
-              InkWell(
-                onTap: () {
-                  if (MediaQuery.of(context).size.width > 600) {
-                    Get.find<HomeController>().selectedWidget.value =
-                        CreateSuppliers(
-                      page: "suppliersPage",
-                    );
-                  } else {
-                    Get.to(() => CreateSuppliers(
-                          page: "suppliersPage",
-                        ));
-                  }
-                },
-                child: Padding(
-                  padding: const EdgeInsets.all(10),
-                  child: Container(
-                    padding: EdgeInsets.fromLTRB(5, 2, 5, 2),
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: (BorderRadius.circular(10)),
-                        border:
-                            Border.all(color: AppColors.mainColor, width: 1)),
-                    child: Center(
-                      child: majorTitle(
-                          title: "Add Supplier",
-                          color: AppColors.mainColor,
-                          size: 12.0),
+              if (checkPermission(category: "suppliers", permission: "add"))
+                InkWell(
+                  onTap: () {
+                    if (MediaQuery.of(context).size.width > 600) {
+                      Get.find<HomeController>().selectedWidget.value =
+                          CreateSuppliers(
+                        page: "suppliersPage",
+                      );
+                    } else {
+                      Get.to(() => CreateSuppliers(
+                            page: "suppliersPage",
+                          ));
+                    }
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: Container(
+                      padding: EdgeInsets.fromLTRB(5, 2, 5, 2),
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: (BorderRadius.circular(10)),
+                          border:
+                              Border.all(color: AppColors.mainColor, width: 1)),
+                      child: Center(
+                        child: majorTitle(
+                            title: "Add Supplier",
+                            color: AppColors.mainColor,
+                            size: 12.0),
+                      ),
                     ),
                   ),
-                ),
-              )
+                )
             ],
           ),
           body: Suppliers(

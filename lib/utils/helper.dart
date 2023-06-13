@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pointify/controllers/AuthController.dart';
 import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/controllers/user_controller.dart';
+import 'package:pointify/main.dart';
 import 'package:pointify/screens/cash_flow/cash_flow_manager.dart';
 import 'package:pointify/screens/finance/expense_page.dart';
 import 'package:pointify/screens/product/create_product.dart';
@@ -9,6 +10,7 @@ import 'package:pointify/screens/sales/create_sale.dart';
 import 'package:pointify/screens/shop/create_shop.dart';
 import 'package:get/get.dart';
 
+import '../controllers/realm_controller.dart';
 import '../screens/home/home.dart';
 
 missingValueDialog(context, message) {
@@ -64,15 +66,14 @@ class Helper extends StatelessWidget {
       backgroundColor: Colors.white,
       appBar: appBar,
       floatingActionButton:
-          Get.find<AuthController>().currentUser.value == null ||
-                  MediaQuery.of(context).size.width > 600 ||
-                  Get.find<UserController>().user.value?.usertype == "attendant"
+          userController.user.value?.usertype == "attendant" ||
+                  userController.switcheduser.value != null
               ? null
               : FloatingActionButton(
                   onPressed: () {
                     showShortCutBottomSheet(context: context);
                   },
-                  child: Center(
+                  child: const Center(
                     child: Icon(Icons.menu, color: Colors.white),
                   ),
                 ),

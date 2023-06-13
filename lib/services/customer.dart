@@ -74,4 +74,21 @@ class Customer {
     var data = jsonDecode(response);
     return data;
   }
+
+  RealmResults<DepositModel> getCustomerWallets({
+    required bool debtors,
+    DateTime? fromDate,
+    DateTime? toDate,
+  }) {
+    if (debtors == true) {
+      var response = realmService.realm.query<DepositModel>(
+          'type == \$0 AND date > ${fromDate?.millisecondsSinceEpoch} AND date < ${toDate!.millisecondsSinceEpoch}',
+          ['usage']);
+      return response;
+    }
+    var response = realmService.realm.query<DepositModel>(
+        'type == \$0 AND date > ${fromDate?.millisecondsSinceEpoch} AND date < ${toDate!.millisecondsSinceEpoch}',
+        ['deposit']);
+    return response;
+  }
 }

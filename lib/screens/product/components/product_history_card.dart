@@ -90,7 +90,7 @@ Widget productPurchaseHistoryContainer(InvoiceItem invoiceItem) {
             ),
             Spacer(),
             Column(
-              children: [Text('by ~  ${invoiceItem.attendantid?.fullnames}')],
+              children: [Text('by ~  ${invoiceItem.attendantid?.username}')],
             )
           ],
         )),

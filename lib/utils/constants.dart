@@ -55,6 +55,7 @@ class Constants {
   ];
 
   static final currenciesData = [
+    "KES",
     "USD",
     "CAD",
     "EUR",
@@ -110,7 +111,6 @@ class Constants {
     "JMD",
     "JOD",
     "JPY",
-    "KES",
     "KHR",
     "KMF",
     "KRW",

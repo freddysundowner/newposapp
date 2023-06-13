@@ -3,6 +3,7 @@ import 'package:pointify/controllers/cashflow_controller.dart';
 import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/controllers/sales_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
+import 'package:pointify/functions/functions.dart';
 import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/cash_flow/cash_at_bank.dart';
 import 'package:pointify/screens/cash_flow/cashflow_categories.dart';
@@ -19,29 +20,20 @@ import '../../utils/colors.dart';
 import '../../widgets/sales_card.dart';
 
 class CashCategoryHistory extends StatelessWidget {
-  final title;
-  final subtitle;
-  final id;
+  final CashFlowCategory? cashFlowCategory;
+  BankModel? bank;
   final page;
   ShopController shopController = Get.find<ShopController>();
   SalesController salesController = Get.find<SalesController>();
   CashflowController cashflowController = Get.find<CashflowController>();
 
   CashCategoryHistory(
-      {Key? key,
-      required this.title,
-      required this.subtitle,
-      required this.id,
-      required this.page})
+      {Key? key, this.page, required this.cashFlowCategory, this.bank})
       : super(key: key) {
-    if (title == "services") {
-      salesController.getSales(total: "true");
-    } else if (page == "cashflowcategory") {
-      cashflowController.getCategoryHistory(id);
-    } else {
-      cashflowController.getBankTransactions(id);
-    }
+    cashflowController.getCategoryHistory(cashFlowCategory!, bankModel: bank);
+    title = bank != null ? bank!.name! : cashFlowCategory!.name!;
   }
+  String title = "";
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +52,7 @@ class CashCategoryHistory extends StatelessWidget {
                       ? Center(
                           child: CircularProgressIndicator(),
                         )
-                      : cashflowController.bankTransactions.isEmpty
+                      : cashflowController.categoryCashflowTransactions.isEmpty
                           ? noItemsFound(context, true)
                           : Container(
                               width: double.infinity,
@@ -87,19 +79,23 @@ class CashCategoryHistory extends StatelessWidget {
                                   ],
                                   rows: List.generate(
                                       cashflowController
-                                          .bankTransactions.length, (index) {
-                                    BankTransactions bankTransactions =
-                                        cashflowController.bankTransactions
+                                          .categoryCashflowTransactions
+                                          .length, (index) {
+                                    CashFlowTransaction cashFlowTransaction =
+                                        cashflowController
+                                            .categoryCashflowTransactions
                                             .elementAt(index);
-                                    final y = bankTransactions.amount;
-                                    final x = bankTransactions.createdAt;
+                                    final y = cashFlowTransaction.amount;
+                                    final x = cashFlowTransaction.date;
 
                                     return DataRow(cells: [
                                       DataCell(
                                           Container(child: Text(y.toString()))),
                                       DataCell(Container(
                                           child: Text(DateFormat("yyyy-dd-MM")
-                                              .format(x!)))),
+                                              .format(DateTime
+                                                  .fromMillisecondsSinceEpoch(
+                                                      x!))))),
                                     ]);
                                   }),
                                 ),
@@ -123,13 +119,9 @@ class CashCategoryHistory extends StatelessWidget {
                     ? noItemsFound(context, true)
                     : _sales();
           }
-          return cashflowController.loadingBankHistory.value
-              ? Center(
-                  child: CircularProgressIndicator(),
-                )
-              : cashflowController.bankTransactions.isEmpty
-                  ? noItemsFound(context, true)
-                  : _sales();
+          return cashflowController.categoryCashflowTransactions.isEmpty
+              ? noItemsFound(context, true)
+              : _sales();
         }),
         appBar: _appBar("small", context),
         bottomNavigationBar: BottomAppBar(
@@ -158,7 +150,7 @@ class CashCategoryHistory extends StatelessWidget {
                           color: Colors.green.withOpacity(0.8),
                           borderRadius: BorderRadius.circular(20)),
                       child: Obx(() => Text(
-                          "${shopController.currentShop.value!.currency!} ${title == "services" ? salesController.allSalesTotal : cashflowController.totalcashAtBankHistory.value}")),
+                          "${shopController.currentShop.value!.currency!} ${title == "services" ? salesController.allSalesTotal : cashflowController.categoryCashflowTransactions.fold(0, (previousValue, element) => previousValue + element.amount!)}")),
                     )
                   ],
                 ),
@@ -202,12 +194,12 @@ class CashCategoryHistory extends StatelessWidget {
           });
     }
     return ListView.builder(
-        itemCount: cashflowController.bankTransactions.length,
+        itemCount: cashflowController.categoryCashflowTransactions.length,
         shrinkWrap: true,
         itemBuilder: (context, index) {
-          BankTransactions bankTransactions =
-              cashflowController.bankTransactions.elementAt(index);
-          return bankTransactionsCard(bankTransactions: bankTransactions);
+          CashFlowTransaction cashFlowTransaction =
+              cashflowController.categoryCashflowTransactions.elementAt(index);
+          return bankTransactionsCard(cashFlowTransaction: cashFlowTransaction);
         });
   }
 
@@ -256,7 +248,8 @@ class CashCategoryHistory extends StatelessWidget {
         });
   }
 
-  Widget bankTransactionsCard({required BankTransactions bankTransactions}) {
+  Widget bankTransactionsCard(
+      {required CashFlowTransaction cashFlowTransaction}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -278,13 +271,14 @@ class CashCategoryHistory extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    DateFormat("MMM dd yyyy hh:mm a")
-                        .format(bankTransactions.createdAt!),
+                    DateFormat("MMM dd yyyy hh:mm a").format(
+                        DateTime.fromMillisecondsSinceEpoch(
+                            cashFlowTransaction.date!)),
                     style: TextStyle(
                         color: Colors.grey, fontWeight: FontWeight.w600),
                   ),
                   Text(
-                    "@${Get.find<ShopController>().currentShop.value?.currency} ${bankTransactions.amount}",
+                    "@${htmlPrice(cashFlowTransaction.amount)}",
                     style: TextStyle(
                         color: Colors.grey, fontWeight: FontWeight.w600),
                   ),
@@ -335,7 +329,7 @@ class CashCategoryHistory extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               )),
           Text(
-            subtitle,
+            "All Records",
             style: TextStyle(
               fontSize: 10,
             ),
@@ -361,15 +355,15 @@ class CashCategoryHistory extends StatelessWidget {
                       type: "All");
                 }
               } else {
-                if (cashflowController.bankTransactions.isEmpty) {
-                  showSnackBar(
-                      message: "No Items to download", color: Colors.black);
-                } else {
-                  HistoryPdf(
-                      shop: shopController.currentShop.value!.name!,
-                      name: title,
-                      sales: cashflowController.bankTransactions);
-                }
+                // if (cashflowController.bankTransactions.isEmpty) {
+                //   showSnackBar(
+                //       message: "No Items to download", color: Colors.black);
+                // } else {
+                //   HistoryPdf(
+                //       shop: shopController.currentShop.value!.name!,
+                //       name: title,
+                //       sales: cashflowController.bankTransactions);
+                // }
               }
               Get.back();
             },

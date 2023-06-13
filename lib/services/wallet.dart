@@ -21,21 +21,7 @@ class Wallet {
   RealmResults<DepositModel> getWallet(CustomerModel customerModel, type) {
     RealmResults<DepositModel> deposits = realmService.realm
         .query<DepositModel>('customer == \$0', [customerModel]);
-    print(deposits.length);
     return deposits
         .query("type == \$0  AND TRUEPREDICATE SORT(createdAt DESC)", [type]);
-  }
-
-  updateWallet(uid, body) async {
-    var response = await DbBase()
-        .databaseRequest(wallet + uid, DbBase().putRequestType, body: body);
-    return jsonDecode(response);
-    ;
-  }
-
-  deleteWallet(uid, Map<String, dynamic> body) async {
-    var response = await DbBase()
-        .databaseRequest(wallet + uid, DbBase().deleteRequestType, body: body);
-    return jsonDecode(response);
   }
 }

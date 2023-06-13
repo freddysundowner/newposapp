@@ -111,7 +111,7 @@ class SaleOrderItem extends StatelessWidget {
                                 final z =
                                     saleOrderItemModel.itemCount.toString();
                                 final w = saleOrderItemModel.createdAt;
-                                // final a = saleOrderItemModel.attendantid?.fullnames;
+                                // final a = saleOrderItemModel.attendantid?.username;
 
                                 return DataRow(cells: [
                                   DataCell(

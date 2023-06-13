@@ -62,7 +62,7 @@ Widget transferHistoryCard(
             ],
           ),
           Spacer(),
-          Text("By ~ ${stockTransferHistory.attendant?.fullnames}")
+          Text("By ~ ${stockTransferHistory.attendant?.username}")
         ],
       ),
     ),

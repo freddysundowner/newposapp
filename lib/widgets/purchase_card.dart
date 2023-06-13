@@ -65,7 +65,7 @@ Widget returnedIvoiceItemsCard({required context, InvoiceItem? invoiceItem}) {
                         SizedBox(width: 20),
                         if (invoiceItem.attendantid != null)
                           Text(
-                            "By-${invoiceItem.attendantid!.fullnames}",
+                            "By-${invoiceItem.attendantid!.username}",
                             style: TextStyle(color: Colors.grey),
                           ),
                       ],

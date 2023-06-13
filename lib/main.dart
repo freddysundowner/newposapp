@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:pointify/Real/Models/schema.dart';
 import 'package:pointify/Real/services/r_shop.dart';
 import 'package:pointify/bindings.dart';
 import 'package:pointify/controllers/user_controller.dart';
@@ -7,9 +8,12 @@ import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/controllers/plan_controller.dart';
 import 'package:pointify/screens/home/home.dart';
 import 'package:pointify/screens/authentication/landing.dart';
+import 'package:pointify/screens/home/home_page.dart';
 import 'package:pointify/screens/shop/create_shop.dart';
+import 'package:pointify/services/users.dart';
 import 'package:pointify/utils/colors.dart';
 import 'package:get/get.dart';
+import 'package:realm/realm.dart';
 import 'controllers/AuthController.dart';
 import 'controllers/realm_controller.dart';
 
@@ -18,6 +22,7 @@ import 'package:flutter/services.dart' show rootBundle;
 
 final AuthController appController = Get.put(AuthController());
 final RealmController realmServices = Get.put(RealmController());
+UserController userController = Get.put<UserController>(UserController());
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   String appId = 'application-0-iosyj';
@@ -29,8 +34,6 @@ void main() async {
 class MyApp extends StatelessWidget {
   MyApp({super.key});
 
-  UserController attendantController =
-      Get.put<UserController>(UserController());
   PlanController planController = Get.put<PlanController>(PlanController());
   HomeController homeController = Get.put<HomeController>(HomeController());
   final RealmController realmService = Get.put(RealmController());
@@ -63,11 +66,26 @@ class Authenticate extends StatelessWidget {
 
   _auth() {
     if (realmServices.currentUser!.value != null) {
-      var shop = RShop().getShop();
-      if (shop.isEmpty) {
-        return CreateShop(page: "home");
+      RealmResults<UserModel> users = Users.getUserUser();
+      userController.getUser();
+      print("users ${users.length}");
+      if (users.isNotEmpty) {
+        if (users.first.usertype == "attendant") {
+          return Scaffold(
+            body: SafeArea(
+              child: HomePage(),
+            ),
+          );
+        } else {
+          var shop = RShop().getShop();
+          if (shop.isEmpty) {
+            return CreateShop(page: "home");
+          } else {
+            return Home();
+          }
+        }
       } else {
-        return Home();
+        return Landing();
       }
     } else {
       return Landing();

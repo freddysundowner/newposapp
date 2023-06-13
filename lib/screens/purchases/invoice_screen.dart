@@ -238,11 +238,13 @@ class InvoiceScreen extends StatelessWidget {
                                     ]),
                                   ]),
                                 ),
-                                InkWell(
-                                    onTap: () {
-                                      _dialog(invoice!, sale);
-                                    },
-                                    child: const Icon(Icons.more_vert)),
+                                if (checkPermission(
+                                    category: "stocks", permission: "return"))
+                                  InkWell(
+                                      onTap: () {
+                                        _dialog(invoice!, sale);
+                                      },
+                                      child: const Icon(Icons.more_vert)),
                               ],
                             );
                           }),
@@ -317,7 +319,7 @@ class InvoiceScreen extends StatelessWidget {
                           height: 10,
                         ),
                         majorTitle(
-                            title: invoice?.attendantId?.fullnames,
+                            title: invoice?.attendantId?.username,
                             color: Colors.black,
                             size: 18.0)
                       ],

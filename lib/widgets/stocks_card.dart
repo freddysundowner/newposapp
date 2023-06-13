@@ -71,7 +71,7 @@ Widget stockCard(
                               .format(supplyOrderModel.createdAt!)
                               .toString()),
                           Text(
-                              ", by: ${supplyOrderModel.attendantid?.fullnames}"),
+                              ", by: ${supplyOrderModel.attendantid?.username}"),
                         ],
                       ),
                     ],

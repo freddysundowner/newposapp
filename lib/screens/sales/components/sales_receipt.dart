@@ -244,11 +244,13 @@ class SalesReceipt extends StatelessWidget {
                                     ]),
                                   ]),
                                 ),
-                                InkWell(
-                                    onTap: () {
-                                      _dialog(receiptitem);
-                                    },
-                                    child: const Icon(Icons.more_vert)),
+                                if (checkPermission(
+                                    category: "sales", permission: "return"))
+                                  InkWell(
+                                      onTap: () {
+                                        _dialog(receiptitem);
+                                      },
+                                      child: const Icon(Icons.more_vert)),
                               ],
                             );
                           }),
@@ -324,7 +326,7 @@ class SalesReceipt extends StatelessWidget {
                         ),
                         majorTitle(
                             title: salesController
-                                .currentReceipt.value!.attendantId?.fullnames,
+                                .currentReceipt.value!.attendantId?.username,
                             color: Colors.black,
                             size: 18.0)
                       ],

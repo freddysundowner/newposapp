@@ -90,7 +90,7 @@ Widget SalesCard({required SalesModel salesModel}) {
               SizedBox(height: 3),
               minorTitle(
                   title:
-                      "Cashier: ${salesModel.attendantId?.fullnames?.capitalize}",
+                      "Cashier: ${salesModel.attendantId?.username?.capitalize}",
                   color: Colors.black),
               SizedBox(height: 3),
               minorTitle(

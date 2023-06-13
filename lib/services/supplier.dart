@@ -25,23 +25,35 @@ class SupplierService {
     if (type == "debtors") {
       RealmResults<Supplier> suppliersd =
           suppliers.query("balance < 0 AND TRUEPREDICATE SORT(createdAt DESC)");
-      print("suppliersd ${suppliersd.length}");
       return suppliersd;
     }
-    print("suppliers ${suppliers.length}");
     return suppliers;
   }
 
-  getSupplierById(id) async {
-    var response =
-        await DbBase().databaseRequest(supplier + id, DbBase().getRequestType);
-    return jsonDecode(response);
-  }
+  updateSupplier(
+    Supplier supplier, {
+    String? fullname,
+    String? phoneNumber,
+    String? emailAddress,
+    String? location,
+  }) async {
+    realmService.realm.write(() {
+      if (fullname != null) {
+        supplier.fullName = fullname;
+      }
+      if (phoneNumber != null) {
+        supplier.phoneNumber = phoneNumber;
+      }
+      if (emailAddress != null) {
+        supplier.emailAddress = emailAddress;
+      }
+      if (location != null) {
+        supplier.location = location;
+      }
+    });
 
-  updateSupplier({required Map<String, dynamic> body, id}) async {
-    var response = await DbBase()
-        .databaseRequest(supplier + id, DbBase().patchRequestType, body: body);
-    return jsonDecode(response);
+    realmService.realm.write<Supplier>(
+        () => realmService.realm.add<Supplier>(supplier, update: true));
   }
 
   deleteSupplier(Supplier supplier) async {
@@ -50,45 +62,11 @@ class SupplierService {
     });
   }
 
-  deleteStockProduct(String productId) async {
-    var response = await DbBase().databaseRequest(
-        product + "deletestockin/${productId}", DbBase().getRequestType);
-
-    var data = jsonDecode(response);
-    return data;
-  }
-
-  paySupplyCredit() {
-    //   StockInCredit stockInCredit, Map<String, dynamic> body) async {
-    // var response = await DbBase().databaseRequest(
-    //     supplier + "pay/${stockInCredit.id}", DbBase().patchRequestType,
-    //     body: body);
-    // return jsonDecode(response);
-    return {};
-  }
-
   updateSupplierWalletbalance(Supplier supplier, {int? amount}) async {
     realmService.realm.write(() {
       if (amount != null) {
         supplier.balance = amount;
       }
     });
-  }
-
-  getCredit(shopId, uid) async {
-    var response = await DbBase().databaseRequest(
-        supplier + "stockinhistory/${shopId}/${uid}", DbBase().getRequestType);
-    return jsonDecode(response);
-  }
-
-  getSupplierSupplies({required supplierId, required returned}) async {
-    var attendantId = Get.find<UserController>().user.value?.usertype == "admin"
-        ? ""
-        : Get.find<UserController>().user.value!.id;
-
-    var response = await DbBase().databaseRequest(
-        "${supplier}supplier/returns?supplier=$supplierId&attendant=$attendantId&returned=$returned",
-        DbBase().getRequestType);
-    return jsonDecode(response);
   }
 }

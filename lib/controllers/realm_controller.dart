@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:get/get.dart';
 import 'package:pointify/Real/Models/schema.dart';
 import 'package:pointify/controllers/shop_controller.dart';
@@ -28,32 +30,36 @@ class RealmController extends GetxController {
 
   auth() {
     AuthController appController = Get.find<AuthController>();
+    List<SchemaObject> schemas = [
+      Shop.schema,
+      ShopTypes.schema,
+      ProductCategory.schema,
+      UserModel.schema,
+      Product.schema,
+      RolesModel.schema,
+      Supplier.schema,
+      Invoice.schema,
+      InvoiceItem.schema,
+      ProductHistoryModel.schema,
+      CustomerModel.schema,
+      PayHistory.schema,
+      BadStock.schema,
+      StockTransferHistory.schema,
+      SalesModel.schema,
+      ReceiptItem.schema,
+      SalesReturn.schema,
+      DepositModel.schema,
+      ProductCountModel.schema,
+      CashFlowCategory.schema,
+      ExpenseModel.schema,
+      CashOutGroup.schema,
+      BankModel.schema,
+      CashFlowTransaction.schema,
+    ];
     if (appController.app.value!.currentUser != null ||
         currentUser?.value != appController.app.value!.currentUser) {
       currentUser?.value ??= appController.app.value!.currentUser;
-      realm = Realm(Configuration.flexibleSync(currentUser!.value!, [
-        Shop.schema,
-        ShopTypes.schema,
-        ProductCategory.schema,
-        UserModel.schema,
-        Product.schema,
-        RolesModel.schema,
-        Supplier.schema,
-        Invoice.schema,
-        InvoiceItem.schema,
-        ProductHistoryModel.schema,
-        CustomerModel.schema,
-        PayHistory.schema,
-        BadStock.schema,
-        StockTransferHistory.schema,
-        SalesModel.schema,
-        ReceiptItem.schema,
-        SalesReturn.schema,
-        DepositModel.schema,
-        ProductCountModel.schema,
-        CashFlowCategory.schema,
-        ExpenseModel.schema,
-      ]));
+      realm = Realm(Configuration.flexibleSync(currentUser!.value!, schemas));
       realm.subscriptions.update((mutableSubscriptions) {
         mutableSubscriptions.add(realm.all<Shop>());
         mutableSubscriptions.add(realm.all<ShopTypes>());
@@ -76,7 +82,12 @@ class RealmController extends GetxController {
         mutableSubscriptions.add(realm.all<ProductCountModel>());
         mutableSubscriptions.add(realm.all<CashFlowCategory>());
         mutableSubscriptions.add(realm.all<ExpenseModel>());
+        mutableSubscriptions.add(realm.all<CashOutGroup>());
+        mutableSubscriptions.add(realm.all<BankModel>());
+        mutableSubscriptions.add(realm.all<CashFlowTransaction>());
       });
+    } else {
+      realm = Realm(Configuration.local(schemas));
     }
   }
 
@@ -97,9 +108,14 @@ class RealmController extends GetxController {
   Future<String?> setDefaulShop(Shop shop) async {
     RealmResults<UserModel> admin = await Users.getUserUser();
     if (admin.isEmpty) {
-      Users.createUser(UserModel(ObjectId(), shop: shop));
+      Users.createUser(UserModel(
+        ObjectId(),
+        Random().nextInt(098459),
+        shop: shop,
+        deleted: false,
+      ));
     } else {
-      Users().updateAdmin(admin, shop: shop);
+      Users().updateAdmin(admin.first, shop: shop);
     }
 
     Get.find<UserController>().getUser();

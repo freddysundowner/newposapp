@@ -14,6 +14,7 @@ class Invoice extends _Invoice with RealmEntity, RealmObjectBase, RealmObject {
     UserModel? attendantId,
     int? balance,
     int? total,
+    int? dated,
     String? receiptNumber,
     bool? onCredit,
     int? productCount,
@@ -28,6 +29,7 @@ class Invoice extends _Invoice with RealmEntity, RealmObjectBase, RealmObject {
     RealmObjectBase.set(this, 'attendantId', attendantId);
     RealmObjectBase.set(this, 'balance', balance);
     RealmObjectBase.set(this, 'total', total);
+    RealmObjectBase.set(this, 'dated', dated);
     RealmObjectBase.set(this, 'receiptNumber', receiptNumber);
     RealmObjectBase.set(this, 'onCredit', onCredit);
     RealmObjectBase.set(this, 'productCount', productCount);
@@ -74,6 +76,11 @@ class Invoice extends _Invoice with RealmEntity, RealmObjectBase, RealmObject {
   int? get total => RealmObjectBase.get<int>(this, 'total') as int?;
   @override
   set total(int? value) => RealmObjectBase.set(this, 'total', value);
+
+  @override
+  int? get dated => RealmObjectBase.get<int>(this, 'dated') as int?;
+  @override
+  set dated(int? value) => RealmObjectBase.set(this, 'dated', value);
 
   @override
   String? get receiptNumber =>
@@ -145,6 +152,7 @@ class Invoice extends _Invoice with RealmEntity, RealmObjectBase, RealmObject {
           optional: true, linkTarget: 'UserModel'),
       SchemaProperty('balance', RealmPropertyType.int, optional: true),
       SchemaProperty('total', RealmPropertyType.int, optional: true),
+      SchemaProperty('dated', RealmPropertyType.int, optional: true),
       SchemaProperty('receiptNumber', RealmPropertyType.string, optional: true),
       SchemaProperty('onCredit', RealmPropertyType.bool, optional: true),
       SchemaProperty('productCount', RealmPropertyType.int, optional: true),
@@ -154,6 +162,56 @@ class Invoice extends _Invoice with RealmEntity, RealmObjectBase, RealmObject {
           linkTarget: 'InvoiceItem', collectionType: RealmCollectionType.list),
       SchemaProperty('createdAt', RealmPropertyType.timestamp, optional: true),
       SchemaProperty('updatedAt', RealmPropertyType.timestamp, optional: true),
+    ]);
+  }
+}
+
+class CashOutGroup extends _CashOutGroup
+    with RealmEntity, RealmObjectBase, RealmObject {
+  CashOutGroup(
+    ObjectId? id, {
+    String? name,
+    String? key,
+  }) {
+    RealmObjectBase.set(this, '_id', id);
+    RealmObjectBase.set(this, 'name', name);
+    RealmObjectBase.set(this, 'key', key);
+  }
+
+  CashOutGroup._();
+
+  @override
+  ObjectId? get id => RealmObjectBase.get<ObjectId>(this, '_id') as ObjectId?;
+  @override
+  set id(ObjectId? value) => RealmObjectBase.set(this, '_id', value);
+
+  @override
+  String? get name => RealmObjectBase.get<String>(this, 'name') as String?;
+  @override
+  set name(String? value) => RealmObjectBase.set(this, 'name', value);
+
+  @override
+  String? get key => RealmObjectBase.get<String>(this, 'key') as String?;
+  @override
+  set key(String? value) => RealmObjectBase.set(this, 'key', value);
+
+  @override
+  Stream<RealmObjectChanges<CashOutGroup>> get changes =>
+      RealmObjectBase.getChanges<CashOutGroup>(this);
+
+  @override
+  CashOutGroup freeze() => RealmObjectBase.freezeObject<CashOutGroup>(this);
+
+  static SchemaObject get schema => _schema ??= _initSchema();
+  static SchemaObject? _schema;
+  static SchemaObject _initSchema() {
+    RealmObjectBase.registerFactory(CashOutGroup._);
+    return const SchemaObject(
+        ObjectType.realmObject, CashOutGroup, 'CashOutGroup', [
+      SchemaProperty('id', RealmPropertyType.objectid,
+          mapTo: '_id', optional: true, primaryKey: true),
+      SchemaProperty('name', RealmPropertyType.string, optional: true),
+      SchemaProperty('key', RealmPropertyType.string, optional: true),
     ]);
   }
 }
@@ -351,17 +409,29 @@ class Shop extends _Shop with RealmEntity, RealmObjectBase, RealmObject {
 class UserModel extends _UserModel
     with RealmEntity, RealmObjectBase, RealmObject {
   UserModel(
-    ObjectId? id, {
+    ObjectId? id,
+    int UNID, {
+    String? username,
+    bool? loggedin,
+    bool? deleted,
     String? fullnames,
     String? phonenumber,
+    String? authId,
     Shop? shop,
+    String? permisions,
     String? usertype,
     Iterable<RolesModel> roles = const [],
   }) {
     RealmObjectBase.set(this, '_id', id);
+    RealmObjectBase.set(this, 'username', username);
+    RealmObjectBase.set(this, 'loggedin', loggedin);
+    RealmObjectBase.set(this, 'deleted', deleted);
     RealmObjectBase.set(this, 'fullnames', fullnames);
     RealmObjectBase.set(this, 'phonenumber', phonenumber);
+    RealmObjectBase.set(this, 'authId', authId);
+    RealmObjectBase.set(this, 'UNID', UNID);
     RealmObjectBase.set(this, 'shop', shop);
+    RealmObjectBase.set(this, 'permisions', permisions);
     RealmObjectBase.set(this, 'usertype', usertype);
     RealmObjectBase.set<RealmList<RolesModel>>(
         this, 'roles', RealmList<RolesModel>(roles));
@@ -373,6 +443,22 @@ class UserModel extends _UserModel
   ObjectId? get id => RealmObjectBase.get<ObjectId>(this, '_id') as ObjectId?;
   @override
   set id(ObjectId? value) => RealmObjectBase.set(this, '_id', value);
+
+  @override
+  String? get username =>
+      RealmObjectBase.get<String>(this, 'username') as String?;
+  @override
+  set username(String? value) => RealmObjectBase.set(this, 'username', value);
+
+  @override
+  bool? get loggedin => RealmObjectBase.get<bool>(this, 'loggedin') as bool?;
+  @override
+  set loggedin(bool? value) => RealmObjectBase.set(this, 'loggedin', value);
+
+  @override
+  bool? get deleted => RealmObjectBase.get<bool>(this, 'deleted') as bool?;
+  @override
+  set deleted(bool? value) => RealmObjectBase.set(this, 'deleted', value);
 
   @override
   String? get fullnames =>
@@ -388,6 +474,16 @@ class UserModel extends _UserModel
       RealmObjectBase.set(this, 'phonenumber', value);
 
   @override
+  String? get authId => RealmObjectBase.get<String>(this, 'authId') as String?;
+  @override
+  set authId(String? value) => RealmObjectBase.set(this, 'authId', value);
+
+  @override
+  int get UNID => RealmObjectBase.get<int>(this, 'UNID') as int;
+  @override
+  set UNID(int value) => RealmObjectBase.set(this, 'UNID', value);
+
+  @override
   Shop? get shop => RealmObjectBase.get<Shop>(this, 'shop') as Shop?;
   @override
   set shop(covariant Shop? value) => RealmObjectBase.set(this, 'shop', value);
@@ -398,6 +494,13 @@ class UserModel extends _UserModel
   @override
   set roles(covariant RealmList<RolesModel> value) =>
       throw RealmUnsupportedSetError();
+
+  @override
+  String? get permisions =>
+      RealmObjectBase.get<String>(this, 'permisions') as String?;
+  @override
+  set permisions(String? value) =>
+      RealmObjectBase.set(this, 'permisions', value);
 
   @override
   String? get usertype =>
@@ -419,12 +522,18 @@ class UserModel extends _UserModel
     return const SchemaObject(ObjectType.realmObject, UserModel, 'UserModel', [
       SchemaProperty('id', RealmPropertyType.objectid,
           mapTo: '_id', optional: true, primaryKey: true),
+      SchemaProperty('username', RealmPropertyType.string, optional: true),
+      SchemaProperty('loggedin', RealmPropertyType.bool, optional: true),
+      SchemaProperty('deleted', RealmPropertyType.bool, optional: true),
       SchemaProperty('fullnames', RealmPropertyType.string, optional: true),
       SchemaProperty('phonenumber', RealmPropertyType.string, optional: true),
+      SchemaProperty('authId', RealmPropertyType.string, optional: true),
+      SchemaProperty('UNID', RealmPropertyType.int),
       SchemaProperty('shop', RealmPropertyType.object,
           optional: true, linkTarget: 'Shop'),
       SchemaProperty('roles', RealmPropertyType.object,
           linkTarget: 'RolesModel', collectionType: RealmCollectionType.list),
+      SchemaProperty('permisions', RealmPropertyType.string, optional: true),
       SchemaProperty('usertype', RealmPropertyType.string, optional: true),
     ]);
   }
@@ -1026,12 +1135,14 @@ class BankTransactions extends _BankTransactions
     ObjectId? id, {
     String? shop,
     String? category,
+    CashOutGroup? group,
     int? amount,
     DateTime? createdAt,
   }) {
     RealmObjectBase.set(this, '_id', id);
     RealmObjectBase.set(this, 'shop', shop);
     RealmObjectBase.set(this, 'category', category);
+    RealmObjectBase.set(this, 'group', group);
     RealmObjectBase.set(this, 'amount', amount);
     RealmObjectBase.set(this, 'createdAt', createdAt);
   }
@@ -1053,6 +1164,13 @@ class BankTransactions extends _BankTransactions
       RealmObjectBase.get<String>(this, 'category') as String?;
   @override
   set category(String? value) => RealmObjectBase.set(this, 'category', value);
+
+  @override
+  CashOutGroup? get group =>
+      RealmObjectBase.get<CashOutGroup>(this, 'group') as CashOutGroup?;
+  @override
+  set group(covariant CashOutGroup? value) =>
+      RealmObjectBase.set(this, 'group', value);
 
   @override
   int? get amount => RealmObjectBase.get<int>(this, 'amount') as int?;
@@ -1084,6 +1202,8 @@ class BankTransactions extends _BankTransactions
           mapTo: '_id', optional: true, primaryKey: true),
       SchemaProperty('shop', RealmPropertyType.string, optional: true),
       SchemaProperty('category', RealmPropertyType.string, optional: true),
+      SchemaProperty('group', RealmPropertyType.object,
+          optional: true, linkTarget: 'CashOutGroup'),
       SchemaProperty('amount', RealmPropertyType.int, optional: true),
       SchemaProperty('createdAt', RealmPropertyType.timestamp, optional: true),
     ]);
@@ -1097,6 +1217,7 @@ class CashFlowCategory extends _CashFlowCategory
     String? name,
     int? amount,
     String? type,
+    String? key,
     String? shop,
     DateTime? createdAt,
   }) {
@@ -1104,6 +1225,7 @@ class CashFlowCategory extends _CashFlowCategory
     RealmObjectBase.set(this, 'name', name);
     RealmObjectBase.set(this, 'amount', amount);
     RealmObjectBase.set(this, 'type', type);
+    RealmObjectBase.set(this, 'key', key);
     RealmObjectBase.set(this, 'shop', shop);
     RealmObjectBase.set(this, 'createdAt', createdAt);
   }
@@ -1129,6 +1251,11 @@ class CashFlowCategory extends _CashFlowCategory
   String? get type => RealmObjectBase.get<String>(this, 'type') as String?;
   @override
   set type(String? value) => RealmObjectBase.set(this, 'type', value);
+
+  @override
+  String? get key => RealmObjectBase.get<String>(this, 'key') as String?;
+  @override
+  set key(String? value) => RealmObjectBase.set(this, 'key', value);
 
   @override
   String? get shop => RealmObjectBase.get<String>(this, 'shop') as String?;
@@ -1161,116 +1288,110 @@ class CashFlowCategory extends _CashFlowCategory
       SchemaProperty('name', RealmPropertyType.string, optional: true),
       SchemaProperty('amount', RealmPropertyType.int, optional: true),
       SchemaProperty('type', RealmPropertyType.string, optional: true),
+      SchemaProperty('key', RealmPropertyType.string, optional: true),
       SchemaProperty('shop', RealmPropertyType.string, optional: true),
       SchemaProperty('createdAt', RealmPropertyType.timestamp, optional: true),
     ]);
   }
 }
 
-class CashflowSummary extends _CashflowSummary
+class CashFlowTransaction extends _CashFlowTransaction
     with RealmEntity, RealmObjectBase, RealmObject {
-  CashflowSummary({
-    int? totalExpenses,
-    int? cashinhand,
-    int? totalbanked,
-    int? totalSales,
-    int? totalpurchases,
-    int? totalwallet,
-    int? creditTotal,
-    int? totalcashin,
-    int? totalcashout,
+  CashFlowTransaction(
+    ObjectId? id, {
+    CashFlowCategory? cashFlowCategory,
+    BankModel? bank,
+    int? amount,
+    String? type,
+    String? description,
+    Shop? shop,
+    int? date,
   }) {
-    RealmObjectBase.set(this, 'totalExpenses', totalExpenses);
-    RealmObjectBase.set(this, 'cashinhand', cashinhand);
-    RealmObjectBase.set(this, 'totalbanked', totalbanked);
-    RealmObjectBase.set(this, 'totalSales', totalSales);
-    RealmObjectBase.set(this, 'totalpurchases', totalpurchases);
-    RealmObjectBase.set(this, 'totalwallet', totalwallet);
-    RealmObjectBase.set(this, 'creditTotal', creditTotal);
-    RealmObjectBase.set(this, 'totalcashin', totalcashin);
-    RealmObjectBase.set(this, 'totalcashout', totalcashout);
+    RealmObjectBase.set(this, '_id', id);
+    RealmObjectBase.set(this, 'cashFlowCategory', cashFlowCategory);
+    RealmObjectBase.set(this, 'bank', bank);
+    RealmObjectBase.set(this, 'amount', amount);
+    RealmObjectBase.set(this, 'type', type);
+    RealmObjectBase.set(this, 'description', description);
+    RealmObjectBase.set(this, 'shop', shop);
+    RealmObjectBase.set(this, 'date', date);
   }
 
-  CashflowSummary._();
+  CashFlowTransaction._();
 
   @override
-  int? get totalExpenses =>
-      RealmObjectBase.get<int>(this, 'totalExpenses') as int?;
+  ObjectId? get id => RealmObjectBase.get<ObjectId>(this, '_id') as ObjectId?;
   @override
-  set totalExpenses(int? value) =>
-      RealmObjectBase.set(this, 'totalExpenses', value);
+  set id(ObjectId? value) => RealmObjectBase.set(this, '_id', value);
 
   @override
-  int? get cashinhand => RealmObjectBase.get<int>(this, 'cashinhand') as int?;
+  CashFlowCategory? get cashFlowCategory =>
+      RealmObjectBase.get<CashFlowCategory>(this, 'cashFlowCategory')
+          as CashFlowCategory?;
   @override
-  set cashinhand(int? value) => RealmObjectBase.set(this, 'cashinhand', value);
+  set cashFlowCategory(covariant CashFlowCategory? value) =>
+      RealmObjectBase.set(this, 'cashFlowCategory', value);
 
   @override
-  int? get totalbanked => RealmObjectBase.get<int>(this, 'totalbanked') as int?;
+  BankModel? get bank =>
+      RealmObjectBase.get<BankModel>(this, 'bank') as BankModel?;
   @override
-  set totalbanked(int? value) =>
-      RealmObjectBase.set(this, 'totalbanked', value);
+  set bank(covariant BankModel? value) =>
+      RealmObjectBase.set(this, 'bank', value);
 
   @override
-  int? get totalSales => RealmObjectBase.get<int>(this, 'totalSales') as int?;
+  int? get amount => RealmObjectBase.get<int>(this, 'amount') as int?;
   @override
-  set totalSales(int? value) => RealmObjectBase.set(this, 'totalSales', value);
+  set amount(int? value) => RealmObjectBase.set(this, 'amount', value);
 
   @override
-  int? get totalpurchases =>
-      RealmObjectBase.get<int>(this, 'totalpurchases') as int?;
+  String? get type => RealmObjectBase.get<String>(this, 'type') as String?;
   @override
-  set totalpurchases(int? value) =>
-      RealmObjectBase.set(this, 'totalpurchases', value);
+  set type(String? value) => RealmObjectBase.set(this, 'type', value);
 
   @override
-  int? get totalwallet => RealmObjectBase.get<int>(this, 'totalwallet') as int?;
+  String? get description =>
+      RealmObjectBase.get<String>(this, 'description') as String?;
   @override
-  set totalwallet(int? value) =>
-      RealmObjectBase.set(this, 'totalwallet', value);
+  set description(String? value) =>
+      RealmObjectBase.set(this, 'description', value);
 
   @override
-  int? get creditTotal => RealmObjectBase.get<int>(this, 'creditTotal') as int?;
+  Shop? get shop => RealmObjectBase.get<Shop>(this, 'shop') as Shop?;
   @override
-  set creditTotal(int? value) =>
-      RealmObjectBase.set(this, 'creditTotal', value);
+  set shop(covariant Shop? value) => RealmObjectBase.set(this, 'shop', value);
 
   @override
-  int? get totalcashin => RealmObjectBase.get<int>(this, 'totalcashin') as int?;
+  int? get date => RealmObjectBase.get<int>(this, 'date') as int?;
   @override
-  set totalcashin(int? value) =>
-      RealmObjectBase.set(this, 'totalcashin', value);
+  set date(int? value) => RealmObjectBase.set(this, 'date', value);
 
   @override
-  int? get totalcashout =>
-      RealmObjectBase.get<int>(this, 'totalcashout') as int?;
-  @override
-  set totalcashout(int? value) =>
-      RealmObjectBase.set(this, 'totalcashout', value);
+  Stream<RealmObjectChanges<CashFlowTransaction>> get changes =>
+      RealmObjectBase.getChanges<CashFlowTransaction>(this);
 
   @override
-  Stream<RealmObjectChanges<CashflowSummary>> get changes =>
-      RealmObjectBase.getChanges<CashflowSummary>(this);
-
-  @override
-  CashflowSummary freeze() =>
-      RealmObjectBase.freezeObject<CashflowSummary>(this);
+  CashFlowTransaction freeze() =>
+      RealmObjectBase.freezeObject<CashFlowTransaction>(this);
 
   static SchemaObject get schema => _schema ??= _initSchema();
   static SchemaObject? _schema;
   static SchemaObject _initSchema() {
-    RealmObjectBase.registerFactory(CashflowSummary._);
+    RealmObjectBase.registerFactory(CashFlowTransaction._);
     return const SchemaObject(
-        ObjectType.realmObject, CashflowSummary, 'CashflowSummary', [
-      SchemaProperty('totalExpenses', RealmPropertyType.int, optional: true),
-      SchemaProperty('cashinhand', RealmPropertyType.int, optional: true),
-      SchemaProperty('totalbanked', RealmPropertyType.int, optional: true),
-      SchemaProperty('totalSales', RealmPropertyType.int, optional: true),
-      SchemaProperty('totalpurchases', RealmPropertyType.int, optional: true),
-      SchemaProperty('totalwallet', RealmPropertyType.int, optional: true),
-      SchemaProperty('creditTotal', RealmPropertyType.int, optional: true),
-      SchemaProperty('totalcashin', RealmPropertyType.int, optional: true),
-      SchemaProperty('totalcashout', RealmPropertyType.int, optional: true),
+        ObjectType.realmObject, CashFlowTransaction, 'CashFlowTransaction', [
+      SchemaProperty('id', RealmPropertyType.objectid,
+          mapTo: '_id', optional: true, primaryKey: true),
+      SchemaProperty('cashFlowCategory', RealmPropertyType.object,
+          optional: true, linkTarget: 'CashFlowCategory'),
+      SchemaProperty('bank', RealmPropertyType.object,
+          optional: true, linkTarget: 'BankModel'),
+      SchemaProperty('amount', RealmPropertyType.int, optional: true),
+      SchemaProperty('type', RealmPropertyType.string, optional: true),
+      SchemaProperty('description', RealmPropertyType.string, optional: true),
+      SchemaProperty('shop', RealmPropertyType.object,
+          optional: true, linkTarget: 'Shop'),
+      SchemaProperty('date', RealmPropertyType.int, optional: true),
     ]);
   }
 }
@@ -1409,6 +1530,7 @@ class DepositModel extends _DepositModel
     String? recieptNumber,
     String? type,
     UserModel? attendant,
+    int? date,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -1419,6 +1541,7 @@ class DepositModel extends _DepositModel
     RealmObjectBase.set(this, 'recieptNumber', recieptNumber);
     RealmObjectBase.set(this, 'type', type);
     RealmObjectBase.set(this, 'attendant', attendant);
+    RealmObjectBase.set(this, 'date', date);
     RealmObjectBase.set(this, 'createdAt', createdAt);
     RealmObjectBase.set(this, 'updatedAt', updatedAt);
   }
@@ -1469,6 +1592,11 @@ class DepositModel extends _DepositModel
       RealmObjectBase.set(this, 'attendant', value);
 
   @override
+  int? get date => RealmObjectBase.get<int>(this, 'date') as int?;
+  @override
+  set date(int? value) => RealmObjectBase.set(this, 'date', value);
+
+  @override
   DateTime? get createdAt =>
       RealmObjectBase.get<DateTime>(this, 'createdAt') as DateTime?;
   @override
@@ -1506,6 +1634,7 @@ class DepositModel extends _DepositModel
       SchemaProperty('type', RealmPropertyType.string, optional: true),
       SchemaProperty('attendant', RealmPropertyType.object,
           optional: true, linkTarget: 'UserModel'),
+      SchemaProperty('date', RealmPropertyType.int, optional: true),
       SchemaProperty('createdAt', RealmPropertyType.timestamp, optional: true),
       SchemaProperty('updatedAt', RealmPropertyType.timestamp, optional: true),
     ]);
@@ -2146,191 +2275,6 @@ class ProductHistoryModel extends _ProductHistoryModel
       SchemaProperty('customer', RealmPropertyType.object,
           optional: true, linkTarget: 'CustomerModel'),
       SchemaProperty('createdAt', RealmPropertyType.timestamp, optional: true),
-    ]);
-  }
-}
-
-class ProductTransferHistories extends _ProductTransferHistories
-    with RealmEntity, RealmObjectBase, RealmObject {
-  ProductTransferHistories({
-    Product? product,
-    int? quantity,
-    DateTime? createdAt,
-  }) {
-    RealmObjectBase.set(this, 'product', product);
-    RealmObjectBase.set(this, 'quantity', quantity);
-    RealmObjectBase.set(this, 'createdAt', createdAt);
-  }
-
-  ProductTransferHistories._();
-
-  @override
-  Product? get product =>
-      RealmObjectBase.get<Product>(this, 'product') as Product?;
-  @override
-  set product(covariant Product? value) =>
-      RealmObjectBase.set(this, 'product', value);
-
-  @override
-  int? get quantity => RealmObjectBase.get<int>(this, 'quantity') as int?;
-  @override
-  set quantity(int? value) => RealmObjectBase.set(this, 'quantity', value);
-
-  @override
-  DateTime? get createdAt =>
-      RealmObjectBase.get<DateTime>(this, 'createdAt') as DateTime?;
-  @override
-  set createdAt(DateTime? value) =>
-      RealmObjectBase.set(this, 'createdAt', value);
-
-  @override
-  Stream<RealmObjectChanges<ProductTransferHistories>> get changes =>
-      RealmObjectBase.getChanges<ProductTransferHistories>(this);
-
-  @override
-  ProductTransferHistories freeze() =>
-      RealmObjectBase.freezeObject<ProductTransferHistories>(this);
-
-  static SchemaObject get schema => _schema ??= _initSchema();
-  static SchemaObject? _schema;
-  static SchemaObject _initSchema() {
-    RealmObjectBase.registerFactory(ProductTransferHistories._);
-    return const SchemaObject(ObjectType.realmObject, ProductTransferHistories,
-        'ProductTransferHistories', [
-      SchemaProperty('product', RealmPropertyType.object,
-          optional: true, linkTarget: 'Product'),
-      SchemaProperty('quantity', RealmPropertyType.int, optional: true),
-      SchemaProperty('createdAt', RealmPropertyType.timestamp, optional: true),
-    ]);
-  }
-}
-
-class ProfitModel extends _ProfitModel
-    with RealmEntity, RealmObjectBase, RealmObject {
-  ProfitModel({
-    int? shopProfit,
-    Iterable<BadStock> profit = const [],
-    Iterable<BadStock> totalsales = const [],
-    Iterable<BadStock> badstock = const [],
-    Iterable<BadStock> expense = const [],
-  }) {
-    RealmObjectBase.set(this, 'shopProfit', shopProfit);
-    RealmObjectBase.set<RealmList<BadStock>>(
-        this, 'profit', RealmList<BadStock>(profit));
-    RealmObjectBase.set<RealmList<BadStock>>(
-        this, 'totalsales', RealmList<BadStock>(totalsales));
-    RealmObjectBase.set<RealmList<BadStock>>(
-        this, 'badstock', RealmList<BadStock>(badstock));
-    RealmObjectBase.set<RealmList<BadStock>>(
-        this, 'expense', RealmList<BadStock>(expense));
-  }
-
-  ProfitModel._();
-
-  @override
-  RealmList<BadStock> get profit =>
-      RealmObjectBase.get<BadStock>(this, 'profit') as RealmList<BadStock>;
-  @override
-  set profit(covariant RealmList<BadStock> value) =>
-      throw RealmUnsupportedSetError();
-
-  @override
-  RealmList<BadStock> get totalsales =>
-      RealmObjectBase.get<BadStock>(this, 'totalsales') as RealmList<BadStock>;
-  @override
-  set totalsales(covariant RealmList<BadStock> value) =>
-      throw RealmUnsupportedSetError();
-
-  @override
-  RealmList<BadStock> get badstock =>
-      RealmObjectBase.get<BadStock>(this, 'badstock') as RealmList<BadStock>;
-  @override
-  set badstock(covariant RealmList<BadStock> value) =>
-      throw RealmUnsupportedSetError();
-
-  @override
-  RealmList<BadStock> get expense =>
-      RealmObjectBase.get<BadStock>(this, 'expense') as RealmList<BadStock>;
-  @override
-  set expense(covariant RealmList<BadStock> value) =>
-      throw RealmUnsupportedSetError();
-
-  @override
-  int? get shopProfit => RealmObjectBase.get<int>(this, 'shopProfit') as int?;
-  @override
-  set shopProfit(int? value) => RealmObjectBase.set(this, 'shopProfit', value);
-
-  @override
-  Stream<RealmObjectChanges<ProfitModel>> get changes =>
-      RealmObjectBase.getChanges<ProfitModel>(this);
-
-  @override
-  ProfitModel freeze() => RealmObjectBase.freezeObject<ProfitModel>(this);
-
-  static SchemaObject get schema => _schema ??= _initSchema();
-  static SchemaObject? _schema;
-  static SchemaObject _initSchema() {
-    RealmObjectBase.registerFactory(ProfitModel._);
-    return const SchemaObject(
-        ObjectType.realmObject, ProfitModel, 'ProfitModel', [
-      SchemaProperty('profit', RealmPropertyType.object,
-          linkTarget: 'BadStock', collectionType: RealmCollectionType.list),
-      SchemaProperty('totalsales', RealmPropertyType.object,
-          linkTarget: 'BadStock', collectionType: RealmCollectionType.list),
-      SchemaProperty('badstock', RealmPropertyType.object,
-          linkTarget: 'BadStock', collectionType: RealmCollectionType.list),
-      SchemaProperty('expense', RealmPropertyType.object,
-          linkTarget: 'BadStock', collectionType: RealmCollectionType.list),
-      SchemaProperty('shopProfit', RealmPropertyType.int, optional: true),
-    ]);
-  }
-}
-
-class ProfitSummary extends _ProfitSummary
-    with RealmEntity, RealmObjectBase, RealmObject {
-  ProfitSummary({
-    int? profit,
-    int? sales,
-    int? expenses,
-  }) {
-    RealmObjectBase.set(this, 'profit', profit);
-    RealmObjectBase.set(this, 'sales', sales);
-    RealmObjectBase.set(this, 'expenses', expenses);
-  }
-
-  ProfitSummary._();
-
-  @override
-  int? get profit => RealmObjectBase.get<int>(this, 'profit') as int?;
-  @override
-  set profit(int? value) => RealmObjectBase.set(this, 'profit', value);
-
-  @override
-  int? get sales => RealmObjectBase.get<int>(this, 'sales') as int?;
-  @override
-  set sales(int? value) => RealmObjectBase.set(this, 'sales', value);
-
-  @override
-  int? get expenses => RealmObjectBase.get<int>(this, 'expenses') as int?;
-  @override
-  set expenses(int? value) => RealmObjectBase.set(this, 'expenses', value);
-
-  @override
-  Stream<RealmObjectChanges<ProfitSummary>> get changes =>
-      RealmObjectBase.getChanges<ProfitSummary>(this);
-
-  @override
-  ProfitSummary freeze() => RealmObjectBase.freezeObject<ProfitSummary>(this);
-
-  static SchemaObject get schema => _schema ??= _initSchema();
-  static SchemaObject? _schema;
-  static SchemaObject _initSchema() {
-    RealmObjectBase.registerFactory(ProfitSummary._);
-    return const SchemaObject(
-        ObjectType.realmObject, ProfitSummary, 'ProfitSummary', [
-      SchemaProperty('profit', RealmPropertyType.int, optional: true),
-      SchemaProperty('sales', RealmPropertyType.int, optional: true),
-      SchemaProperty('expenses', RealmPropertyType.int, optional: true),
     ]);
   }
 }

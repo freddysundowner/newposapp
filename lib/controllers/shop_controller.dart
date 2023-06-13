@@ -42,7 +42,8 @@ class ShopController extends GetxController {
         name: nameController.text,
         location: reqionController.text,
         owner: appController.app.value!.currentUser!.id,
-        currency: currency.value);
+        currency:
+            currency.isEmpty ? Constants.currenciesData[0] : currency.value);
     newItem.type = Get.find<ShopController>().selectedCategory.value;
     RShop().createShop(newItem);
 

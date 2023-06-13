@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:get/get.dart';
 import 'package:pointify/Real/Models/schema.dart';
 import 'package:pointify/controllers/shop_controller.dart';
+import 'package:pointify/functions/functions.dart';
+import 'package:pointify/main.dart';
 import 'package:pointify/services/apiurls.dart';
 import 'package:realm/realm.dart';
 
@@ -75,9 +77,7 @@ class Sales {
       String receipt = "",
       String total = ""}) {
     String filter = "";
-    // if (receipt.isNotEmpty) {
-    //   filter = " AND receiptNumber BEGINSWITH '$receipt' ";
-    // }
+
     if (onCredit) {
       filter += " AND creditTotal < 0";
     }
@@ -85,30 +85,42 @@ class Sales {
       RealmResults<SalesModel> invoices = realmService.realm.query<SalesModel>(
           'customerId == \$0  $filter AND TRUEPREDICATE SORT(createdAt DESC)',
           [customer]);
-      return invoices;
+      return _attendantFilter(invoices);
     }
-    print(filter);
     RealmResults<SalesModel> invoices = realmService.realm.query<SalesModel>(
         'shop == \$0 $filter AND TRUEPREDICATE SORT(createdAt DESC)',
         [shopController.currentShop.value]);
-    print("ii ${receipt}");
-    print("ii ${invoices.length}");
     if (fromDate == null) {
       if (receipt.isNotEmpty) {
         var ii = invoices.query("receiptNumber BEGINSWITH \$0 ", [receipt]);
-        print("ii ii ${ii.length}");
         return ii;
       }
-      return invoices;
+      return _attendantFilter(invoices);
     }
 
     if (invoices.isNotEmpty) {
-      print("haha ");
       RealmResults<SalesModel> dateinvoices = invoices.query(
           'dated > ${fromDate.millisecondsSinceEpoch} AND dated < ${toDate!.millisecondsSinceEpoch} AND TRUEPREDICATE SORT(createdAt DESC)');
-      return dateinvoices;
+
+      return _attendantFilter(dateinvoices);
     }
-    return invoices;
+    return _attendantFilter(invoices);
+  }
+
+  _attendantFilter(RealmResults<SalesModel> data) {
+    if (userController.switcheduser.value != null) {
+      return data
+          .query("attendantId == \$0 ", [userController.switcheduser.value!]);
+    }
+    if (checkPermission(category: "customers", permission: "all_sales") ||
+        userController.user.value!.usertype == "admin") {
+      return data;
+    }
+    if (userController.user.value != null &&
+        userController.user.value!.usertype == "attendant") {
+      return data.query("attendantId == \$0 ", [userController.user.value!]);
+    }
+    return data;
   }
 
   SalesModel? getSalesBySaleId(ObjectId id) {
@@ -142,11 +154,11 @@ class Sales {
     }
     if (customerModel != null) {
       RealmResults<ReceiptItem> returns = realmService.realm
-          .query<ReceiptItem>('customerId == \$0 ', [customerModel]);
+          .query<ReceiptItem>('customerId == \$0', [customerModel]);
       return returns;
     }
     RealmResults<ReceiptItem> returns =
-        realmService.realm.query<ReceiptItem>('receipt == \$0 ', [salesModel]);
+        realmService.realm.query<ReceiptItem>('receipt == \$0', [salesModel]);
     return returns;
   }
 

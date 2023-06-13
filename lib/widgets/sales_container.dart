@@ -63,9 +63,7 @@ Widget SalesContainer(
                 ],
               ),
               SizedBox(width: 15),
-              if (userController.user.value?.usertype == "admin" ||
-                  (userController.user.value?.usertype == "attendant" &&
-                      userController.checkRole("edit_entries")))
+              if (checkPermission(category: "sales", permission: "edit_price"))
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -88,9 +86,7 @@ Widget SalesContainer(
             ],
           ),
           const SizedBox(height: 10),
-          if ((userController.user.value?.usertype == "attendant" &&
-                  userController.checkRole("discounts") == true) ||
-              userController.user.value?.usertype == "admin")
+          if (checkPermission(category: "sales", permission: "discount"))
             Align(
               alignment: Alignment.topRight,
               child: InkWell(
@@ -152,10 +148,10 @@ Widget SalesContainer(
                               onPressed: () {
                                 salesController.decrementItem(index);
                               },
-                              icon: Icon(Icons.remove,
+                              icon: const Icon(Icons.remove,
                                   color: Colors.black, size: 16)),
                           Container(
-                              padding: EdgeInsets.only(
+                              padding: const EdgeInsets.only(
                                   top: 5, bottom: 5, right: 8, left: 8),
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(5),

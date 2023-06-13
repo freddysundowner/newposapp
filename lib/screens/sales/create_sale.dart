@@ -33,7 +33,7 @@ class CreateSale extends StatelessWidget {
   final String? page;
 
   CreateSale({Key? key, this.page}) : super(key: key) {
-    customersController.getCustomersInShop("all");
+    // customersController.getCustomersInShop("all");
   }
 
   SalesController salesController = Get.find<SalesController>();
@@ -815,9 +815,7 @@ class CreateSale extends StatelessWidget {
     TextEditingController textEditingController = TextEditingController();
     return PopupMenuButton(
       itemBuilder: (ctx) => [
-        if (usercontroller.user.value?.usertype == "admin" ||
-            (usercontroller.user.value?.usertype == "attendant" &&
-                usercontroller.checkRole("edit_entries")))
+        if (checkPermission(category: "sales", permission: "edit_price"))
           PopupMenuItem(
             child: ListTile(
               leading: Icon(Icons.edit),
@@ -829,9 +827,7 @@ class CreateSale extends StatelessWidget {
               title: Text("Edit Selling price"),
             ),
           ),
-        if (usercontroller.user.value?.usertype == "admin" ||
-            (usercontroller.user.value?.usertype == "attendant" &&
-                usercontroller.checkRole("discounts")))
+        if (checkPermission(category: "sales", permission: "discount"))
           PopupMenuItem(
             child: ListTile(
               leading: Icon(Icons.discount),

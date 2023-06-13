@@ -14,10 +14,9 @@ import '../../widgets/bigtext.dart';
 
 class CashInLayout extends StatelessWidget {
   CashInLayout({Key? key}) : super(key: key) {
-    cashflowController.selectedCashFlowCategories.value = null;
+    cashflowController.selectedcashOutGroups.value = null;
     cashflowController.cashFlowCategories.clear();
-    cashflowController.getCategory(
-        "cash-in", createShopController.currentShop.value!.id);
+    cashflowController.getCategory("cash-in");
   }
 
   ShopController createShopController = Get.find<ShopController>();
@@ -102,12 +101,10 @@ class CashInLayout extends StatelessWidget {
             cashflowController.textEditingControllerAmount.text.isEmpty) {
           showSnackBar(message: "Please fill all fields", color: Colors.black);
         } else {
-          if (cashflowController.selectedCashFlowCategories.value == null) {
+          if (cashflowController.selectedcashOutGroups.value == null) {
             showSnackBar(message: "Select Category", color: Colors.black);
           } else {
             cashflowController.createTransaction(
-              shopId: createShopController.currentShop.value!.id,
-              context: context,
               type: "cash-in",
             );
           }
@@ -177,7 +174,7 @@ class CashInLayout extends StatelessWidget {
                                           (index) => SimpleDialogOption(
                                                 onPressed: () {
                                                   cashflowController
-                                                          .selectedCashFlowCategories
+                                                          .selectedcashOutGroups
                                                           .value =
                                                       cashflowController
                                                           .cashFlowCategories
@@ -186,7 +183,7 @@ class CashInLayout extends StatelessWidget {
                                                           .textEditingControllerName
                                                           .text =
                                                       cashflowController
-                                                          .selectedCashFlowCategories
+                                                          .selectedcashOutGroups
                                                           .value!
                                                           .name!;
                                                   Navigator.pop(context);
@@ -210,11 +207,10 @@ class CashInLayout extends StatelessWidget {
                               children: [
                                 Obx(
                                   () => Text(cashflowController
-                                              .selectedCashFlowCategories
-                                              .value ==
+                                              .selectedcashOutGroups.value ==
                                           null
                                       ? "Select Category"
-                                      : "${cashflowController.selectedCashFlowCategories.value!.name}"),
+                                      : "${cashflowController.selectedcashOutGroups.value!.name}"),
                                 ),
                                 Icon(Icons.arrow_drop_down, color: Colors.grey)
                               ],

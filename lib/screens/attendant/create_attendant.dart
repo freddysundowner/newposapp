@@ -1,13 +1,19 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:pointify/controllers/AuthController.dart';
 import 'package:pointify/controllers/user_controller.dart';
 import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/home/attendants_page.dart';
 import 'package:get/get.dart';
+import 'package:pointify/widgets/alert.dart';
+import 'package:realm/realm.dart';
 import 'package:switcher_button/switcher_button.dart';
 
 import '../../Real/Models/schema.dart';
 import '../../controllers/shop_controller.dart';
+import '../../services/users.dart';
 import '../../utils/colors.dart';
 import '../../widgets/attendant_user_inputs.dart';
 import '../../widgets/bigtext.dart';
@@ -113,31 +119,22 @@ class CreateAttendant extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(height: 10),
-          majorTitle(
-              title: "Attendant Credentials",
-              color: Colors.black54,
-              size: 14.0),
-          SizedBox(height: 10),
           Card(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
             ),
             elevation: 2,
-            child: Container(
-              padding: EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  attendantUserInputs(
-                      name: "Attendant Username",
-                      controller: attendantController.nameController),
-                  SizedBox(height: 10),
-                  attendantUserInputs(
-                      name: "Attendant Password",
-                      controller: attendantController.passwordController)
-                ],
-              ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                attendantUserInputs(
+                    name: "Username",
+                    controller: attendantController.nameController),
+                // SizedBox(height: 10),
+                // attendantUserInputs(
+                //     name: "Attendant Password",
+                //     controller: attendantController.passwordController)
+              ],
             ),
           ),
           SizedBox(height: 10),
@@ -152,44 +149,55 @@ class CreateAttendant extends StatelessWidget {
             child: Container(
               width: double.infinity,
               padding: EdgeInsets.all(10),
-              child: Obx(() {
-                return ListView.builder(
-                  physics: NeverScrollableScrollPhysics(),
-                  itemCount: attendantController.rolesFromApi.length,
-                  shrinkWrap: true,
-                  itemBuilder: (context, int) {
-                    RolesModel role =
-                        attendantController.rolesFromApi.elementAt(int);
-                    return Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Row(
-                        children: <Widget>[
-                          majorTitle(
-                              title: "${role.name}",
-                              color: Colors.black,
-                              size: 12.0),
-                          Spacer(),
-                          SwitcherButton(
-                            onColor: AppColors.mainColor,
-                            offColor: Colors.grey,
-                            value: false,
-                            onChange: (value) {
-                              if (attendantController.roles.indexWhere(
-                                      (element) => element.key == role.key) ==
-                                  -1) {
-                                attendantController.roles.add(role);
-                              } else {
-                                attendantController.roles.removeWhere(
-                                    (element) => element.key == role.key);
-                              }
-                            },
+              child: StreamBuilder<RealmResultsChanges<RolesModel>>(
+                  stream: Users.getAllRoles().changes,
+                  builder: (context, snapshot) {
+                    final data = snapshot.data;
+
+                    if (data == null) {
+                      return const Center(
+                        child: Text("No purchase Entries Found"),
+                      );
+                    }
+
+                    final results = data.results;
+                    return ListView.builder(
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: results.realm.isClosed ? 0 : results.length,
+                      shrinkWrap: true,
+                      itemBuilder: (context, int) {
+                        RolesModel role = results.elementAt(int);
+                        return Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            children: <Widget>[
+                              majorTitle(
+                                  title: "${role.name}",
+                                  color: Colors.black,
+                                  size: 12.0),
+                              Spacer(),
+                              SwitcherButton(
+                                onColor: AppColors.mainColor,
+                                offColor: Colors.grey,
+                                value: false,
+                                onChange: (value) {
+                                  if (attendantController.roles.indexWhere(
+                                          (element) =>
+                                              element.key == role.key) ==
+                                      -1) {
+                                    attendantController.roles.add(role);
+                                  } else {
+                                    attendantController.roles.removeWhere(
+                                        (element) => element.key == role.key);
+                                  }
+                                },
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
+                        );
+                      },
                     );
-                  },
-                );
-              }),
+                  }),
             ),
           ),
           SizedBox(height: 10),
@@ -201,8 +209,29 @@ class CreateAttendant extends StatelessWidget {
   Widget submitButton(context) {
     return InkWell(
       onTap: () {
-        attendantController.saveAttendant(
-            shopId: shopController.currentShop.value?.id, context: context);
+        if (attendantController.nameController.text.isEmpty) {
+          generalAlert(title: "Error", message: "Enter username");
+          return;
+        }
+        print("submitButton");
+        RealmResults<UserModel> users = Users.getUserUser(
+            username: attendantController.nameController.text.trim());
+        print("users ${users.length}");
+        if (users.isNotEmpty) {
+          generalAlert(title: "Error", message: "username already taken");
+          return;
+        }
+        // Users.createUser(UserModel(
+        //   ObjectId(),
+        //   Random().nextInt(100000),
+        //   username: attendantController.nameController.text,
+        //   usertype: "attendant",
+        //   deleted: false,
+        //   shop: shopController.currentShop.value,
+        //   roles: attendantController.roles,
+        // ));
+        attendantController.roles.clear();
+        Get.back();
       },
       child: Container(
         padding: EdgeInsets.all(10),

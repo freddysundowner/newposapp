@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:pointify/controllers/cashflow_controller.dart';
 import 'package:pointify/controllers/expense_controller.dart';
 import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
@@ -11,6 +12,7 @@ import 'package:get/get.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 import '../../controllers/sales_controller.dart';
+import '../../functions/functions.dart';
 import '../../utils/colors.dart';
 import '../../widgets/bigtext.dart';
 import '../../widgets/normal_text.dart';
@@ -201,98 +203,116 @@ class FinancePage extends StatelessWidget {
                     color: Colors.black,
                     size: 16.0),
                 SizedBox(height: 10),
-                Obx(() {
-                  return financeCards(
-                      title: "Profits",
-                      subtitle: "Gross & Net profits",
+                if (checkPermission(
+                    category: "accounts", permission: "profits"))
+                  Obx(() {
+                    return financeCards(
+                        title: "Profits",
+                        subtitle: "Gross & Net profits",
+                        onPresssed: () {
+                          salesController.getProfitTransaction(
+                            fromDate: DateTime.parse(
+                                DateFormat("yyy-MM-dd").format(DateTime.now())),
+                            toDate: DateTime.parse(DateFormat("yyy-MM-dd")
+                                .format(DateTime.now().add(Duration(days: 1)))),
+                          );
+                          Get.to(() => ProfitPage());
+                        },
+                        color: Colors.amber.shade100,
+                        icon: Icons.query_stats,
+                        amount: "${salesController.grossProfit}");
+                  }),
+                if (checkPermission(
+                    category: "accounts", permission: "expenses"))
+                  Obx(() {
+                    return financeCards(
+                      title: "Expenses",
+                      subtitle: "Expenditure",
                       onPresssed: () {
-                        salesController.getProfitTransaction(
-                          fromDate: DateTime.parse(
-                              DateFormat("yyy-MM-dd").format(DateTime.now())),
-                          toDate: DateTime.parse(DateFormat("yyy-MM-dd")
-                              .format(DateTime.now().add(Duration(days: 1)))),
-                        );
-                        Get.to(() => ProfitPage());
+                        Get.to(() => ExpensePage());
                       },
-                      color: Colors.amber.shade100,
-                      icon: Icons.query_stats,
-                      amount: "${salesController.grossProfit}");
-                }),
-                Obx(() {
-                  return financeCards(
-                    title: "Expenses",
-                    subtitle: "Expenditure",
-                    onPresssed: () {
-                      Get.to(() => ExpensePage());
-                    },
-                    color: Colors.purple.shade100,
-                    icon: Icons.show_chart,
-                    amount: expenseController.totalExpenses.value,
-                  );
-                }),
-                Obx(() {
-                  return financeCards(
-                    title: "Sales",
-                    subtitle: "services",
-                    onPresssed: () {
-                      salesController.salesInitialIndex.value = 0;
-                      salesController.getSales();
+                      color: Colors.purple.shade100,
+                      icon: Icons.show_chart,
+                      amount: expenseController.totalExpenses.value,
+                    );
+                  }),
+                if (checkPermission(category: "accounts", permission: "sales"))
+                  Obx(() {
+                    return financeCards(
+                      title: "Sales",
+                      subtitle: "services",
+                      onPresssed: () {
+                        salesController.salesInitialIndex.value = 0;
+                        salesController.getSales();
 
-                      Get.to(() => AllSalesPage(
-                            page: "financePage",
-                          ));
+                        Get.to(() => AllSalesPage(
+                              page: "financePage",
+                            ));
+                      },
+                      color: Colors.blue.shade100,
+                      icon: Icons.sell_rounded,
+                      amount: "${salesController.totalSalesByDate.value}",
+                    );
+                  }),
+                if (checkPermission(
+                    category: "accounts", permission: "cashflow"))
+                  InkWell(
+                    onTap: () {
+                      Get.find<CashflowController>().getCashflowSummary(
+                        shopId:
+                            Get.find<ShopController>().currentShop.value!.id,
+                        from: DateTime.parse(DateFormat("yyyy-MM-dd").format(
+                            Get.find<CashflowController>().fromDate.value)),
+                        to: DateTime.parse(DateFormat("yyyy-MM-dd").format(
+                                Get.find<CashflowController>().toDate.value))
+                            .add(const Duration(days: 1)),
+                      );
+                      Get.to(() => CashFlowManager());
                     },
-                    color: Colors.blue.shade100,
-                    icon: Icons.sell_rounded,
-                    amount: "${salesController.totalSalesByDate.value}",
-                  );
-                }),
-                InkWell(
-                  onTap: () {
-                    Get.to(() => CashFlowManager());
-                  },
-                  child: Container(
-                    width: double.infinity,
-                    margin: const EdgeInsets.only(top: 10),
-                    padding: EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                        color: Colors.deepPurple.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(10)),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              height: 40,
-                              width: 40,
-                              child: Center(child: Icon(Icons.margin_outlined)),
-                              decoration: BoxDecoration(
-                                  color: Colors.amberAccent,
-                                  borderRadius: BorderRadius.circular(20)),
-                            ),
-                            SizedBox(
-                              width: 10,
-                            ),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                majorTitle(
-                                    title: "Cashflow Manager",
-                                    color: Colors.black,
-                                    size: 16.0),
-                                SizedBox(height: 5),
-                                minorTitle(
-                                    title: "Track finance", color: Colors.grey)
-                              ],
-                            )
-                          ],
-                        ),
-                      ],
+                    child: Container(
+                      width: double.infinity,
+                      margin: const EdgeInsets.only(top: 10),
+                      padding: EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                          color: Colors.deepPurple.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(10)),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                height: 40,
+                                width: 40,
+                                child:
+                                    Center(child: Icon(Icons.margin_outlined)),
+                                decoration: BoxDecoration(
+                                    color: Colors.amberAccent,
+                                    borderRadius: BorderRadius.circular(20)),
+                              ),
+                              SizedBox(
+                                width: 10,
+                              ),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  majorTitle(
+                                      title: "Cashflow Manager",
+                                      color: Colors.black,
+                                      size: 16.0),
+                                  SizedBox(height: 5),
+                                  minorTitle(
+                                      title: "Track finance",
+                                      color: Colors.grey)
+                                ],
+                              )
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
               ],
             ),
           ),

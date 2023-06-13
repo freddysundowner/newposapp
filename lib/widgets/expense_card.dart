@@ -80,7 +80,7 @@ Widget expenseCard({required context, required ExpenseModel expense}) {
                             child: Text(
                               expense.attendantId == null
                                   ? ""
-                                  : "By-${expense.attendantId!.fullnames}",
+                                  : "By-${expense.attendantId!.username}",
                               style: const TextStyle(
                                   color: Color.fromRGBO(158, 158, 158, 1)),
                             ),
