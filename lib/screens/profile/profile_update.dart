@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:pointify/controllers/home_controller.dart';
+import 'package:pointify/main.dart';
 import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/home/profile_page.dart';
 import 'package:get/get.dart';
+import 'package:pointify/services/users.dart';
 
 import '../../controllers/AuthController.dart';
 import '../../utils/colors.dart';
@@ -11,7 +13,11 @@ import '../../widgets/shopWidget.dart';
 
 class ProfileUpdate extends StatelessWidget {
   ProfileUpdate({Key? key}) : super(key: key) {
-    // authController.assignDataToTextFields();
+    authController.nameController.text = userController.user.value!.fullnames!;
+    authController.emailController.text =
+        authController.app.value!.currentUser!.profile.email!;
+    authController.phoneController.text =
+        userController.user.value!.phonenumber ?? "";
   }
   AuthController authController = Get.find<AuthController>();
 
@@ -63,19 +69,20 @@ class ProfileUpdate extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                     profileInputWidget(
                         controller: authController.nameController,
                         name: "Name"),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                     profileInputWidget(
                         controller: authController.emailController,
                         name: "Email"),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                     profileInputWidget(
-                        controller: authController.phoneController,
-                        name: "Phone"),
-                    SizedBox(height: 30),
+                      controller: authController.phoneController,
+                      name: "Phone",
+                    ),
+                    const SizedBox(height: 30),
                     updateButton(context: context)
                   ],
                 ),
@@ -145,7 +152,9 @@ class ProfileUpdate extends StatelessWidget {
           : InkWell(
               splashColor: Colors.transparent,
               onTap: () {
-                // authController.updateAdmin(context);
+                Users().updateAdmin(userController.user.value!,
+                    fullnames: authController.nameController.text,
+                    phonenumber: authController.phoneController.text);
               },
               child: Container(
                 padding: EdgeInsets.all(10),

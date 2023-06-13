@@ -74,6 +74,8 @@ class Users {
       {Shop? shop,
       bool? deleted,
       String? username,
+      String? fullnames,
+      String? phonenumber,
       String? authId,
       String? permissions}) async {
     print(permissions);
@@ -83,6 +85,12 @@ class Users {
       }
       if (username != null) {
         user.username = username;
+      }
+      if (phonenumber != null) {
+        user.phonenumber = phonenumber;
+      }
+      if (fullnames != null) {
+        user.fullnames = fullnames;
       }
       if (authId != null) {
         user.authId = authId;

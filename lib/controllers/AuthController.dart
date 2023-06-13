@@ -79,10 +79,7 @@ class AuthController extends GetxController {
     RealmResults<UserModel> users = Users.getUserUser(uid: uid);
     if (users.isNotEmpty) {
       UserModel userModel = users.first;
-      print("after c ${users.length}");
       if (userModel.loggedin == null) {
-        print("after c c ${users.length}");
-
         await registerUserEmailPassword(email, password);
         User? loggedInUser = await logInUserEmailPassword(email, password);
         var uid = userModel.UNID;
@@ -129,6 +126,7 @@ class AuthController extends GetxController {
           Random().nextInt(098459),
           usertype: "admin",
           deleted: false,
+          username: "Admin",
           authId: loggedInUser.id,
           fullnames: nameController.text,
         ));

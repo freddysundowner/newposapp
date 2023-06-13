@@ -452,9 +452,9 @@ showUpdatePasswordDialog(
                     title: "Cancel", color: AppColors.mainColor, size: 13.0)),
             TextButton(
                 onPressed: () {
-                  Get.back();
-                  attendantController.updatePassword(
-                      id: userModel.id, context: context);
+                  // Get.back();
+                  // attendantController.updatePassword(
+                  //     id: userModel.id, context: context);
                 },
                 child: majorTitle(
                     title: "Okay", color: AppColors.mainColor, size: 13.0))

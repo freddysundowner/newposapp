@@ -72,9 +72,6 @@ class ShopController extends GetxController {
       RealmResults<Shop> response = await RShop().getShop(name: name);
       if (response.isNotEmpty) {
         allShops.assignAll(response.map((e) => e).toList());
-        // if (currentShop.value == null) {
-        //   Get.find<RealmController>().setDefaulShop(allShops.first);
-        // }
       } else {
         allShops.value = [];
       }

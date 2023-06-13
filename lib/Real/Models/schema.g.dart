@@ -3096,3 +3096,57 @@ class StockTransferHistory extends _StockTransferHistory
     ]);
   }
 }
+
+class ProductTransfer extends _ProductTransfer
+    with RealmEntity, RealmObjectBase, RealmObject {
+  ProductTransfer({
+    String? supplier,
+    int? quantity,
+    Product? product,
+  }) {
+    RealmObjectBase.set(this, 'supplier', supplier);
+    RealmObjectBase.set(this, 'quantity', quantity);
+    RealmObjectBase.set(this, 'product', product);
+  }
+
+  ProductTransfer._();
+
+  @override
+  String? get supplier =>
+      RealmObjectBase.get<String>(this, 'supplier') as String?;
+  @override
+  set supplier(String? value) => RealmObjectBase.set(this, 'supplier', value);
+
+  @override
+  int? get quantity => RealmObjectBase.get<int>(this, 'quantity') as int?;
+  @override
+  set quantity(int? value) => RealmObjectBase.set(this, 'quantity', value);
+
+  @override
+  Product? get product =>
+      RealmObjectBase.get<Product>(this, 'product') as Product?;
+  @override
+  set product(covariant Product? value) =>
+      RealmObjectBase.set(this, 'product', value);
+
+  @override
+  Stream<RealmObjectChanges<ProductTransfer>> get changes =>
+      RealmObjectBase.getChanges<ProductTransfer>(this);
+
+  @override
+  ProductTransfer freeze() =>
+      RealmObjectBase.freezeObject<ProductTransfer>(this);
+
+  static SchemaObject get schema => _schema ??= _initSchema();
+  static SchemaObject? _schema;
+  static SchemaObject _initSchema() {
+    RealmObjectBase.registerFactory(ProductTransfer._);
+    return const SchemaObject(
+        ObjectType.realmObject, ProductTransfer, 'ProductTransfer', [
+      SchemaProperty('supplier', RealmPropertyType.string, optional: true),
+      SchemaProperty('quantity', RealmPropertyType.int, optional: true),
+      SchemaProperty('product', RealmPropertyType.object,
+          optional: true, linkTarget: 'Product'),
+    ]);
+  }
+}

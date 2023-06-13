@@ -85,25 +85,4 @@ class WalletController extends GetxController with GetTickerProviderStateMixin {
       gettingWalletLoad.value = false;
     }
   }
-
-  updateWallet(
-      {required amount,
-      required id,
-      required CustomerModel customerModel}) async {
-    print("updateWallet");
-    try {
-      updateWalletLoad.value = true;
-      // Map<String, dynamic> body = {"amount": amount, "customerId": uid};
-      // var response = await Wallet().updateWallet(id, body);
-      // print(response);
-      // return response;
-
-      // await Get.find<CustomerController>().getCustomerById(uid);
-      // await getWallet(uid, "deposit");
-      // updateWalletLoad.value = false;
-    } catch (e) {
-      print(e);
-      updateWalletLoad.value = false;
-    }
-  }
 }

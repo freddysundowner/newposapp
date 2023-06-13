@@ -85,59 +85,6 @@ class UserController extends GetxController {
       "value": ["view"],
     },
   ]);
-  RxList switchedpermissions = RxList([
-    {
-      "key": "sales",
-      "value": ['add', 'view', 'discount', "return", "edit_price"],
-    },
-    {
-      "key": "accounts",
-      "value": ['reports', 'cashflow', 'profits', "sales", "expenses"],
-    },
-    {
-      "key": "stocks",
-      "value": [
-        'add',
-        'view',
-        'purchases',
-        'count',
-        'badstock',
-        'transfer',
-        'reports',
-        'return',
-        "edit_price",
-        "stock_summary"
-      ],
-    },
-    {
-      "key": "purchases",
-      "value": ['return']
-    },
-    {
-      "key": "suppliers",
-      "value": ['manage', 'view', 'all_purchases']
-    },
-    {
-      "key": "customers",
-      "value": ['manage', 'view', 'deposit', "all_sales"]
-    },
-    {
-      "key": 'shop',
-      "value": ["add", "switch", "delete", "view"],
-    },
-    {
-      "key": 'attendants',
-      "value": ["add", "delete", "view"],
-    },
-    {
-      "key": 'products',
-      "value": ["add", "delete", "edit"],
-    },
-    {
-      "key": 'usage',
-      "value": ["view"],
-    },
-  ]);
 
   getRoles(UserModel userModel) {
     List perms = jsonDecode(userModel.permisions!);
@@ -185,6 +132,7 @@ class UserController extends GetxController {
     await _createDefaultCashFlowCategory();
     if (user.value!.usertype == "attendant") {
       getRoles(user.value!);
+      roles.refresh();
     }
     shopController.currentShop.refresh();
   }
@@ -216,68 +164,6 @@ class UserController extends GetxController {
     }
   }
 
-  saveAttendant({required shopId, required context}) async {
-    // String name = nameController.text;
-    // String password = passwordController.text;
-    // if (name == "" || password == "") {
-    //   showSnackBar(message: "please fill all the fields", color: Colors.red);
-    // } else {
-    //   try {
-    //     creatingAttendantsLoad.value = true;
-    //     var response = await Attendant().createAttendant(AttendantModel(
-    //       ObjectId(),
-    //       fullnames: nameController.text,
-    //       shop: shopId,
-    //       roles: roles,
-    //     ));
-    //     if (response["status"] = true) {
-    //       clearTextFields();
-    //       if (MediaQuery.of(context).size.width > 600) {
-    //         Get.find<HomeController>().selectedWidget.value = AttendantsPage();
-    //       } else {
-    //         Get.back();
-    //       }
-    //       getAttendantsByShopId(shopId: shopId);
-    //     } else {
-    //       showSnackBar(
-    //           message: response["message"], color: AppColors.mainColor);
-    //     }
-    //
-    //     creatingAttendantsLoad.value = false;
-    //   } catch (e) {
-    //     creatingAttendantsLoad.value = false;
-    //   }
-    // }
-  }
-
-  getAttendantRoles() async {
-    // try {
-    //   RealmResults<RolesModel> response = await Attendant().getRoles();
-    //   rolesFromApi.clear();
-    //   if (response.isNotEmpty) {
-    //     rolesFromApi.assignAll(response);
-    //   } else {
-    //     rolesFromApi.value = [];
-    //   }
-    // } catch (e) {}
-  }
-
-  getAttendantsByShopId({required shopId}) async {
-    // try {
-    //   getAttendantsLoad.value = true;
-    //   RealmResults<AttendantModel> response =
-    //       await Attendant().getAttendantsByShopId(shopId);
-    //   if (response.isNotEmpty) {
-    //     attendants.assignAll(response);
-    //   } else {
-    //     attendants.value = [];
-    //   }
-    //   getAttendantsLoad.value = false;
-    // } catch (e) {
-    //   getAttendantsLoad.value = false;
-    // }
-  }
-
   clearTextFields() {
     nameController.text = "";
     passwordController.text = "";
@@ -293,20 +179,6 @@ class UserController extends GetxController {
     print(userModel.roles.length);
     refresh();
     return userModel;
-  }
-
-  updatePassword({required id, required BuildContext context}) async {
-    // try {
-    //   Map<String, dynamic> body = {"password": passwordController.text};
-    //   LoadingDialog.showLoadingDialog(
-    //       context: context,
-    //       title: "Updating password please wait...",
-    //       key: _keyLoader);
-    //   await Attendant().updatePassword(id, body);
-    //   Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
-    // } catch (e) {
-    //   Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
-    // }
   }
 
   deleteAttendant({UserModel? userModel}) async {

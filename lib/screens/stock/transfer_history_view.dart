@@ -118,7 +118,7 @@ class TransferHistoryView extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  "${productModel.product!.name!}".capitalize!,
+                                  productModel.product!.name!.capitalize!,
                                   style: TextStyle(
                                       color: Colors.black,
                                       fontWeight: FontWeight.bold),

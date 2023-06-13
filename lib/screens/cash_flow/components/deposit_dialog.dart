@@ -79,17 +79,6 @@ showDepositDialog(
                         Navigator.pop(context);
                         print("title $title");
                         if (title == "edit") {
-                          var response = await walletController.updateWallet(
-                              amount: walletController.amountController.text,
-                              id: depositModel!.id,
-                              customerModel: customerModel);
-                          if (response["status"] == false) {
-                            generalAlert(
-                                title: "Error", message: response["message"]);
-                          } else {
-                            await Get.find<CustomerController>()
-                                .getCustomerById(customerModel);
-                          }
                         } else {
                           walletController.deposit(
                               customerModel, context, page, size);

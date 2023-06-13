@@ -447,3 +447,10 @@ class _StockTransferHistory {
   DateTime? createdAt;
   DateTime? updatedAt;
 }
+
+@RealmModel()
+class _ProductTransfer {
+  String? supplier;
+  int? quantity;
+  _Product? product;
+}

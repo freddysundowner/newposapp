@@ -279,8 +279,6 @@ class HomePage extends StatelessWidget {
         smallScreen: RefreshIndicator(
           onRefresh: () async {
             await shopController.getShops();
-
-            await Get.find<UserController>().getAttendantRoles();
           },
           child: Scaffold(
               body: SingleChildScrollView(

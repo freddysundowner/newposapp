@@ -46,7 +46,6 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    userController.getAttendantRoles();
     return ResponsiveWidget(
         largeScreen: Obx(() => Scaffold(
               backgroundColor: Colors.white,
@@ -122,9 +121,6 @@ class _HomeState extends State<Home> {
                   InkWell(
                     onTap: () {
                       homeControler.selectedIndex.value = 2;
-
-                      userController.getAttendantsByShopId(
-                          shopId: shopController.currentShop.value?.id);
                     },
                     child: Column(
                       mainAxisSize: MainAxisSize.min,

@@ -167,7 +167,7 @@ Widget SalesContainer(
                               onPressed: () {
                                 salesController.incrementItem(index);
                               },
-                              icon: Icon(Icons.add,
+                              icon: const Icon(Icons.add,
                                   color: Colors.black, size: 16)),
                         ]),
                     normalText(
