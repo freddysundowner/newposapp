@@ -6,7 +6,7 @@ import 'package:pointify/widgets/smalltext.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
-import '../Real/Models/schema.dart';
+import '../Real/schema.dart';
 import 'normal_text.dart';
 
 Widget InvoiceCard({required Invoice invoice, String? tab}) {

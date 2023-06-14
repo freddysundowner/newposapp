@@ -11,7 +11,7 @@ import '../../../controllers/product_controller.dart';
 import '../../../utils/colors.dart';
 import '../../../widgets/bigtext.dart';
 import '../../../widgets/smalltext.dart';
-import '../../Real/Models/schema.dart';
+import '../../Real/schema.dart';
 import '../../controllers/AuthController.dart';
 import '../../controllers/home_controller.dart';
 import '../../controllers/supplierController.dart';
@@ -54,6 +54,7 @@ class CreateProduct extends StatelessWidget {
         return true;
       },
       child: Scaffold(
+        resizeToAvoidBottomInset: true,
         appBar: AppBar(
           backgroundColor: Colors.white,
           elevation: 0.1,
@@ -111,25 +112,10 @@ class CreateProduct extends StatelessWidget {
                   ],
                 )),
           ),
-          smallScreen: SingleChildScrollView(
-            physics: BouncingScrollPhysics(),
-            child: Padding(
-              padding: const EdgeInsets.only(left: 8.0, right: 8.0, top: 5.0),
-              child: productDetailsCard(context),
-            ),
-          ),
-        ),
-        bottomNavigationBar: BottomAppBar(
-          color: Colors.white,
-          child: Container(
-            width: double.infinity,
-            padding: EdgeInsets.all(10),
-            height: MediaQuery.of(context).size.width < 600
-                ? kToolbarHeight * 1.5
-                : 0,
-            decoration:
-                BoxDecoration(border: Border.all(width: 1, color: Colors.grey)),
-            child: saveButton(context),
+          smallScreen: Container(
+            padding: const EdgeInsets.only(
+                left: 8.0, right: 8.0, top: 5.0, bottom: 10),
+            child: productDetailsCard(context),
           ),
         ),
       ),
@@ -137,10 +123,11 @@ class CreateProduct extends StatelessWidget {
   }
 
   Widget productDetailsCard(context) {
-    return Column(
+    return ListView(
+      shrinkWrap: true,
       children: [
         SizedBox(height: 10),
-        Text("Item Name *"),
+        const Text("Product Name *"),
         SizedBox(height: 5),
         TextFormField(
           controller: productController.itemNameController,
@@ -663,36 +650,33 @@ class CreateProduct extends StatelessWidget {
             ],
           ),
         SizedBox(height: 10),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text("Description"),
-            SizedBox(height: 5),
-            TextFormField(
-              controller: productController.descriptionController,
-              keyboardType: TextInputType.text,
-              minLines: 3,
-              maxLines: 6,
-              decoration: InputDecoration(
-                fillColor: Colors.white,
-                filled: true,
-                hintText: "optional",
-                labelStyle: const TextStyle(
-                    fontFamily: 'Montserrat',
-                    fontWeight: FontWeight.bold,
-                    color: Colors.grey),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide(color: Colors.grey),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide(color: Colors.grey),
-                ),
-              ),
+        const Text("Description"),
+        SizedBox(height: 5),
+        TextFormField(
+          controller: productController.descriptionController,
+          keyboardType: TextInputType.text,
+          minLines: 3,
+          maxLines: 6,
+          decoration: InputDecoration(
+            fillColor: Colors.white,
+            filled: true,
+            hintText: "optional",
+            labelStyle: const TextStyle(
+                fontFamily: 'Montserrat',
+                fontWeight: FontWeight.bold,
+                color: Colors.grey),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(color: Colors.grey),
             ),
-          ],
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(color: Colors.grey),
+            ),
+          ),
         ),
+        SizedBox(height: 10),
+        saveButton(context)
       ],
     );
   }
@@ -723,9 +707,6 @@ class CreateProduct extends StatelessWidget {
               },
               child: Container(
                 padding: EdgeInsets.all(10),
-                width: MediaQuery.of(context).size.width < 600
-                    ? double.infinity
-                    : 300,
                 decoration: BoxDecoration(
                     border: Border.all(width: 3, color: AppColors.mainColor),
                     borderRadius: BorderRadius.circular(40)),

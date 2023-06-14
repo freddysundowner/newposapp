@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
 import 'package:pointify/services/plans_service.dart';
 
-import '../Real/Models/schema.dart';
+import '../Real/schema.dart';
 
 class PlanController extends GetxController {
   RxList<Plan> plans = RxList([]);

@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:pointify/functions/functions.dart';
 import 'package:pointify/screens/purchases/invoice_screen.dart';
-import '../Real/Models/schema.dart';
+import '../Real/schema.dart';
 import '../utils/colors.dart';
 import 'delete_dialog.dart';
 

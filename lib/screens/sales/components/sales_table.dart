@@ -4,7 +4,7 @@ import 'package:pointify/controllers/shop_controller.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
-import '../../../Real/Models/schema.dart';
+import '../../../Real/schema.dart';
 import '../../../controllers/home_controller.dart';
 import '../../../utils/colors.dart';
 import '../sale_order_item.dart';

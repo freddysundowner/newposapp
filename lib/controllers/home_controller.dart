@@ -3,7 +3,7 @@ import 'package:pointify/screens/home/profile_page.dart';
 import 'package:pointify/utils/constants.dart';
 import 'package:get/get.dart';
 
-import '../screens/home/attendants_page.dart';
+import '../screens/attendant/attendants_page.dart';
 import '../screens/home/home_page.dart';
 import '../screens/shop/shops_page.dart';
 

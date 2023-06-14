@@ -5,7 +5,7 @@ import 'package:pointify/controllers/sales_controller.dart';
 import 'package:pointify/widgets/snackBars.dart';
 import 'package:get/get.dart';
 
-import '../Real/Models/schema.dart';
+import '../Real/schema.dart';
 
 Widget searchWidget(
     {required autoCompletKey,

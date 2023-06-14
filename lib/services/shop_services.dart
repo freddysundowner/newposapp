@@ -1,11 +1,11 @@
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
-import 'package:pointify/Real/Models/schema.dart';
+import 'package:pointify/Real/schema.dart';
 import 'package:realm/realm.dart';
 
-import '../../controllers/realm_controller.dart';
+import '../controllers/realm_controller.dart';
 
-class RShop {
+class ShopService {
   final RealmController realmService = Get.find<RealmController>();
   void createShop(Shop shop) {
     realmService.realm.write<Shop>(() => realmService.realm.add<Shop>(shop));

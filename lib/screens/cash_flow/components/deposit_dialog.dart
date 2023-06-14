@@ -5,7 +5,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:pointify/widgets/alert.dart';
 
-import '../../../Real/Models/schema.dart';
+import '../../../Real/schema.dart';
 
 showDepositDialog(
     {required context,

@@ -7,7 +7,7 @@ import 'package:pointify/utils/colors.dart';
 import 'package:pointify/widgets/shop_list_bottomsheet.dart';
 import 'package:pointify/widgets/smalltext.dart';
 
-import '../../Real/Models/schema.dart';
+import '../../Real/schema.dart';
 import '../../widgets/bigtext.dart';
 
 class ExtendUsage extends StatelessWidget {

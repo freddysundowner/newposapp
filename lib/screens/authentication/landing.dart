@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:pointify/responsive/responsiveness.dart';
-import 'package:pointify/screens/authentication/admin_login.dart';
+import 'package:pointify/screens/authentication/admin/admin_login.dart';
 import 'package:get/get.dart';
 import '../../utils/colors.dart';
-import 'login_attendant.dart';
+import 'attendant/login_attendant.dart';
 
 class Landing extends StatelessWidget {
   Landing({Key? key}) : super(key: key);

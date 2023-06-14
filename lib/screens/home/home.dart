@@ -6,7 +6,7 @@ import 'package:pointify/controllers/user_controller.dart';
 import 'package:pointify/controllers/sales_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/responsive/responsiveness.dart';
-import 'package:pointify/screens/home/attendants_page.dart';
+import 'package:pointify/screens/attendant/attendants_page.dart';
 import 'package:pointify/utils/helper.dart';
 import 'package:pointify/widgets/bigtext.dart';
 import 'package:pointify/widgets/side_menu.dart';

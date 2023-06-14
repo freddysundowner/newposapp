@@ -7,7 +7,7 @@ import 'package:pointify/screens/suppliers/supplier_info_page.dart';
 import 'package:pointify/widgets/smalltext.dart';
 import 'package:get/get.dart';
 
-import '../../Real/Models/schema.dart';
+import '../../Real/schema.dart';
 import '../../utils/colors.dart';
 import '../../widgets/bigtext.dart';
 

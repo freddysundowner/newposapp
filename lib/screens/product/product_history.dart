@@ -8,7 +8,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:realm/realm.dart';
 
-import '../../Real/Models/schema.dart';
+import '../../Real/schema.dart';
 import '../../controllers/stock_transfer_controller.dart';
 import '../../widgets/bigtext.dart';
 import '../../widgets/smalltext.dart';

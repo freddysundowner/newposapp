@@ -1,13 +1,9 @@
 import 'dart:convert';
 
 import 'package:get/get.dart';
-import 'package:pointify/controllers/AuthController.dart';
-import 'package:pointify/controllers/user_controller.dart';
-import 'package:pointify/services/apiurls.dart';
-import 'package:pointify/services/client.dart';
 import 'package:realm/realm.dart';
 
-import '../Real/Models/schema.dart';
+import '../Real/schema.dart';
 import '../controllers/realm_controller.dart';
 import '../controllers/shop_controller.dart';
 

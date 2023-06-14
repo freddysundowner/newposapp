@@ -9,7 +9,7 @@ import 'package:pointify/functions/functions.dart';
 import 'package:pointify/screens/sales/components/return_stock.dart';
 import '../../../widgets/bigtext.dart';
 import '../../../widgets/normal_text.dart';
-import '../../Real/Models/schema.dart';
+import '../../Real/schema.dart';
 
 class InvoiceScreen extends StatelessWidget {
   Invoice? invoice;

@@ -8,7 +8,7 @@ import 'package:pointify/screens/stock/transfer_history.dart';
 import 'package:pointify/widgets/shop_card.dart';
 import 'package:get/get.dart';
 
-import '../../Real/Models/schema.dart';
+import '../../Real/schema.dart';
 import '../../controllers/AuthController.dart';
 import '../../utils/colors.dart';
 import '../../widgets/bigtext.dart';

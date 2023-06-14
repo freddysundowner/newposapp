@@ -18,7 +18,7 @@ import '../../widgets/bigtext.dart';
 import '../../widgets/normal_text.dart';
 import '../../widgets/smalltext.dart';
 import '../home/home_page.dart';
-import '../sales/all_sales_page.dart';
+import '../sales/all_sales.dart';
 import 'expense_page.dart';
 
 class FinancePage extends StatelessWidget {

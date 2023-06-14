@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pointify/controllers/sales_controller.dart';
 import 'package:get/get.dart';
 
-import '../../../Real/Models/schema.dart';
+import '../../../Real/schema.dart';
 import '../../../widgets/snackBars.dart';
 
 showEditDialogPrice({required Product productModel, required index}) {

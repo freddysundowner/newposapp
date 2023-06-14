@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../controllers/home_controller.dart';
-import '../screens/home/attendants_page.dart';
+import '../screens/attendant/attendants_page.dart';
 import '../screens/home/home_page.dart';
 import '../screens/home/profile_page.dart';
 import '../screens/shop/shops_page.dart';

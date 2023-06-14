@@ -8,7 +8,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 
-import '../../Real/Models/schema.dart';
+import '../../Real/schema.dart';
 
 WalletPdf(
     {required final shop,

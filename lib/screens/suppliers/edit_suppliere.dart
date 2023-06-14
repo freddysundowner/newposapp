@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../Real/Models/schema.dart';
+import '../../Real/schema.dart';
 import '../../controllers/supplierController.dart';
 
 class EditSupplier extends StatelessWidget {

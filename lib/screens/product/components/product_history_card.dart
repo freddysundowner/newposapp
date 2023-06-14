@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:pointify/functions/functions.dart';
 
-import '../../../Real/Models/schema.dart';
+import '../../../Real/schema.dart';
 import '../../../controllers/shop_controller.dart';
 
 Widget productHistoryContainer(ProductHistoryModel productHistoryModel) {

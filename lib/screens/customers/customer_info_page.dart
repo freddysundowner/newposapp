@@ -17,7 +17,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../Real/Models/schema.dart';
+import '../../Real/schema.dart';
 import '../../controllers/CustomerController.dart';
 import '../../controllers/AuthController.dart';
 import '../../controllers/user_controller.dart';

@@ -6,7 +6,7 @@ import 'package:pointify/screens/shop/create_shop.dart';
 import 'package:pointify/widgets/no_items_found.dart';
 import 'package:get/get.dart';
 
-import '../../Real/Models/schema.dart';
+import '../../Real/schema.dart';
 import '../../controllers/AuthController.dart';
 import '../../utils/colors.dart';
 import '../../widgets/shop_card.dart';

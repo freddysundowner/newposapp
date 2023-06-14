@@ -10,13 +10,13 @@ import 'package:pointify/main.dart';
 import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/customers/customers_page.dart';
 import 'package:pointify/screens/home/home_page.dart';
-import 'package:pointify/screens/sales/all_sales_page.dart';
+import 'package:pointify/screens/sales/all_sales.dart';
 import 'package:pointify/widgets/no_items_found.dart';
 import 'package:pointify/widgets/search_widget.dart';
 import 'package:get/get.dart';
 import 'package:realm/realm.dart';
 
-import '../../Real/Models/schema.dart';
+import '../../Real/schema.dart';
 import '../../controllers/AuthController.dart';
 import '../../controllers/CustomerController.dart';
 import '../../controllers/sales_controller.dart';

@@ -4,11 +4,12 @@ import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/authentication/landing.dart';
 import 'package:get/get.dart';
+import 'package:pointify/widgets/alert.dart';
 
-import '../../controllers/AuthController.dart';
-import '../../utils/colors.dart';
-import '../../utils/themer.dart';
-import '../../widgets/header.dart';
+import '../../../controllers/AuthController.dart';
+import '../../../utils/colors.dart';
+import '../../../utils/themer.dart';
+import '../../../widgets/header.dart';
 
 class ForgotPassword extends StatelessWidget {
   ForgotPassword({Key? key}) : super(key: key);
@@ -26,7 +27,7 @@ class ForgotPassword extends StatelessWidget {
           elevation: 0.0,
           leading: IconButton(
               onPressed: () {
-                Get.to(() => Landing());
+                Get.back();
               },
               icon: Icon(
                 Icons.clear,
@@ -98,7 +99,7 @@ class ForgotPassword extends StatelessWidget {
 
   Widget loginForm(context) {
     return Form(
-        key: authController.loginKey,
+        key: authController.adminresetPassWordFormKey,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 25),
           child: Column(
@@ -122,6 +123,47 @@ class ForgotPassword extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 15.0),
+              Container(
+                decoration: ThemeHelper().inputBoxDecorationShaddow(),
+                child: TextFormField(
+                  controller: authController.passwordController,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter new password';
+                    }
+                    return null;
+                  },
+                  keyboardType: TextInputType.emailAddress,
+                  decoration: ResponsiveWidget.isSmallScreen(context)
+                      ? ThemeHelper().textInputDecoration(
+                          'new password', 'Enter your new password')
+                      : ThemeHelper().textInputDecorationDesktop(
+                          'new password', 'Enter your new password'),
+                ),
+              ),
+              SizedBox(height: 15.0),
+              Container(
+                decoration: ThemeHelper().inputBoxDecorationShaddow(),
+                child: TextFormField(
+                  controller: authController.passwordControllerConfirm,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please confirm password';
+                    }
+                    if (value != authController.passwordController.text) {
+                      return "Password must match";
+                    }
+                    return null;
+                  },
+                  keyboardType: TextInputType.emailAddress,
+                  decoration: ResponsiveWidget.isSmallScreen(context)
+                      ? ThemeHelper().textInputDecoration(
+                          'confirm password', 'Please confirm password')
+                      : ThemeHelper().textInputDecorationDesktop(
+                          'confirm password', 'Please confirm password'),
+                ),
+              ),
+              SizedBox(height: 15.0),
               Obx(() {
                 return authController.loginuserLoad.value
                     ? const Center(
@@ -139,9 +181,14 @@ class ForgotPassword extends StatelessWidget {
                                 color: Colors.white),
                           ),
                         ),
-                        onPressed: () async {
-                          print("b");
-                          // await authController.resetPasswordEmail();
+                        onPressed: () {
+                          if (authController
+                              .adminresetPassWordFormKey.currentState!
+                              .validate()) {
+                            authController.resetPasswordEmail(
+                                authController.emailController.text,
+                                authController.passwordController.text);
+                          }
                         },
                       );
               }),

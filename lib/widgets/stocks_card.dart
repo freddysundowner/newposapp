@@ -6,7 +6,7 @@ import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/widgets/snackBars.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import '../Real/Models/schema.dart';
+import '../Real/schema.dart';
 import '../utils/colors.dart';
 
 Widget stockCard(

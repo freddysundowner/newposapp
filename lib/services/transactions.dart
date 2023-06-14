@@ -5,28 +5,18 @@ import 'package:get/get_core/src/get_main.dart';
 import 'package:pointify/services/client.dart';
 import 'package:realm/realm.dart';
 
-import '../Real/Models/schema.dart';
+import '../Real/schema.dart';
 import '../controllers/realm_controller.dart';
 import '../controllers/shop_controller.dart';
-import 'apiurls.dart';
 
 class Transactions {
   final RealmController realmService = Get.find<RealmController>();
   final ShopController shopController = Get.find<ShopController>();
-  getProfitTransactions(shopId, startDate, endDate) async {
-    var response = await DbBase().databaseRequest(
-      "$transaction/salessummary/$shopId/$startDate/$endDate",
-      DbBase().getRequestType,
-    );
-    return jsonDecode(response);
-  }
 
   RealmResults<BankModel> getCashAtBank() {
-    print("getCashAtBank");
     RealmResults<BankModel> response = realmService.realm.query<BankModel>(
         r'shop == $0',
         [Get.find<ShopController>().currentShop.value!.id.toString()]);
-    print("getCashAtBank ${response.length}");
     return response;
   }
 
@@ -62,15 +52,6 @@ class Transactions {
   createBank(BankModel bankModel) async {
     realmService.realm
         .write<BankModel>(() => realmService.realm.add<BankModel>(bankModel));
-  }
-
-  getBankNames(shopId) async {
-    var response = await DbBase().databaseRequest(
-      category + "banklist/${shopId}",
-      DbBase().getRequestType,
-    );
-    var data = jsonDecode(response);
-    return data;
   }
 
   createTransaction(CashFlowTransaction cashFlowTransaction) async {
@@ -127,14 +108,6 @@ class Transactions {
       return responsedata;
     }
     return response;
-  }
-
-  ediCategory({required Map<String, dynamic> body, required id}) async {
-    var response = await DbBase().databaseRequest(
-        "${cashflow}" + "category/$id", DbBase().patchRequestType,
-        body: body);
-    var data = jsonDecode(response);
-    return data;
   }
 
   deleteCategory({CashFlowCategory? cashFlowCategory}) async {

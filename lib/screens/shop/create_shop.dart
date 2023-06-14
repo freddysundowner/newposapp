@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/responsive/responsiveness.dart';
-import 'package:pointify/screens/authentication/shop_cagories.dart';
+import 'package:pointify/screens/shop/shop_cagories.dart';
 import 'package:pointify/screens/shop/shops_page.dart';
 import 'package:pointify/utils/constants.dart';
 import 'package:get/get.dart';
 import 'package:switcher_button/switcher_button.dart';
 
-import '../../Real/Models/schema.dart';
-import '../../Real/services/r_shop.dart';
+import '../../Real/schema.dart';
+import '../../services/shop_services.dart';
 import '../../data/interests.dart';
 import '../../utils/colors.dart';
 import '../../widgets/bigtext.dart';
@@ -51,63 +51,11 @@ class CreateShop extends StatelessWidget {
         title:
             majorTitle(title: "Create Shop", color: Colors.black, size: 16.0),
       ),
-      body: ResponsiveWidget(
-          largeScreen: Align(
-            alignment: Alignment.center,
-            child: Container(
-              width: MediaQuery.of(context).size.width * 0.5,
-              padding: EdgeInsets.symmetric(horizontal: 10),
-              margin: EdgeInsets.symmetric(vertical: 10),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(5.0),
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey,
-                    offset: Offset(0.0, 0.0), //(x,y)
-                    blurRadius: 1.0,
-                  ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  shopDetails(context),
-                  SizedBox(height: 10),
-                  Obx(() {
-                    return shopController.createShopLoad.value
-                        ? const Center(child: CircularProgressIndicator())
-                        : Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 20.0),
-                            child: saveButton(context),
-                          );
-                  }),
-                ],
-              ),
-            ),
-          ),
-          smallScreen: SingleChildScrollView(
-            child: Container(
-              padding: EdgeInsets.all(10),
-              child: shopDetails(context),
-            ),
-          )),
-      bottomNavigationBar: BottomAppBar(
-        color: Colors.white,
+      body: SingleChildScrollView(
         child: Container(
-          width: double.infinity,
           padding: EdgeInsets.all(10),
-          height: MediaQuery.of(context).size.width > 600
-              ? 0
-              : kToolbarHeight * 1.5,
-          decoration:
-              BoxDecoration(border: Border.all(width: 1, color: Colors.grey)),
-          child: Obx(() {
-            return shopController.createShopLoad.value
-                ? const Center(child: CircularProgressIndicator())
-                : saveButton(context);
-          }),
+          height: MediaQuery.of(context).size.height,
+          child: shopDetails(context),
         ),
       ),
     );
@@ -237,6 +185,11 @@ class CreateShop extends StatelessWidget {
           ],
         ),
         SizedBox(height: 10),
+        Obx(() {
+          return shopController.createShopLoad.value
+              ? const Center(child: CircularProgressIndicator())
+              : saveButton(context);
+        })
       ],
     );
   }

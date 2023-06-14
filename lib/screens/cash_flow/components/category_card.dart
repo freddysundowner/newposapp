@@ -9,7 +9,7 @@ import 'package:pointify/utils/colors.dart';
 import 'package:pointify/widgets/delete_dialog.dart';
 import 'package:get/get.dart';
 
-import '../../../Real/Models/schema.dart';
+import '../../../Real/schema.dart';
 
 Widget categoryCard(context, {required CashFlowCategory cashflowCategory}) {
   return Padding(

@@ -3,7 +3,7 @@ import 'package:pointify/controllers/cashflow_controller.dart';
 import 'package:get/get.dart';
 import 'package:pointify/screens/cash_flow/cashflow_category_history.dart';
 
-import '../../../Real/Models/schema.dart';
+import '../../../Real/schema.dart';
 import '../../../controllers/home_controller.dart';
 import '../../../utils/colors.dart';
 import '../../../widgets/delete_dialog.dart';

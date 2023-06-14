@@ -11,7 +11,7 @@ import 'package:pointify/widgets/pdf/wallet_pdf.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
-import '../../Real/Models/schema.dart';
+import '../../Real/schema.dart';
 import '../../controllers/CustomerController.dart';
 import '../../controllers/user_controller.dart';
 import '../../controllers/wallet_controller.dart';

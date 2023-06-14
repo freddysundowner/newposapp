@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:pointify/Real/Models/schema.dart';
-import 'package:pointify/Real/services/r_shop.dart';
+import 'package:pointify/Real/schema.dart';
+import 'package:pointify/services/shop_services.dart';
 import 'package:pointify/controllers/AuthController.dart';
 import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/controllers/realm_controller.dart';
@@ -9,6 +9,7 @@ import 'package:pointify/controllers/sales_controller.dart';
 import 'package:pointify/controllers/user_controller.dart';
 import 'package:pointify/main.dart';
 import 'package:pointify/utils/constants.dart';
+import 'package:pointify/widgets/alert.dart';
 import 'package:pointify/widgets/snackBars.dart';
 import 'package:get/get.dart';
 import 'package:realm/realm.dart';
@@ -37,6 +38,10 @@ class ShopController extends GetxController {
   RxList<ShopTypes> categories = RxList([]);
 
   createShop({required page, required context}) async {
+    if (terms.isFalse) {
+      generalAlert(title: "Error", message: "Accept terms and conditions");
+      return;
+    }
     createShopLoad.value = true;
     final newItem = Shop(ObjectId(),
         name: nameController.text,
@@ -45,7 +50,7 @@ class ShopController extends GetxController {
         currency:
             currency.isEmpty ? Constants.currenciesData[0] : currency.value);
     newItem.type = Get.find<ShopController>().selectedCategory.value;
-    RShop().createShop(newItem);
+    ShopService().createShop(newItem);
 
     getShops();
     Get.find<UserController>().getUser();
@@ -69,7 +74,7 @@ class ShopController extends GetxController {
     try {
       gettingShopsLoad.value = true;
 
-      RealmResults<Shop> response = await RShop().getShop(name: name);
+      RealmResults<Shop> response = await ShopService().getShop(name: name);
       if (response.isNotEmpty) {
         allShops.assignAll(response.map((e) => e).toList());
       } else {
@@ -100,7 +105,7 @@ class ShopController extends GetxController {
   updateShop({Shop? shop}) async {
     try {
       updateShopLoad.value = true;
-      await RShop().updateItem(shop!,
+      await ShopService().updateItem(shop!,
           name: nameController.text,
           currency: currency.value == ""
               ? Constants.currenciesData[0]
@@ -120,7 +125,7 @@ class ShopController extends GetxController {
   deleteShop({required Shop shop, required context}) async {
     try {
       deleteShopLoad.value = true;
-      var response = await RShop().deleteItem(shop);
+      var response = await ShopService().deleteItem(shop);
       getShops();
       Get.back();
       showSnackBar(message: "shop deleted", color: AppColors.mainColor);
@@ -133,7 +138,7 @@ class ShopController extends GetxController {
   getCategories() async {
     try {
       loadingcateries.value = true;
-      RealmResults<ShopTypes> response = RShop().getShopTypes();
+      RealmResults<ShopTypes> response = ShopService().getShopTypes();
       categories.value = response.map((e) => e).toList();
       loadingcateries.value = false;
     } catch (e) {

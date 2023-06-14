@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:pointify/Real/Models/schema.dart';
+import 'package:pointify/Real/schema.dart';
 import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/controllers/product_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
@@ -17,7 +17,7 @@ import '../../controllers/expense_controller.dart';
 import '../../controllers/sales_controller.dart';
 import '../../utils/dates.dart';
 import '../../widgets/bigtext.dart';
-import '../sales/all_sales_page.dart';
+import '../sales/all_sales.dart';
 
 class ProfitPage extends StatelessWidget {
   ProfitPage({Key? key}) : super(key: key) {}

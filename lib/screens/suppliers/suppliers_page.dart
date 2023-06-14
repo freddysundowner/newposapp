@@ -13,7 +13,7 @@ import 'package:pointify/widgets/no_items_found.dart';
 import 'package:get/get.dart';
 import 'package:realm/realm.dart';
 
-import '../../Real/Models/schema.dart';
+import '../../Real/schema.dart';
 import '../../controllers/CustomerController.dart';
 import '../../controllers/supplierController.dart';
 import '../../controllers/user_controller.dart';

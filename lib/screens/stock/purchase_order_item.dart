@@ -8,7 +8,7 @@ import 'package:pointify/widgets/no_items_found.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
-import '../../Real/Models/schema.dart';
+import '../../Real/schema.dart';
 import '../../widgets/bigtext.dart';
 import '../../widgets/smalltext.dart';
 import '../../widgets/stocks_card.dart';

@@ -7,7 +7,7 @@ import 'package:pointify/widgets/pdf/bar_code_pdf.dart';
 import 'package:pointify/widgets/smalltext.dart';
 import 'package:get/get.dart';
 
-import '../Real/Models/schema.dart';
+import '../Real/schema.dart';
 import '../functions/functions.dart';
 import '../screens/product/create_product.dart';
 import '../screens/product/product_history.dart';

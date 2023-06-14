@@ -8,7 +8,7 @@ import 'package:pointify/screens/customers/customer_info_page.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
-import '../../Real/Models/schema.dart';
+import '../../Real/schema.dart';
 
 class PaymentHistory extends StatelessWidget {
   final String id;
@@ -22,7 +22,6 @@ class PaymentHistory extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    salesController.getPaymentHistory(id: id, type: type);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(

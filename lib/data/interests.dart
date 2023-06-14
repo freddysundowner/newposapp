@@ -1,8 +1,7 @@
-import 'package:pointify/Real/Models/schema.dart';
-import 'package:pointify/screens/authentication/shop_cagories.dart';
+import 'package:pointify/Real/schema.dart';
 import 'package:realm/realm.dart';
 
-import '../Real/services/r_shop.dart';
+import '../services/shop_services.dart';
 
 class Interests {
   Interests() {
@@ -15,12 +14,13 @@ class Interests {
   ];
 
   static createInterests() {
-    RealmResults<ShopTypes> shopcategories = RShop().getShopTypes();
+    RealmResults<ShopTypes> shopcategories = ShopService().getShopTypes();
+    print("shopcategories ${shopcategories.length}");
     if (shopcategories.isEmpty) {
       for (var element in roles) {
         print(element);
         ShopTypes shopTypes = ShopTypes(ObjectId(), title: element);
-        RShop().createShopType(shopTypes);
+        ShopService().createShopType(shopTypes);
       }
     }
   }

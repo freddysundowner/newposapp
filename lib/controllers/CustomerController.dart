@@ -6,7 +6,7 @@ import 'package:pointify/services/sales.dart';
 import 'package:pointify/widgets/alert.dart';
 import 'package:realm/realm.dart';
 
-import '../Real/Models/schema.dart';
+import '../Real/schema.dart';
 import '../screens/customers/customers_page.dart';
 import '../screens/product/create_product.dart';
 import '../screens/sales/create_sale.dart';

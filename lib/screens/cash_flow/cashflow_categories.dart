@@ -8,7 +8,7 @@ import 'package:pointify/utils/helper.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
-import '../../Real/Models/schema.dart';
+import '../../Real/schema.dart';
 import '../../controllers/home_controller.dart';
 import '../../controllers/shop_controller.dart';
 import 'components/category_card.dart';

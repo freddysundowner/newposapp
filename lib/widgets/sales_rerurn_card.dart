@@ -6,7 +6,7 @@ import 'package:pointify/widgets/snackBars.dart';
 import 'package:get/get.dart';
 import 'package:get/get_utils/get_utils.dart';
 
-import '../Real/Models/schema.dart';
+import '../Real/schema.dart';
 import '../controllers/sales_controller.dart';
 import 'bigtext.dart';
 

@@ -7,7 +7,7 @@ import 'package:pointify/screens/sales/components/edit_price_dialog.dart';
 import 'package:pointify/widgets/smalltext.dart';
 import 'package:get/get.dart';
 
-import '../Real/Models/schema.dart';
+import '../Real/schema.dart';
 import '../controllers/AuthController.dart';
 import '../controllers/sales_controller.dart';
 import 'bigtext.dart';
@@ -16,7 +16,6 @@ import 'normal_text.dart';
 Widget SalesContainer(
     {required ReceiptItem receiptItem, required index, required type}) {
   SalesController salesController = Get.find<SalesController>();
-  UserController userController = Get.find<UserController>();
   TextEditingController textEditingController = TextEditingController();
   Product productModel = receiptItem.product!;
   return Padding(
@@ -45,6 +44,7 @@ Widget SalesContainer(
           ),
           SizedBox(height: 3),
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 majorTitle(title: "Qty", color: Colors.black54, size: 13.0),
@@ -83,26 +83,47 @@ Widget SalesContainer(
                         )),
                   ],
                 ),
+              Spacer(),
+              if (checkPermission(category: "sales", permission: "discount"))
+                Align(
+                  alignment: Alignment.topRight,
+                  child: InkWell(
+                    onTap: () {
+                      discountDialog(
+                          controller: textEditingController,
+                          receiptItem: receiptItem,
+                          index: index);
+                    },
+                    child: receiptItem.discount! > 0
+                        ? InkWell(
+                            onTap: () {
+                              receiptItem.discount = 0;
+                              salesController.calculateAmount(index);
+                            },
+                            child: Row(
+                              children: [
+                                Text(
+                                  htmlPrice(receiptItem.discount!),
+                                  style: TextStyle(
+                                      color: Colors.red, fontSize: 12),
+                                ),
+                                const Icon(
+                                  Icons.clear,
+                                  color: Colors.red,
+                                  size: 14,
+                                ),
+                              ],
+                            ))
+                        : const Text(
+                            "Discount",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(color: Colors.blue),
+                          ),
+                  ),
+                ),
             ],
           ),
           const SizedBox(height: 10),
-          if (checkPermission(category: "sales", permission: "discount"))
-            Align(
-              alignment: Alignment.topRight,
-              child: InkWell(
-                onTap: () {
-                  discountDialog(
-                      controller: textEditingController,
-                      receiptItem: receiptItem,
-                      index: index);
-                },
-                child: const Text(
-                  "Discount",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.blue),
-                ),
-              ),
-            ),
           type == "small"
               ? Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -112,10 +133,10 @@ Widget SalesContainer(
                           onPressed: () {
                             salesController.decrementItem(index);
                           },
-                          icon: Icon(Icons.remove,
+                          icon: const Icon(Icons.remove,
                               color: Colors.black, size: 16)),
                       Container(
-                          padding: EdgeInsets.only(
+                          padding: const EdgeInsets.only(
                               top: 5, bottom: 5, right: 8, left: 8),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(5),

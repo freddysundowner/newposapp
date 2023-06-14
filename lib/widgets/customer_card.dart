@@ -5,7 +5,7 @@ import 'package:pointify/functions/functions.dart';
 import 'package:pointify/widgets/smalltext.dart';
 import 'package:get/get.dart';
 
-import '../Real/Models/schema.dart';
+import '../Real/schema.dart';
 import '../screens/customers/customer_info_page.dart';
 import '../utils/colors.dart';
 import 'bigtext.dart';

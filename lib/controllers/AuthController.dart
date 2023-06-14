@@ -4,12 +4,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
-import 'package:pointify/Real/Models/schema.dart';
+import 'package:pointify/Real/schema.dart';
 import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/controllers/user_controller.dart';
 import 'package:pointify/screens/authentication/landing.dart';
 import 'package:pointify/screens/home/home_page.dart';
-import 'package:pointify/services/apiurls.dart';
 import 'package:pointify/services/users.dart';
 import 'package:realm/realm.dart';
 
@@ -25,6 +24,7 @@ class AuthController extends GetxController {
   Rxn<Uri> baseUrl = Rxn(null);
   Rxn<App> app = Rxn(null);
   ShopController shopController = Get.put(ShopController());
+  TextEditingController passwordControllerConfirm = TextEditingController();
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   TextEditingController nameController = TextEditingController();
@@ -36,8 +36,9 @@ class AuthController extends GetxController {
   TextEditingController attendantUidController = TextEditingController();
   TextEditingController attendantPasswordController = TextEditingController();
 
-  GlobalKey<FormState> signupkey = GlobalKey();
   GlobalKey<FormState> loginKey = GlobalKey();
+  GlobalKey<FormState> signupkey = GlobalKey();
+  GlobalKey<FormState> adminresetPassWordFormKey = GlobalKey();
   GlobalKey<FormState> loginAttendantKey = GlobalKey();
   RxBool signuserLoad = RxBool(false);
   RxBool loginuserLoad = RxBool(false);
@@ -70,8 +71,12 @@ class AuthController extends GetxController {
   }
 
   attendantLogin(context) async {
+    if (attendantPasswordController.text.isEmpty ||
+        attendantUidController.text.isEmpty) {
+      generalAlert(title: "Error", message: "Enter user id");
+      return;
+    }
     LoginAttendantLoad.value = true;
-    var email = "${attendantUidController.text}@gmail.com";
     var password = attendantPasswordController.text;
     var uid = int.parse(attendantUidController.text);
 
@@ -79,8 +84,9 @@ class AuthController extends GetxController {
     RealmResults<UserModel> users = Users.getUserUser(uid: uid);
     if (users.isNotEmpty) {
       UserModel userModel = users.first;
+      var email = userModel.email;
       if (userModel.loggedin == null) {
-        await registerUserEmailPassword(email, password);
+        await registerUserEmailPassword(email!, password);
         User? loggedInUser = await logInUserEmailPassword(email, password);
         var uid = userModel.UNID;
         final updatedCustomUserData = {
@@ -95,14 +101,23 @@ class AuthController extends GetxController {
           attendantUidController.clear();
           attendantPasswordController.clear();
           Get.find<UserController>().currentAttendant.value = users.first;
-          Get.to(() => HomePage);
+          Get.to(() => Scaffold(
+                body: SafeArea(
+                  child: HomePage(),
+                ),
+              ));
         });
         await loggedInUser.refreshCustomData();
       } else {
         try {
-          await logInUserEmailPassword(email, password);
-          Get.to(() => HomePage);
+          await logInUserEmailPassword(email!, password);
+          Get.to(() => Scaffold(
+                body: SafeArea(
+                  child: HomePage(),
+                ),
+              ));
         } catch (e) {
+          print(e);
           showSnackBar(message: "wrong password", color: Colors.red);
         }
       }
@@ -182,5 +197,19 @@ class AuthController extends GetxController {
     Get.find<RealmController>().currentUser?.value = null;
     refresh();
     Get.offAll(() => Landing());
+  }
+
+  void resetPasswordEmail(String email, String password) {
+    app.value!.emailPasswordAuthProvider
+        .callResetPasswordFunction(email, password);
+
+    generalAlert(
+        title: "Done",
+        message: "password reset successful",
+        negativeText: "",
+        function: () {
+          Get.back();
+          Get.back();
+        });
   }
 }

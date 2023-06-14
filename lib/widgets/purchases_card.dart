@@ -7,7 +7,7 @@ import 'package:pointify/widgets/alert.dart';
 import 'package:pointify/widgets/smalltext.dart';
 import 'package:get/get.dart';
 
-import '../Real/Models/schema.dart';
+import '../Real/schema.dart';
 import '../utils/colors.dart';
 import '../utils/themer.dart';
 import 'bigtext.dart';

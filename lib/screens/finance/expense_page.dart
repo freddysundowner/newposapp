@@ -14,7 +14,7 @@ import 'package:pointify/widgets/snackBars.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
-import '../../Real/Models/schema.dart';
+import '../../Real/schema.dart';
 import '../../controllers/AuthController.dart';
 import '../../utils/colors.dart';
 import '../../utils/dates.dart';

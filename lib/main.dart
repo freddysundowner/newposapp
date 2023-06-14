@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:pointify/Real/Models/schema.dart';
-import 'package:pointify/Real/services/r_shop.dart';
+import 'package:pointify/Real/schema.dart';
+import 'package:pointify/services/shop_services.dart';
 import 'package:pointify/bindings.dart';
 import 'package:pointify/controllers/user_controller.dart';
 import 'package:pointify/controllers/home_controller.dart';
@@ -40,24 +40,24 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ScreenUtilInit(
-        designSize: const Size(360, 690),
-        minTextAdapt: true,
-        splitScreenMode: true,
-        builder: (BuildContext context, c) {
-          return GetMaterialApp(
-            title: 'Pointify:',
-            debugShowCheckedModeBanner: false,
-            theme: ThemeData(
-                primarySwatch: AppColors.mainColor,
-                splashColor: Colors.transparent,
-                hoverColor: Colors.transparent,
-                highlightColor: Colors.transparent,
-                splashFactory: NoSplash.splashFactory),
-            initialBinding: AuthBinding(),
-            home: Authenticate(),
-          );
-        });
+    // return ScreenUtilInit(
+    // designSize: const Size(360, 690),
+    // minTextAdapt: true,
+    // splitScreenMode: true,
+    // builder: (BuildContext context, c) {
+    return GetMaterialApp(
+      title: 'Pointify:',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+          primarySwatch: AppColors.mainColor,
+          splashColor: Colors.transparent,
+          hoverColor: Colors.transparent,
+          highlightColor: Colors.transparent,
+          splashFactory: NoSplash.splashFactory),
+      initialBinding: AuthBinding(),
+      home: Authenticate(),
+    );
+    // });
   }
 }
 
@@ -77,7 +77,7 @@ class Authenticate extends StatelessWidget {
             ),
           );
         } else {
-          var shop = RShop().getShop();
+          var shop = ShopService().getShop();
           if (shop.isEmpty) {
             return CreateShop(page: "home");
           } else {

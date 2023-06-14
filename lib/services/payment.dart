@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:pointify/Real/Models/schema.dart';
+import 'package:pointify/Real/schema.dart';
 import 'package:pointify/controllers/realm_controller.dart';
 
 import '../controllers/shop_controller.dart';

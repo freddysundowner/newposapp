@@ -12,7 +12,7 @@ import 'package:pointify/screens/sales/components/sales_receipt.dart';
 import 'package:pointify/widgets/alert.dart';
 import 'package:realm/realm.dart';
 
-import '../Real/Models/schema.dart';
+import '../Real/schema.dart';
 import '../functions/functions.dart';
 import '../services/customer.dart';
 import '../services/payment.dart';
@@ -142,7 +142,9 @@ class SalesController extends GetxController
     receipt.value!.grandTotal = receipt.value!.items.fold(
         0,
         (previousValue, element) =>
-            previousValue! + (element.product!.selling! * element.quantity!));
+            previousValue! +
+            ((element.product!.selling! - element.discount!) *
+                element.quantity!));
 
     amountPaid.text = receipt.value!.grandTotal.toString();
 
@@ -152,8 +154,13 @@ class SalesController extends GetxController
       return;
     }
 
+    receipt.value?.items[index].price =
+        (receipt.value!.items[index].product!.selling! -
+            receipt.value!.items[index].discount!);
+
     receipt.value?.items[index].total =
-        receipt.value!.items[index].product!.selling! *
+        (receipt.value!.items[index].product!.selling! -
+                receipt.value!.items[index].discount!) *
             receipt.value!.items[index!].quantity!;
     receipt.refresh();
   }
@@ -257,7 +264,12 @@ class SalesController extends GetxController
     receiptData.receiptNumber = getRandomString(10);
     receiptData.dated = DateTime.now().millisecondsSinceEpoch;
     receiptData.createdAt = DateTime.now();
-    receiptData.quantity = receiptData.items.length;
+    receiptData.totalDiscount = receiptData.items.fold(
+        0,
+        (previousValue, element) =>
+            previousValue! + (element.discount! * element.quantity!));
+    receiptData.quantity = receiptData.items.fold(
+        0, (previousValue, element) => previousValue! + element.quantity!);
     receiptData.paymentMethod = _paymentType(receiptData);
 
     //debit customer wallet
@@ -547,25 +559,6 @@ class SalesController extends GetxController
 
     getSalesBySaleId(id: salesBody.id);
     currentReceipt.refresh();
-  }
-
-  getPaymentHistory({required String id, required type}) async {
-    try {
-      getPaymentHistoryLoad.value = true;
-      var response = await Sales().getPaymentHistory(id: id, type: type);
-      if (response != null) {
-        List rawData = response;
-        List<PayHistory> pay =
-            []; //rawData.map((e) => PayHistory.fromJson(e)).toList();
-        paymenHistory.assignAll(pay);
-      } else {
-        paymenHistory.value = [];
-      }
-      getPaymentHistoryLoad.value = false;
-    } catch (e) {
-      getPaymentHistoryLoad.value = false;
-      print(e);
-    }
   }
 
   void getSalesByDate({DateTime? fromDate, DateTime? toDate}) {

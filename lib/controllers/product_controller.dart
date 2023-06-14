@@ -14,8 +14,8 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:realm/realm.dart';
 
-import '../Real/Models/schema.dart';
-import '../screens/sales/all_sales_page.dart';
+import '../Real/schema.dart';
+import '../screens/sales/all_sales.dart';
 import '../services/product.dart';
 import '../widgets/loading_dialog.dart';
 
@@ -254,33 +254,6 @@ class ProductController extends GetxController {
     categoryId.value = productModel.category;
     minsellingPriceController.text = productModel.minPrice.toString();
     selectedMeasure.value = productModel.unit!;
-  }
-
-  getProductsByCount(String shopId, String type) async {
-    try {
-      getProductCountLoad.value = true;
-      var now = new DateTime.now();
-      var tomm = now.add(new Duration(days: 1));
-      var response = await Products().getProductCountInShop(
-        shopId,
-        type,
-        DateFormat("yyyy-MM-dd").format(now),
-        DateFormat("yyyy-MM-dd").format(tomm),
-      );
-      products.clear();
-      if (response != null) {
-        List fetchedProducts = response["products"];
-        List<Product> listProducts =
-            []; //fetchedProducts.map((e) => ProductModel.fromJson(e)).toList();
-        products.assignAll(listProducts);
-      } else {
-        products.value = [];
-      }
-      getProductCountLoad.value = false;
-    } catch (e) {
-      print(e);
-      getProductCountLoad.value = false;
-    }
   }
 
   updateQuantity({required Product product, required int quantity}) async {

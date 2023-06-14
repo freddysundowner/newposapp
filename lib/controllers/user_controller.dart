@@ -11,14 +11,15 @@ import 'package:pointify/services/transactions.dart';
 import 'package:pointify/widgets/alert.dart';
 import 'package:realm/realm.dart';
 
-import '../Real/Models/schema.dart';
-import '../Real/services/r_shop.dart';
+import '../Real/schema.dart';
+import '../services/shop_services.dart';
 import '../data/interests.dart';
 import '../services/users.dart';
 
 class UserController extends GetxController {
   TextEditingController passwordController = TextEditingController();
   TextEditingController nameController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
   TextEditingController attendantId = TextEditingController();
   RxBool creatingAttendantsLoad = RxBool(false);
   RxBool getAttendantsLoad = RxBool(false);
@@ -99,6 +100,7 @@ class UserController extends GetxController {
   getUser({String? type}) async {
     Interests();
     RealmResults<UserModel> userdata = await Users.getUserUser();
+    print("userdata $userdata");
     if (type == "login") {
       if (userdata.isEmpty) {
         Users.createUser(UserModel(
@@ -124,7 +126,7 @@ class UserController extends GetxController {
       shopController.currentShop.value =
           userdata.map((e) => e).toList().first.shop;
     } else {
-      RealmResults<Shop> response = await RShop().getShop();
+      RealmResults<Shop> response = await ShopService().getShop();
       if (response.isNotEmpty) {
         shopController.currentShop.value = response.first;
       }
@@ -189,7 +191,9 @@ class UserController extends GetxController {
   updateAttedant({required UserModel userModel, String? permissions}) {
     print("updateAttedant");
     Users().updateAdmin(userModel,
-        username: nameController.text, permissions: permissions);
+        username: nameController.text,
+        permissions: permissions,
+        email: emailController.text);
     generalAlert(
         title: "Updated",
         message: "Permissions updated successfully",

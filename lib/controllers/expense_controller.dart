@@ -9,7 +9,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:realm/realm.dart';
 
-import '../Real/Models/schema.dart';
+import '../Real/schema.dart';
 import '../services/expense.dart';
 
 class ExpenseController extends GetxController {

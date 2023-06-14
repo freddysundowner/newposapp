@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:pointify/controllers/shop_controller.dart';
 import 'package:intl/intl.dart';
 
-import '../../../Real/Models/schema.dart';
+import '../../../Real/schema.dart';
 import '../../sales/components/sales_receipt.dart';
 
 Widget WalletUsageCard(

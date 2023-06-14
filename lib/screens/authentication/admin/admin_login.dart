@@ -3,19 +3,18 @@ import 'package:flutter/material.dart';
 import 'package:pointify/controllers/AuthController.dart';
 import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/responsive/responsiveness.dart';
-import 'package:pointify/screens/authentication/forgot_password.dart';
-import 'package:pointify/screens/authentication/sign_up.dart';
+import 'package:pointify/screens/authentication/admin/forgot_password.dart';
+import 'package:pointify/screens/authentication/admin/sign_up.dart';
 import 'package:get/get.dart';
 
-import '../../utils/colors.dart';
-import '../../utils/themer.dart';
-import '../../widgets/header.dart';
+import '../../../utils/colors.dart';
+import '../../../utils/themer.dart';
+import '../../../widgets/header.dart';
 
 class AdminLogin extends StatelessWidget {
   AdminLogin({Key? key}) : super(key: key);
   AuthController authController = Get.find<AuthController>();
   HomeController homeController = Get.find<HomeController>();
-
   final AuthController appController = Get.find<AuthController>();
   @override
   Widget build(BuildContext context) {

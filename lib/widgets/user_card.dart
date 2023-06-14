@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pointify/widgets/smalltext.dart';
 import 'package:get/get.dart';
 
-import '../Real/Models/schema.dart';
+import '../Real/schema.dart';
 import '../screens/attendant/attendant_details.dart';
 import '../utils/colors.dart';
 import 'bigtext.dart';

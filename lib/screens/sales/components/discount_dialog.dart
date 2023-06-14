@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pointify/controllers/sales_controller.dart';
 import 'package:get/get.dart';
 
-import '../../../Real/Models/schema.dart';
+import '../../../Real/schema.dart';
 import '../../../widgets/snackBars.dart';
 
 discountDialog(
@@ -37,7 +37,6 @@ discountDialog(
             TextButton(
               onPressed: () {
                 Navigator.pop(context);
-                print(receiptItem.product!.discount);
                 if (int.parse(controller.text) >
                     receiptItem.product!.discount!) {
                   showSnackBar(

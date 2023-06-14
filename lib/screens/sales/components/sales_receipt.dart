@@ -6,7 +6,7 @@ import 'package:pointify/controllers/sales_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/functions/functions.dart';
 import 'package:realm/realm.dart';
-import '../../../Real/Models/schema.dart';
+import '../../../Real/schema.dart';
 import '../../../utils/colors.dart';
 import '../../../utils/themer.dart';
 import '../../../widgets/alert.dart';
@@ -100,11 +100,8 @@ class SalesReceipt extends StatelessWidget {
                         height: 10,
                       ),
                       majorTitle(
-                          title: htmlPrice(receiptItems.fold(
-                              0,
-                              (previousValue, element) =>
-                                  previousValue +
-                                  (element.price! * element.quantity!))),
+                          title: htmlPrice(
+                              salesController.currentReceipt.value!.grandTotal),
                           color: Colors.black,
                           size: 18.0)
                     ],
@@ -273,11 +270,8 @@ class SalesReceipt extends StatelessWidget {
                           Column(
                             children: [
                               Text(
-                                htmlPrice(receiptItems.fold(
-                                    0,
-                                    (previousValue, element) =>
-                                        previousValue +
-                                        (element.price! * element.quantity!))),
+                                htmlPrice(salesController
+                                    .currentReceipt.value!.grandTotal),
                                 style: const TextStyle(
                                     fontSize: 16, fontWeight: FontWeight.bold),
                               ),

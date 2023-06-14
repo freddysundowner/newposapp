@@ -8,7 +8,7 @@ import 'package:pointify/screens/stock/products_selection.dart';
 import 'package:pointify/utils/colors.dart';
 import 'package:get/get.dart';
 
-import '../../Real/Models/schema.dart';
+import '../../Real/schema.dart';
 import '../../widgets/bigtext.dart';
 
 class StockSubmit extends StatelessWidget {

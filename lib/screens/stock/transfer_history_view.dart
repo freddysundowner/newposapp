@@ -8,7 +8,7 @@ import 'package:pointify/screens/stock/transfer_history.dart';
 import 'package:get/get.dart';
 import 'package:realm/realm.dart';
 
-import '../../Real/Models/schema.dart';
+import '../../Real/schema.dart';
 import '../../controllers/shop_controller.dart';
 import '../../widgets/no_items_found.dart';
 

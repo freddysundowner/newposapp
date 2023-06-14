@@ -3,7 +3,7 @@ import 'package:pointify/controllers/user_controller.dart';
 import 'package:pointify/responsive/responsiveness.dart';
 import 'package:get/get.dart';
 
-import '../../Real/Models/schema.dart';
+import '../../Real/schema.dart';
 import '../../controllers/product_controller.dart';
 import '../../controllers/shop_controller.dart';
 import '../../utils/colors.dart';

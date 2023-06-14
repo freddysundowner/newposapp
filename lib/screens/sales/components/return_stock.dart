@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 import 'package:pointify/utils/themer.dart';
 import 'package:pointify/widgets/alert.dart';
 
-import '../../../Real/Models/schema.dart';
+import '../../../Real/schema.dart';
 import '../../../utils/colors.dart';
 
 returnInvoiceItem({required InvoiceItem invoiceItem, Invoice? invoice}) {

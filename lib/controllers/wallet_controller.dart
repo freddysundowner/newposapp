@@ -7,7 +7,7 @@ import 'package:pointify/screens/sales/create_sale.dart';
 import 'package:get/get.dart';
 import 'package:pointify/services/customer.dart';
 import 'package:realm/realm.dart';
-import '../Real/Models/schema.dart';
+import '../Real/schema.dart';
 import '../functions/functions.dart';
 import '../services/wallet.dart';
 import '../widgets/alert.dart';

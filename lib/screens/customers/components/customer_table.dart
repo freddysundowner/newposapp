@@ -3,7 +3,7 @@ import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/screens/customers/customer_info_page.dart';
 import 'package:get/get.dart';
 
-import '../../../Real/Models/schema.dart';
+import '../../../Real/schema.dart';
 import '../../../utils/colors.dart';
 
 Widget customerTable({required customers, required context}) {

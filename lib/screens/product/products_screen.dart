@@ -8,7 +8,7 @@ import 'package:get/get.dart';
 import 'package:pointify/screens/sales/sale_order_item.dart';
 import 'package:realm/realm.dart';
 
-import '../../Real/Models/schema.dart';
+import '../../Real/schema.dart';
 import '../../controllers/user_controller.dart';
 import '../../services/product.dart';
 import '../../widgets/bigtext.dart';

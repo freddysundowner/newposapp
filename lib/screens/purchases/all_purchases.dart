@@ -13,7 +13,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:realm/realm.dart';
 
-import '../../Real/Models/schema.dart';
+import '../../Real/schema.dart';
 import '../../services/purchases.dart';
 import '../../utils/colors.dart';
 import '../../widgets/bigtext.dart';

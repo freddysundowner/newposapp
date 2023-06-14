@@ -3,6 +3,8 @@ import 'package:pointify/controllers/realm_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/responsive/responsiveness.dart';
 import 'package:get/get.dart';
+import 'package:pointify/widgets/alert.dart';
+import 'package:realm/src/user.dart';
 
 import '../../controllers/AuthController.dart';
 import '../../controllers/home_controller.dart';
@@ -109,8 +111,7 @@ class ProfilePage extends StatelessWidget {
                   accountCardDesktop(
                       title: "Password Setting",
                       onPressed: () {
-                        showPasswordResetDialog(context,
-                            "${authController.currentUser!.value?.id}");
+                        // showPasswordResetDialog();
                       }),
                   SizedBox(height: 10),
                   accountCardDesktop(title: "Subscriptions", onPressed: () {}),
@@ -184,8 +185,8 @@ class ProfilePage extends StatelessWidget {
                           title: "Password Settings",
                           icon: Icons.lock,
                           onPressed: () {
-                            // showPasswordResetDialog(context,
-                            //     "${authController.currentUser.value?.id}");
+                            showPasswordResetDialog(
+                                authController.currentUser!.value!.profile);
                           }),
                       accountCard(
                           title: "Delete Account",
@@ -194,9 +195,8 @@ class ProfilePage extends StatelessWidget {
                             deleteDialog(
                                 context: context,
                                 onPressed: () {
-                                  // authController.deleteAdmin(
-                                  //     context: context,
-                                  //     id: authController.currentUser.value?.id);
+                                  print("b");
+                                  authController.deleteAdmin();
                                 });
                           }),
                     ],
@@ -302,118 +302,124 @@ class ProfilePage extends StatelessWidget {
       ],
     );
   }
-}
 
-showPasswordResetDialog(BuildContext context, String id) {
-  AuthController authController = Get.find<AuthController>();
-  showDialog(
-      context: context,
-      builder: (_) {
-        return AlertDialog(
-          title: Center(child: Text("Edit Password")),
-          content: Container(
-            height: MediaQuery.of(context).size.height * 0.3,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    majorTitle(
-                        title: "New Password", color: Colors.black, size: 16.0),
-                    SizedBox(height: 5),
-                    TextFormField(
-                      controller:
-                          authController.textEditingControllerNewPassword,
-                      obscureText: true,
-                      decoration: InputDecoration(
-                        contentPadding: EdgeInsets.all(3),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(5),
-                          borderSide: BorderSide(color: Colors.grey),
+  showPasswordResetDialog(UserProfile profile) {
+    AuthController authController = Get.find<AuthController>();
+    showDialog(
+        context: Get.context!,
+        builder: (_) {
+          return AlertDialog(
+            title: Center(child: Text("Edit Password")),
+            content: Container(
+              height: MediaQuery.of(Get.context!).size.height * 0.3,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      majorTitle(
+                          title: "New Password",
+                          color: Colors.black,
+                          size: 16.0),
+                      SizedBox(height: 5),
+                      TextFormField(
+                        controller:
+                            authController.textEditingControllerNewPassword,
+                        obscureText: true,
+                        decoration: InputDecoration(
+                          contentPadding: EdgeInsets.all(10),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(5),
+                            borderSide: BorderSide(color: Colors.grey),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(5),
+                            borderSide: BorderSide(color: Colors.grey),
+                          ),
                         ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(5),
-                          borderSide: BorderSide(color: Colors.grey),
+                      )
+                    ],
+                  ),
+                  SizedBox(height: 5),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      majorTitle(
+                          title: "Confirm Password",
+                          color: Colors.black,
+                          size: 16.0),
+                      SizedBox(height: 5),
+                      TextFormField(
+                        controller:
+                            authController.textEditingControllerConfirmPassword,
+                        obscureText: true,
+                        decoration: InputDecoration(
+                          contentPadding: const EdgeInsets.all(10),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(5),
+                            borderSide: BorderSide(color: Colors.grey),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(5),
+                            borderSide: BorderSide(color: Colors.grey),
+                          ),
                         ),
-                      ),
-                    )
-                  ],
-                ),
-                SizedBox(height: 5),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    majorTitle(
-                        title: "Confirm Password",
-                        color: Colors.black,
-                        size: 16.0),
-                    SizedBox(height: 5),
-                    TextFormField(
-                      controller:
-                          authController.textEditingControllerConfirmPassword,
-                      obscureText: true,
-                      decoration: InputDecoration(
-                        contentPadding: EdgeInsets.all(3),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(5),
-                          borderSide: BorderSide(color: Colors.grey),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(5),
-                          borderSide: BorderSide(color: Colors.grey),
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-                Spacer(),
-                Row(
-                  // crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    TextButton(
-                        onPressed: () {
-                          Get.back();
-                        },
-                        child: majorTitle(
-                            title: "CANCEL",
-                            color: AppColors.mainColor,
-                            size: 13.0)),
-                    TextButton(
-                        onPressed: () {
-                          if (authController
-                                      .textEditingControllerNewPassword.text ==
-                                  "" ||
-                              authController
-                                      .textEditingControllerConfirmPassword
-                                      .text ==
-                                  "") {
-                            showSnackBar(
-                                message: "please fill all the fields",
-                                color: Colors.red);
-                          } else if (authController
-                                  .textEditingControllerNewPassword.text !=
-                              authController
-                                  .textEditingControllerConfirmPassword.text) {
-                            showSnackBar(
-                                message: "Password mismatched",
-                                color: Colors.red);
-                          } else {
+                      )
+                    ],
+                  ),
+                  Spacer(),
+                  Row(
+                    // crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                          onPressed: () {
                             Get.back();
-                            // authController.updateUserPasswords(
-                            //     authController.currentUser.value?.id, context);
-                          }
-                        },
-                        child: majorTitle(
-                            title: "UPDATE",
-                            color: AppColors.mainColor,
-                            size: 13.0)),
-                  ],
-                )
-              ],
+                          },
+                          child: majorTitle(
+                              title: "CANCEL",
+                              color: AppColors.mainColor,
+                              size: 13.0)),
+                      TextButton(
+                          onPressed: () {
+                            if (authController.textEditingControllerNewPassword
+                                        .text ==
+                                    "" ||
+                                authController
+                                        .textEditingControllerConfirmPassword
+                                        .text ==
+                                    "") {
+                              generalAlert(
+                                  message: "please fill all the fields",
+                                  title: "Error");
+                            } else if (authController
+                                    .textEditingControllerNewPassword.text !=
+                                authController
+                                    .textEditingControllerConfirmPassword
+                                    .text) {
+                              generalAlert(
+                                  message: "Password mismatched",
+                                  title: "Error");
+                            } else {
+                              Get.back();
+                              authController.resetPasswordEmail(
+                                  profile.email!,
+                                  authController
+                                      .textEditingControllerConfirmPassword
+                                      .text);
+                            }
+                          },
+                          child: majorTitle(
+                              title: "UPDATE",
+                              color: AppColors.mainColor,
+                              size: 13.0)),
+                    ],
+                  )
+                ],
+              ),
             ),
-          ),
-        );
-      });
+          );
+        });
+  }
 }

@@ -4,19 +4,18 @@ import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/controllers/sales_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/responsive/responsiveness.dart';
-import 'package:pointify/screens/attendant/create_attendant.dart';
 import 'package:pointify/widgets/user_card.dart';
 import 'package:pointify/widgets/no_items_found.dart';
 import 'package:get/get.dart';
 import 'package:realm/realm.dart';
 
 import '../../../../utils/colors.dart';
-import '../../Real/Models/schema.dart';
+import '../../Real/schema.dart';
 import '../../controllers/user_controller.dart';
 import '../../main.dart';
 import '../../services/users.dart';
 import '../../widgets/smalltext.dart';
-import '../attendant/attendant_details.dart';
+import 'attendant_details.dart';
 
 class AttendantsPage extends StatelessWidget {
   String? type;
@@ -197,9 +196,13 @@ class AttendantsPage extends StatelessWidget {
           } else {
             if (MediaQuery.of(context).size.width > 600) {
               Get.find<HomeController>().selectedWidget.value =
-                  CreateAttendant();
+                  AttendantDetails(
+                userModel: null,
+              );
             } else {
-              Get.to(() => CreateAttendant());
+              Get.to(() => AttendantDetails(
+                    userModel: null,
+                  ));
             }
           }
         },

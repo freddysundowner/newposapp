@@ -1,12 +1,14 @@
 import 'dart:math';
 
 import 'package:get/get.dart';
-import 'package:pointify/Real/Models/schema.dart';
+import 'package:pointify/Real/schema.dart';
 import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/controllers/user_controller.dart';
+import 'package:pointify/services/product.dart';
 import 'package:realm/realm.dart';
 
-import '../Real/services/r_shop.dart';
+import '../services/shop_services.dart';
+import '../services/sales.dart';
 import '../services/users.dart';
 import 'AuthController.dart';
 
@@ -86,8 +88,6 @@ class RealmController extends GetxController {
         mutableSubscriptions.add(realm.all<BankModel>());
         mutableSubscriptions.add(realm.all<CashFlowTransaction>());
       });
-    } else {
-      realm = Realm(Configuration.local(schemas));
     }
   }
 
@@ -183,5 +183,71 @@ class RealmController extends GetxController {
   void dispose() {
     realm.close();
     super.dispose();
+  }
+
+  void deleteAdmin() {
+    // UserModel user = Get.find<UserController>().user.value!;
+    //delete shops by this admin
+    RealmResults<Shop> shops = ShopService().getShop();
+    if (shops.isNotEmpty) {
+      shops.forEach((element) {
+        //delete sales by this shop
+        List<SalesModel> sales =
+            Sales().getSales(shop: element).map((e) => e).toList();
+        if (sales.isNotEmpty) {
+          print("${element.name} sales ${sales.length}");
+          Sales().deleteSaleByShopId(sales);
+        }
+        //delete sales receipts by this shop
+        List<ReceiptItem> saleReceipts =
+            Sales().getSaleReceipts(shop: element).map((e) => e).toList();
+        if (saleReceipts.isNotEmpty) {
+          print("${element.name} saleReceipts ${saleReceipts.length}");
+          Sales().deleteReceiptItemByShopId(saleReceipts);
+        }
+        //delete sales receipts by this shop
+        List<StockTransferHistory> stockTransfer = Products()
+            .getTransHistory(shop: element, type: "out")
+            .map((e) => e)
+            .toList();
+        if (stockTransfer.isNotEmpty) {
+          print("${element.name} stockTransfer ${stockTransfer.length}");
+          Products().deleteTransHistoryByShopId(stockTransfer);
+        }
+        //delete sales receipts by this shop
+        List<ProductHistoryModel> productHistory = Products()
+            .getProductHistory("", shop: element.id.toString())
+            .map((e) => e)
+            .toList();
+        if (productHistory.isNotEmpty) {
+          print("${element.name} productHistory ${productHistory.length}");
+          Products().deleteProductHistoryModelByShopId(productHistory);
+        }
+        //delete sales receipts by this shop
+        List<ProductCountModel> productCuntHistory =
+            Products().getProductCountByShopId(element).map((e) => e).toList();
+        if (productCuntHistory.isNotEmpty) {
+          print(
+              "${element.name} productCuntHistory ${productCuntHistory.length}");
+          Products().deleteProductCountModelByShopId(productCuntHistory);
+        }
+        //delete sales receipts by this shop
+        List<Product> products =
+            Products().getProductsBySort(shop: element).map((e) => e).toList();
+        if (productCuntHistory.isNotEmpty) {
+          print("${element.name} products ${products.length}");
+          Products().deleteProductsByShopId(products);
+        }
+        print("deleting ${element.name}");
+        ShopService().deleteItem(element);
+      });
+    }
+    // Users.deleteUser(user);
+    Get.find<AuthController>()
+        .app
+        .value!
+        .deleteUser(Get.find<AuthController>().app.value!.currentUser!);
+    print("deleting");
+    // Get.find<AuthController>().logOut();
   }
 }

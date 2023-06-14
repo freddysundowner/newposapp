@@ -8,7 +8,7 @@ import 'package:pointify/screens/home/home_page.dart';
 import 'package:pointify/widgets/no_items_found.dart';
 import 'package:get/get.dart';
 
-import '../../Real/Models/schema.dart';
+import '../../Real/schema.dart';
 import '../../controllers/CustomerController.dart';
 import '../../controllers/supplierController.dart';
 import '../../controllers/user_controller.dart';

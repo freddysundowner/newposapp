@@ -5,7 +5,7 @@ import 'package:pointify/controllers/realm_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/widgets/bigtext.dart';
 
-import '../Real/Models/schema.dart';
+import '../Real/schema.dart';
 
 showShopModalBottomSheet(context) {
   ShopController shopController = Get.find<ShopController>();

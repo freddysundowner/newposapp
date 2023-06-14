@@ -71,6 +71,7 @@ class _UserModel {
   bool? loggedin;
   bool? deleted;
   String? fullnames;
+  String? email;
   String? phonenumber;
   String? authId;
   late int UNID;

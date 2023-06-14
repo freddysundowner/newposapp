@@ -10,7 +10,7 @@ import 'package:pointify/utils/constants.dart';
 import 'package:get/get.dart';
 import 'package:realm/realm.dart';
 
-import '../../Real/Models/schema.dart';
+import '../../Real/schema.dart';
 import '../../controllers/AuthController.dart';
 import '../../controllers/product_controller.dart';
 import '../../services/product.dart';

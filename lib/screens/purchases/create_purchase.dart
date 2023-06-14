@@ -12,7 +12,7 @@ import 'package:pointify/widgets/search_widget.dart';
 import 'package:get/get.dart';
 
 import '../../../../utils/colors.dart';
-import '../../Real/Models/schema.dart';
+import '../../Real/schema.dart';
 import '../../controllers/AuthController.dart';
 import '../../controllers/purchase_controller.dart';
 import '../../controllers/supplierController.dart';

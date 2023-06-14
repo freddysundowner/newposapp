@@ -3,13 +3,11 @@ import 'dart:convert';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:intl/intl.dart';
-import 'package:pointify/services/apiurls.dart';
 import 'package:realm/realm.dart';
 
-import '../Real/Models/schema.dart';
+import '../Real/schema.dart';
 import '../controllers/realm_controller.dart';
 import '../controllers/shop_controller.dart';
-import '../functions/functions.dart';
 import '../main.dart';
 import 'client.dart';
 
@@ -69,7 +67,12 @@ class Products {
   }
 
   RealmResults<Product> getProductsBySort(
-      {String? type = "all", String? text = ""}) {
+      {String? type = "all", String? text = "", Shop? shop}) {
+    if (shop != null) {
+      RealmResults<Product> products =
+          realmService.realm.query<Product>('shop == \$0', [shop]);
+      return products;
+    }
     String filter = " AND deleted == false";
     if (type == "quantity") {
       filter += " AND TRUEPREDICATE SORT(quantity DESC)";
@@ -124,12 +127,6 @@ class Products {
     return products.isNotEmpty ? products.first : null;
   }
 
-  deleteProduct({required id}) async {
-    var response = await DbBase()
-        .databaseRequest(product + id, DbBase().deleteRequestType);
-    return jsonDecode(response);
-  }
-
   getProductPurchaseHistory({Product? product}) {
     RealmResults<InvoiceItem> invoices = realmService.realm.query<InvoiceItem>(
         'product == \$0  AND TRUEPREDICATE SORT(createdAt DESC)', [product]);
@@ -144,48 +141,61 @@ class Products {
     return productCountHistory;
   }
 
-  getProductCountInShop(String shopId, String type, startDate, endDate) async {
-    var response = await DbBase().databaseRequest(
-        product +
-            "filter?shopid=${shopId}&type=${type}&startDate=${startDate}&endDate=${endDate}",
-        DbBase().getRequestType);
-    var data = jsonDecode(response);
-    return data;
-  }
-
   updateProductCount(ProductHistoryModel productCountModel) async {
     realmService.realm.write<ProductHistoryModel>(
         () => realmService.realm.add<ProductHistoryModel>(productCountModel));
   }
 
   RealmResults<ProductHistoryModel> getProductHistory(String type,
-      {ObjectId? transferId}) {
+      {ObjectId? transferId, String? shop}) {
+    if (shop != null) {
+      RealmResults<ProductHistoryModel> results =
+          realmService.realm.query<ProductHistoryModel>('shop =="${shop}"');
+      return results;
+    }
+
     if (transferId != null) {
       RealmResults<ProductHistoryModel> results = realmService.realm
           .query<ProductHistoryModel>(
               'stockTransferHistory == \$0', [transferId]);
       var resultsResponse = results.query("type == \$0", [type]);
-      print("resultsResponse $resultsResponse");
       return resultsResponse;
     }
     RealmResults<ProductHistoryModel> results = realmService.realm.query<
             ProductHistoryModel>(
-        'shop =="${Get.find<ShopController>().currentShop.value!.id.toString()}"');
+        'shop =="${shop ?? Get.find<ShopController>().currentShop.value!.id.toString()}"');
     var resultsResponse = results.query("type == \$0", [type]);
     return resultsResponse;
-  }
-
-  transferProducts({required Map<String, dynamic> body}) async {
-    var response = await DbBase()
-        .databaseRequest(stocktransfer, DbBase().postRequestType, body: body);
-    var data = jsonDecode(response);
-    return data;
   }
 
   createProductStockTransferHistory(
       StockTransferHistory stockTransferHistory) async {
     realmService.realm.write<StockTransferHistory>(() =>
         realmService.realm.add<StockTransferHistory>(stockTransferHistory));
+  }
+
+  deleteTransHistoryByShopId(List<StockTransferHistory> sales) {
+    realmService.realm.write(() {
+      realmService.realm.deleteMany(sales);
+    });
+  }
+
+  deleteProductHistoryModelByShopId(List<ProductHistoryModel> sales) {
+    realmService.realm.write(() {
+      realmService.realm.deleteMany(sales);
+    });
+  }
+
+  deleteProductCountModelByShopId(List<ProductCountModel> sales) {
+    realmService.realm.write(() {
+      realmService.realm.deleteMany(sales);
+    });
+  }
+
+  deleteProductsByShopId(List<Product> sales) {
+    realmService.realm.write(() {
+      realmService.realm.deleteMany(sales);
+    });
   }
 
   RealmResults<StockTransferHistory> getTransHistory(
@@ -232,6 +242,12 @@ class Products {
       return products.query("product == \$0", [product]);
     }
     return products;
+  }
+
+  RealmResults<ProductCountModel> getProductCountByShopId(Shop shop) {
+    RealmResults<ProductCountModel> returns =
+        realmService.realm.query<ProductCountModel>('shop == \$0', [shop]);
+    return returns;
   }
 
   void createProductCount({required ProductCountModel productCountModel}) {

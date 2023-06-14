@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:pointify/Real/Models/schema.dart';
+import 'package:pointify/Real/schema.dart';
 import 'package:pointify/controllers/AuthController.dart';
 import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/responsive/responsiveness.dart';
-import 'package:pointify/screens/authentication/shop_cagories.dart';
+import 'package:pointify/screens/shop/shop_cagories.dart';
 import 'package:pointify/screens/shop/shops_page.dart';
-import 'package:pointify/services/shop_old.dart';
 import 'package:pointify/utils/constants.dart';
 import 'package:pointify/widgets/shop_delete_dialog.dart';
 import 'package:get/get.dart';

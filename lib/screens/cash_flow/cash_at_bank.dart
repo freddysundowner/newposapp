@@ -7,7 +7,7 @@ import 'package:pointify/utils/helper.dart';
 import 'package:pointify/widgets/no_items_found.dart';
 import 'package:get/get.dart';
 
-import '../../Real/Models/schema.dart';
+import '../../Real/schema.dart';
 import '../../controllers/home_controller.dart';
 import '../../controllers/shop_controller.dart';
 import '../../utils/colors.dart';

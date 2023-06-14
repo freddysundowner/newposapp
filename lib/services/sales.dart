@@ -1,15 +1,13 @@
 import 'dart:convert';
 
 import 'package:get/get.dart';
-import 'package:pointify/Real/Models/schema.dart';
+import 'package:pointify/Real/schema.dart';
 import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/functions/functions.dart';
 import 'package:pointify/main.dart';
-import 'package:pointify/services/apiurls.dart';
 import 'package:realm/realm.dart';
 
 import '../controllers/realm_controller.dart';
-import 'client.dart';
 
 class Sales {
   final RealmController realmService = Get.find<RealmController>();
@@ -22,13 +20,6 @@ class Sales {
   createSaleReceiptItem(ReceiptItem receiptItem) async {
     realmService.realm.write<ReceiptItem>(
         () => realmService.realm.add<ReceiptItem>(receiptItem));
-  }
-
-  createSales(Map<String, dynamic> salesdata) async {
-    var response = await DbBase()
-        .databaseRequest(sales, DbBase().postRequestType, body: salesdata);
-    var data = jsonDecode(response);
-    return data;
   }
 
   updateReceiptItem(
@@ -72,6 +63,7 @@ class Sales {
   RealmResults<SalesModel> getSales(
       {onCredit = false,
       DateTime? fromDate,
+      Shop? shop,
       DateTime? toDate,
       CustomerModel? customer,
       String receipt = "",
@@ -80,6 +72,11 @@ class Sales {
 
     if (onCredit) {
       filter += " AND creditTotal < 0";
+    }
+    if (shop != null) {
+      RealmResults<SalesModel> invoices =
+          realmService.realm.query<SalesModel>('shop == \$0 ', [shop]);
+      return invoices;
     }
     if (customer != null) {
       RealmResults<SalesModel> invoices = realmService.realm.query<SalesModel>(
@@ -128,6 +125,18 @@ class Sales {
     return invoice;
   }
 
+  deleteSaleByShopId(List<SalesModel> sales) {
+    realmService.realm.write(() {
+      realmService.realm.deleteMany(sales);
+    });
+  }
+
+  deleteReceiptItemByShopId(List<ReceiptItem> sales) {
+    realmService.realm.write(() {
+      realmService.realm.deleteMany(sales);
+    });
+  }
+
   RealmResults<ReceiptItem>? getSalesByProductId(Product product) {
     RealmResults<ReceiptItem>? invoices =
         realmService.realm.query<ReceiptItem>('product == \$0 ', [product]);
@@ -137,9 +146,15 @@ class Sales {
   RealmResults<ReceiptItem> getSaleReceipts(
       {CustomerModel? customerModel,
       SalesModel? salesModel,
+      Shop? shop,
       String? date,
       DateTime? fromDate,
       DateTime? toDate}) {
+    if (shop != null) {
+      RealmResults<ReceiptItem> returns =
+          realmService.realm.query<ReceiptItem>(' shop == \$0', [shop]);
+      return returns;
+    }
     if (fromDate != null && toDate != null) {
       RealmResults<ReceiptItem> returns = realmService.realm.query<ReceiptItem>(
           'soldOn > ${fromDate.millisecondsSinceEpoch} AND soldOn < ${toDate.millisecondsSinceEpoch} AND shop == \$0',
@@ -171,21 +186,5 @@ class Sales {
   retunSale(SalesReturn salesReturn) async {
     realmService.realm.write<SalesReturn>(
         () => realmService.realm.add<SalesReturn>(salesReturn));
-  }
-
-  createPayment({required Map<String, dynamic> body, required saleId}) async {
-    var response = await DbBase().databaseRequest(
-        "${sales}pay/credit/$saleId", DbBase().postRequestType,
-        body: body);
-    return jsonDecode(response);
-  }
-
-  getPaymentHistory({required String id, required String type}) async {
-    var response = await DbBase().databaseRequest(
-        type == "purchase"
-            ? "${purchases}paymenthistory/$id"
-            : "${sales}paymenthistory/$id",
-        DbBase().getRequestType);
-    return jsonDecode(response);
   }
 }

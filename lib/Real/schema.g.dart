@@ -415,6 +415,7 @@ class UserModel extends _UserModel
     bool? loggedin,
     bool? deleted,
     String? fullnames,
+    String? email,
     String? phonenumber,
     String? authId,
     Shop? shop,
@@ -427,6 +428,7 @@ class UserModel extends _UserModel
     RealmObjectBase.set(this, 'loggedin', loggedin);
     RealmObjectBase.set(this, 'deleted', deleted);
     RealmObjectBase.set(this, 'fullnames', fullnames);
+    RealmObjectBase.set(this, 'email', email);
     RealmObjectBase.set(this, 'phonenumber', phonenumber);
     RealmObjectBase.set(this, 'authId', authId);
     RealmObjectBase.set(this, 'UNID', UNID);
@@ -465,6 +467,11 @@ class UserModel extends _UserModel
       RealmObjectBase.get<String>(this, 'fullnames') as String?;
   @override
   set fullnames(String? value) => RealmObjectBase.set(this, 'fullnames', value);
+
+  @override
+  String? get email => RealmObjectBase.get<String>(this, 'email') as String?;
+  @override
+  set email(String? value) => RealmObjectBase.set(this, 'email', value);
 
   @override
   String? get phonenumber =>
@@ -526,6 +533,7 @@ class UserModel extends _UserModel
       SchemaProperty('loggedin', RealmPropertyType.bool, optional: true),
       SchemaProperty('deleted', RealmPropertyType.bool, optional: true),
       SchemaProperty('fullnames', RealmPropertyType.string, optional: true),
+      SchemaProperty('email', RealmPropertyType.string, optional: true),
       SchemaProperty('phonenumber', RealmPropertyType.string, optional: true),
       SchemaProperty('authId', RealmPropertyType.string, optional: true),
       SchemaProperty('UNID', RealmPropertyType.int),

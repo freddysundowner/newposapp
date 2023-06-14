@@ -11,7 +11,7 @@ import 'package:pointify/widgets/no_items_found.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
-import '../../Real/Models/schema.dart';
+import '../../Real/schema.dart';
 import '../../controllers/AuthController.dart';
 import '../../controllers/product_controller.dart';
 import '../../controllers/user_controller.dart';

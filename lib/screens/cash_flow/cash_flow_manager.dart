@@ -3,7 +3,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:pointify/Real/Models/schema.dart';
+import 'package:pointify/Real/schema.dart';
 import 'package:pointify/controllers/CustomerController.dart';
 import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/functions/functions.dart';

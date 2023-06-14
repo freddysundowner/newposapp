@@ -15,7 +15,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:pointify/widgets/shop_list_bottomsheet.dart';
 
-import '../../Real/Models/schema.dart';
+import '../../Real/schema.dart';
 import '../../controllers/AuthController.dart';
 import '../../controllers/sales_controller.dart';
 import '../../services/sales.dart';
@@ -25,7 +25,7 @@ import '../../widgets/normal_text.dart';
 import '../../widgets/smalltext.dart';
 import '../customers/customers_page.dart';
 import '../finance/finance_page.dart';
-import '../sales/all_sales_page.dart';
+import '../sales/all_sales.dart';
 import '../stock/stock_page.dart';
 
 class HomePage extends StatelessWidget {

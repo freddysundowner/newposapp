@@ -18,7 +18,7 @@ import 'package:pointify/widgets/loading_dialog.dart';
 import 'package:get/get.dart';
 import 'package:realm/realm.dart';
 
-import '../Real/Models/schema.dart';
+import '../Real/schema.dart';
 import '../services/supplier.dart';
 import '../widgets/snackBars.dart';
 import 'CustomerController.dart';

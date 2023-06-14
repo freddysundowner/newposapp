@@ -10,7 +10,7 @@ import 'package:pointify/widgets/alert.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:realm/realm.dart';
-import '../Real/Models/schema.dart';
+import '../Real/schema.dart';
 import '../services/transactions.dart';
 import '../services/users.dart';
 import '../widgets/loading_dialog.dart';

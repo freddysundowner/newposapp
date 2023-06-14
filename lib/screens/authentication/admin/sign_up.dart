@@ -4,9 +4,9 @@ import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/utils/colors.dart';
 import 'package:get/get.dart';
 
-import '../../controllers/AuthController.dart';
-import '../../utils/themer.dart';
-import '../../widgets/header.dart';
+import '../../../controllers/AuthController.dart';
+import '../../../utils/themer.dart';
+import '../../../widgets/header.dart';
 
 class SignUp extends StatelessWidget {
   AuthController authController = Get.find<AuthController>();

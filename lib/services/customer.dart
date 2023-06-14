@@ -2,8 +2,7 @@ import 'dart:convert';
 
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
-import 'package:pointify/Real/Models/schema.dart';
-import 'package:pointify/services/apiurls.dart';
+import 'package:pointify/Real/schema.dart';
 import 'package:pointify/services/client.dart';
 import 'package:realm/realm.dart';
 
@@ -54,25 +53,6 @@ class Customer {
     realmService.realm.write(() {
       realmService.realm.delete(customerModel);
     });
-  }
-
-  getPurchases({
-    required uid,
-    required operation,
-    required attendantId,
-  }) async {
-    var response = await DbBase()
-        .databaseRequest(customerPurchase + uid, DbBase().getRequestType);
-    var data = jsonDecode(response);
-    return data;
-  }
-
-  getReturns({String? uid, ObjectId? attendantId}) async {
-    var response = await DbBase().databaseRequest(
-        "$customerReturns?customer=$uid&attendant=$attendantId",
-        DbBase().getRequestType);
-    var data = jsonDecode(response);
-    return data;
   }
 
   RealmResults<DepositModel> getCustomerWallets({

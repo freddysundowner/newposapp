@@ -7,7 +7,7 @@ import 'package:pointify/screens/stock/stock_transfer.dart';
 import 'package:pointify/screens/stock/stock_transfer_submit.dart';
 import 'package:get/get.dart';
 
-import '../../Real/Models/schema.dart';
+import '../../Real/schema.dart';
 import '../../controllers/product_controller.dart';
 import '../../utils/colors.dart';
 import '../../widgets/bigtext.dart';

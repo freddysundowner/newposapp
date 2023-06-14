@@ -2,13 +2,11 @@ import 'dart:convert';
 
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
-import 'package:pointify/Real/Models/schema.dart';
-import 'package:pointify/services/apiurls.dart';
+import 'package:pointify/Real/schema.dart';
 import 'package:realm/realm.dart';
 
 import '../controllers/realm_controller.dart';
 import '../controllers/shop_controller.dart';
-import 'client.dart';
 
 class Expense {
   final RealmController realmService = Get.find<RealmController>();
@@ -22,12 +20,10 @@ class Expense {
     DateTime? fromDate,
     DateTime? toDate,
   }) {
-    print("getExpenseByDate");
     RealmResults<ExpenseModel> expenses = realmService.realm.query<
             ExpenseModel>(
         'shop == \$0 AND date > ${fromDate!.millisecondsSinceEpoch} AND date < ${toDate!.millisecondsSinceEpoch}',
         [shopController.currentShop.value!.id.toString()]);
-    print("expenses ${expenses.length}");
     return expenses;
   }
 }
