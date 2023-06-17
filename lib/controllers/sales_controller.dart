@@ -61,6 +61,7 @@ class SalesController extends GetxController
 
   RxInt totalSalesByDate = RxInt(0);
   RxInt salesInitialIndex = RxInt(0);
+  RxInt tableInitialIndex = RxInt(0);
   Rxn<Product> selecteProduct = Rxn(null);
   RxBool saveSaleLoad = RxBool(false);
   RxBool getSalesByLoad = RxBool(false);
