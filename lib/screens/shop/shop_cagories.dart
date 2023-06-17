@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/utils/colors.dart';
@@ -47,7 +46,7 @@ class ShopCategories extends StatelessWidget {
                   children: listMyWidgets(),
                 )
               : SizedBox(
-                  height: 0.2.sh,
+                  height: 20,
                   child: Center(
                       child: CircularProgressIndicator(
                     color: AppColors.mainColor,

@@ -241,22 +241,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.5.3"
-  date_time_picker:
-    dependency: "direct main"
-    description:
-      name: date_time_picker
-      sha256: "6923c568bcb67a66ab7e083708d0adbcae8214b41bb84d49febc17e89e06fc4a"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.1.0"
-  f_datetimerangepicker:
-    dependency: "direct main"
-    description:
-      name: f_datetimerangepicker
-      sha256: f87b99ea45a4862038fac617d22b24c2cbe879e3634a91aed401fc0485097ff6
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.2.0"
   fake_async:
     dependency: transitive
     description:
@@ -326,14 +310,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.13"
-  flutter_screenutil:
-    dependency: "direct main"
-    description:
-      name: flutter_screenutil
-      sha256: "0a122936b450324cbdfd51be0819cc6fcebb093eb65585e9cd92263f7a1a8a39"
-      url: "https://pub.dev"
-    source: hosted
-    version: "5.7.0"
   flutter_svg:
     dependency: "direct main"
     description:
@@ -352,14 +328,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  font_awesome_flutter:
-    dependency: "direct main"
-    description:
-      name: font_awesome_flutter
-      sha256: "959ef4add147753f990b4a7c6cccb746d5792dbdc81b1cde99e62e7edb31b206"
-      url: "https://pub.dev"
-    source: hosted
-    version: "10.4.0"
   frontend_server_client:
     dependency: transitive
     description:
@@ -488,14 +456,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.2.0"
-  math_expressions:
-    dependency: "direct main"
-    description:
-      name: math_expressions
-      sha256: "3576593617c3870d75728a751f6ec6e606706d44e363f088ac394b5a28a98064"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.4.0"
   meta:
     dependency: transitive
     description:

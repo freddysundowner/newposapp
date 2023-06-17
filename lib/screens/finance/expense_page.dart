@@ -1,4 +1,3 @@
-import 'package:f_datetimerangepicker/f_datetimerangepicker.dart';
 import 'package:flutter/material.dart';
 import 'package:pointify/controllers/sales_controller.dart';
 import 'package:pointify/controllers/user_controller.dart';
