@@ -59,7 +59,7 @@ class CreateCustomer extends StatelessWidget {
                 Get.back();
               }
             },
-            icon: Icon(Icons.arrow_back_ios, color: Colors.black),
+            icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
           ),
           title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

@@ -16,10 +16,8 @@ class Expense {
         () => realmService.realm.add<ExpenseModel>(expenseModel));
   }
 
-  RealmResults<ExpenseModel> getExpenseByDate({
-    DateTime? fromDate,
-    DateTime? toDate,
-  }) {
+  RealmResults<ExpenseModel> getExpenseByDate(
+      {DateTime? fromDate, DateTime? toDate, Shop? shop}) {
     RealmResults<ExpenseModel> expenses = realmService.realm.query<
             ExpenseModel>(
         'shop == \$0 AND date > ${fromDate!.millisecondsSinceEpoch} AND date < ${toDate!.millisecondsSinceEpoch}',

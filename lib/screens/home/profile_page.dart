@@ -196,7 +196,7 @@ class ProfilePage extends StatelessWidget {
                                 context: context,
                                 onPressed: () {
                                   print("b");
-                                  authController.deleteAdmin();
+                                  // authController.deleteAdmin();
                                 });
                           }),
                     ],

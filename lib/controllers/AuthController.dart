@@ -7,7 +7,9 @@ import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:pointify/Real/schema.dart';
 import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/controllers/user_controller.dart';
+import 'package:pointify/main.dart';
 import 'package:pointify/screens/authentication/landing.dart';
+import 'package:pointify/screens/authentication/reloadpage.dart';
 import 'package:pointify/screens/home/home_page.dart';
 import 'package:pointify/services/users.dart';
 import 'package:realm/realm.dart';
@@ -80,15 +82,20 @@ class AuthController extends GetxController {
     var password = attendantPasswordController.text;
     var uid = int.parse(attendantUidController.text);
 
-    Get.find<RealmController>().auth();
-    RealmResults<UserModel> users = Users.getUserUser(uid: uid);
-    if (users.isNotEmpty) {
-      UserModel userModel = users.first;
-      var email = userModel.email;
-      if (userModel.loggedin == null) {
+    Get.put(RealmController()).auth();
+    var response = await Users.getAttendantbyUid(uid.toString());
+    var userdata = response["user"];
+    print(userdata);
+    if (userdata["_id"] != null) {
+      var email = userdata["email"];
+      if (userdata["loggedin"] == null) {
         await registerUserEmailPassword(email!, password);
-        User? loggedInUser = await logInUserEmailPassword(email, password);
-        var uid = userModel.UNID;
+
+        appController.initialize(appId);
+        User? loggedInUser = await logInUserEmailPassword(email!, password);
+        appController.initialize(appId);
+
+        var uid = userdata["UNID"];
         final updatedCustomUserData = {
           "uid": uid,
           "authId": loggedInUser.id,
@@ -100,24 +107,21 @@ class AuthController extends GetxController {
 
           attendantUidController.clear();
           attendantPasswordController.clear();
-          Get.find<UserController>().currentAttendant.value = users.first;
-          Get.to(() => Scaffold(
-                body: SafeArea(
-                  child: HomePage(),
-                ),
-              ));
+
+          Get.offAll(() => const ReloadPage());
         });
+        LoginAttendantLoad.value = false;
         await loggedInUser.refreshCustomData();
       } else {
         try {
+          appController.initialize(appId);
           await logInUserEmailPassword(email!, password);
-          Get.to(() => Scaffold(
-                body: SafeArea(
-                  child: HomePage(),
-                ),
-              ));
+          appController.initialize(appId);
+          LoginAttendantLoad.value = false;
+          Get.offAll(() => const ReloadPage());
         } catch (e) {
           print(e);
+          LoginAttendantLoad.value = false;
           showSnackBar(message: "wrong password", color: Colors.red);
         }
       }
@@ -125,7 +129,6 @@ class AuthController extends GetxController {
       generalAlert(title: "Error", message: "UID supplied does not exist");
     }
     LoginAttendantLoad.value = false;
-    print(users.length);
   }
 
   signUser(context) async {
@@ -177,8 +180,10 @@ class AuthController extends GetxController {
   Future<User> logInUserEmailPassword(String email, String password) async {
     User loggedInUser =
         await app.value!.logIn(Credentials.emailPassword(email, password));
-    Get.find<RealmController>().currentUser?.value = loggedInUser;
-    Get.find<RealmController>().auth();
+
+    Get.put(RealmController()).currentUser?.value = loggedInUser;
+    Get.put(RealmController()).auth();
+    print("bbbbbbb");
     return loggedInUser;
   }
 

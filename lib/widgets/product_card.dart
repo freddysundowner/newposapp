@@ -112,7 +112,7 @@ showProductModal(context, Product product) {
                       Get.to(() => ProductHistory(product: product));
                     },
                     title: const Text('Product History')),
-              if (checkPermission(category: "products", permission: "edit"))
+              if (checkPermission(category: "products", permission: "manage"))
                 ListTile(
                     leading: Icon(Icons.edit),
                     onTap: () {
@@ -136,7 +136,7 @@ showProductModal(context, Product product) {
                               .name!);
                     },
                     title: const Text('Generate Barcode')),
-              if (checkPermission(category: "products", permission: "delete"))
+              if (checkPermission(category: "products", permission: "manage"))
                 ListTile(
                     leading: Icon(Icons.delete),
                     onTap: () {

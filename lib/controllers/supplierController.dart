@@ -7,6 +7,7 @@ import 'package:pointify/screens/suppliers/suppliers_page.dart';
 import 'package:pointify/services/purchases.dart';
 import 'package:pointify/services/supplier.dart';
 import 'package:pointify/utils/colors.dart';
+import 'package:pointify/widgets/alert.dart';
 import 'package:pointify/widgets/snackBars.dart';
 import 'package:get/get.dart';
 import 'package:realm/realm.dart';
@@ -141,6 +142,13 @@ class SupplierController extends GetxController
   }
 
   deleteSuppler(Supplier supplier) {
+    print(supplier.balance);
+    if (supplier.balance! < 0) {
+      generalAlert(
+          title: "Error",
+          message: "you cannot delete a supplier with a negative balance");
+      return;
+    }
     SupplierService().deleteSupplier(supplier);
     Get.back();
   }

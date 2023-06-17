@@ -112,10 +112,8 @@ class AllSalesPage extends StatelessWidget {
               backgroundColor: Colors.white,
               elevation: 0.3,
               centerTitle: false,
-              title: Row(
-                children: [
-                  if (usercontroller.user.value?.usertype == "admin")
-                    Column(
+              title: usercontroller.user.value?.usertype == "admin"
+                  ? Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         majorTitle(
@@ -129,52 +127,11 @@ class AllSalesPage extends StatelessWidget {
                             ),
                           )
                       ],
+                    )
+                  : Text(
+                      "Sales",
+                      style: TextStyle(color: Colors.black),
                     ),
-                  const Spacer(),
-                  if (usercontroller.user.value?.usertype == "attendant")
-                    PopupMenuButton(
-                      itemBuilder: (ctx) => [
-                        PopupMenuItem(
-                          child: ListTile(
-                            onTap: () {
-                              Get.back();
-                              if (MediaQuery.of(context).size.width > 600) {
-                                homeController.selectedWidget.value =
-                                    CreateSale(
-                                  page: "allSales",
-                                );
-                              } else {
-                                Get.to(() => CreateSale(page: "allSales"));
-                              }
-                            },
-                            title: const Text("Create Sale"),
-                          ),
-                        ),
-                        PopupMenuItem(
-                          child: ListTile(
-                            onTap: () {
-                              Get.back();
-                              if (MediaQuery.of(context).size.width > 600) {
-                                homeController.selectedWidget.value =
-                                    BadStockPage(
-                                  page: "services",
-                                );
-                              } else {
-                                Get.to(() => BadStockPage(page: "services"));
-                              }
-                            },
-                            title: const Text("Bad Stocks"),
-                          ),
-                        ),
-                      ],
-                      icon: const Icon(
-                        Icons.more_vert,
-                        color: Colors.black,
-                        size: 30,
-                      ),
-                    ),
-                ],
-              ),
               leading: Get.find<UserController>().user.value?.usertype ==
                           "attendant" &&
                       MediaQuery.of(context).size.width > 600

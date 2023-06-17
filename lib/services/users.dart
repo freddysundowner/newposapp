@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:pointify/Real/schema.dart';
@@ -7,6 +9,7 @@ import 'package:pointify/main.dart';
 import 'package:realm/realm.dart';
 
 import '../controllers/realm_controller.dart';
+import 'client.dart';
 
 class Users {
   static RealmController realmService = Get.find<RealmController>();
@@ -39,19 +42,24 @@ class Users {
     return user;
   }
 
+  static getAttendantbyUid(String uid) async {
+    String url =
+        "https://us-east-1.aws.data.mongodb-api.com/app/application-0-iosyj/endpoint/getattendantmeta?uid=$uid";
+    var response = await DbBase().databaseRequest(url, DbBase().getRequestType);
+
+    return jsonDecode(response);
+  }
+
   static RealmResults<UserModel> getUserUser(
-      {UserModel? userModel, int? uid, String? username}) {
-    print("bbb ${realmService.currentUser!.value!.id}");
+      {UserModel? userModel, int? uid, String? username, String? email}) {
     if (uid != null) {
-      print("UNID == $uid");
       RealmResults<UserModel> user =
-          realmService.realm.query<UserModel>('UNID == \$0 ', [uid]);
-      print("user == $user");
+          realmService.realm.query<UserModel>('UNID == ${uid} ');
       return user;
     }
-    if (username != null) {
+    if (email != null) {
       RealmResults<UserModel> user = realmService.realm.query<UserModel>(
-          "username == '$username' AND shop == \$0  AND deleted == false",
+          "email == '$email' AND shop == \$0  AND deleted == false",
           [Get.find<ShopController>().currentShop.value]);
       return user;
     }
@@ -60,11 +68,8 @@ class Users {
           .query<UserModel>(r'_id == $0  AND deleted == false', [userModel.id]);
       return user;
     }
-    print("last");
-    // Get.find<AuthController>().logOut();
     RealmResults<UserModel> user = realmService.realm.query<UserModel>(
-        r'authId == $0', [realmService.currentUser!.value!.id]);
-    print("last ${user.first.usertype}");
+        r'authId == $0', [realmService.currentUser!.value!.id.toString()]);
     return user;
   }
 

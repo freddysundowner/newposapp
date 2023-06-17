@@ -445,10 +445,10 @@ class Permissions extends StatelessWidget {
     }
     print("submitButton");
     RealmResults<UserModel> users = Users.getUserUser(
-        username: attendantController.nameController.text.trim());
+        email: attendantController.emailController.text.trim());
     print("users ${users.length}");
     if (users.isNotEmpty) {
-      generalAlert(title: "Error", message: "username already taken");
+      generalAlert(title: "Error", message: "email already taken");
       return;
     }
     Users.createUser(UserModel(

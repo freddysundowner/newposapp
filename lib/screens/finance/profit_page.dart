@@ -12,6 +12,7 @@ import 'package:pointify/screens/stock/badstocks.dart';
 import 'package:pointify/utils/colors.dart';
 import 'package:pointify/utils/helper.dart';
 import 'package:get/get.dart';
+import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 import '../../controllers/expense_controller.dart';
 import '../../controllers/sales_controller.dart';
@@ -20,11 +21,30 @@ import '../../widgets/bigtext.dart';
 import '../sales/all_sales.dart';
 
 class ProfitPage extends StatelessWidget {
-  ProfitPage({Key? key}) : super(key: key) {}
+  String? headline;
+  ProfitPage({Key? key, this.headline}) : super(key: key) {}
 
   SalesController salesController = Get.find<SalesController>();
   ShopController shopController = Get.find<ShopController>();
   ExpenseController expensesController = Get.find<ExpenseController>();
+
+  String _range = '';
+  void _onSelectionChanged(DateRangePickerSelectionChangedArgs args) {
+    if (args.value is PickerDateRange) {
+      _range = '${DateFormat('dd/MM/yyyy').format(args.value.startDate)} -'
+          ' ${DateFormat('dd/MM/yyyy').format(args.value.endDate ?? args.value.startDate)}';
+
+      if (args.value.startDate != null && args.value.endDate != null) {
+        salesController.getProfitTransaction(
+          fromDatee: DateFormat('yyy-MM-dd').format(args.value.startDate),
+          toDatee: DateFormat('yyy-MM-dd')
+              .format(args.value.endDate ?? args.value.startDate),
+        );
+        Get.to(() => ProfitPage(headline: "from\n$_range"));
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return ResponsiveWidget(
@@ -58,46 +78,47 @@ class ProfitPage extends StatelessWidget {
           } else {
             Get.back();
           }
-
-          salesController.filterStartDate.value =
-              DateTime.parse(DateFormat("yyy-MM-dd").format(DateTime.now()));
-          salesController.filterEnndStartDate.value = DateTime.parse(
-              DateFormat("yyy-MM-dd")
-                  .format(DateTime.now().add(Duration(days: 1))));
-          salesController.getFinanceSummary(
-              fromDate: salesController.filterStartDate.value,
-              toDate: salesController.filterEnndStartDate.value);
         },
         icon: Icon(
           Icons.arrow_back_ios,
           color: Colors.white,
         ),
       ),
-      title: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          majorTitle(title: "Profit", color: Colors.white, size: 16.0),
-          Obx(
-            () => Text(
-              "${DateFormat("yyyy-MM-dd").format(salesController.filterStartDate.value)} - ${DateFormat("yyyy-MM-dd").format(salesController.filterEnndStartDate.value!)}",
-              style: TextStyle(color: Colors.white, fontSize: 13),
-            ),
-          )
-        ],
-      ),
       actions: [
         InkWell(
             onTap: () async {
-              final picked = await showDateRangePicker(
+              showDialog(
                 context: context,
-                lastDate: DateTime(2079),
-                firstDate: DateTime(2019),
+                builder: (BuildContext context) {
+                  print(salesController.currentYear.value);
+                  return Scaffold(
+                    body: Container(
+                      color: Colors.white,
+                      // child: SfDateRangePicker(
+                      //   initialSelectedDate:
+                      //       DateTime(salesController.currentYear.value),
+                      //   confirmText: "Filter",
+                      //   showActionButtons: true,
+                      //   onSelectionChanged: _onSelectionChanged,
+                      //   selectionMode: DateRangePickerSelectionMode.range,
+                      //   monthViewSettings: DateRangePickerMonthViewSettings(),
+                      //   headerStyle: DateRangePickerHeaderStyle(
+                      //       textAlign: TextAlign.center,
+                      //       textStyle: TextStyle(
+                      //           fontWeight: FontWeight.bold,
+                      //           color: AppColors.mainColor,
+                      //           fontSize: 18)),
+                      //   onSubmit: (v) {
+                      //     print(v);
+                      //   },
+                      //   onCancel: () {
+                      //     Get.back();
+                      //   },
+                      // ),
+                    ),
+                  );
+                },
               );
-
-              salesController.filterStartDate.value = picked!.start;
-              salesController.filterEnndStartDate.value = picked.end;
-              salesController.getProfitTransaction(
-                  fromDate: picked.start, toDate: picked.end);
             },
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 20),
@@ -135,9 +156,12 @@ class ProfitPage extends StatelessWidget {
                 SizedBox(height: 30),
                 Center(
                     child: Text(
-                  "Net Profit",
-                  style: TextStyle(
-                      color: Colors.white, fontWeight: FontWeight.bold),
+                  "Net Profit $headline",
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
                 )),
                 SizedBox(height: 15),
                 Container(
@@ -146,25 +170,22 @@ class ProfitPage extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      InkWell(
-                        onTap: () {},
-                        child: Container(
-                          padding: const EdgeInsets.only(
-                              top: 5, bottom: 5, left: 10, right: 15),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(50),
-                              color: Colors.white.withOpacity(0.2)),
-                          child: Row(
-                            children: [
-                              Icon(Icons.credit_card, color: Colors.white),
-                              SizedBox(width: 10),
-                              Text(
-                                htmlPrice(salesController.grossProfit.value -
-                                    expensesController.totalExpenses.value),
-                                style: TextStyle(color: Colors.white),
-                              )
-                            ],
-                          ),
+                      Container(
+                        padding: const EdgeInsets.only(
+                            top: 5, bottom: 5, left: 10, right: 15),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(50),
+                            color: Colors.white.withOpacity(0.2)),
+                        child: Row(
+                          children: [
+                            Icon(Icons.credit_card, color: Colors.white),
+                            const SizedBox(width: 10),
+                            Text(
+                              htmlPrice(salesController.grossProfit.value -
+                                  expensesController.totalExpenses.value),
+                              style: const TextStyle(color: Colors.white),
+                            )
+                          ],
                         ),
                       ),
                     ],

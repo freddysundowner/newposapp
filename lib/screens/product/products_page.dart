@@ -388,7 +388,7 @@ class ProductPage extends StatelessWidget {
                 },
                 title: Text("Product History"),
               ),
-            if (checkPermission(category: "products", permission: "edit"))
+            if (checkPermission(category: "products", permission: "manage"))
               ListTile(
                   leading: Icon(Icons.edit),
                   title: const Text("Edit"),
@@ -404,7 +404,7 @@ class ProductPage extends StatelessWidget {
                     Get.back();
                   },
                   title: const Text('Generate Barcode')),
-            if (checkPermission(category: "products", permission: "delete"))
+            if (checkPermission(category: "products", permission: "manage"))
               ListTile(
                 leading: Icon(Icons.delete),
                 onTap: () {

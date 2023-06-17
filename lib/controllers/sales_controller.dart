@@ -5,6 +5,7 @@ import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/controllers/user_controller.dart';
 import 'package:pointify/controllers/wallet_controller.dart';
+import 'package:pointify/main.dart';
 import 'package:pointify/screens/cash_flow/wallet_page.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -15,10 +16,18 @@ import 'package:realm/realm.dart';
 import '../Real/schema.dart';
 import '../functions/functions.dart';
 import '../services/customer.dart';
+import '../services/expense.dart';
 import '../services/payment.dart';
 import '../services/product.dart';
 import '../services/sales.dart';
 import '../utils/colors.dart';
+
+class SalesData {
+  SalesData(this.year, this.sales);
+
+  final String year;
+  final double sales;
+}
 
 class SalesController extends GetxController
     with GetSingleTickerProviderStateMixin {
@@ -39,8 +48,10 @@ class SalesController extends GetxController
   RxList<ReceiptItem> productSales = RxList([]);
   RxList<SalesModel> creditSales = RxList([]);
   RxList<PayHistory> paymenHistory = RxList([]);
+  RxList<SalesData> listSalesData = RxList([]);
   Rxn<SalesSummary> salesSummary = Rxn(null);
   RxInt grossProfit = RxInt(0);
+  RxInt currentYear = RxInt(DateTime.now().year);
   var filterStartDate =
       DateTime.parse(DateFormat("yyy-MM-dd").format(DateTime.now())).obs;
   var filterEnndStartDate = DateTime.parse(
@@ -60,16 +71,137 @@ class SalesController extends GetxController
   RxBool loadingSales = RxBool(false);
   RxList paymentMethods = RxList(["Cash", "Credit"]);
   Rxn<SalesModel> receipt = Rxn(null);
+  RxList<SalesData> salesdata = RxList([]);
+  RxList<SalesData> expensesdata = RxList([]);
+  RxList<SalesData> profitdata = RxList([]);
 
   RxList<InvoiceItem> salesHistory = RxList([]);
 
   RxString activeItem = RxString("All Sales");
+  RxString titleFilter = RxString("Filter by ~");
+
+  getGraphSales({
+    DateTime? fromDate,
+    DateTime? toDate,
+  }) {
+    if (fromDate == null) {
+      int y = DateTime.now().year;
+      DateTime now = DateTime(y, 1);
+      fromDate = DateTime(now.year, now.month, 1);
+      DateTime now2 = DateTime(y, 12);
+      toDate = DateTime(now2.year, now2.month + 1, 0);
+    }
+    print(fromDate);
+    print(toDate);
+    Shop shop = Get.find<ShopController>().currentShop.value!;
+    RealmResults<ReceiptItem> sales =
+        Sales().getSaleReceipts(shop: shop, fromDate: fromDate, toDate: toDate);
+    salesdata.value = [
+      SalesData('Jan', 0),
+      SalesData('Feb', 0),
+      SalesData('Mar', 0),
+      SalesData('Apr', 0),
+      SalesData('May', 0),
+      SalesData('Jun', 0),
+      SalesData('Jul', 0),
+      SalesData('Aug', 0),
+      SalesData('Sept', 0),
+      SalesData('Oct', 0),
+      SalesData('Nov', 0),
+      SalesData('Dec', 0),
+    ];
+    for (var element in sales) {
+      var month = DateFormat("MMM")
+          .format(DateTime.fromMillisecondsSinceEpoch(element.soldOn!));
+      int i = salesdata.indexWhere((element) => element.year == month);
+      if (i == -1) {
+        salesdata.add(SalesData(month,
+            double.parse((element.quantity! * element.price!).toString())));
+      } else {
+        salesdata[i] = SalesData(
+            month,
+            salesdata[i].sales +
+                double.parse((element.quantity! * element.price!).toString()));
+      }
+    }
+    listSalesData.addAll(salesdata);
+    profitdata.value = [
+      SalesData('Jan', 0),
+      SalesData('Feb', 0),
+      SalesData('Mar', 0),
+      SalesData('Apr', 0),
+      SalesData('May', 0),
+      SalesData('Jun', 0),
+      SalesData('Jul', 0),
+      SalesData('Aug', 0),
+      SalesData('Sept', 0),
+      SalesData('Oct', 0),
+      SalesData('Nov', 0),
+      SalesData('Dec', 0),
+    ];
+    for (var element in sales) {
+      var month = DateFormat("MMM")
+          .format(DateTime.fromMillisecondsSinceEpoch(element.soldOn!));
+      int i = profitdata.indexWhere((element) => element.year == month);
+      double total = double.parse((((element.quantity! * element.price!) -
+              element.quantity! * element.product!.buyingPrice!))
+          .toString());
+      if (i == -1) {
+        profitdata.add(SalesData(month, total));
+      } else {
+        profitdata[i] = SalesData(month, profitdata[i].sales + total);
+      }
+      profitdata.refresh();
+      titleFilter.refresh();
+    }
+    listSalesData.addAll(profitdata);
+
+    RealmResults<ExpenseModel> response = Expense()
+        .getExpenseByDate(shop: shop, fromDate: fromDate, toDate: toDate);
+    expensesdata.value = [
+      SalesData('Jan', 0),
+      SalesData('Feb', 0),
+      SalesData('Mar', 0),
+      SalesData('Apr', 0),
+      SalesData('May', 0),
+      SalesData('Jun', 0),
+      SalesData('Jul', 0),
+      SalesData('Aug', 0),
+      SalesData('Sept', 0),
+      SalesData('Oct', 0),
+      SalesData('Nov', 0),
+      SalesData('Dec', 0),
+    ];
+    for (var element in response) {
+      var month = DateFormat("MMM")
+          .format(DateTime.fromMillisecondsSinceEpoch(element.date!));
+      int i = expensesdata.indexWhere((element) => element.year == month);
+      double total = double.parse(element.amount!.toString());
+      if (i == -1) {
+        expensesdata.add(SalesData(month, total));
+      } else {
+        expensesdata[i] = SalesData(month, expensesdata[i].sales + total);
+      }
+      int ei = profitdata.indexWhere((element) => element.year == month);
+      if (ei != -1) {
+        profitdata[ei] =
+            SalesData(month, profitdata[ei].sales - expensesdata[i].sales);
+      }
+    }
+    listSalesData.addAll(expensesdata);
+
+    print("listSalesData ${listSalesData[2]}");
+  }
+
+  getTableVieData() {}
 
   getFinanceSummary({
     String? date = "",
     DateTime? fromDate,
     DateTime? toDate,
   }) {
+    print(fromDate);
+    print(toDate);
     RealmResults<ReceiptItem> sales =
         Sales().getSaleReceipts(date: date, fromDate: fromDate, toDate: toDate);
     grossProfit.value = sales.fold(
@@ -451,7 +583,13 @@ class SalesController extends GetxController
   getProfitTransaction({
     DateTime? fromDate,
     DateTime? toDate,
+    String? fromDatee,
+    String? toDatee,
   }) async {
+    if (fromDatee != null) {
+      fromDate = DateTime.parse(fromDatee);
+      toDate = DateTime.parse(toDatee!);
+    }
     RealmResults<ReceiptItem> sales =
         Sales().getSaleReceipts(fromDate: fromDate, toDate: toDate);
     allSalesTotal.value = sales.fold(

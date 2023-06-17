@@ -89,7 +89,7 @@ class ExpensePage extends StatelessWidget {
                           : expenseController.expenses.isEmpty
                               ? noItemsFound(context, true)
                               : Container(
-                                  padding: EdgeInsets.symmetric(
+                                  padding: const EdgeInsets.symmetric(
                                       horizontal: 15, vertical: 10),
                                   width: double.infinity,
                                   child: Theme(

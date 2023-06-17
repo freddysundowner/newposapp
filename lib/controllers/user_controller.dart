@@ -71,19 +71,19 @@ class UserController extends GetxController {
     },
     {
       "key": 'shop',
-      "value": ["add", "switch", "delete", "view"],
+      "value": ["manage", "switch", "view"],
     },
     {
       "key": 'attendants',
-      "value": ["add", "delete", "view"],
+      "value": ["manage", "view"],
     },
     {
       "key": 'products',
-      "value": ["add", "delete", "edit"],
+      "value": ["add", "manage"],
     },
     {
       "key": 'usage',
-      "value": ["view"],
+      "value": ["manage"],
     },
   ]);
 
@@ -93,14 +93,12 @@ class UserController extends GetxController {
     perms.forEach((element) {
       all.add({"key": element["key"], "value": jsonDecode(element["value"])});
     });
-    print("all roles $all");
     roles.value = all;
   }
 
-  getUser({String? type}) async {
+  getUser({String? type, int? uid}) async {
     Interests();
-    RealmResults<UserModel> userdata = await Users.getUserUser();
-    print("userdata $userdata");
+    RealmResults<UserModel> userdata = Users.getUserUser(uid: uid);
     if (type == "login") {
       if (userdata.isEmpty) {
         Users.createUser(UserModel(

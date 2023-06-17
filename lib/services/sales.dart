@@ -69,7 +69,6 @@ class Sales {
       String receipt = "",
       String total = ""}) {
     String filter = "";
-
     if (onCredit) {
       filter += " AND creditTotal < 0";
     }
@@ -150,11 +149,6 @@ class Sales {
       String? date,
       DateTime? fromDate,
       DateTime? toDate}) {
-    if (shop != null) {
-      RealmResults<ReceiptItem> returns =
-          realmService.realm.query<ReceiptItem>(' shop == \$0', [shop]);
-      return returns;
-    }
     if (fromDate != null && toDate != null) {
       RealmResults<ReceiptItem> returns = realmService.realm.query<ReceiptItem>(
           'soldOn > ${fromDate.millisecondsSinceEpoch} AND soldOn < ${toDate.millisecondsSinceEpoch} AND shop == \$0',

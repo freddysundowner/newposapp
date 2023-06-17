@@ -161,10 +161,34 @@ class Customers extends StatelessWidget {
                       stream: Customer().getCustomersByShopId("all").changes,
                       builder: (context, snapshot) {
                         final data = snapshot.data;
-                        if (data == null) {
-                          return minorTitle(
-                              title: "This shop doesn't have products yet",
-                              color: Colors.black);
+                        print("data $data");
+                        if (data == null || data.results.isEmpty) {
+                          return Center(
+                            child: InkWell(
+                              onTap: () {
+                                Get.to(() => CreateCustomer(
+                                      page: "",
+                                    ));
+                              },
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    "Add",
+                                    style: TextStyle(
+                                        color: AppColors.mainColor,
+                                        fontSize: 21),
+                                  ),
+                                  Icon(
+                                    Icons.add_circle_outline_outlined,
+                                    size: 60,
+                                    color: AppColors.mainColor,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
                         } else {
                           final results = data.results;
                           return ListView.builder(

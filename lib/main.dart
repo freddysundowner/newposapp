@@ -23,9 +23,9 @@ import 'package:flutter/services.dart' show rootBundle;
 final AuthController appController = Get.put(AuthController());
 final RealmController realmServices = Get.put(RealmController());
 UserController userController = Get.put<UserController>(UserController());
+String appId = 'application-0-iosyj';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  String appId = 'application-0-iosyj';
   appController.initialize(appId);
 
   runApp(MyApp());

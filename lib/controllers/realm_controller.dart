@@ -58,10 +58,13 @@ class RealmController extends GetxController {
       BankModel.schema,
       CashFlowTransaction.schema,
     ];
+    print("real 0");
     if (appController.app.value!.currentUser != null ||
         currentUser?.value != appController.app.value!.currentUser) {
       currentUser?.value ??= appController.app.value!.currentUser;
+      print("real 1");
       realm = Realm(Configuration.flexibleSync(currentUser!.value!, schemas));
+      print("real 2");
       realm.subscriptions.update((mutableSubscriptions) {
         mutableSubscriptions.add(realm.all<Shop>());
         mutableSubscriptions.add(realm.all<ShopTypes>());
@@ -88,6 +91,10 @@ class RealmController extends GetxController {
         mutableSubscriptions.add(realm.all<BankModel>());
         mutableSubscriptions.add(realm.all<CashFlowTransaction>());
       });
+      print("real 3");
+    } else {
+      print("real 4");
+      // realm = Realm(Configuration.local(schemas));
     }
   }
 
@@ -185,69 +192,69 @@ class RealmController extends GetxController {
     super.dispose();
   }
 
-  void deleteAdmin() {
-    // UserModel user = Get.find<UserController>().user.value!;
-    //delete shops by this admin
-    RealmResults<Shop> shops = ShopService().getShop();
-    if (shops.isNotEmpty) {
-      shops.forEach((element) {
-        //delete sales by this shop
-        List<SalesModel> sales =
-            Sales().getSales(shop: element).map((e) => e).toList();
-        if (sales.isNotEmpty) {
-          print("${element.name} sales ${sales.length}");
-          Sales().deleteSaleByShopId(sales);
-        }
-        //delete sales receipts by this shop
-        List<ReceiptItem> saleReceipts =
-            Sales().getSaleReceipts(shop: element).map((e) => e).toList();
-        if (saleReceipts.isNotEmpty) {
-          print("${element.name} saleReceipts ${saleReceipts.length}");
-          Sales().deleteReceiptItemByShopId(saleReceipts);
-        }
-        //delete sales receipts by this shop
-        List<StockTransferHistory> stockTransfer = Products()
-            .getTransHistory(shop: element, type: "out")
-            .map((e) => e)
-            .toList();
-        if (stockTransfer.isNotEmpty) {
-          print("${element.name} stockTransfer ${stockTransfer.length}");
-          Products().deleteTransHistoryByShopId(stockTransfer);
-        }
-        //delete sales receipts by this shop
-        List<ProductHistoryModel> productHistory = Products()
-            .getProductHistory("", shop: element.id.toString())
-            .map((e) => e)
-            .toList();
-        if (productHistory.isNotEmpty) {
-          print("${element.name} productHistory ${productHistory.length}");
-          Products().deleteProductHistoryModelByShopId(productHistory);
-        }
-        //delete sales receipts by this shop
-        List<ProductCountModel> productCuntHistory =
-            Products().getProductCountByShopId(element).map((e) => e).toList();
-        if (productCuntHistory.isNotEmpty) {
-          print(
-              "${element.name} productCuntHistory ${productCuntHistory.length}");
-          Products().deleteProductCountModelByShopId(productCuntHistory);
-        }
-        //delete sales receipts by this shop
-        List<Product> products =
-            Products().getProductsBySort(shop: element).map((e) => e).toList();
-        if (productCuntHistory.isNotEmpty) {
-          print("${element.name} products ${products.length}");
-          Products().deleteProductsByShopId(products);
-        }
-        print("deleting ${element.name}");
-        ShopService().deleteItem(element);
-      });
-    }
-    // Users.deleteUser(user);
-    Get.find<AuthController>()
-        .app
-        .value!
-        .deleteUser(Get.find<AuthController>().app.value!.currentUser!);
-    print("deleting");
-    // Get.find<AuthController>().logOut();
-  }
+  // void deleteAdmin() {
+  //   // UserModel user = Get.find<UserController>().user.value!;
+  //   //delete shops by this admin
+  //   RealmResults<Shop> shops = ShopService().getShop();
+  //   if (shops.isNotEmpty) {
+  //     shops.forEach((element) {
+  //       //delete sales by this shop
+  //       List<SalesModel> sales =
+  //           Sales().getSales(shop: element).map((e) => e).toList();
+  //       if (sales.isNotEmpty) {
+  //         print("${element.name} sales ${sales.length}");
+  //         Sales().deleteSaleByShopId(sales);
+  //       }
+  //       //delete sales receipts by this shop
+  //       List<ReceiptItem> saleReceipts =
+  //           Sales().getSaleReceipts(shop: element).map((e) => e).toList();
+  //       if (saleReceipts.isNotEmpty) {
+  //         print("${element.name} saleReceipts ${saleReceipts.length}");
+  //         Sales().deleteReceiptItemByShopId(saleReceipts);
+  //       }
+  //       //delete sales receipts by this shop
+  //       List<StockTransferHistory> stockTransfer = Products()
+  //           .getTransHistory(shop: element, type: "out")
+  //           .map((e) => e)
+  //           .toList();
+  //       if (stockTransfer.isNotEmpty) {
+  //         print("${element.name} stockTransfer ${stockTransfer.length}");
+  //         Products().deleteTransHistoryByShopId(stockTransfer);
+  //       }
+  //       //delete sales receipts by this shop
+  //       List<ProductHistoryModel> productHistory = Products()
+  //           .getProductHistory("", shop: element.id.toString())
+  //           .map((e) => e)
+  //           .toList();
+  //       if (productHistory.isNotEmpty) {
+  //         print("${element.name} productHistory ${productHistory.length}");
+  //         Products().deleteProductHistoryModelByShopId(productHistory);
+  //       }
+  //       //delete sales receipts by this shop
+  //       List<ProductCountModel> productCuntHistory =
+  //           Products().getProductCountByShopId(element).map((e) => e).toList();
+  //       if (productCuntHistory.isNotEmpty) {
+  //         print(
+  //             "${element.name} productCuntHistory ${productCuntHistory.length}");
+  //         Products().deleteProductCountModelByShopId(productCuntHistory);
+  //       }
+  //       //delete sales receipts by this shop
+  //       List<Product> products =
+  //           Products().getProductsBySort(shop: element).map((e) => e).toList();
+  //       if (productCuntHistory.isNotEmpty) {
+  //         print("${element.name} products ${products.length}");
+  //         Products().deleteProductsByShopId(products);
+  //       }
+  //       print("deleting ${element.name}");
+  //       ShopService().deleteItem(element);
+  //     });
+  //   }
+  //   // Users.deleteUser(user);
+  //   // Get.find<AuthController>()
+  //   //     .app
+  //   //     .value!
+  //   //     .deleteUser(Get.find<AuthController>().app.value!.currentUser!);
+  //   print("deleting");
+  //   // Get.find<AuthController>().logOut();
+  // }
 }

@@ -9,15 +9,8 @@ import '../../controllers/AuthController.dart';
 
 //ignore: must_be_immutable
 class ShopCategories extends StatelessWidget {
-  final String? title;
-  final String? subtitle;
   final Function? selectedItemsCallback;
-  final showbackarrow;
-  ShopCategories(
-      {this.title,
-      this.subtitle,
-      this.selectedItemsCallback,
-      this.showbackarrow}) {
+  ShopCategories({this.selectedItemsCallback}) {
     shopController.getCategories();
   }
 
@@ -33,17 +26,17 @@ class ShopCategories extends StatelessWidget {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.clear, color: Colors.black),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
         ),
-        iconTheme: IconThemeData(
+        iconTheme: const IconThemeData(
           color: Colors.black, //change your color here
         ),
-        title: Text(
+        title: const Text(
           "Choose Shop Category",
           style: TextStyle(
-              color: AppColors.mainColor,
-              fontSize: 16.sp,
-              fontWeight: FontWeight.bold),
+              color: Colors.black, fontSize: 16, fontWeight: FontWeight.bold),
         ),
       ),
       body: Padding(

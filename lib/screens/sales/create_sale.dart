@@ -286,14 +286,7 @@ class CreateSale extends StatelessWidget {
                             Get.to(() => ProductsScreen(
                                   type: "sale",
                                   function: (Product product) {
-                                    ReceiptItem re = ReceiptItem(ObjectId(),
-                                        product: product,
-                                        quantity: 1,
-                                        total: product.selling,
-                                        discount: 0,
-                                        price: product.selling);
-                                    salesController.changesaleItem(re);
-                                    Get.back();
+                                    addToCart(product);
                                   },
                                 ));
                           },
@@ -363,30 +356,10 @@ class CreateSale extends StatelessWidget {
                                     productController.getProductsBySort(
                                       type: "all",
                                     );
-                                    final DateTime now = DateTime.now();
-                                    final DateFormat formatter =
-                                        DateFormat('yyyy-MM-dd');
-                                    final String formatted =
-                                        formatter.format(now);
                                     Get.to(() => ProductsScreen(
                                         type: "sale",
                                         function: (Product product) {
-                                          ReceiptItem re = ReceiptItem(
-                                              ObjectId(),
-                                              product: product,
-                                              quantity: 1,
-                                              total: product.selling,
-                                              discount: 0,
-                                              date: formatted,
-                                              soldOn: DateTime.now()
-                                                  .millisecondsSinceEpoch,
-                                              shop: Get.find<ShopController>()
-                                                  .currentShop
-                                                  .value,
-                                              createdAt: DateTime.now(),
-                                              price: product.selling);
-                                          Get.back();
-                                          salesController.changesaleItem(re);
+                                          addToCart(product);
                                         }));
                                   },
                                   child: Container(
@@ -701,6 +674,7 @@ class CreateSale extends StatelessWidget {
                                                 },
                                                 icon: Icon(Icons.add))
                                           ],
+                                          title: Text("Select customer"),
                                         ),
                                         body: Customers(type: "sale"),
                                       ));
@@ -854,5 +828,23 @@ class CreateSale extends StatelessWidget {
       ],
       icon: Icon(Icons.more_vert),
     );
+  }
+
+  void addToCart(Product product) {
+    final DateTime now = DateTime.now();
+    final DateFormat formatter = DateFormat('yyyy-MM-dd');
+    final String formatted = formatter.format(now);
+    ReceiptItem re = ReceiptItem(ObjectId(),
+        product: product,
+        quantity: 1,
+        total: product.selling,
+        discount: 0,
+        date: formatted,
+        soldOn: DateTime.now().millisecondsSinceEpoch,
+        shop: Get.find<ShopController>().currentShop.value,
+        createdAt: DateTime.now(),
+        price: product.selling);
+    Get.back();
+    salesController.changesaleItem(re);
   }
 }

@@ -5,6 +5,7 @@ import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/functions/functions.dart';
 import 'package:pointify/main.dart';
 import 'package:pointify/responsive/responsiveness.dart';
+import 'package:pointify/screens/cash_flow/cash_flow_manager.dart';
 import 'package:pointify/screens/sales/components/sales_table.dart';
 import 'package:pointify/screens/sales/create_sale.dart';
 import 'package:pointify/screens/suppliers/suppliers_page.dart';
@@ -17,6 +18,7 @@ import 'package:pointify/widgets/shop_list_bottomsheet.dart';
 
 import '../../Real/schema.dart';
 import '../../controllers/AuthController.dart';
+import '../../controllers/cashflow_controller.dart';
 import '../../controllers/sales_controller.dart';
 import '../../services/sales.dart';
 import '../../utils/colors.dart';
@@ -41,6 +43,28 @@ class HomePage extends StatelessWidget {
       DateFormat("yyy-MM-dd").format(DateTime.now().add(Duration(days: 1))));
   @override
   Widget build(BuildContext context) {
+    // if (shopController.currentShop.value != null) {
+    //   return Scaffold(
+    //     body: InkWell(
+    //       onTap: () {
+    //         userController.getUser();
+    //       },
+    //       child: Center(
+    //         child: Column(
+    //           mainAxisAlignment: MainAxisAlignment.center,
+    //           crossAxisAlignment: CrossAxisAlignment.center,
+    //           children: [
+    //             Icon(Icons.refresh, size: 120, color: AppColors.mainColor),
+    //             const Text(
+    //               "Click here to refresh",
+    //               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+    //             ),
+    //           ],
+    //         ),
+    //       ),
+    //     ),
+    //   );
+    // }
     salesController.getSalesByDate(fromDate: fromDate, toDate: toDate);
     return ResponsiveWidget(
         largeScreen: SingleChildScrollView(
@@ -255,7 +279,7 @@ class HomePage extends StatelessWidget {
                 SizedBox(height: 10),
                 Obx(() {
                   return salesController.loadingSales.value
-                      ? Center(
+                      ? const Center(
                           child: Column(
                             children: [
                               SizedBox(
@@ -265,7 +289,7 @@ class HomePage extends StatelessWidget {
                             ],
                           ),
                         )
-                      : salesController.allSales.length == 0
+                      : salesController.allSales.isEmpty
                           ? Center(child: noItemsFound(context, false))
                           : salesTable(context, "home");
                 }),
@@ -364,68 +388,172 @@ class HomePage extends StatelessWidget {
                     decoration: BoxDecoration(
                         color: AppColors.mainColor,
                         borderRadius: BorderRadius.circular(20)),
-                    child: Obx(
-                      () => GridView.count(
-                        crossAxisCount: 3,
-                        crossAxisSpacing: 10,
-                        mainAxisSpacing: 10,
-                        shrinkWrap: true,
-                        physics: const ScrollPhysics(),
-                        children: [
-                          if (checkPermission(
-                              category: "sales", permission: "add"))
-                            gridItems(
-                                title: "Sell",
-                                iconData: Icons.sell_rounded,
-                                isSmallScreen: true,
-                                function: () {
-                                  Get.to(() => CreateSale());
-                                }),
-                          if (checkPermission(
-                              category: "accounts", group: true))
-                            gridItems(
-                                title: "Finance",
-                                isSmallScreen: true,
-                                iconData: Icons.request_quote_outlined,
-                                function: () {
-                                  Get.to(() => FinancePage());
-                                }),
-                          if (checkPermission(category: "stocks", group: true))
-                            gridItems(
-                                title: "Stock",
-                                isSmallScreen: true,
-                                iconData: Icons.production_quantity_limits,
-                                function: () {
-                                  Get.to(() => StockPage());
-                                }),
-                          if (checkPermission(
-                              category: "suppliers", group: true))
-                            gridItems(
-                                title: "Suppliers",
-                                iconData: Icons.people_alt,
-                                isSmallScreen: true,
-                                function: () {
-                                  Get.to(() => SuppliersPage());
-                                }),
-                          if (checkPermission(
-                              category: "customers", group: true))
-                            gridItems(
-                                title: "Customers",
-                                iconData: Icons.people_outline_outlined,
-                                isSmallScreen: true,
-                                function: () {
-                                  Get.to(() => CustomersPage());
-                                }),
-                          if (checkPermission(category: "usage", group: true))
-                            gridItems(
-                                title: "Usage",
-                                iconData: Icons.data_usage,
-                                isSmallScreen: true,
-                                function: () {
-                                  Get.to(() => ExtendUsage());
-                                }),
-                        ],
-                      ),
+                    child: Column(
+                      children: [
+                        Obx(
+                          () => GridView.count(
+                            crossAxisCount: 3,
+                            padding: EdgeInsets.zero,
+                            crossAxisSpacing: 13,
+                            mainAxisSpacing: 8,
+                            shrinkWrap: true,
+                            physics: const ScrollPhysics(),
+                            children: [
+                              if (checkPermission(
+                                  category: "sales", permission: "add"))
+                                gridItems(
+                                    title: "Sell",
+                                    iconData: Icons.sell_rounded,
+                                    isSmallScreen: true,
+                                    function: () {
+                                      Get.to(() => CreateSale());
+                                    }),
+                              if (checkPermission(
+                                  category: "accounts", group: true))
+                                gridItems(
+                                    title: "Cashflow",
+                                    isSmallScreen: true,
+                                    iconData: Icons.request_quote_outlined,
+                                    function: () {
+                                      Get.find<CashflowController>()
+                                          .getCashflowSummary(
+                                        shopId: shopController
+                                            .currentShop.value!.id,
+                                        from: DateTime.parse(
+                                            DateFormat("yyyy-MM-dd").format(
+                                                Get.find<CashflowController>()
+                                                    .fromDate
+                                                    .value)),
+                                        to: DateTime.parse(DateFormat(
+                                                    "yyyy-MM-dd")
+                                                .format(Get.find<
+                                                        CashflowController>()
+                                                    .toDate
+                                                    .value))
+                                            .add(const Duration(days: 1)),
+                                      );
+                                      Get.to(() => CashFlowManager());
+                                    }),
+                              if (checkPermission(
+                                  category: "stocks", group: true))
+                                gridItems(
+                                    title: "Stock",
+                                    isSmallScreen: true,
+                                    iconData: Icons.production_quantity_limits,
+                                    function: () {
+                                      Get.to(() => StockPage());
+                                    }),
+                              if (checkPermission(
+                                  category: "suppliers", group: true))
+                                gridItems(
+                                    title: "Suppliers",
+                                    iconData: Icons.people_alt,
+                                    isSmallScreen: true,
+                                    function: () {
+                                      Get.to(() => SuppliersPage());
+                                    }),
+                              if (checkPermission(
+                                  category: "customers", group: true))
+                                gridItems(
+                                    title: "Customers",
+                                    iconData: Icons.people_outline_outlined,
+                                    isSmallScreen: true,
+                                    function: () {
+                                      Get.to(() => CustomersPage());
+                                    }),
+                              if (checkPermission(
+                                  category: "usage", group: true))
+                                gridItems(
+                                    title: "Usage",
+                                    iconData: Icons.data_usage,
+                                    isSmallScreen: true,
+                                    function: () {
+                                      Get.to(() => ExtendUsage());
+                                    }),
+                            ],
+                          ),
+                        ),
+                        if (checkPermission(category: "accounts", group: true))
+                          Divider(
+                            color: Colors.white,
+                          ),
+                        if (checkPermission(category: "accounts", group: true))
+                          InkWell(
+                            onTap: () {
+                              Get.to(() => FinancePage());
+                            },
+                            child: const Row(
+                              children: [
+                                Icon(
+                                  Icons.auto_graph,
+                                  color: Colors.amber,
+                                ),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                Text(
+                                  "Profits & Expenses manager",
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                Spacer(),
+                                Icon(
+                                  Icons.arrow_forward_ios_rounded,
+                                  color: Colors.white,
+                                  size: 15,
+                                )
+                              ],
+                            ),
+                          ),
+                        // if (checkPermission(
+                        //     category: "accounts", permission: "cashflow"))
+                        //   Divider(
+                        //     color: Colors.white,
+                        //   ),
+                        // if (checkPermission(
+                        //     category: "accounts", permission: "cashflow"))
+                        //   InkWell(
+                        //     onTap: () {
+                        //       Get.find<CashflowController>().getCashflowSummary(
+                        //         shopId: shopController.currentShop.value!.id,
+                        //         from: DateTime.parse(DateFormat("yyyy-MM-dd")
+                        //             .format(Get.find<CashflowController>()
+                        //                 .fromDate
+                        //                 .value)),
+                        //         to: DateTime.parse(DateFormat("yyyy-MM-dd")
+                        //                 .format(Get.find<CashflowController>()
+                        //                     .toDate
+                        //                     .value))
+                        //             .add(const Duration(days: 1)),
+                        //       );
+                        //       Get.to(() => CashFlowManager());
+                        //     },
+                        //     child: const Row(
+                        //       children: [
+                        //         Icon(
+                        //           Icons.margin_outlined,
+                        //           color: Colors.amber,
+                        //         ),
+                        //         SizedBox(
+                        //           width: 10,
+                        //         ),
+                        //         Text(
+                        //           "Cashflow manager",
+                        //           style: TextStyle(
+                        //               color: Colors.white,
+                        //               fontWeight: FontWeight.bold),
+                        //         ),
+                        //         Spacer(),
+                        //         Icon(
+                        //           Icons.arrow_forward_ios_rounded,
+                        //           color: Colors.white,
+                        //           size: 15,
+                        //         )
+                        //       ],
+                        //     ),
+                        //   )
+                      ],
                     ),
                   ),
                   SizedBox(height: 20),
@@ -472,6 +600,8 @@ class HomePage extends StatelessWidget {
       required isSmallScreen}) {
     return InkWell(
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
             decoration: BoxDecoration(
@@ -490,12 +620,14 @@ class HomePage extends StatelessWidget {
             ),
           ),
           SizedBox(height: 10),
-          Text(
-            title,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 15,
-              color: isSmallScreen ? Colors.white : AppColors.mainColor,
+          Center(
+            child: Text(
+              title,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 13,
+                color: isSmallScreen ? Colors.white : AppColors.mainColor,
+              ),
             ),
           ),
         ],
