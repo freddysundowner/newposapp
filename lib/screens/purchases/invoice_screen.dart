@@ -95,22 +95,38 @@ class InvoiceScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       normalText(
-                          title: "Total Amount",
-                          color: Colors.black,
-                          size: 14.0),
+                          title: "Total", color: Colors.black, size: 14.0),
                       const SizedBox(
                         height: 10,
                       ),
                       majorTitle(
-                          title: htmlPrice(invoiceItems.fold(
-                              0,
-                              (previousValue, element) =>
-                                  previousValue +
-                                  (element.itemCount! * element.price!))),
+                          title: htmlPrice(invoice!.total!),
                           color: Colors.black,
                           size: 18.0)
                     ],
                   ),
+                  if (purchaseController.currentInvoice.value!.balance! < 0)
+                    SizedBox(
+                      width: 30,
+                    ),
+                  if (purchaseController.currentInvoice.value!.balance! < 0)
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        normalText(
+                            title: "Total Paid",
+                            color: Colors.black,
+                            size: 14.0),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        majorTitle(
+                            title: htmlPrice(
+                                invoice!.total! - invoice!.balance!.abs()),
+                            color: Colors.black,
+                            size: 18.0)
+                      ],
+                    ),
                   SizedBox(
                     width: 80,
                   ),
@@ -120,7 +136,9 @@ class InvoiceScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         normalText(
-                            title: "Balance", color: Colors.black, size: 14.0),
+                            title: "Credit Balance",
+                            color: Colors.black,
+                            size: 14.0),
                         SizedBox(
                           height: 10,
                         ),
@@ -371,8 +389,8 @@ String _chechPayment(Invoice salesModel, String? type) {
     return type == "returns" ? "RETURNED ITEMS" : "RETURNED";
   }
   if (salesModel.total == 0) return "RETURNED";
-  if (salesModel.balance == 0) return "PAID";
-  if (salesModel.balance! < 0) return "NOT PAID";
+  if (salesModel.balance == 0) return "CASH";
+  if (salesModel.balance! < 0) return "ON CREDIT";
   return "";
 }
 

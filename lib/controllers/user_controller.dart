@@ -19,7 +19,7 @@ import '../services/users.dart';
 class UserController extends GetxController {
   TextEditingController passwordController = TextEditingController();
   TextEditingController nameController = TextEditingController();
-  TextEditingController emailController = TextEditingController();
+  // TextEditingController emailController = TextEditingController();
   TextEditingController attendantId = TextEditingController();
   RxBool creatingAttendantsLoad = RxBool(false);
   RxBool getAttendantsLoad = RxBool(false);
@@ -36,11 +36,18 @@ class UserController extends GetxController {
   RxList permissions = RxList([
     {
       "key": "sales",
-      "value": ['add', 'view', 'discount', "return", "edit_price"],
+      "value": ['add', 'view', 'discount', "return", "edit_price", "manage"],
     },
     {
       "key": "accounts",
-      "value": ['reports', 'cashflow', 'profits', "sales", "expenses"],
+      "value": [
+        'reports',
+        'cashflow',
+        'profits',
+        "sales",
+        "expenses",
+        "analysis"
+      ],
     },
     {
       "key": "stocks",
@@ -88,11 +95,13 @@ class UserController extends GetxController {
   ]);
 
   getRoles(UserModel userModel) {
-    List perms = jsonDecode(userModel.permisions!);
     var all = [];
-    perms.forEach((element) {
-      all.add({"key": element["key"], "value": jsonDecode(element["value"])});
-    });
+    if (userModel.permisions != null) {
+      List perms = jsonDecode(userModel.permisions!);
+      for (var element in perms) {
+        all.add({"key": element["key"], "value": jsonDecode(element["value"])});
+      }
+    }
     roles.value = all;
   }
 
@@ -106,11 +115,12 @@ class UserController extends GetxController {
               Get.find<RealmController>().currentUser!.value!.id),
           Random().nextInt(098459),
           usertype: "admin",
+          authId: Get.find<RealmController>().currentUser!.value!.id,
           deleted: false,
           fullnames:
               Get.find<RealmController>().currentUser?.value!.profile.name,
         ));
-        userdata = await Users.getUserUser();
+        userdata = Users.getUserUser();
         return;
       }
     }
@@ -187,11 +197,8 @@ class UserController extends GetxController {
 
   //
   updateAttedant({required UserModel userModel, String? permissions}) {
-    print("updateAttedant");
     Users().updateAdmin(userModel,
-        username: nameController.text,
-        permissions: permissions,
-        email: emailController.text);
+        username: nameController.text, permissions: permissions);
     generalAlert(
         title: "Updated",
         message: "Permissions updated successfully",

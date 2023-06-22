@@ -78,17 +78,20 @@ class Transactions {
   }
 
   RealmResults<CashFlowTransaction> CategoryHistory(
-      {required CashFlowCategory cashFlowCategory, BankModel? bankModel}) {
+      {CashFlowCategory? cashFlowCategory, BankModel? bankModel}) {
     if (bankModel != null) {
+      RealmResults<CashFlowTransaction> response = realmService.realm
+          .query<CashFlowTransaction>(r'bank == $0', [bankModel]);
+      return response;
+    }
+
+    if (cashFlowCategory != null) {
       RealmResults<CashFlowTransaction> response = realmService.realm
           .query<CashFlowTransaction>(
               r'cashFlowCategory == $0', [cashFlowCategory]);
-      return response.query("bank == \$0", [bankModel]);
+      return response;
     }
-
-    RealmResults<CashFlowTransaction> response = realmService.realm
-        .query<CashFlowTransaction>(
-            r'cashFlowCategory == $0', [cashFlowCategory]);
+    RealmResults<CashFlowTransaction> response = realmService.realm.all();
     return response;
   }
 

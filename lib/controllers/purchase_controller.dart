@@ -40,6 +40,9 @@ class PurchaseController extends GetxController {
   ProductController productController = Get.find<ProductController>();
   ShopController shopController = Get.find<ShopController>();
 
+  get balance =>
+      invoice.value!.balance! - int.parse(textEditingControllerAmount.text);
+
   createPurchase({required context, required screen}) async {
     if (invoice.value!.balance! > 0 && invoice.value!.supplier == null) {
       generalAlert(title: "Error", message: "please select supplier");
@@ -52,23 +55,24 @@ class PurchaseController extends GetxController {
       invoiceData.createdAt = DateTime.now();
       invoiceData.dated = DateTime.now().millisecondsSinceEpoch;
       invoiceData.productCount = invoiceData.items.length;
+      invoiceData.balance = invoiceData.balance! * -1;
 
       if (_onCredit(invoiceData)) {
         var balance = (invoiceData.supplier!.balance ?? 0);
-        if (invoiceData.balance == 0) {
-          invoiceData.balance = invoiceData.total! * -1;
-        } else {
-          invoiceData.balance = invoiceData.balance! * -1;
-        }
+        // if (invoiceData.balance == 0) {
+        //   invoiceData.balance = invoiceData.total! * -1;
+        // } else {
+        //   invoiceData.balance = invoiceData.balance! * -1;
+        // }
         if (invoiceData.balance! > balance) {
           balance = (balance.abs() + invoiceData.balance!.abs()) * -1;
         } else {
           balance = balance.abs() - invoiceData.balance!.abs();
-          if (balance < 0) {
-            invoiceData.balance = balance;
-          } else {
-            invoiceData.balance = 0;
-          }
+          // if (balance < 0) {
+          //   invoiceData.balance = balance;
+          // } else {
+          //   invoiceData.balance = 0;
+          // }
         }
         SupplierService().updateSupplierWalletbalance(invoiceData.supplier!,
             amount: balance);
@@ -123,6 +127,7 @@ class PurchaseController extends GetxController {
   }
 
   addNewPurchase(InvoiceItem value) {
+    textEditingControllerAmount.text = "";
     var index = -1;
     if (invoice.value != null) {
       index = invoice.value!.items
@@ -140,12 +145,13 @@ class PurchaseController extends GetxController {
       }
       index =
           invoice.value!.items.indexWhere((element) => element.id == value.id);
+      invoice.value?.items[index].date = DateTime.now().millisecondsSinceEpoch;
     } else {
       var data = int.parse(invoice.value!.items[index].itemCount.toString()) +
           1; // +=1;
       invoice.value?.items[index].itemCount = data;
     }
-    calculateAmount(index);
+    calculateAmount(index: index);
     invoice.refresh();
   }
 
@@ -155,7 +161,7 @@ class PurchaseController extends GetxController {
           invoice.value!.items[index].itemCount! - 1;
       invoice.refresh();
     }
-    calculateAmount(index);
+    calculateAmount(index: index);
   }
 
   incrementItem(index) {
@@ -163,40 +169,45 @@ class PurchaseController extends GetxController {
         invoice.value!.items[index].itemCount! + 1;
     invoice.refresh();
 
-    calculateAmount(index);
+    calculateAmount(index: index);
   }
 
-  calculateAmount(index) {
-    invoice.value!.total = 0;
-    invoice.value!.balance = 0;
-    textEditingControllerAmount.text = "0";
-
-    invoice.value!.total = invoice.value!.items.fold(
+  calculateAmount({int? index}) {
+    var total = invoice.value!.total = invoice.value!.items.fold(
         0,
         (previousValue, element) =>
-            previousValue! +
-            (element.product!.buyingPrice! * element.itemCount!));
-
-    textEditingControllerAmount.text = invoice.value!.total.toString();
-
-    invoice.value!.balance =
-        invoice.value!.total! - int.parse(textEditingControllerAmount.text);
+            previousValue! + (element.itemCount! * element.price!));
+    invoice.value!.total = total;
+    var paid = int.parse(textEditingControllerAmount.text.isEmpty
+        ? "0"
+        : textEditingControllerAmount.text);
+    var balance = total;
+    if (paid > total!) {
+      total = total;
+      balance = 0;
+    } else if (paid > 0) {
+      total = paid;
+      balance = balance! - paid;
+    } else if (paid == 0) {
+      balance = total;
+      total = 0;
+    }
+    invoice.value!.balance = balance;
     if (index == -1) {
       return;
     }
 
-    invoice.value?.items[index].total =
+    invoice.value?.items[index!].total =
         invoice.value!.items[index].product!.buyingPrice! *
-            invoice.value!.items[index!].itemCount!;
+            invoice.value!.items[index].itemCount!;
 
-    print(invoice.value!.items[index].product!.buyingPrice);
     invoice.refresh();
   }
 
   removeFromList(index) {
     invoice.value?.items.removeAt(index);
     invoice.refresh();
-    calculateAmount(-1);
+    calculateAmount(index: -1);
   }
 
   Future<void> scanQR({required shopId, required context}) async {
@@ -272,7 +283,8 @@ class PurchaseController extends GetxController {
             (previousValue, element) =>
                 previousValue! + (element.itemCount! * element.price!)),
         returnedquantity: quatity,
-        creditBalance: (invoice.balance!.abs() - amount) * -1,
+        creditBalance:
+            invoice.balance! < 0 ? (invoice.balance!.abs() - amount) * -1 : 0,
         returnedItems: returnedReceipt);
 
     // //refund to the wallet if its was a wallet sale

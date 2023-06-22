@@ -179,7 +179,7 @@ class AttendantsPage extends StatelessWidget {
     var toDate = DateTime.parse(DateFormat("yyy-MM-dd")
         .format(DateTime.now().add(const Duration(days: 1))));
     Get.find<SalesController>()
-        .getSalesByDate(fromDate: fromDate, toDate: toDate);
+        .getSalesByDate(fromDate: fromDate, toDate: toDate, type: "today");
     Get.back();
     userController.switcheduser.refresh();
   }

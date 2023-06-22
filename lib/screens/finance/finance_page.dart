@@ -6,6 +6,7 @@ import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/cash_flow/cash_flow_manager.dart';
+import 'package:pointify/screens/finance/product_comparison.dart';
 import 'package:pointify/screens/finance/profit_page.dart';
 import 'package:pointify/utils/helper.dart';
 import 'package:get/get.dart';
@@ -65,11 +66,6 @@ class FinancePage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                majorTitle(
-                    title: "Weekly Profit Trajectory",
-                    color: Colors.black,
-                    size: 16.0),
-                SizedBox(height: 10),
                 Container(
                   height: MediaQuery.of(context).size.height * 0.5,
                   width: MediaQuery.of(context).size.width * 0.98,
@@ -308,12 +304,11 @@ class FinancePage extends StatelessWidget {
                     showsummary: false,
                     subtitle: "view fast and slow moving products",
                     onPresssed: () {
-                      salesController.salesInitialIndex.value = 0;
-                      salesController.getSales();
+                      salesController.selectedMonth.value =
+                          DateTime.now().month;
+                      salesController.currentYear.value = DateTime.now().year;
 
-                      Get.to(() => AllSalesPage(
-                            page: "financePage",
-                          ));
+                      Get.to(() => ProductAnalysis());
                     },
                     color: Colors.blue.shade100,
                     icon: Icons.sell_rounded,
@@ -324,6 +319,28 @@ class FinancePage extends StatelessWidget {
             ),
           ),
         ),
+        bottomNavigationBar: Container(
+          color: Colors.transparent,
+          width: 200,
+          height: 60,
+          child: InkWell(
+            onTap: () {
+              Get.to(() => ExpensePage());
+            },
+            child: Container(
+                margin:
+                    EdgeInsets.only(left: 60, right: 60, bottom: 10, top: 10),
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: AppColors.mainColor),
+                child: Center(
+                    child: Text(
+                  "Add Expense",
+                  style: TextStyle(color: Colors.white),
+                ))),
+          ),
+        ),
+        floatButton: Container(),
         appBar: appBar(context),
       ),
     );

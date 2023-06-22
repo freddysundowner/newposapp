@@ -29,6 +29,21 @@ class SalesData {
   final double sales;
 }
 
+class ChartData {
+  ChartData(this.x, this.y);
+  final String x;
+  final double y;
+}
+
+class HomeCard {
+  final double? total;
+  final String? name;
+  final String? key;
+  final Color? color;
+  final IconData? iconData;
+  HomeCard({this.total, this.name, this.key, this.color, this.iconData});
+}
+
 class SalesController extends GetxController
     with GetSingleTickerProviderStateMixin {
   late TabController tabController;
@@ -37,6 +52,7 @@ class SalesController extends GetxController
   TextEditingController textEditingCredit = TextEditingController();
   TextEditingController amountPaid = TextEditingController();
   RxList<SalesModel> allSales = RxList([]);
+  RxList<ReceiptItem> allSalesReturns = RxList([]);
   RxnInt allSalesTotal = RxnInt(0);
   RxnInt netProfit = RxnInt(0);
   RxnInt totalbadStock = RxnInt(0);
@@ -48,13 +64,12 @@ class SalesController extends GetxController
   RxList<ReceiptItem> productSales = RxList([]);
   RxList<SalesModel> creditSales = RxList([]);
   RxList<PayHistory> paymenHistory = RxList([]);
-  RxList<SalesData> listSalesData = RxList([]);
   Rxn<SalesSummary> salesSummary = Rxn(null);
   RxInt grossProfit = RxInt(0);
   RxInt currentYear = RxInt(DateTime.now().year);
   var filterStartDate =
       DateTime.parse(DateFormat("yyy-MM-dd").format(DateTime.now())).obs;
-  var filterEnndStartDate = DateTime.parse(
+  var filterEndDate = DateTime.parse(
           DateFormat("yyy-MM-dd").format(DateTime.now().add(Duration(days: 1))))
       .obs;
   TextEditingController searchProductController = TextEditingController();
@@ -73,13 +88,51 @@ class SalesController extends GetxController
   RxList paymentMethods = RxList(["Cash", "Credit"]);
   Rxn<SalesModel> receipt = Rxn(null);
   RxList<SalesData> salesdata = RxList([]);
+  RxList<ChartData> dailySales = RxList([]);
   RxList<SalesData> expensesdata = RxList([]);
+  RxList<ChartData> productsDatadata = RxList([]);
+  RxList<ChartData> productSalesAnalysis = RxList([]);
+  RxList<ChartData> productSalesByAttendantsAnalysis = RxList([]);
   RxList<SalesData> profitdata = RxList([]);
+  RxList<HomeCard> homecards = RxList([]);
 
   RxList<InvoiceItem> salesHistory = RxList([]);
 
   RxString activeItem = RxString("All Sales");
-  RxString titleFilter = RxString("Filter by ~");
+  RxString filterTitle = RxString("Filter by ~");
+  RxInt selectedMonth = RxInt(1);
+
+  getDailySalesGraph({
+    DateTime? fromDate,
+    DateTime? toDate,
+  }) {
+    dailySales.clear();
+    if (fromDate == null) {
+      int y = DateTime.now().year;
+      DateTime now = DateTime(y, 1);
+      fromDate = DateTime(now.year, now.month, 1);
+      DateTime now2 = DateTime(y, 12);
+      toDate = DateTime(now2.year, now2.month + 1, 0);
+    }
+    Shop shop = Get.find<ShopController>().currentShop.value!;
+    RealmResults<ReceiptItem> sales =
+        Sales().getSaleReceipts(shop: shop, fromDate: fromDate, toDate: toDate);
+    for (var element in sales) {
+      var day = DateFormat("MMM-dd")
+          .format(DateTime.fromMillisecondsSinceEpoch(element.soldOn!));
+      print(day);
+      int i = dailySales.indexWhere((element) => element.x == day);
+      if (i == -1) {
+        dailySales.add(ChartData(day,
+            double.parse((element.quantity! * element.price!).toString())));
+      } else {
+        dailySales[i] = ChartData(
+            day,
+            dailySales[i].y +
+                double.parse((element.quantity! * element.price!).toString()));
+      }
+    }
+  }
 
   getGraphSales({
     DateTime? fromDate,
@@ -92,8 +145,6 @@ class SalesController extends GetxController
       DateTime now2 = DateTime(y, 12);
       toDate = DateTime(now2.year, now2.month + 1, 0);
     }
-    print(fromDate);
-    print(toDate);
     Shop shop = Get.find<ShopController>().currentShop.value!;
     RealmResults<ReceiptItem> sales =
         Sales().getSaleReceipts(shop: shop, fromDate: fromDate, toDate: toDate);
@@ -125,7 +176,6 @@ class SalesController extends GetxController
                 double.parse((element.quantity! * element.price!).toString()));
       }
     }
-    listSalesData.addAll(salesdata);
     profitdata.value = [
       SalesData('Jan', 0),
       SalesData('Feb', 0),
@@ -153,9 +203,7 @@ class SalesController extends GetxController
         profitdata[i] = SalesData(month, profitdata[i].sales + total);
       }
       profitdata.refresh();
-      titleFilter.refresh();
     }
-    listSalesData.addAll(profitdata);
 
     RealmResults<ExpenseModel> response = Expense()
         .getExpenseByDate(shop: shop, fromDate: fromDate, toDate: toDate);
@@ -189,20 +237,61 @@ class SalesController extends GetxController
             SalesData(month, profitdata[ei].sales - expensesdata[i].sales);
       }
     }
-    listSalesData.addAll(expensesdata);
-
-    print("listSalesData ${listSalesData[2]}");
   }
 
-  getTableVieData() {}
+  getProductComparison({DateTime? fromDate, DateTime? toDate}) {
+    productsDatadata.clear();
+    productSalesAnalysis.clear();
+    productSalesByAttendantsAnalysis.clear();
+    if (fromDate == null) {
+      int y = DateTime.now().year;
+      DateTime now = DateTime(y, 1);
+      fromDate = DateTime(now.year, now.month, 1);
+      DateTime now2 = DateTime(y, 12);
+      toDate = DateTime(now2.year, now2.month + 1, 0);
+    }
+    Shop shop = Get.find<ShopController>().currentShop.value!;
+    RealmResults<ReceiptItem> sales =
+        Sales().getSaleReceipts(shop: shop, fromDate: fromDate, toDate: toDate);
+    for (var e in sales) {
+      int i = productsDatadata
+          .indexWhere((element) => element.x == e.product!.name);
+
+      if (i == -1) {
+        productsDatadata
+            .add(ChartData(e.product!.name!, e.quantity!.toDouble()));
+        productSalesAnalysis
+            .add(ChartData(e.product!.name!, e.quantity!.toDouble()));
+      } else {
+        productsDatadata[i] = ChartData(
+            e.product!.name!, (productsDatadata[i].y + e.quantity!).toDouble());
+        productSalesAnalysis[i] = ChartData(e.product!.name!,
+            (productSalesAnalysis[i].y + e.quantity!).toDouble());
+      }
+
+      int ai = productSalesByAttendantsAnalysis
+          .indexWhere((element) => element.x == e.attendantId?.username);
+      if (ai == -1) {
+        productSalesByAttendantsAnalysis.add(ChartData(e.attendantId!.username!,
+            (e.quantity!.toDouble() * e.price!.toDouble())));
+      } else {
+        productSalesByAttendantsAnalysis[ai] = ChartData(
+            e.attendantId!.username!,
+            (productSalesByAttendantsAnalysis[ai].y +
+                (e.quantity!.toDouble() * e.price!.toDouble())));
+      }
+    }
+    productsDatadata.refresh();
+    productSalesByAttendantsAnalysis.refresh();
+    productSalesAnalysis.refresh();
+    filterTitle.refresh();
+  }
 
   getFinanceSummary({
     String? date = "",
     DateTime? fromDate,
     DateTime? toDate,
   }) {
-    print(fromDate);
-    print(toDate);
     RealmResults<ReceiptItem> sales =
         Sales().getSaleReceipts(date: date, fromDate: fromDate, toDate: toDate);
     grossProfit.value = sales.fold(
@@ -234,6 +323,7 @@ class SalesController extends GetxController
       }
       index =
           receipt.value!.items.indexWhere((element) => element.id == value.id);
+      receipt.value!.items[index].receipt = receipt.value;
     } else {
       ReceiptItem receiptItem = receipt.value!.items[index];
       var newqty =
@@ -461,6 +551,7 @@ class SalesController extends GetxController
         ));
     receipt.value = null;
     refresh();
+    getSalesByDate(type: "today");
   }
 
   _paymentType(SalesModel salesModel) {
@@ -557,11 +648,20 @@ class SalesController extends GetxController
     currentReceipt.value = receipt;
   }
 
-  getSalesByProductId({Product? product}) async {
+  getSalesByProductId(
+      {Product? product, DateTime? fromDate, DateTime? toDate}) async {
     productSales.clear();
-    RealmResults<ReceiptItem>? receipt = Sales().getSalesByProductId(product!);
-    productSales.addAll(receipt!.map((e) => e).toList());
-    print(productSales.length);
+
+    if (fromDate == null) {
+      fromDate = DateTime.parse(DateFormat("yyy-MM-dd").format(DateTime.now()));
+      toDate = DateTime.parse(DateFormat("yyy-MM-dd")
+          .format(DateTime.now().add(const Duration(days: 1))));
+    }
+    print(fromDate);
+    print(toDate);
+    RealmResults<ReceiptItem>? receipt = Sales()
+        .getSaleReceipts(product: product, fromDate: fromDate, toDate: toDate);
+    productSales.addAll(receipt.map((e) => e).toList());
   }
 
   getSales(
@@ -571,6 +671,10 @@ class SalesController extends GetxController
       CustomerModel? customer,
       String total = "",
       String receipt = ""}) async {
+    if (fromDate == null) {
+      fromDate = filterStartDate.value;
+      toDate = filterEndDate.value;
+    }
     RealmResults<SalesModel> sales = Sales().getSales(
         fromDate: fromDate,
         receipt: receipt,
@@ -627,7 +731,9 @@ class SalesController extends GetxController
         discount: receiptItem.discount,
         price: receiptItem.price,
         type: "return",
+        soldOn: receiptItem.soldOn,
         receipt: currentReceipt.value,
+        shop: receiptItem.shop,
         customerId: currentReceipt.value!.customerId);
     Sales().createSaleReceiptItem(returnedReceipt);
     //refund to the wallet if its was a wallet sale
@@ -667,7 +773,9 @@ class SalesController extends GetxController
             (previousValue, element) =>
                 previousValue! + (element.quantity! * element.price!)),
         returnedquantity: quatity,
-        creditBalance: (currentReceipt.value!.creditTotal!.abs() - amount) * -1,
+        creditBalance: currentReceipt.value!.paymentMethod == "Credit"
+            ? (currentReceipt.value!.creditTotal!.abs() - amount) * -1
+            : currentReceipt.value!.creditTotal,
         returnedItems: returnedReceipt);
     getSalesBySaleId(id: currentReceipt.value!.id);
     currentReceipt.refresh();
@@ -700,25 +808,106 @@ class SalesController extends GetxController
     currentReceipt.refresh();
   }
 
-  void getSalesByDate({DateTime? fromDate, DateTime? toDate}) {
+  _generateHomeCard(
+      {required String type,
+      required double total,
+      required String name,
+      required IconData icon,
+      required Color color}) {
+    int i = homecards.indexWhere((element) => element.key == type);
+    if (i != -1) homecards.removeAt(i);
+    homecards.add(HomeCard(
+        total: total, name: name, key: type, color: color, iconData: icon));
+  }
+
+  void getSalesByDate({DateTime? fromDate, DateTime? toDate, String? type}) {
     todaySales.clear();
+    allSales.clear();
+    if (type == "today") {
+      fromDate = DateTime.parse(DateFormat("yyy-MM-dd").format(DateTime.now()));
+      toDate = DateTime.parse(DateFormat("yyy-MM-dd")
+          .format(DateTime.now().add(const Duration(days: 1))));
+    }
     RealmResults<SalesModel> response =
         Sales().getSales(fromDate: fromDate, toDate: toDate);
+
+    if (type == "today") {
+      _generateHomeCard(
+          type: type!,
+          total: response.fold(0,
+              (previousValue, element) => previousValue + element.grandTotal!),
+          name: "Today Sales",
+          color: Color(0xffbe741f),
+          icon: Icons.auto_graph_rounded); //0xff34a8e0 //ffbe741f
+
+      Get.find<ExpenseController>().getExpenseByDate(
+        fromDate: fromDate,
+        toDate: toDate,
+      );
+      if (checkPermission(category: "accounts", permission: "analysis")) {
+        _generateHomeCard(
+            type: "profit",
+            total: response.fold(
+                0,
+                (previousValue, element) =>
+                    previousValue +
+                    ((element.items.fold(
+                        0,
+                        (previousValue, element) =>
+                            previousValue +
+                            (element.price! * element.quantity! -
+                                element.product!.buyingPrice! *
+                                    element.quantity!))))),
+            name: "Today Profit",
+            color: const Color(0xff08a52c).withOpacity(0.7),
+            icon: Icons.stacked_line_chart); //0x
+      } else {
+        int i = homecards.indexWhere((element) => element.key == "profit");
+        if (i != -1) homecards.removeAt(i);
+      }
+      if (checkPermission(category: "accounts", permission: "expenses")) {
+        _generateHomeCard(
+            type: "expenses",
+            total: Get.find<ExpenseController>().totalExpenses.value.toDouble(),
+            name: "Today Expenses",
+            color: const Color(0xff3a3055),
+            icon: Icons.bar_chart);
+      } else {
+        int i = homecards.indexWhere((element) => element.key == "expenses");
+        if (i != -1) homecards.removeAt(i);
+      }
+    }
     totalSalesByDate.value = response.fold(
         0, (previousValue, element) => previousValue + element.grandTotal!);
     todaySales.addAll(response.map((e) => e).toList());
+    allSales.addAll(response.map((e) => e).toList());
+    allSales.refresh();
+    todaySales.refresh();
   }
 
-  void getReturns({CustomerModel? customerModel, SalesModel? salesModel}) {
+  void getReturns(
+      {CustomerModel? customerModel,
+      SalesModel? salesModel,
+      DateTime? fromDate,
+      String? type,
+      DateTime? toDate}) {
     currentReceiptReturns.clear();
-    RealmResults<ReceiptItem> response = Sales()
-        .getSaleReceipts(salesModel: salesModel, customerModel: customerModel);
+    allSalesReturns.clear();
+    RealmResults<ReceiptItem> response = Sales().getSaleReceipts(
+        salesModel: salesModel,
+        customerModel: customerModel,
+        type: type,
+        fromDate: fromDate,
+        toDate: toDate);
     List<ReceiptItem> salesReturn = response.map((e) => e).toList();
+    // print(allSalesReturns.length);
+    allSalesReturns.value = salesReturn;
+
     for (var e in salesReturn) {
-      if (currentReceiptReturns
-              .indexWhere((element) => element.receipt!.id == e.receipt!.id) ==
+      if (currentReceiptReturns.indexWhere((element) =>
+              element.receipt != null &&
+              element.receipt!.id == e.receipt!.id) ==
           -1) {
-        print(e.receipt!.id);
         currentReceiptReturns.add(e);
       }
     }

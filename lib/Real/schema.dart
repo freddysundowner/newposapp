@@ -275,6 +275,7 @@ class _InvoiceItem {
   int? total;
   int? itemCount;
   int? returnedItems;
+  int? date;
   int? price;
   @Ignored()
   _SalesModel? sale;
@@ -382,6 +383,7 @@ class _ReceiptItem {
   ObjectId? id;
   _Product? product;
   _SalesModel? receipt;
+  _UserModel? attendantId;
   _CustomerModel? customerId;
   int? quantity;
   _Shop? shop;

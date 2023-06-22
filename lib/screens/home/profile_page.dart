@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pointify/controllers/realm_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
+import 'package:pointify/main.dart';
 import 'package:pointify/responsive/responsiveness.dart';
 import 'package:get/get.dart';
 import 'package:pointify/widgets/alert.dart';
@@ -153,16 +154,14 @@ class ProfilePage extends StatelessWidget {
                           Obx(() {
                             return profileItems(
                                 title: "Email",
-                                subtitle: authController
-                                    .currentUser!.value?.profile.email,
+                                subtitle: userController.user.value!.email,
                                 icon: Icons.email);
                           }),
                           SizedBox(height: 15),
                           Obx(() {
                             return profileItems(
                                 title: "Username",
-                                subtitle: authController
-                                    .currentUser!.value?.profile.name,
+                                subtitle: userController.user.value!.fullnames,
                                 icon: Icons.person);
                           }),
                         ],

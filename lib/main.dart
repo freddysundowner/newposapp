@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pointify/Real/schema.dart';
 import 'package:pointify/services/shop_services.dart';
 import 'package:pointify/bindings.dart';
@@ -68,7 +67,6 @@ class Authenticate extends StatelessWidget {
     if (realmServices.currentUser!.value != null) {
       RealmResults<UserModel> users = Users.getUserUser();
       userController.getUser();
-      print("users ${users.length}");
       if (users.isNotEmpty) {
         if (users.first.usertype == "attendant") {
           return Scaffold(

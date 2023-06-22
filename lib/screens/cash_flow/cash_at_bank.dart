@@ -270,6 +270,7 @@ class CashAtBank extends StatelessWidget {
               children: [
                 InkWell(
                   onTap: () {
+                    print(cashFlowCategory);
                     Get.to(() => CashCategoryHistory(
                           cashFlowCategory: cashFlowCategory,
                           page: "bank",

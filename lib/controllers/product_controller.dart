@@ -35,6 +35,7 @@ class ProductController extends GetxController {
   RxList<ProductCategory> productCategory = RxList([]);
   Rxn<ProductCategory> categoryId = Rxn(null);
   RxString selectedMeasure = RxString("Kg");
+  RxInt currentYear = RxInt(DateTime.now().year);
   RxBool creatingProductLoad = RxBool(false);
   RxBool getProductLoad = RxBool(false);
   RxBool updateProductLoad = RxBool(false);
@@ -50,6 +51,12 @@ class ProductController extends GetxController {
   RxString supplierId = RxString("");
 
   RxInt initialProductValue = RxInt(0);
+  RxInt productHistoryTabIndex = RxInt(0);
+  var filterStartDate =
+      DateTime.parse(DateFormat("yyy-MM-dd").format(DateTime.now())).obs;
+  var filterEndDate = DateTime.parse(
+          DateFormat("yyy-MM-dd").format(DateTime.now().add(Duration(days: 1))))
+      .obs;
 
   TextEditingController itemNameController = TextEditingController();
   TextEditingController buyingPriceController = TextEditingController();
@@ -140,18 +147,12 @@ class ProductController extends GetxController {
   }
 
   createCategory({required Shop shop, required BuildContext context}) async {
-    // try {
     LoadingDialog.showLoadingDialog(
         context: context, title: "Creating category...", key: _keyLoader);
     ProductCategory productCategoryModel =
         ProductCategory(ObjectId(), name: category.text, shop: shop);
-    var response =
-        await Categories().createProductCategory(productCategoryModel);
-    // showSnackBar(message: response["message"], color: AppColors.mainColor);
-    // } catch (e) {
-    //   print(e);
+    Categories().createProductCategory(productCategoryModel);
     Get.back();
-    // }
   }
 
   clearControllers() {
@@ -183,9 +184,7 @@ class ProductController extends GetxController {
     productsCount.clear();
     RealmResults<Product> allproducts =
         Products().getProductsBySort(type: type, text: text);
-    print("getProductsCount ${allproducts.length}");
     List<Product> products = allproducts.map((e) => e).toList();
-    print("products ${products.length}");
     for (var element in products) {
       ProductCountModel productCountModel = ProductCountModel(ObjectId(),
           product: element,
@@ -197,13 +196,12 @@ class ProductController extends GetxController {
       productsCount.add(productCountModel);
     }
     productsCount.refresh();
-    print("products ${productsCount.length}");
   }
 
-  getCountHistory() {
+  getCountHistory({Product? product}) {
     countHistory.clear();
     RealmResults<ProductCountModel> productCountHistoryResponse =
-        Products().getProductCountHistory();
+        Products().getProductCountHistory(product: product);
     countHistory.addAll(productCountHistoryResponse.map((e) => e).toList());
     print(countHistory.length);
   }
@@ -277,18 +275,11 @@ class ProductController extends GetxController {
   }
 
   getProductHistory(String type, {ObjectId? transferId}) async {
-    // try {
-    //   loadingCountHistory.value = true;
     productHistoryList.clear();
     RealmResults<ProductHistoryModel> response =
         Products().getProductHistory(type, transferId: transferId);
     print(response.length);
     productHistoryList.addAll(response.map((e) => e).toList());
-    // loadingCountHistory.value = false;
-    // } catch (e) {
-    //   print(e);
-    //   loadingCountHistory.value = false;
-    // }
   }
 
   saveBadStock({required page, required context}) async {
@@ -322,7 +313,7 @@ class ProductController extends GetxController {
   }
 
   getBadStock(
-      {required shopId,
+      { shopId,
       String? attendant,
       Product? product,
       DateTime? fromDate,
@@ -340,10 +331,18 @@ class ProductController extends GetxController {
     }
   }
 
-  getProductPurchaseHistory(Product product) {
+  getProductPurchaseHistory(Product product,
+      {DateTime? fromDate, DateTime? toDate}) {
+    if (fromDate == null) {
+      fromDate = filterStartDate.value;
+      toDate = filterEndDate.value;
+    }
     productInvoices.clear();
-    RealmResults<InvoiceItem> productsHistory =
-        Products().getProductPurchaseHistory(product: product);
+    RealmResults<InvoiceItem> productsHistory = Products()
+        .getProductPurchaseHistory(
+            product: product, fromDate: fromDate, toDate: toDate);
     productInvoices.addAll(productsHistory.map((e) => e).toList());
+    print("vvv ${productInvoices.length}");
+    productInvoices.refresh();
   }
 }

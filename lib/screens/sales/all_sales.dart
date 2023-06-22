@@ -8,17 +8,20 @@ import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/sales/create_sale.dart';
 import 'package:pointify/screens/stock/badstocks.dart';
 import 'package:pointify/utils/helper.dart';
-import 'package:pointify/widgets/pdf/sales_pdf.dart';
 import 'package:pointify/widgets/sales_card.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-
+import 'package:syncfusion_flutter_charts/charts.dart';
+import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import '../../Real/schema.dart';
 import '../../controllers/home_controller.dart';
 import '../../controllers/sales_controller.dart';
 import '../../utils/colors.dart';
+import '../../utils/date_filter.dart';
 import '../../widgets/bigtext.dart';
+import '../../widgets/bottom_widget_count_view.dart';
 import '../../widgets/normal_text.dart';
+import '../../widgets/sales_rerurn_card.dart';
 import '../finance/finance_page.dart';
 import '../finance/profit_page.dart';
 import '../home/home_page.dart';
@@ -42,9 +45,6 @@ class AllSalesPage extends StatelessWidget {
       smallScreen: _body(context),
     );
   }
-
-  DateTime? fromDate;
-  DateTime? toDate;
 
   Widget searchWidget() {
     return Container(
@@ -84,23 +84,95 @@ class AllSalesPage extends StatelessWidget {
               ),
             ),
           ),
-          if (salesController.salesInitialIndex.value != 2)
-            IconButton(
-                onPressed: () async {
-                  final picked = await showDateRangePicker(
-                    context: Get.context!,
-                    lastDate: DateTime(2079),
-                    firstDate: DateTime(2019),
-                  );
-                  fromDate = picked!.start;
-                  toDate = picked.end;
-                  salesController.getSales(
-                      fromDate: picked.start, toDate: picked.end);
-                },
-                icon: Icon(Icons.date_range))
         ],
       ),
     );
+  }
+
+  _bottomView() {
+    if (salesController.salesInitialIndex.value == 1) {
+      return Obx(
+        () => SizedBox(
+          height: 40,
+          child: Row(
+            children: [
+              SizedBox(
+                width: 10,
+              ),
+              Column(
+                children: [
+                  Text("Items"),
+                  Text(
+                    salesController.allSalesReturns.length.toString(),
+                    style: const TextStyle(
+                        fontSize: 13, fontWeight: FontWeight.bold),
+                  )
+                ],
+              ),
+              SizedBox(
+                width: 20,
+              ),
+              Column(
+                children: [
+                  Text("Qty"),
+                  Text(
+                    salesController.allSalesReturns
+                        .fold(
+                            0,
+                            (previousValue, element) =>
+                                previousValue + element.quantity!)
+                        .toString(),
+                    style: const TextStyle(
+                        fontSize: 13, fontWeight: FontWeight.bold),
+                  )
+                ],
+              ),
+              Spacer(),
+              Column(
+                children: [
+                  Text("Total"),
+                  Text(
+                    htmlPrice(salesController.allSalesReturns.fold(
+                        0,
+                        (previousValue, element) =>
+                            previousValue +
+                            (element.quantity! * element.price!))),
+                    style: const TextStyle(
+                        fontSize: 13, fontWeight: FontWeight.bold),
+                  )
+                ],
+              ),
+              SizedBox(
+                width: 10,
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+    return bottomWidgetCountView(
+        count: salesController.allSales.length.toString(),
+        qty: salesController.allSales
+            .fold(
+                0,
+                (previousValue, element) =>
+                    previousValue +
+                    element.items.fold(
+                        0,
+                        (previousValue, element) =>
+                            previousValue + element.quantity!))
+            .toString(),
+        onCrdit: htmlPrice(salesController.allSales.fold(0,
+            (previousValue, element) => previousValue + element.creditTotal!)),
+        cash: htmlPrice(salesController.allSales.fold(
+            0,
+            (previousValue, element) =>
+                previousValue +
+                element.items.fold(
+                    0,
+                    (previousValue, element) =>
+                        previousValue +
+                        (element.quantity! * element.price!)))));
   }
 
   Widget _body(context) {
@@ -108,6 +180,8 @@ class AllSalesPage extends StatelessWidget {
           length: salesController.tabController.length,
           initialIndex: salesController.salesInitialIndex.value,
           child: Helper(
+            floatButton: Container(),
+            bottomNavigationBar: _bottomView(),
             appBar: AppBar(
               backgroundColor: Colors.white,
               elevation: 0.3,
@@ -118,17 +192,15 @@ class AllSalesPage extends StatelessWidget {
                       children: [
                         majorTitle(
                             title: "Sales", color: Colors.black, size: 18.0),
-                        if (toDate != null)
-                          Obx(
-                            () => Text(
-                              "${DateFormat("yyyy-MM-dd").format(fromDate!)} - ${DateFormat("yyyy-MM-dd").format(toDate!)}",
-                              style:
-                                  TextStyle(color: Colors.blue, fontSize: 13),
-                            ),
-                          )
+                        Obx(
+                          () => Text(
+                            "${DateFormat("yyyy-MM-dd").format(salesController.filterStartDate.value)} - ${DateFormat("yyyy-MM-dd").format(salesController.filterEndDate.value)}",
+                            style: TextStyle(color: Colors.blue, fontSize: 13),
+                          ),
+                        )
                       ],
                     )
-                  : Text(
+                  : const Text(
                       "Sales",
                       style: TextStyle(color: Colors.black),
                     ),
@@ -165,86 +237,225 @@ class AllSalesPage extends StatelessWidget {
                 if (usercontroller.user.value?.usertype == "admin")
                   IconButton(
                       onPressed: () {
-                        SalesPdf(
-                            shop: shopController.currentShop.value!.name!,
-                            sales: salesController.allSales,
-                            type: salesController.salesInitialIndex.value == 0
-                                ? "All"
-                                : salesController.salesInitialIndex.value == 1
-                                    ? "Credit"
-                                    : "Today");
+                        // SalesPdf(
+                        //     shop: shopController.currentShop.value!.name!,
+                        //     sales: salesController.allSales,
+                        //     type: salesController.salesInitialIndex.value == 0
+                        //         ? "All"
+                        //         : salesController.salesInitialIndex.value == 1
+                        //             ? "Credit"
+                        //             : "Today");
                       },
                       icon: const Icon(
                         Icons.download_rounded,
                         color: Colors.black,
-                      ))
+                      )),
+                IconButton(
+                    onPressed: () async {
+                      Get.to(() => DateFilter(
+                            function: (value) {
+                              if (value is PickerDateRange) {
+                                final DateTime rangeStartDate =
+                                    value.startDate!;
+                                final DateTime rangeEndDate = value.endDate!;
+                                salesController.filterStartDate.value =
+                                    rangeStartDate;
+                                salesController.filterEndDate.value =
+                                    rangeEndDate;
+                              } else if (value is DateTime) {
+                                final DateTime selectedDate = value;
+                                salesController.filterStartDate.value =
+                                    selectedDate;
+                                salesController.filterEndDate.value =
+                                    selectedDate;
+                              }
+
+                              salesController.getSales(
+                                  fromDate:
+                                      salesController.filterStartDate.value,
+                                  toDate: salesController.filterEndDate.value);
+
+                              salesController.getProductComparison(
+                                  fromDate:
+                                      salesController.filterStartDate.value,
+                                  toDate: salesController.filterEndDate.value);
+                              salesController.getDailySalesGraph(
+                                  fromDate:
+                                      salesController.filterStartDate.value,
+                                  toDate: salesController.filterEndDate.value);
+
+                              salesController.getReturns(
+                                  fromDate:
+                                      salesController.filterStartDate.value,
+                                  toDate: salesController.filterEndDate.value,
+                                  type: "returns");
+                            },
+                          ));
+                    },
+                    icon: const Icon(
+                      Icons.filter_alt,
+                      color: Colors.black,
+                    ))
               ],
-              bottom: TabBar(
-                indicatorColor: AppColors.mainColor,
-                unselectedLabelColor: Colors.black,
-                labelColor: AppColors.mainColor,
-                onTap: (value) {
-                  salesController.salesInitialIndex.value = value;
-                  toDate = null;
-                  fromDate = null;
-                  if (value == 0) {
-                    salesController.getSales();
-                  } else if (value == 1) {
-                    salesController.getSales(
-                        fromDate: fromDate, toDate: toDate, onCredit: true);
-                  } else {
-                    final DateTime now = DateTime.now();
-                    salesController.getSales(fromDate: now, toDate: now);
-                  }
-                },
-                tabs: const [
-                  Tab(text: 'All Sales'),
-                  Tab(text: 'On Credit'),
-                  Tab(text: 'Today'),
-                ],
-              ),
             ),
-            widget: Obx(
-              () => Column(
+            widget: Builder(builder: (context) {
+              return Column(
                 children: [
-                  searchWidget(),
+                  TabBar(
+                      controller: DefaultTabController.of(context),
+                      onTap: (value) {
+                        salesController.salesInitialIndex.value = value;
+                        if (value == 0) {
+                          salesController.getSales(
+                            fromDate: salesController.filterStartDate.value,
+                            toDate: salesController.filterEndDate.value,
+                          );
+                        }
+
+                        if (value == 1) {
+                          salesController.getReturns(
+                              fromDate: salesController.filterStartDate.value,
+                              toDate: salesController.filterEndDate.value,
+                              type: "returns");
+                        }
+
+                        if (value == 2) {
+                          salesController.getDailySalesGraph(
+                              fromDate: salesController.filterStartDate.value,
+                              toDate: salesController.filterEndDate.value);
+                          salesController.getProductComparison(
+                              fromDate: salesController.filterStartDate.value,
+                              toDate: salesController.filterEndDate.value);
+                        }
+                      },
+                      tabs: [
+                        Tab(
+                            child: Row(children: [
+                          Text(
+                            "Sales",
+                            style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black),
+                          )
+                        ])),
+                        Tab(
+                            child: Text(
+                          "Returns",
+                          style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black),
+                        )),
+                        if (checkPermission(
+                            category: "accounts", permission: "analysis"))
+                          Tab(
+                              child: Text(
+                            "Analysis",
+                            style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black),
+                          )),
+                      ]),
                   Expanded(
-                    child: TabBarView(
-                      controller: salesController.tabController,
-                      physics: NeverScrollableScrollPhysics(),
-                      children: [
-                        salesController.salesInitialIndex.value == 0
-                            ? AllSales()
-                            : salesController.salesInitialIndex.value == 1
-                                ? AllSales()
-                                : AllSales()
-                      ],
+                    flex: 1,
+                    child: Container(
+                      color: Colors.white,
+                      child: TabBarView(
+                        physics: const NeverScrollableScrollPhysics(),
+                        children: [
+                          ListView(
+                            children: [
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              if (salesController.salesInitialIndex.value == 0)
+                                searchWidget(),
+                              AllSales()
+                            ],
+                          ),
+                          AllSales(type: "returns"),
+                          if (checkPermission(
+                              category: "accounts", permission: "analysis"))
+                            Analysis()
+                        ],
+                      ),
                     ),
-                  ),
+                  )
                 ],
-              ),
-            ),
+              );
+            }),
           ),
         ));
   }
 }
 
+class Analysis extends StatelessWidget {
+  Analysis({Key? key}) : super(key: key);
+
+  SalesController salesController = Get.find<SalesController>();
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: ListView(
+        children: [
+          SfCartesianChart(
+              tooltipBehavior: TooltipBehavior(enable: true),
+              primaryXAxis: CategoryAxis(isVisible: true),
+              title: ChartTitle(text: "Daily Sales"),
+              series: <ChartSeries<ChartData, String>>[
+                // Renders column chart
+                ColumnSeries<ChartData, String>(
+                    dataSource: salesController.dailySales,
+                    xValueMapper: (ChartData data, _) => data.x,
+                    yValueMapper: (ChartData data, _) => data.y)
+              ]),
+          SfCartesianChart(
+              tooltipBehavior: TooltipBehavior(enable: true),
+              primaryXAxis: CategoryAxis(isVisible: true),
+              title: ChartTitle(text: "Sales by product"),
+              series: <ChartSeries<ChartData, String>>[
+                // Renders column chart
+                ColumnSeries<ChartData, String>(
+                    dataSource: salesController.productSalesAnalysis,
+                    xValueMapper: (ChartData data, _) => data.x,
+                    yValueMapper: (ChartData data, _) => data.y)
+              ]),
+          SfCartesianChart(
+              tooltipBehavior: TooltipBehavior(enable: true),
+              primaryXAxis: CategoryAxis(isVisible: true),
+              title: ChartTitle(text: "Sales by attendants"),
+              series: <ChartSeries<ChartData, String>>[
+                // Renders column chart
+                ColumnSeries<ChartData, String>(
+                    name: "sales",
+                    dataSource:
+                        salesController.productSalesByAttendantsAnalysis,
+                    xValueMapper: (ChartData data, _) => data.x,
+                    yValueMapper: (ChartData data, _) => data.y)
+              ]),
+        ],
+      ),
+    );
+  }
+}
+
 class AllSales extends StatelessWidget {
+  String? type;
   SalesController salesController = Get.find<SalesController>();
   ShopController shopController = Get.find<ShopController>();
 
-  AllSales({Key? key}) : super(key: key) {}
+  AllSales({Key? key, this.type}) : super(key: key) {}
 
   _checkEmptyView() {
     if (salesController.salesInitialIndex.value == 0) {
       return salesController.allSales.isEmpty;
     }
     if (salesController.salesInitialIndex.value == 1) {
-      return salesController.allSales.isEmpty;
+      return salesController.allSalesReturns.isEmpty;
     }
-    if (salesController.salesInitialIndex.value == 2) {
-      return salesController.todaySales.isEmpty;
-    }
+    return false;
   }
 
   @override
@@ -292,39 +503,25 @@ class AllSales extends StatelessWidget {
                     ],
                   ),
                 )
-              : _sales();
+              : type == "returns"
+                  ? ListView.builder(
+                      itemCount: salesController.allSalesReturns.length,
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemBuilder: (context, index) {
+                        ReceiptItem receiptItem =
+                            salesController.allSalesReturns.elementAt(index);
+                        return SaleReturnCard(receiptItem);
+                      })
+                  : ListView.builder(
+                      shrinkWrap: true,
+                      physics: BouncingScrollPhysics(),
+                      itemCount: salesController.allSales.length,
+                      itemBuilder: (context, index) {
+                        SalesModel salesModel =
+                            salesController.allSales.elementAt(index);
+                        return SalesCard(salesModel: salesModel);
+                      });
     });
-  }
-
-  _sales() {
-    print(
-        "salesController.salesInitialIndex.value ${salesController.salesInitialIndex.value}");
-    if (salesController.salesInitialIndex.value == 0) {
-      return ListView.builder(
-          shrinkWrap: true,
-          itemCount: salesController.allSales.length,
-          itemBuilder: (context, index) {
-            SalesModel salesModel = salesController.allSales.elementAt(index);
-            return SalesCard(salesModel: salesModel);
-          });
-    }
-    if (salesController.salesInitialIndex.value == 1) {
-      return ListView.builder(
-          shrinkWrap: true,
-          itemCount: salesController.allSales.length,
-          itemBuilder: (context, index) {
-            SalesModel salesModel = salesController.allSales.elementAt(index);
-            return SalesCard(salesModel: salesModel);
-          });
-    }
-    if (salesController.salesInitialIndex.value == 2) {
-      return ListView.builder(
-          shrinkWrap: true,
-          itemCount: salesController.todaySales.length,
-          itemBuilder: (context, index) {
-            SalesModel salesModel = salesController.todaySales.elementAt(index);
-            return SalesCard(salesModel: salesModel);
-          });
-    }
   }
 }

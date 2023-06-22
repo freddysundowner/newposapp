@@ -96,7 +96,6 @@ Widget SaleReturnCard(ReceiptItem receiptItem) {
 }
 
 showbottomSheet(historyBody, context, salesId) {
-  SalesController salesController = Get.find<SalesController>();
   showModalBottomSheet(
       context: context,
       builder: (_) {

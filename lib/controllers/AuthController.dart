@@ -62,6 +62,7 @@ class AuthController extends GetxController {
 
         Get.offAll(() => Home());
       } catch (e) {
+        print(e);
         showSnackBar(message: "wrong username or password", color: Colors.red);
         loginuserLoad.value = false;
       } finally {
@@ -144,6 +145,8 @@ class AuthController extends GetxController {
           Random().nextInt(098459),
           usertype: "admin",
           deleted: false,
+          email: emailController.text,
+          phonenumber: phoneController.text,
           username: "Admin",
           authId: loggedInUser.id,
           fullnames: nameController.text,
@@ -183,7 +186,6 @@ class AuthController extends GetxController {
 
     Get.put(RealmController()).currentUser?.value = loggedInUser;
     Get.put(RealmController()).auth();
-    print("bbbbbbb");
     return loggedInUser;
   }
 

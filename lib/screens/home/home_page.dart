@@ -28,7 +28,9 @@ import '../../widgets/smalltext.dart';
 import '../customers/customers_page.dart';
 import '../finance/finance_page.dart';
 import '../sales/all_sales.dart';
+import '../sales/sales_page.dart';
 import '../stock/stock_page.dart';
+import 'dart:math' as math;
 
 class HomePage extends StatelessWidget {
   ShopController shopController = Get.find<ShopController>();
@@ -43,29 +45,8 @@ class HomePage extends StatelessWidget {
       DateFormat("yyy-MM-dd").format(DateTime.now().add(Duration(days: 1))));
   @override
   Widget build(BuildContext context) {
-    // if (shopController.currentShop.value != null) {
-    //   return Scaffold(
-    //     body: InkWell(
-    //       onTap: () {
-    //         userController.getUser();
-    //       },
-    //       child: Center(
-    //         child: Column(
-    //           mainAxisAlignment: MainAxisAlignment.center,
-    //           crossAxisAlignment: CrossAxisAlignment.center,
-    //           children: [
-    //             Icon(Icons.refresh, size: 120, color: AppColors.mainColor),
-    //             const Text(
-    //               "Click here to refresh",
-    //               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-    //             ),
-    //           ],
-    //         ),
-    //       ),
-    //     ),
-    //   );
-    // }
-    salesController.getSalesByDate(fromDate: fromDate, toDate: toDate);
+    salesController.getSalesByDate(
+        fromDate: fromDate, toDate: toDate, type: "today");
     return ResponsiveWidget(
         largeScreen: SingleChildScrollView(
           child: Container(
@@ -135,10 +116,11 @@ class HomePage extends StatelessWidget {
                   ],
                 ),
                 SizedBox(height: 10),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                  child: showTodaySales(context),
-                ),
+                // Padding(
+                //   padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                //   child: showTodaySales(
+                //       context, 0, HomeCard(0, "test", "t", Color(0Xfff))),
+                // ),
                 SizedBox(
                   height: 30,
                 ),
@@ -303,12 +285,13 @@ class HomePage extends StatelessWidget {
         smallScreen: RefreshIndicator(
           onRefresh: () async {
             await shopController.getShops();
+            salesController.getSalesByDate(type: "today");
           },
           child: Scaffold(
               body: SingleChildScrollView(
             child: Container(
               width: double.infinity,
-              padding: EdgeInsets.all(20),
+              padding: EdgeInsets.all(10),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -375,7 +358,33 @@ class HomePage extends StatelessWidget {
                     ],
                   ),
                   SizedBox(height: 20),
-                  showTodaySales(context),
+                  SizedBox(
+                    height: 100,
+                    child: Column(
+                      children: [
+                        Obx(
+                          () => Expanded(
+                            child: PageView.builder(
+                                scrollDirection: Axis.horizontal,
+                                controller: PageController(
+                                    viewportFraction: 0.8,
+                                    initialPage: 1,
+                                    keepPage: false),
+                                onPageChanged: (value) {},
+                                itemCount: salesController.homecards.length,
+                                itemBuilder: (context, index) {
+                                  return showTodaySales(
+                                      context,
+                                      index,
+                                      salesController.homecards
+                                          .elementAt(index));
+                                }),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
                   SizedBox(height: 20),
                   majorTitle(
                       title: "Enterprise Operations",
@@ -492,7 +501,7 @@ class HomePage extends StatelessWidget {
                                   width: 10,
                                 ),
                                 Text(
-                                  "Profits & Expenses manager",
+                                  "Profits & Expenses",
                                   style: TextStyle(
                                       color: Colors.white,
                                       fontWeight: FontWeight.bold),
@@ -506,53 +515,39 @@ class HomePage extends StatelessWidget {
                               ],
                             ),
                           ),
-                        // if (checkPermission(
-                        //     category: "accounts", permission: "cashflow"))
-                        //   Divider(
-                        //     color: Colors.white,
-                        //   ),
-                        // if (checkPermission(
-                        //     category: "accounts", permission: "cashflow"))
-                        //   InkWell(
-                        //     onTap: () {
-                        //       Get.find<CashflowController>().getCashflowSummary(
-                        //         shopId: shopController.currentShop.value!.id,
-                        //         from: DateTime.parse(DateFormat("yyyy-MM-dd")
-                        //             .format(Get.find<CashflowController>()
-                        //                 .fromDate
-                        //                 .value)),
-                        //         to: DateTime.parse(DateFormat("yyyy-MM-dd")
-                        //                 .format(Get.find<CashflowController>()
-                        //                     .toDate
-                        //                     .value))
-                        //             .add(const Duration(days: 1)),
-                        //       );
-                        //       Get.to(() => CashFlowManager());
-                        //     },
-                        //     child: const Row(
-                        //       children: [
-                        //         Icon(
-                        //           Icons.margin_outlined,
-                        //           color: Colors.amber,
-                        //         ),
-                        //         SizedBox(
-                        //           width: 10,
-                        //         ),
-                        //         Text(
-                        //           "Cashflow manager",
-                        //           style: TextStyle(
-                        //               color: Colors.white,
-                        //               fontWeight: FontWeight.bold),
-                        //         ),
-                        //         Spacer(),
-                        //         Icon(
-                        //           Icons.arrow_forward_ios_rounded,
-                        //           color: Colors.white,
-                        //           size: 15,
-                        //         )
-                        //       ],
-                        //     ),
-                        //   )
+                        if (checkPermission(category: "sales", group: true))
+                          Divider(
+                            color: Colors.white,
+                          ),
+                        if (checkPermission(category: "sales", group: true))
+                          InkWell(
+                            onTap: () {
+                              Get.to(() => SalesPage());
+                            },
+                            child: const Row(
+                              children: [
+                                Icon(
+                                  Icons.margin_outlined,
+                                  color: Colors.amber,
+                                ),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                Text(
+                                  "Sales & Orders",
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                Spacer(),
+                                Icon(
+                                  Icons.arrow_forward_ios_rounded,
+                                  color: Colors.white,
+                                  size: 15,
+                                )
+                              ],
+                            ),
+                          )
                       ],
                     ),
                   ),
@@ -638,51 +633,40 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget showTodaySales(context) {
+  Widget showTodaySales(context, int index, HomeCard homeCard) {
+    var c =
+        Color((math.Random().nextDouble() * 0xFFFFFF).toInt()).withOpacity(1.0);
     return Container(
-      padding: EdgeInsets.all(20),
+      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+      margin: EdgeInsets.only(right: 20),
       decoration: BoxDecoration(
-          color: AppColors.mainColor, borderRadius: BorderRadius.circular(10)),
+          color: homeCard.color, borderRadius: BorderRadius.circular(10)),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+          Icon(
+            homeCard.iconData,
+            size: 40,
+            color: c,
+          ),
+          SizedBox(
+            width: 40,
+          ),
           Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              majorTitle(
-                  title: "Today's Sale", color: Colors.white, size: 18.0),
+              majorTitle(title: homeCard.name, color: Colors.white, size: 13.0),
               SizedBox(height: 10),
               Obx(() {
                 return salesController.getSalesByLoad.value
                     ? minorTitle(title: "Calculating...", color: Colors.white)
                     : normalText(
-                        title: htmlPrice(salesController.totalSalesByDate),
+                        title: htmlPrice(homeCard.total),
                         color: Colors.white,
-                        size: 14.0);
+                        size: 20.0);
               }),
             ],
-          ),
-          InkWell(
-            onTap: () {
-              if (MediaQuery.of(context).size.width > 600) {
-                salesController.salesInitialIndex.value = 2;
-                salesController.activeItem.value = "Today";
-                salesController.getSales();
-                ;
-                Get.find<HomeController>().selectedWidget.value = AllSalesPage(
-                  page: "homePage",
-                );
-              } else {
-                salesController.salesInitialIndex.value = 2;
-                salesController.getSalesByDate(
-                    fromDate: fromDate, toDate: toDate);
-                Get.to(() => AllSalesPage(
-                      page: "homePage",
-                    ));
-              }
-            },
-            child:
-                majorTitle(title: "View More", color: Colors.white, size: 18.0),
           ),
         ],
       ),
@@ -691,7 +675,11 @@ class HomePage extends StatelessWidget {
 
   Widget salesListView() {
     return StreamBuilder(
-        stream: Sales().getSales().changes,
+        stream: Sales()
+            .getSales(
+                fromDate: salesController.filterStartDate.value,
+                toDate: salesController.filterEndDate.value)
+            .changes,
         builder: (context, snapshot) {
           final data = snapshot.data;
           if (data == null) {
@@ -707,7 +695,7 @@ class HomePage extends StatelessWidget {
                 scrollDirection: Axis.vertical,
                 itemBuilder: (context, index) {
                   SalesModel salesModel = results.elementAt(index);
-
+                  // return Container();
                   return SalesCard(salesModel: salesModel);
                 });
           }

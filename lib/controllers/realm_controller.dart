@@ -58,13 +58,10 @@ class RealmController extends GetxController {
       BankModel.schema,
       CashFlowTransaction.schema,
     ];
-    print("real 0");
     if (appController.app.value!.currentUser != null ||
         currentUser?.value != appController.app.value!.currentUser) {
       currentUser?.value ??= appController.app.value!.currentUser;
-      print("real 1");
       realm = Realm(Configuration.flexibleSync(currentUser!.value!, schemas));
-      print("real 2");
       realm.subscriptions.update((mutableSubscriptions) {
         mutableSubscriptions.add(realm.all<Shop>());
         mutableSubscriptions.add(realm.all<ShopTypes>());
@@ -91,10 +88,6 @@ class RealmController extends GetxController {
         mutableSubscriptions.add(realm.all<BankModel>());
         mutableSubscriptions.add(realm.all<CashFlowTransaction>());
       });
-      print("real 3");
-    } else {
-      print("real 4");
-      // realm = Realm(Configuration.local(schemas));
     }
   }
 

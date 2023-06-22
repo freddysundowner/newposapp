@@ -9,8 +9,6 @@ import 'package:pointify/screens/cash_flow/cash_at_bank.dart';
 import 'package:pointify/screens/cash_flow/cashflow_categories.dart';
 import 'package:pointify/utils/helper.dart';
 import 'package:pointify/widgets/no_items_found.dart';
-import 'package:pointify/widgets/pdf/history_pdf.dart';
-import 'package:pointify/widgets/pdf/sales_pdf.dart';
 import 'package:pointify/widgets/snackBars.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -30,7 +28,8 @@ class CashCategoryHistory extends StatelessWidget {
   CashCategoryHistory(
       {Key? key, this.page, required this.cashFlowCategory, this.bank})
       : super(key: key) {
-    cashflowController.getCategoryHistory(cashFlowCategory!, bankModel: bank);
+    cashflowController.getCategoryHistory(
+        bankModel: bank, cashFlowCategory: cashFlowCategory);
     title = bank != null ? bank!.name! : cashFlowCategory!.name!;
   }
   String title = "";
@@ -48,59 +47,55 @@ class CashCategoryHistory extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Obx(() {
-                  return cashflowController.loadingBankHistory.value
-                      ? Center(
-                          child: CircularProgressIndicator(),
-                        )
-                      : cashflowController.categoryCashflowTransactions.isEmpty
-                          ? noItemsFound(context, true)
-                          : Container(
-                              width: double.infinity,
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 5, vertical: 10),
-                              child: Theme(
-                                data: Theme.of(context)
-                                    .copyWith(dividerColor: Colors.grey),
-                                child: DataTable(
-                                  decoration: BoxDecoration(
-                                      border: Border.all(
-                                    width: 1,
-                                    color: Colors.black,
-                                  )),
-                                  columnSpacing: 30.0,
-                                  columns: [
-                                    DataColumn(
-                                        label: Text(
-                                            'Amount(${shopController.currentShop.value?.currency})',
-                                            textAlign: TextAlign.center)),
-                                    DataColumn(
-                                        label: Text('Date',
-                                            textAlign: TextAlign.center)),
-                                  ],
-                                  rows: List.generate(
-                                      cashflowController
-                                          .categoryCashflowTransactions
-                                          .length, (index) {
-                                    CashFlowTransaction cashFlowTransaction =
-                                        cashflowController
-                                            .categoryCashflowTransactions
-                                            .elementAt(index);
-                                    final y = cashFlowTransaction.amount;
-                                    final x = cashFlowTransaction.date;
+                  return cashflowController.categoryCashflowTransactions.isEmpty
+                      ? noItemsFound(context, true)
+                      : Container(
+                          width: double.infinity,
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+                          child: Theme(
+                            data: Theme.of(context)
+                                .copyWith(dividerColor: Colors.grey),
+                            child: DataTable(
+                              decoration: BoxDecoration(
+                                  border: Border.all(
+                                width: 1,
+                                color: Colors.black,
+                              )),
+                              columnSpacing: 30.0,
+                              columns: [
+                                DataColumn(
+                                    label: Text(
+                                        'Amount(${shopController.currentShop.value?.currency})',
+                                        textAlign: TextAlign.center)),
+                                DataColumn(
+                                    label: Text('Date',
+                                        textAlign: TextAlign.center)),
+                              ],
+                              rows: List.generate(
+                                  cashflowController
+                                      .categoryCashflowTransactions
+                                      .length, (index) {
+                                CashFlowTransaction cashFlowTransaction =
+                                    cashflowController
+                                        .categoryCashflowTransactions
+                                        .elementAt(index);
+                                final y = cashFlowTransaction.amount;
+                                final x = cashFlowTransaction.date;
 
-                                    return DataRow(cells: [
-                                      DataCell(
-                                          Container(child: Text(y.toString()))),
-                                      DataCell(Container(
-                                          child: Text(DateFormat("yyyy-dd-MM")
-                                              .format(DateTime
-                                                  .fromMillisecondsSinceEpoch(
-                                                      x!))))),
-                                    ]);
-                                  }),
-                                ),
-                              ),
-                            );
+                                return DataRow(cells: [
+                                  DataCell(
+                                      Container(child: Text(y.toString()))),
+                                  DataCell(Container(
+                                      child: Text(DateFormat("yyyy-dd-MM")
+                                          .format(DateTime
+                                              .fromMillisecondsSinceEpoch(
+                                                  x!))))),
+                                ]);
+                              }),
+                            ),
+                          ),
+                        );
                 }),
                 SizedBox(height: 60),
               ],
@@ -111,13 +106,9 @@ class CashCategoryHistory extends StatelessWidget {
       smallScreen: Helper(
         widget: Obx(() {
           if (title == "services") {
-            return salesController.loadingSales.value
-                ? Center(
-                    child: CircularProgressIndicator(),
-                  )
-                : salesController.allSales.isEmpty
-                    ? noItemsFound(context, true)
-                    : _sales();
+            return salesController.allSales.isEmpty
+                ? noItemsFound(context, true)
+                : _sales();
           }
           return cashflowController.categoryCashflowTransactions.isEmpty
               ? noItemsFound(context, true)
@@ -349,10 +340,10 @@ class CashCategoryHistory extends StatelessWidget {
                   showSnackBar(
                       message: "No Items to download", color: Colors.black);
                 } else {
-                  SalesPdf(
-                      shop: shopController.currentShop.value!.name!,
-                      sales: salesController.allSales,
-                      type: "All");
+                  // SalesPdf(
+                  //     shop: shopController.currentShop.value!.name!,
+                  //     sales: salesController.allSales,
+                  //     type: "All");
                 }
               } else {
                 // if (cashflowController.bankTransactions.isEmpty) {

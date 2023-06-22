@@ -29,10 +29,10 @@ class AttendantDetails extends StatelessWidget {
 
   AttendantDetails({Key? key, required this.userModel}) : super(key: key) {
     if (userModel != null) {
-      attendantController.nameController.text = userModel!.username!;
+      attendantController.nameController.text = userModel!.username ?? "";
       attendantController.attendantId.text = userModel!.UNID.toString();
       attendantController.currentAttendant.value = userModel;
-      attendantController.emailController.text = userModel!.email!;
+      // attendantController.emailController.text = userModel!.email ?? "";
       attendantController.getRoles(userModel!);
     } else {
       attendantController.attendantId.text = Random().nextInt(30000).toString();
@@ -165,6 +165,7 @@ class AttendantDetails extends StatelessWidget {
                       ),
                     )),
           ),
+          floatButton: Container(),
         ));
   }
 
@@ -233,23 +234,23 @@ class AttendantDetails extends StatelessWidget {
         attendantUserInputs(
             name: "Username", controller: attendantController.nameController),
         SizedBox(height: 15),
-        majorTitle(title: "Email", color: Colors.black, size: 14.0),
-        SizedBox(height: 10),
-        TextFormField(
-          controller: attendantController.emailController,
-          enabled: true,
-          keyboardType: TextInputType.emailAddress,
-          decoration: InputDecoration(
-            isDense: true,
-            contentPadding: EdgeInsets.all(15),
-            border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(color: Colors.grey, width: 1)),
-            focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(color: Colors.grey, width: 1)),
-          ),
-        ),
+        // majorTitle(title: "Email", color: Colors.black, size: 14.0),
+        // SizedBox(height: 10),
+        // TextFormField(
+        //   controller: attendantController.emailController,
+        //   enabled: true,
+        //   keyboardType: TextInputType.emailAddress,
+        //   decoration: InputDecoration(
+        //     isDense: true,
+        //     contentPadding: EdgeInsets.all(15),
+        //     border: OutlineInputBorder(
+        //         borderRadius: BorderRadius.circular(10),
+        //         borderSide: BorderSide(color: Colors.grey, width: 1)),
+        //     focusedBorder: OutlineInputBorder(
+        //         borderRadius: BorderRadius.circular(10),
+        //         borderSide: BorderSide(color: Colors.grey, width: 1)),
+        //   ),
+        // ),
         SizedBox(height: 15),
         attendantUserInputs(
             name: "User ID",
@@ -444,9 +445,9 @@ class Permissions extends StatelessWidget {
       return;
     }
     print("submitButton");
-    RealmResults<UserModel> users = Users.getUserUser(
-        email: attendantController.emailController.text.trim());
-    print("users ${users.length}");
+    var email = "${attendantController.attendantId.text}@gmail.com";
+    RealmResults<UserModel> users =
+        Users.getUserUser(username: attendantController.nameController.text);
     if (users.isNotEmpty) {
       generalAlert(title: "Error", message: "email already taken");
       return;
@@ -455,13 +456,15 @@ class Permissions extends StatelessWidget {
       ObjectId(),
       int.parse(attendantController.attendantId.text),
       username: attendantController.nameController.text,
-      email: attendantController.emailController.text,
+      email: email,
       usertype: "attendant",
       deleted: false,
       shop: Get.find<ShopController>().currentShop.value,
       permisions: jsonEncode(all),
     ));
     attendantController.roles.clear();
+    attendantController.nameController.clear();
+    // attendantController.nameController.clear();
     Get.back();
     Get.back();
   }

@@ -15,7 +15,6 @@ class Interests {
 
   static createInterests() {
     RealmResults<ShopTypes> shopcategories = ShopService().getShopTypes();
-    print("shopcategories ${shopcategories.length}");
     if (shopcategories.isEmpty) {
       for (var element in roles) {
         print(element);

@@ -1768,6 +1768,7 @@ class InvoiceItem extends _InvoiceItem
     int? total,
     int? itemCount,
     int? returnedItems,
+    int? date,
     int? price,
     DateTime? createdAt,
     DateTime? updatedAt,
@@ -1782,6 +1783,7 @@ class InvoiceItem extends _InvoiceItem
     RealmObjectBase.set(this, 'total', total);
     RealmObjectBase.set(this, 'itemCount', itemCount);
     RealmObjectBase.set(this, 'returnedItems', returnedItems);
+    RealmObjectBase.set(this, 'date', date);
     RealmObjectBase.set(this, 'price', price);
     RealmObjectBase.set(this, 'createdAt', createdAt);
     RealmObjectBase.set(this, 'updatedAt', updatedAt);
@@ -1850,6 +1852,11 @@ class InvoiceItem extends _InvoiceItem
       RealmObjectBase.set(this, 'returnedItems', value);
 
   @override
+  int? get date => RealmObjectBase.get<int>(this, 'date') as int?;
+  @override
+  set date(int? value) => RealmObjectBase.set(this, 'date', value);
+
+  @override
   int? get price => RealmObjectBase.get<int>(this, 'price') as int?;
   @override
   set price(int? value) => RealmObjectBase.set(this, 'price', value);
@@ -1896,6 +1903,7 @@ class InvoiceItem extends _InvoiceItem
       SchemaProperty('total', RealmPropertyType.int, optional: true),
       SchemaProperty('itemCount', RealmPropertyType.int, optional: true),
       SchemaProperty('returnedItems', RealmPropertyType.int, optional: true),
+      SchemaProperty('date', RealmPropertyType.int, optional: true),
       SchemaProperty('price', RealmPropertyType.int, optional: true),
       SchemaProperty('createdAt', RealmPropertyType.timestamp, optional: true),
       SchemaProperty('updatedAt', RealmPropertyType.timestamp, optional: true),
@@ -2591,6 +2599,7 @@ class ReceiptItem extends _ReceiptItem
     ObjectId? id, {
     Product? product,
     SalesModel? receipt,
+    UserModel? attendantId,
     CustomerModel? customerId,
     int? quantity,
     Shop? shop,
@@ -2606,6 +2615,7 @@ class ReceiptItem extends _ReceiptItem
     RealmObjectBase.set(this, '_id', id);
     RealmObjectBase.set(this, 'product', product);
     RealmObjectBase.set(this, 'receipt', receipt);
+    RealmObjectBase.set(this, 'attendantId', attendantId);
     RealmObjectBase.set(this, 'customerId', customerId);
     RealmObjectBase.set(this, 'quantity', quantity);
     RealmObjectBase.set(this, 'shop', shop);
@@ -2639,6 +2649,13 @@ class ReceiptItem extends _ReceiptItem
   @override
   set receipt(covariant SalesModel? value) =>
       RealmObjectBase.set(this, 'receipt', value);
+
+  @override
+  UserModel? get attendantId =>
+      RealmObjectBase.get<UserModel>(this, 'attendantId') as UserModel?;
+  @override
+  set attendantId(covariant UserModel? value) =>
+      RealmObjectBase.set(this, 'attendantId', value);
 
   @override
   CustomerModel? get customerId =>
@@ -2720,6 +2737,8 @@ class ReceiptItem extends _ReceiptItem
           optional: true, linkTarget: 'Product'),
       SchemaProperty('receipt', RealmPropertyType.object,
           optional: true, linkTarget: 'SalesModel'),
+      SchemaProperty('attendantId', RealmPropertyType.object,
+          optional: true, linkTarget: 'UserModel'),
       SchemaProperty('customerId', RealmPropertyType.object,
           optional: true, linkTarget: 'CustomerModel'),
       SchemaProperty('quantity', RealmPropertyType.int, optional: true),

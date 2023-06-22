@@ -18,7 +18,7 @@ dependencies:
   mime: ^1.0.2
   switcher_button: ^0.0.4
   intl:
-  pdf: ^3.10.1
+  pdf: ^3.10.4
   path_provider: ^2.0.11
   syncfusion_flutter_pdf: ^20.2.39
   shimmer: ^2.0.0
@@ -32,7 +32,7 @@ dependencies:
   realm: 1.0.0
   syncfusion_flutter_datepicker:
   data_table_2: ^2.5.3
-
+  printing: ^5.11.0
 
 dev_dependencies:
   flutter_test:

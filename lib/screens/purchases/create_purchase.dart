@@ -434,36 +434,13 @@ class CreatePurchase extends StatelessWidget {
                                           height: 10,
                                         ),
                                         TextFormField(
+                                          keyboardType: TextInputType.number,
+                                          autofocus: true,
                                           controller: purchaseController
                                               .textEditingControllerAmount,
                                           onChanged: (value) {
-                                            if (int.parse(value) >
-                                                purchaseController
-                                                    .invoice.value!.total!) {
-                                              purchaseController
-                                                      .textEditingControllerAmount
-                                                      .text =
-                                                  purchaseController
-                                                      .invoice.value!.total!
-                                                      .toString();
-                                              purchaseController
-                                                  .invoice.value!.balance = 0;
-                                            } else if (purchaseController
-                                                    .textEditingControllerAmount
-                                                    .text ==
-                                                "") {
-                                              purchaseController
-                                                      .invoice.value!.balance =
-                                                  purchaseController
-                                                      .invoice.value!.total;
-                                            } else {
-                                              purchaseController.invoice.value!
-                                                  .balance = purchaseController
-                                                      .invoice.value!.total! -
-                                                  int.parse(value);
-                                            }
-                                            purchaseController.invoice
-                                                .refresh();
+                                            purchaseController
+                                                .calculateAmount();
                                           },
                                           decoration: InputDecoration(
                                               isDense: true,
@@ -488,18 +465,36 @@ class CreatePurchase extends StatelessWidget {
                                           CrossAxisAlignment.start,
                                       children: [
                                         majorTitle(
-                                            title: "Balance",
+                                            title: "Total",
                                             color: Colors.black,
                                             size: 13.0),
                                         SizedBox(
-                                          height: 10,
+                                          height: 3,
                                         ),
                                         Obx(() {
                                           return minorTitle(
                                               title: htmlPrice(
                                                   purchaseController
-                                                      .invoice.value!.balance),
-                                              color: Colors.grey);
+                                                      .invoice.value!.total),
+                                              color: Colors.grey,
+                                              size: 14);
+                                        }),
+                                        SizedBox(
+                                          height: 8,
+                                        ),
+                                        majorTitle(
+                                            title: "Credit Balance",
+                                            color: Colors.black,
+                                            size: 13.0),
+                                        const SizedBox(
+                                          height: 3,
+                                        ),
+                                        Obx(() {
+                                          return minorTitle(
+                                              title: htmlPrice(
+                                                  purchaseController.balance),
+                                              color: Colors.grey,
+                                              size: 11);
                                         })
                                       ],
                                     ),

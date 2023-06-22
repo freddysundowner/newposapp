@@ -21,7 +21,7 @@ class Expense {
     RealmResults<ExpenseModel> expenses = realmService.realm.query<
             ExpenseModel>(
         'shop == \$0 AND date > ${fromDate!.millisecondsSinceEpoch} AND date < ${toDate!.millisecondsSinceEpoch}',
-        [shopController.currentShop.value!.id.toString()]);
+        [shopController.currentShop.value?.id.toString()]);
     return expenses;
   }
 }
