@@ -1,16 +1,13 @@
 import 'dart:math';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:pointify/Real/schema.dart';
 import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/controllers/user_controller.dart';
 import 'package:pointify/main.dart';
 import 'package:pointify/screens/authentication/landing.dart';
 import 'package:pointify/screens/authentication/reloadpage.dart';
-import 'package:pointify/screens/home/home_page.dart';
 import 'package:pointify/services/users.dart';
 import 'package:realm/realm.dart';
 
@@ -59,6 +56,7 @@ class AuthController extends GetxController {
         await logInUserEmailPassword(
             emailController.text, passwordController.text);
         await Get.find<UserController>().getUser(type: "login");
+        clearDataFromTextFields();
 
         Get.offAll(() => Home());
       } catch (e) {
