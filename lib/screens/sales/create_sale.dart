@@ -838,6 +838,7 @@ class CreateSale extends StatelessWidget {
         product: product,
         quantity: 1,
         total: product.selling,
+        attendantId: usercontroller.user.value,
         discount: 0,
         date: formatted,
         soldOn: DateTime.now().millisecondsSinceEpoch,

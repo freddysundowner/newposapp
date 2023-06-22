@@ -41,6 +41,11 @@ class ExpenseController extends GetxController {
         title: "Error",
         message: "Enter expense amount",
       );
+    } else if (selectedExpense.value == "") {
+      generalAlert(
+        title: "Error",
+        message: "select category",
+      );
     } else {
       try {
         ExpenseModel expenseModel = ExpenseModel(ObjectId(),
@@ -52,7 +57,7 @@ class ExpenseController extends GetxController {
             createdAt: DateTime.now(),
             date: DateTime.now().millisecondsSinceEpoch);
         await Expense().createExpense(expenseModel);
-        textEditingControllerAmount.clear();
+        textEditingControllerName.clear();
         textEditingControllerAmount.clear();
         selectedExpense.value = '';
         getExpenseByDate(

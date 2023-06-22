@@ -213,7 +213,7 @@ class ProfitPage extends StatelessWidget {
                       } else {
                         salesController.getSales(
                             fromDate: salesController.filterStartDate.value,
-                            toDate: salesController.filterEnndStartDate.value);
+                            toDate: salesController.filterEndDate.value);
                         Get.to(AllSalesPage(
                           page: "profitPage",
                         ));

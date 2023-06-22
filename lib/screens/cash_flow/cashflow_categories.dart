@@ -34,67 +34,13 @@ class CashFlowCategories extends StatelessWidget {
   }
 
   Widget _tabLayout(context) {
-    return Obx(() => DefaultTabController(
-          length: 2,
-          initialIndex: cashflowController.initialPage.value,
-          child: Helper(
-            widget: Column(
-              children: [
-                Expanded(
-                  flex: 1,
-                  child: Container(
-                    color: MediaQuery.of(context).size.width > 600
-                        ? Colors.white
-                        : Colors.grey.withOpacity(0.1),
-                    child: TabBarView(
-                      physics: NeverScrollableScrollPhysics(),
-                      controller: cashflowController.tabController,
-                      children: [
-                        CashInUi(
-                          type: "in",
-                        ),
-                        CashInUi(type: "out")
-                      ],
-                    ),
-                  ),
-                )
-              ],
-            ),
-            appBar: AppBar(
-              elevation: 0.3,
-              backgroundColor: Colors.white,
-              foregroundColor: Colors.black,
-              titleSpacing: 0.0,
-              centerTitle: false,
-              iconTheme: IconThemeData(color: Colors.black),
-              titleTextStyle: TextStyle(color: Colors.black),
-              title: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text("Cashflow Category",
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                      )),
-                  Obx(() {
-                    return Text(
-                      createShopController.currentShop.value == null
-                          ? ""
-                          : "${createShopController.currentShop.value!.name!}"
-                              .capitalize!,
-                      style: TextStyle(
-                        fontSize: 12,
-                      ),
-                    );
-                  })
-                ],
-              ),
-              bottom: TabBar(
-                indicatorColor: Theme.of(context).primaryColor,
-                indicatorWeight: 3,
-                controller: cashflowController.tabController,
-                labelColor: Theme.of(context).primaryColor,
-                unselectedLabelColor: Colors.grey,
+    return DefaultTabController(
+      length: 2,
+      initialIndex: 0,
+      child: Helper(
+        widget: Column(
+          children: [
+            TabBar(
                 onTap: (index) {
                   cashflowController.initialPage.value = index;
                   if (index == 0) {
@@ -103,28 +49,83 @@ class CashFlowCategories extends StatelessWidget {
                     cashflowController.getCategory("cash-out");
                   }
                 },
-                tabs: [
+                tabs: const [
                   Tab(
-                    text: "CashIn",
-                  ),
+                      child: Text(
+                    "Cash in",
+                    style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black),
+                  )),
                   Tab(
-                    text: "CashOut",
-                  )
-                ],
+                      child: Text(
+                    "Cash out",
+                    style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black),
+                  )),
+                ]),
+            Expanded(
+              flex: 1,
+              child: Container(
+                color: Colors.white,
+                child: TabBarView(
+                  physics: const NeverScrollableScrollPhysics(),
+                  children: [
+                    CashInUi(
+                      type: "in",
+                    ),
+                    CashInUi(type: "out")
+                  ],
+                ),
               ),
-              leading: IconButton(
-                  onPressed: () {
-                    if (MediaQuery.of(context).size.width > 600) {
-                      Get.find<HomeController>().selectedWidget.value =
-                          CashFlowManager();
-                    } else {
-                      Get.back();
-                    }
-                  },
-                  icon: Icon(Icons.arrow_back_ios)),
             ),
+          ],
+        ),
+        appBar: AppBar(
+          elevation: 0.3,
+          backgroundColor: Colors.white,
+          foregroundColor: Colors.black,
+          titleSpacing: 0.0,
+          centerTitle: false,
+          iconTheme: IconThemeData(color: Colors.black),
+          titleTextStyle: TextStyle(color: Colors.black),
+          title: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text("Cashflow Category",
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  )),
+              Obx(() {
+                return Text(
+                  createShopController.currentShop.value == null
+                      ? ""
+                      : createShopController
+                          .currentShop.value!.name!.capitalize!,
+                  style: TextStyle(
+                    fontSize: 12,
+                  ),
+                );
+              })
+            ],
           ),
-        ));
+          leading: IconButton(
+              onPressed: () {
+                if (MediaQuery.of(context).size.width > 600) {
+                  Get.find<HomeController>().selectedWidget.value =
+                      CashFlowManager();
+                } else {
+                  Get.back();
+                }
+              },
+              icon: Icon(Icons.arrow_back_ios)),
+        ),
+      ),
+    );
   }
 }
 
@@ -156,9 +157,10 @@ class CashInUi extends StatelessWidget {
                                   previousValue + element.amount!))
                       : htmlPrice(
                           cashflowController.cashOutflowOtherTransactions.fold(
-                              0,
-                              (previousValue, element) =>
-                                  previousValue + element.amount!)),
+                                  0,
+                                  (previousValue, element) =>
+                                      previousValue + element.amount!) +
+                              cashflowController.totalcashAtBankHistory.value),
                   style: const TextStyle(
                       color: Colors.black, fontWeight: FontWeight.bold),
                 );

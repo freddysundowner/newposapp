@@ -68,6 +68,7 @@ class Sales {
       CustomerModel? customer,
       String receipt = "",
       String total = ""}) {
+    print(receipt);
     String filter = "";
     if (onCredit) {
       filter += " AND creditTotal < 0";
@@ -83,20 +84,18 @@ class Sales {
           [customer]);
       return _attendantFilter(invoices);
     }
+
     RealmResults<SalesModel> invoices = realmService.realm.query<SalesModel>(
         'shop == \$0 $filter AND TRUEPREDICATE SORT(createdAt DESC)',
         [shopController.currentShop.value]);
-    if (fromDate == null) {
-      if (receipt.isNotEmpty) {
-        var ii = invoices.query("receiptNumber BEGINSWITH \$0 ", [receipt]);
-        return ii;
-      }
-      return _attendantFilter(invoices);
+    if (receipt.isNotEmpty) {
+      var ii = invoices.query("receiptNumber BEGINSWITH \$0 ", [receipt]);
+      return _attendantFilter(ii);
     }
 
     if (invoices.isNotEmpty) {
       RealmResults<SalesModel> dateinvoices = invoices.query(
-          'dated > ${fromDate.millisecondsSinceEpoch} AND dated < ${toDate!.millisecondsSinceEpoch} AND TRUEPREDICATE SORT(createdAt DESC)');
+          'dated > ${fromDate!.millisecondsSinceEpoch} AND dated < ${toDate!.millisecondsSinceEpoch} AND TRUEPREDICATE SORT(createdAt DESC)');
 
       return _attendantFilter(dateinvoices);
     }
@@ -104,6 +103,22 @@ class Sales {
   }
 
   _attendantFilter(RealmResults<SalesModel> data) {
+    if (userController.switcheduser.value != null) {
+      return data
+          .query("attendantId == \$0 ", [userController.switcheduser.value!]);
+    }
+    if (checkPermission(category: "customers", permission: "all_sales") ||
+        userController.user.value!.usertype == "admin") {
+      return data;
+    }
+    if (userController.user.value != null &&
+        userController.user.value!.usertype == "attendant") {
+      return data.query("attendantId == \$0 ", [userController.user.value!]);
+    }
+    return data;
+  }
+
+  _attendantFilterReceipts(RealmResults<ReceiptItem> data) {
     if (userController.switcheduser.value != null) {
       return data
           .query("attendantId == \$0 ", [userController.switcheduser.value!]);
@@ -139,7 +154,18 @@ class Sales {
   RealmResults<ReceiptItem>? getSalesByProductId(Product product) {
     RealmResults<ReceiptItem>? invoices =
         realmService.realm.query<ReceiptItem>('product == \$0 ', [product]);
-    return invoices;
+    return _attendantFilterReceipts(invoices);
+  }
+
+  RealmResults<ReceiptItem>? getProductsFromSales(
+      {DateTime? fromDate, DateTime? toDate}) {
+    if (fromDate != null && toDate != null) {
+      RealmResults<ReceiptItem> returns = realmService.realm.query<ReceiptItem>(
+          'soldOn > ${fromDate.millisecondsSinceEpoch} AND soldOn < ${toDate.millisecondsSinceEpoch} AND shop == \$0',
+          [shopController.currentShop.value]);
+      return _attendantFilterReceipts(returns);
+    }
+    return null;
   }
 
   RealmResults<ReceiptItem> getSaleReceipts(
@@ -147,34 +173,46 @@ class Sales {
       SalesModel? salesModel,
       Shop? shop,
       String? date,
+      String? type,
       DateTime? fromDate,
+      Product? product,
       DateTime? toDate}) {
+    String filter = "";
+    if (type != null) {
+      filter += " AND type == 'return'";
+    }
+    if (product != null) {
+      RealmResults<ReceiptItem> returns = realmService.realm.query<ReceiptItem>(
+          'soldOn > ${fromDate!.millisecondsSinceEpoch} AND soldOn < ${toDate!.millisecondsSinceEpoch} AND product == \$0 $filter',
+          [product]);
+      return _attendantFilterReceipts(returns);
+    }
     if (fromDate != null && toDate != null) {
       RealmResults<ReceiptItem> returns = realmService.realm.query<ReceiptItem>(
-          'soldOn > ${fromDate.millisecondsSinceEpoch} AND soldOn < ${toDate.millisecondsSinceEpoch} AND shop == \$0',
+          'soldOn > ${fromDate.millisecondsSinceEpoch} AND soldOn < ${toDate.millisecondsSinceEpoch} AND shop == \$0 $filter',
           [shopController.currentShop.value]);
-      return returns;
+      return _attendantFilterReceipts(returns);
     }
     if (date!.isNotEmpty) {
       RealmResults<ReceiptItem> returns = realmService.realm.query<ReceiptItem>(
-          "date == '$date' AND shop == \$0",
+          "date == '$date' AND shop == \$0  $filter",
           [shopController.currentShop.value]);
-      return returns;
+      return _attendantFilterReceipts(returns);
     }
     if (customerModel != null) {
       RealmResults<ReceiptItem> returns = realmService.realm
-          .query<ReceiptItem>('customerId == \$0', [customerModel]);
-      return returns;
+          .query<ReceiptItem>('customerId == \$0  $filter ', [customerModel]);
+      return _attendantFilterReceipts(returns);
     }
-    RealmResults<ReceiptItem> returns =
-        realmService.realm.query<ReceiptItem>('receipt == \$0', [salesModel]);
-    return returns;
+    RealmResults<ReceiptItem> returns = realmService.realm
+        .query<ReceiptItem>('receipt == \$0  $filter ', [salesModel]);
+    return _attendantFilterReceipts(returns);
   }
 
   RealmResults<SalesModel> getCustomerReturns(CustomerModel customerModel) {
     RealmResults<SalesModel> receipts = realmService.realm
         .query<SalesModel>('customer == \$0 ', [customerModel]);
-    return receipts;
+    return _attendantFilter(receipts);
   }
 
   retunSale(SalesReturn salesReturn) async {

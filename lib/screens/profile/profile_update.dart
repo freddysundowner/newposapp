@@ -154,7 +154,9 @@ class ProfileUpdate extends StatelessWidget {
               onTap: () {
                 Users().updateAdmin(userController.user.value!,
                     fullnames: authController.nameController.text,
+                    email: authController.emailController.text,
                     phonenumber: authController.phoneController.text);
+                Get.back();
               },
               child: Container(
                 padding: EdgeInsets.all(10),

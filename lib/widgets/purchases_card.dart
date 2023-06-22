@@ -152,7 +152,8 @@ Widget purchasesItemCard({required InvoiceItem invoiceItem, required index}) {
 
                                               Get.back();
                                               purchaseController
-                                                  .calculateAmount(index);
+                                                  .calculateAmount(
+                                                      index: index);
                                               purchaseController.invoice
                                                   .refresh();
                                             },
@@ -185,13 +186,13 @@ Widget purchasesItemCard({required InvoiceItem invoiceItem, required index}) {
                     },
                     icon: const Icon(Icons.remove,
                         color: Colors.black, size: 16)),
-                Container(
+                SizedBox(
                     width: 60,
                     height: 30,
                     child: TextFormField(
                       onChanged: (value) {
                         invoiceItem.itemCount = int.parse(value);
-                        purchaseController.calculateAmount(index);
+                        purchaseController.calculateAmount(index: index);
                       },
                       textAlign: TextAlign.center,
                       keyboardType: TextInputType.number,
@@ -215,7 +216,7 @@ Widget purchasesItemCard({required InvoiceItem invoiceItem, required index}) {
                     icon: Icon(Icons.add, color: Colors.black, size: 16)),
               ]),
               normalText(
-                  title: "Total=  ${htmlPrice(invoiceItem.price)}",
+                  title: "Total=  ${htmlPrice(invoiceItem.total)}",
                   color: Colors.black,
                   size: 17.0)
             ],

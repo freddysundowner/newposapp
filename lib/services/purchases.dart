@@ -69,9 +69,9 @@ class Purchases {
   }
 
   createPayment(Invoice invoice, int amount) {
-    var newbalance = invoice.balance! - amount;
+    var newbalance = invoice.balance!.abs() - amount;
     realmService.realm.write(() {
-      invoice.balance = newbalance;
+      invoice.balance = newbalance * -1;
       invoice.onCredit = newbalance >= 0;
     });
     PayHistory payHistory = PayHistory(ObjectId(),

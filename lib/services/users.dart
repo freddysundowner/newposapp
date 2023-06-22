@@ -51,15 +51,15 @@ class Users {
   }
 
   static RealmResults<UserModel> getUserUser(
-      {UserModel? userModel, int? uid, String? username, String? email}) {
+      {UserModel? userModel, int? uid, String? username}) {
     if (uid != null) {
       RealmResults<UserModel> user =
           realmService.realm.query<UserModel>('UNID == ${uid} ');
       return user;
     }
-    if (email != null) {
+    if (username != null) {
       RealmResults<UserModel> user = realmService.realm.query<UserModel>(
-          "email == '$email' AND shop == \$0  AND deleted == false",
+          "username == '$username' AND shop == \$0  AND deleted == false",
           [Get.find<ShopController>().currentShop.value]);
       return user;
     }

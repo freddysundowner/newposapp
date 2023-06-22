@@ -27,7 +27,7 @@ class ExpensePage extends StatelessWidget {
     expenseController.filterStartDate.value =
         salesController.filterStartDate.value;
     expenseController.filterEnndStartDate.value =
-        salesController.filterEnndStartDate.value;
+        salesController.filterEndDate.value;
     expenseController.getExpenseByDate(
       fromDate: expenseController.filterStartDate.value,
       toDate: expenseController.filterEnndStartDate.value,
@@ -160,12 +160,15 @@ class ExpensePage extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 10),
-                Obx(() {
-                  return majorTitle(
-                      title: "${expenseController.expenses.length} Entries",
-                      color: Colors.black,
-                      size: 15.0);
-                }),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 10),
+                  child: Obx(() {
+                    return majorTitle(
+                        title: "${expenseController.expenses.length} Entries",
+                        color: Colors.black,
+                        size: 15.0);
+                  }),
+                ),
                 SizedBox(
                   height: 10,
                 ),
@@ -280,12 +283,12 @@ class ExpensePage extends StatelessWidget {
 
                 salesController.filterStartDate.value = DateTime.parse(
                     DateFormat("yyy-MM-dd").format(DateTime.now()));
-                salesController.filterEnndStartDate.value = DateTime.parse(
+                salesController.filterEndDate.value = DateTime.parse(
                     DateFormat("yyy-MM-dd")
                         .format(DateTime.now().add(Duration(days: 1))));
                 salesController.getFinanceSummary(
                     fromDate: salesController.filterStartDate.value,
-                    toDate: salesController.filterEnndStartDate.value);
+                    toDate: salesController.filterEndDate.value);
               },
               icon: Icon(
                 Icons.arrow_back_ios,

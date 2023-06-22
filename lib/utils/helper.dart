@@ -35,6 +35,7 @@ class Helper extends StatelessWidget {
   final Widget widget;
   final String? page;
   final Widget? bottomNavigationBar;
+  final Widget? floatButton;
   List pages = [
     "Home",
     "Sell",
@@ -57,6 +58,7 @@ class Helper extends StatelessWidget {
       required this.widget,
       this.appBar,
       this.bottomNavigationBar,
+      this.floatButton,
       this.page})
       : super(key: key);
 
@@ -65,8 +67,9 @@ class Helper extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: appBar,
-      floatingActionButton:
-          userController.user.value?.usertype == "attendant" ||
+      floatingActionButton: floatButton != null
+          ? Container()
+          : userController.user.value?.usertype == "attendant" ||
                   userController.switcheduser.value != null
               ? null
               : FloatingActionButton(

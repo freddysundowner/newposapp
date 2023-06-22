@@ -5,8 +5,10 @@ import 'package:pointify/controllers/CustomerController.dart';
 import 'package:pointify/controllers/sales_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/functions/functions.dart';
+import 'package:pointify/pdfFiles/pdf/sales_receipt.dart';
 import 'package:realm/realm.dart';
 import '../../../Real/schema.dart';
+import '../../../pdfFiles/pdfpreview.dart';
 import '../../../utils/colors.dart';
 import '../../../utils/themer.dart';
 import '../../../widgets/alert.dart';
@@ -214,7 +216,10 @@ class SalesReceipt extends StatelessWidget {
                                       ),
                                       InkWell(
                                         onTap: () {
-                                          _dialog(receiptitem);
+                                          if (checkPermission(
+                                              category: "sales",
+                                              permission: "return"))
+                                            _dialog(receiptitem);
                                         },
                                         child: Row(
                                           children: [
@@ -370,13 +375,21 @@ class SalesReceipt extends StatelessWidget {
                     child: majorTitle(
                         title: "Email", color: Colors.black, size: 16.0),
                   )),
-              Container(
-                  padding: const EdgeInsets.only(right: 20, bottom: 20),
-                  child: Container(
-                    padding: const EdgeInsets.only(top: 10),
-                    child: majorTitle(
-                        title: "PDF View", color: Colors.black, size: 16.0),
-                  )),
+              InkWell(
+                onTap: () {
+                  Get.to(() async => PdfPreviewPage(
+                      widget: await salesReceipt(salesModel!),
+                      type: "Invoice"));
+                  // SalesPdf(sales: salesModel!, type: "All");
+                },
+                child: Container(
+                    padding: const EdgeInsets.only(right: 20, bottom: 20),
+                    child: Container(
+                      padding: const EdgeInsets.only(top: 10),
+                      child: majorTitle(
+                          title: "PDF View", color: Colors.black, size: 16.0),
+                    )),
+              ),
             ],
           ),
         ),
@@ -404,11 +417,11 @@ Color _chechPaymentColor(SalesModel salesModel, String? type) {
 
 void _dialog(ReceiptItem sale) {
   if (sale.quantity! > 0 && sale.type != "return") {
-    returnInvoiceItem(receiptItem: sale);
+    returnReceiptItem(receiptItem: sale);
   }
 }
 
-returnInvoiceItem({required ReceiptItem receiptItem}) {
+returnReceiptItem({required ReceiptItem receiptItem}) {
   SalesController salesController = Get.find<SalesController>();
   TextEditingController textEditingController = TextEditingController();
   textEditingController.text = receiptItem.quantity.toString();

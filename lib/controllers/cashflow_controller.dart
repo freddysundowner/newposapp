@@ -160,10 +160,11 @@ class CashflowController extends GetxController
     } else {
       cashFlowCategories.value = [];
     }
+    cashFlowCategories.refresh();
   }
 
-  getCategoryHistory(CashFlowCategory cashFlowCategory,
-      {BankModel? bankModel}) async {
+  getCategoryHistory(
+      {BankModel? bankModel, CashFlowCategory? cashFlowCategory}) async {
     RealmResults<CashFlowTransaction> response = Transactions().CategoryHistory(
         cashFlowCategory: cashFlowCategory, bankModel: bankModel);
     List<CashFlowTransaction> cashflowCat = response.map((e) => e).toList();

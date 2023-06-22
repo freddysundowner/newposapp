@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:intl/intl.dart';
+import 'package:pointify/controllers/product_controller.dart';
 import 'package:realm/realm.dart';
 
 import '../Real/schema.dart';
@@ -127,13 +128,31 @@ class Products {
     return products.isNotEmpty ? products.first : null;
   }
 
-  getProductPurchaseHistory({Product? product}) {
+  getProductPurchaseHistory(
+      {Product? product, DateTime? fromDate, DateTime? toDate}) {
+    if (fromDate != null) {
+      print(fromDate);
+      print(toDate);
+      RealmResults<InvoiceItem> invoices = realmService.realm.query<
+              InvoiceItem>(
+          'date > ${fromDate.millisecondsSinceEpoch} AND date < ${toDate!.millisecondsSinceEpoch} AND product == \$0  AND TRUEPREDICATE SORT(createdAt DESC)',
+          [product]);
+      print(invoices.length);
+      return invoices;
+    }
     RealmResults<InvoiceItem> invoices = realmService.realm.query<InvoiceItem>(
         'product == \$0  AND TRUEPREDICATE SORT(createdAt DESC)', [product]);
     return invoices;
   }
 
-  getProductCountHistory({Shop? shop}) {
+  getProductCountHistory({Shop? shop, Product? product}) {
+    if (product != null) {
+      RealmResults<ProductCountModel> productCountHistory = realmService.realm
+          .query<ProductCountModel>(
+              'product == \$0  AND TRUEPREDICATE SORT(createdAt DESC)',
+              [product]);
+      return productCountHistory;
+    }
     RealmResults<ProductCountModel> productCountHistory = realmService.realm
         .query<ProductCountModel>(
             'shopId == \$0  AND TRUEPREDICATE SORT(createdAt DESC)',
@@ -144,6 +163,12 @@ class Products {
   updateProductCount(ProductHistoryModel productCountModel) async {
     realmService.realm.write<ProductHistoryModel>(
         () => realmService.realm.add<ProductHistoryModel>(productCountModel));
+  }
+
+  deleteProductCount(ProductCountModel productCountModel) {
+    realmService.realm.write(() {
+      realmService.realm.delete(productCountModel);
+    });
   }
 
   RealmResults<ProductHistoryModel> getProductHistory(String type,
@@ -228,19 +253,21 @@ class Products {
 
   RealmResults<BadStock> getBadStock(
       {DateTime? fromDate, DateTime? toDate, Product? product}) {
+    if (product != null) {
+      RealmResults<BadStock> returns = realmService.realm.query<BadStock>(
+          'date > ${fromDate!.millisecondsSinceEpoch} AND date < ${toDate!.millisecondsSinceEpoch} AND product == \$0',
+          [product]);
+      return returns;
+    }
     if (fromDate != null && toDate != null) {
       RealmResults<BadStock> returns = realmService.realm.query<BadStock>(
           'date > ${fromDate.millisecondsSinceEpoch} AND date < ${toDate.millisecondsSinceEpoch} AND shop == \$0',
           [shopController.currentShop.value]);
-      print("returns ${returns.length}");
       return returns;
     }
     RealmResults<BadStock> products = realmService.realm.query<BadStock>(
         'shop == \$0 AND TRUEPREDICATE SORT(createdAt DESC)',
         [Get.find<ShopController>().currentShop.value]);
-    if (product != null) {
-      return products.query("product == \$0", [product]);
-    }
     return products;
   }
 
