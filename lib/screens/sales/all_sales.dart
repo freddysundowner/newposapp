@@ -1,22 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:pointify/controllers/AuthController.dart';
-import 'package:pointify/controllers/expense_controller.dart';
-import 'package:pointify/controllers/user_controller.dart';
-import 'package:pointify/controllers/shop_controller.dart';
-import 'package:pointify/functions/functions.dart';
-import 'package:pointify/responsive/responsiveness.dart';
-import 'package:pointify/screens/sales/create_sale.dart';
-import 'package:pointify/screens/stock/badstocks.dart';
-import 'package:pointify/utils/helper.dart';
-import 'package:pointify/widgets/sales_card.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:pointify/controllers/AuthController.dart';
+import 'package:pointify/controllers/shop_controller.dart';
+import 'package:pointify/controllers/user_controller.dart';
+import 'package:pointify/functions/functions.dart';
+import 'package:pointify/responsive/responsiveness.dart';
+import 'package:pointify/utils/helper.dart';
+import 'package:pointify/widgets/sales_card.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
+
 import '../../Real/schema.dart';
 import '../../controllers/home_controller.dart';
 import '../../controllers/sales_controller.dart';
-import '../../utils/colors.dart';
 import '../../utils/date_filter.dart';
 import '../../widgets/bigtext.dart';
 import '../../widgets/bottom_widget_count_view.dart';
@@ -60,7 +57,7 @@ class AllSalesPage extends StatelessWidget {
                       onCredit: salesController.salesInitialIndex.value == 1);
                 } else {
                   salesController.getSales(
-                      receipt: salesController.searchProductController.text,
+                      receipt: salesController.searchProductController.text.toUpperCase(),
                       onCredit: salesController.salesInitialIndex.value == 1);
                 }
               },
@@ -69,7 +66,8 @@ class AllSalesPage extends StatelessWidget {
                 suffixIcon: IconButton(
                   onPressed: () {
                     salesController.getSales(
-                        receipt: salesController.searchProductController.text,
+                        receipt: salesController.searchProductController.text
+                            .toUpperCase(),
                         onCredit: salesController.salesInitialIndex.value == 1);
                   },
                   icon: Icon(Icons.search),
@@ -395,6 +393,7 @@ class Analysis extends StatelessWidget {
   Analysis({Key? key}) : super(key: key);
 
   SalesController salesController = Get.find<SalesController>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

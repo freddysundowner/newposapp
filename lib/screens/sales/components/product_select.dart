@@ -40,7 +40,7 @@ Widget productListItemCard(
                 height: 5,
               ),
               Text(
-                "@ ${htmlPrice(product.buyingPrice)}, ${product.quantity} Left",
+                "@ ${htmlPrice(product.selling)}, ${product.quantity} Left",
                 style: const TextStyle(
                     color: Colors.grey,
                     fontSize: 14,

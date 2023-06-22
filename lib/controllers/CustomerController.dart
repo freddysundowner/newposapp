@@ -111,8 +111,8 @@ class CustomerController extends GetxController
     DateTime? fromDate,
     DateTime? toDate,
   }) async {
-    RealmResults<DepositModel> response = Customer().getCustomerWallets(
-        debtors: debtors, fromDate: fromDate, toDate: toDate);
+    RealmResults<DepositModel> response = Customer().getCustomerWallets(debtors: debtors, fromDate: fromDate, toDate: toDate);
+
     walletDebtsTotal.value = 0;
     walletbalancessTotal.value = 0;
     if (debtors) {
