@@ -164,6 +164,7 @@ class ProductController extends GetxController {
     selectedSupplier.clear();
     categoryId.value = null;
     supplierName.value = "none";
+    selectedMeasure.value="Kg";
   }
 
   getProductsBySort({required String type, String text = ""}) {
