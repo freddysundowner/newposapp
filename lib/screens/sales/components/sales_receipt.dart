@@ -32,6 +32,8 @@ class SalesReceipt extends StatelessWidget {
   List<ReceiptItem> receiptItems = [];
   @override
   Widget build(BuildContext context) {
+
+    print(   receiptItems);
     if (type == "returns") {
       receiptItems = salesController.currentReceipt.value!.returneditems;
     } else {

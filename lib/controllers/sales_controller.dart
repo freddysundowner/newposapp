@@ -891,6 +891,7 @@ class SalesController extends GetxController
       DateTime? fromDate,
       String? type,
       DateTime? toDate}) {
+    print("called");
     currentReceiptReturns.clear();
     allSalesReturns.clear();
     RealmResults<ReceiptItem> response = Sales().getSaleReceipts(
@@ -899,7 +900,9 @@ class SalesController extends GetxController
         type: type,
         fromDate: fromDate,
         toDate: toDate);
+    print("response length is ${response}");
     List<ReceiptItem> salesReturn = response.map((e) => e).toList();
+
     // print(allSalesReturns.length);
     allSalesReturns.value = salesReturn;
 

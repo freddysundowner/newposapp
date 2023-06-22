@@ -177,6 +177,7 @@ class Sales {
       DateTime? fromDate,
       Product? product,
       DateTime? toDate}) {
+
     String filter = "";
     if (type != null) {
       filter += " AND type == 'return'";
@@ -193,7 +194,7 @@ class Sales {
           [shopController.currentShop.value]);
       return _attendantFilterReceipts(returns);
     }
-    if (date!.isNotEmpty) {
+    if (date!=null) {
       RealmResults<ReceiptItem> returns = realmService.realm.query<ReceiptItem>(
           "date == '$date' AND shop == \$0  $filter",
           [shopController.currentShop.value]);
