@@ -6,7 +6,8 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.0.1 <4.0.0'
+#  sdk: '>=3.0.1 <4.0.0'
+  sdk: '>=2.18.4 <3.0.0'
 
 dependencies:
   flutter:
@@ -31,7 +32,8 @@ dependencies:
   url_launcher: ^6.1.10
   realm: 1.0.0
   syncfusion_flutter_datepicker:
-  data_table_2: ^2.5.3
+  data_table_2:
+  flutter_screenutil:
 
 
 dev_dependencies:
