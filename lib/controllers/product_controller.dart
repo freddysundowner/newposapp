@@ -1,21 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
-import 'package:pointify/controllers/AuthController.dart';
-import 'package:pointify/controllers/realm_controller.dart';
+import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/controllers/user_controller.dart';
 import 'package:pointify/screens/stock/stock_page.dart';
 import 'package:pointify/services/category.dart';
-import 'package:pointify/utils/colors.dart';
 import 'package:pointify/widgets/snackBars.dart';
-import 'package:get/get.dart';
-import 'package:intl/intl.dart';
 import 'package:realm/realm.dart';
 
 import '../Real/schema.dart';
-import '../screens/sales/all_sales.dart';
 import '../services/product.dart';
 import '../widgets/loading_dialog.dart';
 
@@ -166,6 +162,8 @@ class ProductController extends GetxController {
     category.text = "";
     minsellingPriceController.text = "";
     selectedSupplier.clear();
+    categoryId.value = null;
+    supplierName.value = "none";
   }
 
   getProductsBySort({required String type, String text = ""}) {
@@ -313,7 +311,7 @@ class ProductController extends GetxController {
   }
 
   getBadStock(
-      { shopId,
+      {shopId,
       String? attendant,
       Product? product,
       DateTime? fromDate,
