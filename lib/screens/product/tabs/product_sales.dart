@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:intl/intl.dart';
-import 'package:pointify/pdfFiles/pdf/product_monthly_report.dart';
 import 'package:pointify/screens/finance/finance_page.dart';
 import 'package:pointify/screens/product/tabs/receipts_sales.dart';
 import 'package:pointify/widgets/months_filter.dart';
@@ -10,6 +9,7 @@ import 'package:pointify/widgets/months_filter.dart';
 import '../../../Real/schema.dart';
 import '../../../controllers/sales_controller.dart';
 import '../../../functions/functions.dart';
+import '../../../pdfFiles/pdf/productmonthlypdf/product_monthly_report.dart';
 import '../../../pdfFiles/pdfpreview.dart';
 import '../../../utils/colors.dart';
 

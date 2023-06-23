@@ -13,7 +13,7 @@ import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/functions/functions.dart';
 import 'package:pointify/widgets/months_filter.dart';
 
-import '../../widgets/normal_text.dart';
+
 
 Future<Uint8List> ProductMonthlyReport(List<ReceiptItem> receipts,
     {required Product product}) async {
