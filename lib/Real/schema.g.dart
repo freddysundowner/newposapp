@@ -883,15 +883,11 @@ class ProductCategory extends _ProductCategory
   ProductCategory(
     ObjectId? id, {
     String? name,
-    Shop? shop,
-    DateTime? createdAt,
-    DateTime? updatedAt,
+    ShopTypes? shopTypes,
   }) {
     RealmObjectBase.set(this, '_id', id);
     RealmObjectBase.set(this, 'name', name);
-    RealmObjectBase.set(this, 'shop', shop);
-    RealmObjectBase.set(this, 'createdAt', createdAt);
-    RealmObjectBase.set(this, 'updatedAt', updatedAt);
+    RealmObjectBase.set(this, 'shopTypes', shopTypes);
   }
 
   ProductCategory._();
@@ -907,23 +903,11 @@ class ProductCategory extends _ProductCategory
   set name(String? value) => RealmObjectBase.set(this, 'name', value);
 
   @override
-  Shop? get shop => RealmObjectBase.get<Shop>(this, 'shop') as Shop?;
+  ShopTypes? get shopTypes =>
+      RealmObjectBase.get<ShopTypes>(this, 'shopTypes') as ShopTypes?;
   @override
-  set shop(covariant Shop? value) => RealmObjectBase.set(this, 'shop', value);
-
-  @override
-  DateTime? get createdAt =>
-      RealmObjectBase.get<DateTime>(this, 'createdAt') as DateTime?;
-  @override
-  set createdAt(DateTime? value) =>
-      RealmObjectBase.set(this, 'createdAt', value);
-
-  @override
-  DateTime? get updatedAt =>
-      RealmObjectBase.get<DateTime>(this, 'updatedAt') as DateTime?;
-  @override
-  set updatedAt(DateTime? value) =>
-      RealmObjectBase.set(this, 'updatedAt', value);
+  set shopTypes(covariant ShopTypes? value) =>
+      RealmObjectBase.set(this, 'shopTypes', value);
 
   @override
   Stream<RealmObjectChanges<ProductCategory>> get changes =>
@@ -942,10 +926,8 @@ class ProductCategory extends _ProductCategory
       SchemaProperty('id', RealmPropertyType.objectid,
           mapTo: '_id', optional: true, primaryKey: true),
       SchemaProperty('name', RealmPropertyType.string, optional: true),
-      SchemaProperty('shop', RealmPropertyType.object,
-          optional: true, linkTarget: 'Shop'),
-      SchemaProperty('createdAt', RealmPropertyType.timestamp, optional: true),
-      SchemaProperty('updatedAt', RealmPropertyType.timestamp, optional: true),
+      SchemaProperty('shopTypes', RealmPropertyType.object,
+          optional: true, linkTarget: 'ShopTypes'),
     ]);
   }
 }

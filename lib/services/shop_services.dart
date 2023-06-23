@@ -12,6 +12,7 @@ class ShopService {
   }
 
   void createShopType(ShopTypes shopTypes) {
+    print("createShopType");
     realmService.realm
         .write<ShopTypes>(() => realmService.realm.add<ShopTypes>(shopTypes));
   }

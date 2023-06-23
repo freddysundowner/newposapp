@@ -136,8 +136,12 @@ class _ProductCategory {
   @MapTo("_id")
   ObjectId? id;
   String? name;
+  _ShopTypes? shopTypes;
+  @Ignored()
   _Shop? shop;
+  @Ignored()
   DateTime? createdAt;
+  @Ignored()
   DateTime? updatedAt;
 }
 

@@ -127,6 +127,7 @@ class AuthController extends GetxController {
         }
       }
     } else {
+      LoginAttendantLoad.value = false;
       generalAlert(title: "Error", message: "UID supplied does not exist");
     }
     LoginAttendantLoad.value = false;
@@ -200,11 +201,11 @@ class AuthController extends GetxController {
   }
 
   Future<void> logOut() async {
-    await Get.find<RealmController>().currentUser!.value?.logOut();
-    Get.find<RealmController>().currentUser?.value = null;
-    shopController.currentShop.value = null;
-    refresh();
     Get.offAll(() => Landing());
+    await Get.find<RealmController>().currentUser!.value?.logOut();
+    // shopController.currentShop.value = null;
+    Get.find<RealmController>().currentUser?.value = null;
+    refresh();
   }
 
   void resetPasswordEmail(String email, String password) {

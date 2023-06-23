@@ -106,7 +106,6 @@ class UserController extends GetxController {
   }
 
   getUser({String? type, int? uid}) async {
-    Interests();
     RealmResults<UserModel> userdata = Users.getUserUser(uid: uid);
     if (type == "login") {
       if (userdata.isEmpty) {
