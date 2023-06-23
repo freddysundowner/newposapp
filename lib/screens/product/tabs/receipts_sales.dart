@@ -11,6 +11,7 @@ import '../../../functions/functions.dart';
 import '../../../utils/colors.dart';
 import '../../../utils/date_filter.dart';
 import '../../../widgets/showReceiptManageModal.dart';
+import '../../../widgets/tab_view.dart';
 import '../product_history.dart';
 
 class ProductReceiptsSales extends StatelessWidget {
@@ -76,6 +77,11 @@ class ProductReceiptsSales extends StatelessWidget {
                             fromDate: salesController.filterStartDate.value,
                             toDate: salesController.filterEndDate.value,
                             product: product);
+                        salesController.getReturns(
+                            product: product,
+                            fromDate: salesController.filterStartDate.value,
+                            toDate: salesController.filterEndDate.value,
+                            type: "return");
                       },
                     ));
               },
@@ -99,35 +105,111 @@ class ProductReceiptsSales extends StatelessWidget {
             const SizedBox(
               height: 10,
             ),
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              child: Text(
-                "TOTAL ${htmlPrice(salesController.productSales.fold(0, (previousValue, element) => previousValue + element.total!))} /=",
-                style:
-                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-            ),
             Divider(),
             Expanded(
-              child: Column(
-                children: [
-                  salesController.productSales.isEmpty
-                      ? const Center(
-                          child: Text("There are no iems to display"),
-                        )
-                      : Expanded(
-                          child: ListView.builder(
-                              shrinkWrap: true,
-                              itemCount: salesController.productSales.length,
-                              itemBuilder: (context, index) {
-                                ReceiptItem receiptItem = salesController
-                                    .productSales
-                                    .elementAt(index);
-                                return productHistoryContainer(receiptItem);
-                              }),
-                        ),
-                ],
-              ),
+              child: DefaultTabController(
+                  initialIndex: 0,
+                  length: 2,
+                  child: Builder(builder: (context) {
+                    return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          TabBar(
+                            controller: DefaultTabController.of(context),
+                            onTap: (index) {
+                              if (index == 0) {
+                                salesController.getSalesByProductId(
+                                    fromDate:
+                                        salesController.filterStartDate.value,
+                                    toDate: salesController.filterEndDate.value,
+                                    product: product);
+                              }
+                              if (index == 1) {
+                                salesController.getReturns(
+                                    product: product,
+                                    fromDate:
+                                        salesController.filterStartDate.value,
+                                    toDate: salesController.filterEndDate.value,
+                                    type: "return");
+                              }
+                            },
+                            tabs: [
+                              Tab(
+                                child: Obx(() => tabView(
+                                    title: "Sales",
+                                    subtitle: htmlPrice(
+                                        salesController.productSales.fold(
+                                            0,
+                                            (previousValue, element) =>
+                                                previousValue +
+                                                element.total!)))),
+                              ),
+                              Tab(
+                                  child: tabView(
+                                      title: "Returns",
+                                      subtitle: htmlPrice(
+                                          salesController.allSalesReturns.fold(
+                                              0,
+                                              (previousValue, element) =>
+                                                  previousValue +
+                                                  element.total!)))),
+                            ],
+                          ),
+                          Expanded(
+                            child: Container(
+                              color: Colors.white,
+                              child: TabBarView(
+                                  controller: DefaultTabController.of(context),
+                                  children: [
+                                    salesController.productSales.isEmpty
+                                        ? const Center(
+                                            child: Text(
+                                                "There are no iems to display"),
+                                          )
+                                        : Expanded(
+                                            child: Obx(
+                                              () => ListView.builder(
+                                                  shrinkWrap: true,
+                                                  itemCount: salesController
+                                                      .productSales.length,
+                                                  itemBuilder:
+                                                      (context, index) {
+                                                    ReceiptItem receiptItem =
+                                                        salesController
+                                                            .productSales
+                                                            .elementAt(index);
+                                                    return productHistoryContainer(
+                                                        receiptItem);
+                                                  }),
+                                            ),
+                                          ),
+                                    salesController.allSalesReturns.isEmpty
+                                        ? const Center(
+                                            child: Text(
+                                                "There are no iems to display"),
+                                          )
+                                        : Expanded(
+                                            child: Obx(
+                                              () => ListView.builder(
+                                                  shrinkWrap: true,
+                                                  itemCount: salesController
+                                                      .allSalesReturns.length,
+                                                  itemBuilder:
+                                                      (context, index) {
+                                                    ReceiptItem receiptItem =
+                                                        salesController
+                                                            .allSalesReturns
+                                                            .elementAt(index);
+                                                    return productHistoryContainer(
+                                                        receiptItem);
+                                                  }),
+                                            ),
+                                          ),
+                                  ]),
+                            ),
+                          )
+                        ]);
+                  })),
             ),
           ],
         ),
@@ -138,8 +220,9 @@ class ProductReceiptsSales extends StatelessWidget {
   Widget productHistoryContainer(ReceiptItem receiptItem) {
     return InkWell(
       onTap: () {
-        if (checkPermission(category: "sales", permission: "manage")) {
-          showReceiptManageModal(Get.context!, receiptItem);
+        if (checkPermission(category: "sales", permission: "manage") &&
+            receiptItem.type != "return") {
+          showReceiptManageModal(Get.context!, receiptItem, product);
         }
       },
       child: Container(
@@ -190,8 +273,8 @@ class ProductReceiptsSales extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                         fontSize: 14),
                   ),
-                  if (receiptItem.quantity == 0)
-                    Text(
+                  if (receiptItem.type == "return")
+                    const Text(
                       "item returned",
                       style: TextStyle(color: Colors.red, fontSize: 13),
                     ),

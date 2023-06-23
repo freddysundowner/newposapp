@@ -41,7 +41,10 @@ class PurchaseController extends GetxController {
   ShopController shopController = Get.find<ShopController>();
 
   get balance =>
-      invoice.value!.balance! - int.parse(textEditingControllerAmount.text);
+      invoice.value!.balance! -
+      int.parse(textEditingControllerAmount.text.isEmpty
+          ? "0"
+          : textEditingControllerAmount.text);
 
   createPurchase({required context, required screen}) async {
     if (invoice.value!.balance! > 0 && invoice.value!.supplier == null) {
@@ -67,7 +70,11 @@ class PurchaseController extends GetxController {
         if (invoiceData.balance! > balance) {
           balance = (balance.abs() + invoiceData.balance!.abs()) * -1;
         } else {
-          balance = balance.abs() - invoiceData.balance!.abs();
+          if (balance < 0) {
+            balance = (balance.abs() - invoiceData.balance!.abs()) * -1;
+          } else {
+            balance = balance - invoiceData.balance!.abs();
+          }
           // if (balance < 0) {
           //   invoiceData.balance = balance;
           // } else {
@@ -261,6 +268,17 @@ class PurchaseController extends GetxController {
         createdAt: DateTime.now(),
         attendantid: Get.find<UserController>().user.value,
         supplier: invoice.supplier);
+
+    // //refund to the wallet if its was a wallet sale
+    // //if it was credit sale return the paid amount to the wallet
+    if (_onCredit(invoice)) {
+      //what was already paid
+      var newBalance =
+          invoice.supplier!.balance! + (quatity * invoiceItem.price!);
+      SupplierService()
+          .updateSupplierWalletbalance(invoice.supplier!, amount: newBalance);
+    }
+
     Purchases().createSaleReceiptItem(returnedReceipt);
 
     //increate product quantity
@@ -286,16 +304,6 @@ class PurchaseController extends GetxController {
         creditBalance:
             invoice.balance! < 0 ? (invoice.balance!.abs() - amount) * -1 : 0,
         returnedItems: returnedReceipt);
-
-    // //refund to the wallet if its was a wallet sale
-    // //if it was credit sale return the paid amount to the wallet
-    if (_onCredit(invoice)) {
-      //what was already paid
-      var newBalance =
-          invoice.supplier!.balance! + (quatity * invoiceItem.price!);
-      SupplierService()
-          .updateSupplierWalletbalance(invoice.supplier!, amount: newBalance);
-    }
     getIvoiceById(invoice);
     currentInvoice.refresh();
   }

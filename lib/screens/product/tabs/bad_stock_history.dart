@@ -10,6 +10,8 @@ import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import '../../../Real/schema.dart';
 import '../../../controllers/product_controller.dart';
 import '../../../functions/functions.dart';
+import '../../../pdfFiles/pdf/productmonthlypdf/monthlypreview.dart';
+import '../../../pdfFiles/pdf/productmonthlypdf/product_monthly_report.dart';
 import '../../../utils/colors.dart';
 import '../../../utils/date_filter.dart';
 import '../../../widgets/months_filter.dart';
@@ -119,15 +121,37 @@ class ProductBadStcokHistory extends StatelessWidget {
                           )
                         ],
                       ),
-                      Container(
-                        padding: const EdgeInsets.all(5),
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            color: AppColors.mainColor),
-                        child: const Icon(
-                          Icons.download_rounded,
-                          color: Colors.white,
-                          size: 15,
+                      InkWell(
+                        onTap: () {
+                          Get.to(() => MonthlyPreviewPage(
+                              sales: monhts
+                                  .map((e) => [
+                                        e["month"],
+                                        htmlPrice(getSalesTotal(e["month"],
+                                            productController.badstocks,
+                                            type: "badstock")),
+                                      ])
+                                  .toList(),
+                              type: "Product Bad Stock",
+                              product: product,
+                              title: "Monthly bad stock for ${product!.name!}",
+                              total: productController.badstocks.fold(
+                                  0,
+                                  (previousValue, element) =>
+                                      previousValue! +
+                                      (element.quantity! *
+                                          element.product!.buyingPrice!))));
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(5),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color: AppColors.mainColor),
+                          child: const Icon(
+                            Icons.download_rounded,
+                            color: Colors.white,
+                            size: 15,
+                          ),
                         ),
                       )
                     ],

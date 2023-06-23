@@ -16,8 +16,7 @@ import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 import '../../controllers/expense_controller.dart';
 import '../../controllers/sales_controller.dart';
-import '../../utils/dates.dart';
-import '../../widgets/bigtext.dart';
+import '../../utils/date_filter.dart';
 import '../sales/all_sales.dart';
 
 class ProfitPage extends StatelessWidget {
@@ -27,23 +26,6 @@ class ProfitPage extends StatelessWidget {
   SalesController salesController = Get.find<SalesController>();
   ShopController shopController = Get.find<ShopController>();
   ExpenseController expensesController = Get.find<ExpenseController>();
-
-  String _range = '';
-  void _onSelectionChanged(DateRangePickerSelectionChangedArgs args) {
-    if (args.value is PickerDateRange) {
-      _range = '${DateFormat('dd/MM/yyyy').format(args.value.startDate)} -'
-          ' ${DateFormat('dd/MM/yyyy').format(args.value.endDate ?? args.value.startDate)}';
-
-      if (args.value.startDate != null && args.value.endDate != null) {
-        salesController.getProfitTransaction(
-          fromDatee: DateFormat('yyy-MM-dd').format(args.value.startDate),
-          toDatee: DateFormat('yyy-MM-dd')
-              .format(args.value.endDate ?? args.value.startDate),
-        );
-        Get.to(() => ProfitPage(headline: "from\n$_range"));
-      }
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -87,38 +69,24 @@ class ProfitPage extends StatelessWidget {
       actions: [
         InkWell(
             onTap: () async {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  print(salesController.currentYear.value);
-                  return Scaffold(
-                    body: Container(
-                      color: Colors.white,
-                      // child: SfDateRangePicker(
-                      //   initialSelectedDate:
-                      //       DateTime(salesController.currentYear.value),
-                      //   confirmText: "Filter",
-                      //   showActionButtons: true,
-                      //   onSelectionChanged: _onSelectionChanged,
-                      //   selectionMode: DateRangePickerSelectionMode.range,
-                      //   monthViewSettings: DateRangePickerMonthViewSettings(),
-                      //   headerStyle: DateRangePickerHeaderStyle(
-                      //       textAlign: TextAlign.center,
-                      //       textStyle: TextStyle(
-                      //           fontWeight: FontWeight.bold,
-                      //           color: AppColors.mainColor,
-                      //           fontSize: 18)),
-                      //   onSubmit: (v) {
-                      //     print(v);
-                      //   },
-                      //   onCancel: () {
-                      //     Get.back();
-                      //   },
-                      // ),
-                    ),
-                  );
-                },
-              );
+              Get.to(() => DateFilter(
+                    function: (value) {
+                      if (value is PickerDateRange) {
+                        final DateTime rangeStartDate = value.startDate!;
+                        final DateTime rangeEndDate = value.endDate!;
+                        salesController.filterStartDate.value = rangeStartDate;
+                        salesController.filterEndDate.value = rangeEndDate;
+                      } else if (value is DateTime) {
+                        final DateTime selectedDate = value;
+                        salesController.filterStartDate.value = selectedDate;
+                        salesController.filterEndDate.value = selectedDate;
+                      }
+
+                      salesController.getProfitTransaction(
+                          fromDate: salesController.filterStartDate.value,
+                          toDate: salesController.filterEndDate.value);
+                    },
+                  ));
             },
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 20),
@@ -330,6 +298,10 @@ class ProfitPage extends StatelessWidget {
                   const SizedBox(height: 15),
                   InkWell(
                     onTap: () {
+                      expensesController.getExpenseByDate(
+                        fromDate: expensesController.filterStartDate.value,
+                        toDate: expensesController.filterEnndStartDate.value,
+                      );
                       Get.to(() => ExpensePage());
                     },
                     child: Row(

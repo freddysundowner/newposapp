@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pointify/controllers/expense_controller.dart';
 import 'package:pointify/controllers/user_controller.dart';
 import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
@@ -26,7 +27,9 @@ import '../../widgets/bigtext.dart';
 import '../../widgets/normal_text.dart';
 import '../../widgets/smalltext.dart';
 import '../customers/customers_page.dart';
+import '../finance/expense_page.dart';
 import '../finance/finance_page.dart';
+import '../finance/profit_page.dart';
 import '../sales/all_sales.dart';
 import '../sales/sales_page.dart';
 import '../stock/stock_page.dart';
@@ -35,6 +38,7 @@ import 'dart:math' as math;
 class HomePage extends StatelessWidget {
   ShopController shopController = Get.find<ShopController>();
   SalesController salesController = Get.put(SalesController());
+  ExpenseController expenseController = Get.put(ExpenseController());
   UserController attendantController = Get.put(UserController());
 
   AuthController authController = Get.find<AuthController>();
@@ -373,11 +377,43 @@ class HomePage extends StatelessWidget {
                                 onPageChanged: (value) {},
                                 itemCount: salesController.homecards.length,
                                 itemBuilder: (context, index) {
-                                  return showTodaySales(
-                                      context,
-                                      index,
-                                      salesController.homecards
-                                          .elementAt(index));
+                                  HomeCard homecard = salesController.homecards
+                                      .elementAt(index);
+                                  return InkWell(
+                                    onTap: () {
+                                      var fromDate = DateTime.parse(
+                                          DateFormat("yyy-MM-dd")
+                                              .format(DateTime.now()));
+                                      var toDate = DateTime.parse(
+                                          DateFormat("yyy-MM-dd").format(
+                                              DateTime.now()
+                                                  .add(Duration(days: 1))));
+
+                                      print(homecard.key);
+                                      if (homecard.key == "today") {
+                                        salesController.getSales(
+                                            fromDate: fromDate, toDate: toDate);
+                                        Get.to(AllSalesPage(
+                                          page: "profitPage",
+                                        ));
+                                      }
+                                      if (homecard.key == "expenses") {
+                                        expenseController.getExpenseByDate(
+                                          fromDate: fromDate,
+                                          toDate: toDate,
+                                        );
+                                        Get.to(() => ExpensePage());
+                                      }
+                                      if (homecard.key == "profit") {
+                                        salesController.getProfitTransaction(
+                                            fromDate: fromDate, toDate: toDate);
+                                        Get.to(() =>
+                                            ProfitPage(headline: "Today"));
+                                      }
+                                    },
+                                    child: showTodaySales(
+                                        context, index, homecard),
+                                  );
                                 }),
                           ),
                         ),

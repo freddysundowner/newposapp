@@ -133,7 +133,7 @@ class _GraphAnalysisState extends State<GraphAnalysis> {
               height: 10,
             ),
             Text(
-              "TOTAL PROFIT(net) ${htmlPrice(salesController.profitdata.fold(0, (previousValue, element) => previousValue + element.sales.toInt()).toString())}",
+              "TOTAL PROFIT(net) ${htmlPrice(salesController.netProfit.value)}",
               style: TextStyle(
                   color: AppColors.mainColor,
                   fontSize: 18,

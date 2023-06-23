@@ -10,13 +10,11 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:pointify/Real/schema.dart';
 import 'package:pointify/controllers/product_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
-import 'package:pointify/functions/functions.dart';
-import 'package:pointify/widgets/months_filter.dart';
 
-import '../../widgets/normal_text.dart';
+import '../../../functions/functions.dart';
 
-Future<Uint8List> ProductMonthlyReport(List<ReceiptItem> receipts,
-    {required Product product}) async {
+Future<Uint8List> ProductMonthlyReport(data,
+    {required Product product, String? title, int? total}) async {
   ShopController shopController = Get.find<ShopController>();
   ProductController productController = Get.find<ProductController>();
   final pdf = Document();
@@ -35,7 +33,7 @@ Future<Uint8List> ProductMonthlyReport(List<ReceiptItem> receipts,
                           TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
                       textAlign: TextAlign.center)),
               Center(
-                  child: Text("Monthly sales for ${product.name!}",
+                  child: Text(title ?? "",
                       style:
                           TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
                       textAlign: TextAlign.center)),
@@ -51,12 +49,8 @@ Future<Uint8List> ProductMonthlyReport(List<ReceiptItem> receipts,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text("Total Cash: "),
-                          Text(
-                              htmlPrice(receipts.fold(
-                                  0,
-                                  (previousValue, element) =>
-                                      previousValue + element.total!)),
+                          Text("Total: "),
+                          Text(htmlPrice(total ?? 0),
                               style: TextStyle(
                                   fontWeight: FontWeight.bold, fontSize: 16))
                         ]),
@@ -68,14 +62,9 @@ Future<Uint8List> ProductMonthlyReport(List<ReceiptItem> receipts,
                     border: TableBorder.all(width: 1), //table border
                     headers: [
                       "MONTH",
-                      "SALES",
+                      "TOTAL",
                     ],
-                    data: monhts
-                        .map((e) => [
-                              e["month"],
-                              htmlPrice(getSalesTotal(e["month"], receipts)),
-                            ])
-                        .toList())
+                    data: data)
               ])),
               SizedBox(height: 10),
             ],
@@ -87,8 +76,28 @@ Future<Uint8List> ProductMonthlyReport(List<ReceiptItem> receipts,
   return pdf.save();
 }
 
-getSalesTotal(String month, productSales) {
-  return productSales
+getSalesTotal(String month, data, {String? type}) {
+  if (type != null) {
+    if (type == "stockin") {
+      List<InvoiceItem> invoices = data as List<InvoiceItem>;
+      return invoices
+          .where((p0) =>
+              getDate("MMMM", p0.createdAt!.millisecondsSinceEpoch) == month)
+          .fold(0, (previousValue, element) => previousValue + element.total!);
+    }
+    if (type == "badstock") {
+      List<BadStock> invoices = data as List<BadStock>;
+      return invoices
+          .where((p0) =>
+              getDate("MMMM", p0.createdAt!.millisecondsSinceEpoch) == month)
+          .fold(
+              0,
+              (previousValue, element) =>
+                  previousValue +
+                  (element.quantity! * element.product!.buyingPrice!));
+    }
+  }
+  return data
       .where((p0) => getDate("MMMM", p0.soldOn!) == month)
       .fold(0, (previousValue, element) => previousValue + element.total!);
 }

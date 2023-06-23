@@ -388,6 +388,8 @@ class _ReceiptItem {
   int? quantity;
   _Shop? shop;
   String? type;
+  String? receiptNo;
+  ObjectId? receiptId;
   String? date;
   int? soldOn;
   int? total;

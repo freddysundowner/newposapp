@@ -3,16 +3,24 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:pointify/pdfFiles/pdf/product_monthly_report.dart';
+import 'package:pointify/pdfFiles/pdf/productmonthlypdf/product_monthly_report.dart';
 import 'package:printing/printing.dart';
 import '../../../Real/schema.dart';
 import '../sales_receipt.dart';
 
 class MonthlyPreviewPage extends StatelessWidget {
-  final sales;
+  var sales;
   String? type;
+  String? title;
+  int? total;
   Product? product;
-  MonthlyPreviewPage({Key? key, this.sales, this.type, required this.product})
+  MonthlyPreviewPage(
+      {Key? key,
+      this.sales,
+      this.type,
+      required this.product,
+      this.title,
+      this.total})
       : super(key: key);
 
   @override
@@ -22,7 +30,8 @@ class MonthlyPreviewPage extends StatelessWidget {
         title: Text(type ?? ""),
       ),
       body: PdfPreview(
-        build: (context) => ProductMonthlyReport(sales, product: product!),
+        build: (context) => ProductMonthlyReport(sales,
+            product: product!, title: title, total: total),
       ),
     );
   }

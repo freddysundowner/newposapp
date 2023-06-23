@@ -13,7 +13,7 @@ generalAlert(
         context: Get.context!,
         builder: (_) {
           return AlertDialog(
-            title: Text(title!),
+            title: Text(title ?? ""),
             content: Text(message),
             actions: [
               TextButton(

@@ -2604,6 +2604,8 @@ class ReceiptItem extends _ReceiptItem
     int? quantity,
     Shop? shop,
     String? type,
+    String? receiptNo,
+    ObjectId? receiptId,
     String? date,
     int? soldOn,
     int? total,
@@ -2620,6 +2622,8 @@ class ReceiptItem extends _ReceiptItem
     RealmObjectBase.set(this, 'quantity', quantity);
     RealmObjectBase.set(this, 'shop', shop);
     RealmObjectBase.set(this, 'type', type);
+    RealmObjectBase.set(this, 'receiptNo', receiptNo);
+    RealmObjectBase.set(this, 'receiptId', receiptId);
     RealmObjectBase.set(this, 'date', date);
     RealmObjectBase.set(this, 'soldOn', soldOn);
     RealmObjectBase.set(this, 'total', total);
@@ -2678,6 +2682,19 @@ class ReceiptItem extends _ReceiptItem
   String? get type => RealmObjectBase.get<String>(this, 'type') as String?;
   @override
   set type(String? value) => RealmObjectBase.set(this, 'type', value);
+
+  @override
+  String? get receiptNo =>
+      RealmObjectBase.get<String>(this, 'receiptNo') as String?;
+  @override
+  set receiptNo(String? value) => RealmObjectBase.set(this, 'receiptNo', value);
+
+  @override
+  ObjectId? get receiptId =>
+      RealmObjectBase.get<ObjectId>(this, 'receiptId') as ObjectId?;
+  @override
+  set receiptId(ObjectId? value) =>
+      RealmObjectBase.set(this, 'receiptId', value);
 
   @override
   String? get date => RealmObjectBase.get<String>(this, 'date') as String?;
@@ -2745,6 +2762,8 @@ class ReceiptItem extends _ReceiptItem
       SchemaProperty('shop', RealmPropertyType.object,
           optional: true, linkTarget: 'Shop'),
       SchemaProperty('type', RealmPropertyType.string, optional: true),
+      SchemaProperty('receiptNo', RealmPropertyType.string, optional: true),
+      SchemaProperty('receiptId', RealmPropertyType.objectid, optional: true),
       SchemaProperty('date', RealmPropertyType.string, optional: true),
       SchemaProperty('soldOn', RealmPropertyType.int, optional: true),
       SchemaProperty('total', RealmPropertyType.int, optional: true),

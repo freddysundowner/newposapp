@@ -694,20 +694,23 @@ class CreateSale extends StatelessWidget {
                                           actions: [
                                             IconButton(
                                                 onPressed: () {
-                                                  if (MediaQuery.of(context)
-                                                          .size
-                                                          .width >
-                                                      600) {
-                                                    Get.find<HomeController>()
-                                                        .selectedWidget
-                                                        .value = CreateCustomer(
-                                                      page: "customersPage",
-                                                    );
-                                                  } else {
-                                                    Get.to(() => CreateCustomer(
-                                                          page: "customersPage",
-                                                        ));
-                                                  }
+                                                  // if (MediaQuery.of(context)
+                                                  //         .size
+                                                  //         .width >
+                                                  //     600) {
+                                                  //   Get.find<HomeController>()
+                                                  //       .selectedWidget
+                                                  //       .value = CreateCustomer(
+                                                  //     page: "customersPage",
+                                                  //   );
+                                                  // } else {
+                                                  //   Get.to(() => CreateCustomer(
+                                                  //         page: "customersPage",
+                                                  //       ));
+                                                  // }
+                                                  Get.to(() => CreateCustomer(
+                                                        page: "customersPage",
+                                                      ));
                                                 },
                                                 icon: Icon(Icons.add))
                                           ],

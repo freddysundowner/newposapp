@@ -134,40 +134,40 @@ class AuthController extends GetxController {
 
   signUser(context) async {
     if (signupkey.currentState!.validate()) {
-      try {
-        signuserLoad.value = true;
-        await registerUserEmailPassword(
-            emailController.text, passwordController.text);
-        User loggedInUser = await logInUserEmailPassword(
-            emailController.text, passwordController.text);
-        Users.createUser(UserModel(
-          ObjectId.fromHexString(loggedInUser.id),
-          Random().nextInt(098459),
-          usertype: "admin",
-          deleted: false,
-          email: emailController.text,
-          phonenumber: phoneController.text,
-          username: "Admin",
-          authId: loggedInUser.id,
-          fullnames: nameController.text,
-        ));
-        clearDataFromTextFields();
-        await Get.find<UserController>().getUser();
-        if (MediaQuery.of(context).size.width > 600) {
-          Get.find<HomeController>().selectedWidget.value =
-              CreateShop(page: "home");
-        } else {
-          Get.off(() => CreateShop(page: "home"));
-        }
-
-        signuserLoad.value = false;
-      } catch (e) {
-        print(e);
-        showSnackBar(
-            message: "error creating account, try another email",
-            color: Colors.red);
-        signuserLoad.value = false;
+      // try {
+      signuserLoad.value = true;
+      await registerUserEmailPassword(
+          emailController.text, passwordController.text);
+      User loggedInUser = await logInUserEmailPassword(
+          emailController.text, passwordController.text);
+      Users.createUser(UserModel(
+        ObjectId.fromHexString(loggedInUser.id),
+        Random().nextInt(098459),
+        usertype: "admin",
+        deleted: false,
+        email: emailController.text,
+        phonenumber: phoneController.text,
+        username: "Admin",
+        authId: loggedInUser.id,
+        fullnames: nameController.text,
+      ));
+      clearDataFromTextFields();
+      await Get.find<UserController>().getUser();
+      if (MediaQuery.of(context).size.width > 600) {
+        Get.find<HomeController>().selectedWidget.value =
+            CreateShop(page: "home");
+      } else {
+        Get.off(() => CreateShop(page: "home"));
       }
+
+      signuserLoad.value = false;
+      // } catch (e) {
+      //   print(e);
+      //   showSnackBar(
+      //       message: "error creating account, try another email",
+      //       color: Colors.red);
+      //   signuserLoad.value = false;
+      // }
     } else {
       showSnackBar(message: "please fill all fields", color: Colors.red);
     }
@@ -202,6 +202,7 @@ class AuthController extends GetxController {
   Future<void> logOut() async {
     await Get.find<RealmController>().currentUser!.value?.logOut();
     Get.find<RealmController>().currentUser?.value = null;
+    shopController.currentShop.value = null;
     refresh();
     Get.offAll(() => Landing());
   }
