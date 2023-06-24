@@ -12,6 +12,10 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.2
+  window_size:
+    git:
+      url: https://github.com/google/flutter-desktop-embedding
+      path: plugins/window_size
   get: ^4.6.5
   http: ^0.13.4
   open_file: ^3.2.1
@@ -33,7 +37,6 @@ dependencies:
   syncfusion_flutter_datepicker:
   data_table_2: ^2.5.3
   printing: ^5.11.0
-
 dev_dependencies:
   flutter_test:
     sdk: flutter
