@@ -6,6 +6,7 @@ import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/controllers/user_controller.dart';
 import 'package:pointify/controllers/wallet_controller.dart';
 import 'package:pointify/main.dart';
+import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/cash_flow/wallet_page.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -416,8 +417,7 @@ class SalesController extends GetxController
   }
 
   saveSale({screen}) {
-    String size =
-        MediaQuery.of(Get.context!).size.width > 600 ? "large" : "small";
+    String size = MediaQuery.of(Get.context!).size.width > 600 ? "large" : "small";
     if (_paymentType(receipt.value!) == "Credit") {
       if (receipt.value?.customerId == null) {
         generalAlert(
@@ -566,10 +566,21 @@ class SalesController extends GetxController
       Products().createProductHistory(productHistoryModel);
     }
     Get.back();
-    Get.to(() => SalesReceipt(
-          salesModel: receiptData,
-          type: "",
-        ));
+    if(isSmallScreen(Get.context!)){
+      Get.to(() => SalesReceipt(
+        salesModel: receiptData,
+        type: "",
+      ));
+    }else{
+      Get.find<HomeController>()
+          .selectedWidget
+          .value =SalesReceipt(
+        salesModel: receiptData,
+        type: "",
+      );
+
+    }
+
     receipt.value = null;
     amountPaid.text = "";
     refresh();

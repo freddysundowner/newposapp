@@ -101,12 +101,12 @@ class AttendantsPage extends StatelessWidget {
                                           label: Text('',
                                               textAlign: TextAlign.center)),
                                     ],
-                                    rows: List.generate(
-                                        results.length,
-                                        (index) {
-                                      UserModel attendantModel = results.elementAt(index);
+                                    rows:
+                                        List.generate(results.length, (index) {
+                                      UserModel attendantModel =
+                                          results.elementAt(index);
                                       final y = attendantModel.username;
-                                      final x= attendantModel.UNID;
+                                      final x = attendantModel.UNID;
 
                                       return DataRow(cells: [
                                         DataCell(Text(y!)),
@@ -155,27 +155,7 @@ class AttendantsPage extends StatelessWidget {
               ],
             ),
           ),
-        ))
-        //       ResponsiveWidget(
-        //           largeScreen: Container(
-        //             padding: EdgeInsets.all(10),
-        //             child: SingleChildScrollView(
-        //               child: Column(
-        //                 crossAxisAlignment: CrossAxisAlignment.start,
-        //                 children: [
-        //                   createAttendantWidget(context),
-        //                   Obx(() {
-        //                     return attendantController.users.isEmpty
-        //                         ? noItemsFound(context, true)
-        //                         :
-        // ;
-        //                   })
-        //                 ],
-        //               ),
-        //             ),
-        //           ),
-        //           smallScreen:)
-        );
+        )));
   }
 
   void switchInit({UserModel? usermodel}) {

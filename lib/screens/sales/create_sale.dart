@@ -48,222 +48,25 @@ class CreateSale extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: () async {
-        salesController.receipt.value = null;
-        return true;
-      },
-      child: ResponsiveWidget(
-        largeScreen: Scaffold(
+        onWillPop: () async {
+          salesController.receipt.value = null;
+          return true;
+        },
+        child: Scaffold(
           backgroundColor: Colors.white,
           appBar: AppBar(
             backgroundColor: Colors.white,
             elevation: 0.3,
             titleSpacing: 0.0,
-            centerTitle: false,
             leading: IconButton(
                 onPressed: () {
-                  salesController.receipt.value = null;
-                  if (page == "allSales") {
-                    Get.find<HomeController>().selectedWidget.value =
-                        AllSalesPage(page: "AttendantLanding");
+                  if (isSmallScreen(context)) {
+                    Get.back();
                   } else {
                     Get.find<HomeController>().selectedWidget.value =
                         HomePage();
                   }
-                },
-                icon: Icon(
-                  Icons.arrow_back_ios,
-                  color: Colors.black,
-                )),
-            title:
-                majorTitle(title: "New Sale", color: Colors.black, size: 18.0),
-          ),
-          body: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 10),
-                Container(
-                  padding: EdgeInsets.only(left: 30, right: 80),
-                  child: searchWidget(
-                      autoCompletKey: _autocompleteKey,
-                      focusNode: _focusNode,
-                      shopId: shopController.currentShop.value?.id,
-                      page: "createSale"),
-                ),
-                Obx(() {
-                  return salesController.receipt.value == null
-                      ? Container()
-                      : Padding(
-                          padding: const EdgeInsets.only(right: 30.0, top: 10),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              Text(
-                                  "Totals:${salesController.receipt.value?.grandTotal}"),
-                              SizedBox(
-                                width: 10,
-                              ),
-                              InkWell(
-                                splashColor: Colors.transparent,
-                                onTap: () {
-                                  if (salesController.receipt.value == null) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(
-                                            content: Text(
-                                                "Please select products to sell")));
-                                  } else {
-                                    salesController.receipt.value?.customerId =
-                                        null;
-                                    salesController
-                                        .receipt.value?.paymentMethod = "Cash";
-                                    customersController
-                                        .getCustomersInShop("all");
-                                    confirmPayment(context, "large");
-                                  }
-                                },
-                                child: majorTitle(
-                                    title: "Proceed To Payment",
-                                    color: AppColors.mainColor,
-                                    size: 14.0),
-                              )
-                            ],
-                          ),
-                        );
-                }),
-                const SizedBox(height: 20),
-                Obx(() {
-                  return productController.getProductLoad.value
-                      ? Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SizedBox(
-                                height:
-                                    MediaQuery.of(context).size.height * 0.4),
-                            Center(child: CircularProgressIndicator()),
-                          ],
-                        )
-                      : salesController.receipt.value == null
-                          ? noItemsFound(context, true)
-                          : Container(
-                              width: double.infinity,
-                              padding: EdgeInsets.symmetric(horizontal: 30),
-                              child: Theme(
-                                data: Theme.of(context)
-                                    .copyWith(dividerColor: Colors.grey),
-                                child: DataTable(
-                                  decoration: BoxDecoration(
-                                      border: Border.all(
-                                    width: 1,
-                                    color: Colors.black,
-                                  )),
-                                  columnSpacing: 50.0,
-                                  columns: [
-                                    const DataColumn(
-                                        label: Text('Product',
-                                            textAlign: TextAlign.center)),
-                                    DataColumn(
-                                        label: Text('Qty',
-                                            textAlign: TextAlign.center)),
-                                    DataColumn(
-                                        label: Text(
-                                            'Price(${shopController.currentShop.value?.currency})',
-                                            textAlign: TextAlign.center)),
-                                    DataColumn(
-                                        label: Text('Sale Total',
-                                            textAlign: TextAlign.center)),
-                                    DataColumn(
-                                        label: Text('',
-                                            textAlign: TextAlign.center)),
-                                  ],
-                                  rows: List.generate(
-                                      salesController.receipt.value!.items
-                                          .length, (index) {
-                                    ReceiptItem receiptItem = salesController
-                                        .receipt.value!.items
-                                        .elementAt(index);
-                                    final y = receiptItem.product!.name!;
-                                    final x = receiptItem.quantity.toString();
-                                    final z = receiptItem.price;
-                                    final w = receiptItem.price! *
-                                        receiptItem.quantity!;
 
-                                    return DataRow(cells: [
-                                      DataCell(
-                                          Container(width: 75, child: Text(y))),
-                                      DataCell(Container(
-                                        child: Row(children: [
-                                          IconButton(
-                                              onPressed: () {
-                                                salesController
-                                                    .decrementItem(index);
-                                              },
-                                              icon: const Icon(Icons.remove,
-                                                  color: Colors.black,
-                                                  size: 16)),
-                                          Container(
-                                              padding: EdgeInsets.only(
-                                                  top: 5,
-                                                  bottom: 5,
-                                                  right: 8,
-                                                  left: 8),
-                                              decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(5),
-                                                border: Border.all(
-                                                    color: Colors.black,
-                                                    width: 0.1),
-                                                color: Colors.grey,
-                                              ),
-                                              child: majorTitle(
-                                                  title:
-                                                      "${receiptItem.quantity}",
-                                                  color: Colors.black,
-                                                  size: 12.0)),
-                                          IconButton(
-                                              onPressed: () {
-                                                salesController
-                                                    .incrementItem(index);
-                                              },
-                                              icon: Icon(Icons.add,
-                                                  color: Colors.black,
-                                                  size: 16)),
-                                        ]),
-                                      )),
-                                      DataCell(
-                                          Container(child: Text(z.toString()))),
-                                      DataCell(
-                                          Container(child: Text(w.toString()))),
-                                      DataCell(
-                                        Container(
-                                          child: Align(
-                                              alignment: Alignment.topRight,
-                                              child: showPopUpdialog(
-                                                  context: context,
-                                                  index: index,
-                                                  receiptItem: receiptItem)),
-                                        ),
-                                      )
-                                    ]);
-                                  }),
-                                ),
-                              ),
-                            );
-                }),
-                SizedBox(height: 60),
-              ],
-            ),
-          ),
-        ),
-        smallScreen: Scaffold(
-          backgroundColor: Colors.white,
-          appBar: AppBar(
-            backgroundColor: Colors.white,
-            elevation: 0.3,
-            titleSpacing: 0.0,
-            leading: IconButton(
-                onPressed: () {
-                  Get.back();
                   salesController.receipt.value = null;
                 },
                 icon: const Icon(
@@ -283,12 +86,21 @@ class CreateSale extends StatelessWidget {
                             productController.getProductsBySort(
                               type: "all",
                             );
-                            Get.to(() => ProductsScreen(
+                            if (isSmallScreen(context)) {
+                              Get.to(() => ProductsScreen(
                                   type: "sale",
                                   function: (Product product) {
                                     addToCart(product);
-                                  },
-                                ));
+                                  }));
+                            }
+                            else {
+                              Get.find<HomeController>().selectedWidget.value =
+                                  ProductsScreen(
+                                      type: "sale",
+                                      function: (Product product) {
+                                        addToCart(product);
+                                      });
+                            }
                           },
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
@@ -356,11 +168,21 @@ class CreateSale extends StatelessWidget {
                                     productController.getProductsBySort(
                                       type: "all",
                                     );
-                                    Get.to(() => ProductsScreen(
-                                        type: "sale",
-                                        function: (Product product) {
-                                          addToCart(product);
-                                        }));
+                                    if (isSmallScreen(context)) {
+                                      Get.to(() => ProductsScreen(
+                                          type: "sale",
+                                          function: (Product product) {
+                                            addToCart(product);
+                                          }));
+                                    }
+                                    else {
+                                      Get.find<HomeController>().selectedWidget.value =
+                                          ProductsScreen(
+                                              type: "sale",
+                                              function: (Product product) {
+                                                addToCart(product);
+                                              });
+                                    }
                                   },
                                   child: Container(
                                     padding: EdgeInsets.fromLTRB(15, 5, 15, 5),
@@ -572,9 +394,8 @@ class CreateSale extends StatelessWidget {
                     ),
             );
           }),
-        ),
-      ),
-    );
+        )
+        );
   }
 
   confirmPayment(context, type) {
@@ -1011,7 +832,13 @@ class CreateSale extends StatelessWidget {
         shop: Get.find<ShopController>().currentShop.value,
         createdAt: DateTime.now(),
         price: product.selling);
-    Get.back();
+    if(isSmallScreen(Get.context!)){
+      Get.back();
+    }else{
+      Get.find<HomeController>().selectedWidget.value =
+          CreateSale();
+    }
+
     salesController.changesaleItem(re);
   }
 }
