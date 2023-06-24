@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pointify/controllers/AuthController.dart';
 import 'package:pointify/controllers/home_controller.dart';
+import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/screens/attendant/attendants_page.dart';
 import 'package:pointify/screens/shop/shops_page.dart';
 import 'package:pointify/utils/colors.dart';
@@ -15,12 +16,13 @@ import 'delete_dialog.dart';
 class SideMenu extends StatelessWidget {
   SideMenu({Key? key}) : super(key: key);
   HomeController homeController = Get.find<HomeController>();
+  ShopController shopController = Get.find<ShopController>();
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.only(top: 10),
-      color: Color(0xff3a3055),
+      padding: const EdgeInsets.only(top: 10),
+      color: const Color(0xff3a3055),
       child: ListView(
         children: sidePages
             .map((e) => sideMenuItems(
@@ -38,6 +40,7 @@ class SideMenu extends StatelessWidget {
             if (title == "Home") {
               homeController.selectedWidget.value = HomePage();
             } else if (title == "Shops") {
+              shopController.getShops();
               homeController.selectedWidget.value = ShopsPage();
             } else if (title == "Attendants") {
               homeController.selectedWidget.value = AttendantsPage();
@@ -57,13 +60,13 @@ class SideMenu extends StatelessWidget {
           child: Container(
             decoration: BoxDecoration(
               color: homeController.activeItem.value == title
-                  ? Color(0xffbe741f)
-                  : Color(0xff3a3055),
+                  ? const Color(0xffbe741f)
+                  : const Color(0xff3a3055),
               borderRadius: BorderRadius.circular(10)
             ),
             
-            padding: EdgeInsets.symmetric(vertical: 2,horizontal: 3).copyWith(left: 6),
-            margin: EdgeInsets.symmetric(horizontal: 3).copyWith(top: 3),
+            padding: const EdgeInsets.symmetric(vertical: 2,horizontal: 3).copyWith(left: 6),
+            margin: const EdgeInsets.symmetric(horizontal: 3).copyWith(top: 3),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -77,12 +80,12 @@ class SideMenu extends StatelessWidget {
                       icon,
                       color: Colors.white,
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 5,
                     ),
                     Text(
-                      "${title}",
-                      style: TextStyle(
+                      "$title",
+                      style: const TextStyle(
                           color: Colors.white),
                     )
                   ],
