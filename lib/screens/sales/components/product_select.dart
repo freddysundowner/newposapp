@@ -46,11 +46,11 @@ Widget productListItemCard(
                     fontSize: 14,
                     fontWeight: FontWeight.bold),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 5,
               ),
               Text(
-                product.category!.name!,
+                product.category==null?"": product.category!.name!,
                 style: const TextStyle(color: Colors.grey, fontSize: 16),
               ),
             ],
