@@ -103,7 +103,7 @@ class SignUp extends StatelessWidget {
                       return null;
                     },
                     keyboardType: TextInputType.text,
-                    decoration: ResponsiveWidget.isSmallScreen(context)
+                    decoration: isSmallScreen(context)
                         ? ThemeHelper().textInputDecoration(
                             'Username*', 'Enter your username')
                         : ThemeHelper().textInputDecorationDesktop(
@@ -115,7 +115,7 @@ class SignUp extends StatelessWidget {
                   decoration: ThemeHelper().inputBoxDecorationShaddow(),
                   child: TextFormField(
                     controller: authController.emailController,
-                    decoration: ResponsiveWidget.isSmallScreen(context)
+                    decoration: isSmallScreen(context)
                         ? ThemeHelper().textInputDecoration(
                             "E-mail address*", "Enter your email")
                         : ThemeHelper().textInputDecorationDesktop(
@@ -134,7 +134,7 @@ class SignUp extends StatelessWidget {
                   decoration: ThemeHelper().inputBoxDecorationShaddow(),
                   child: TextFormField(
                     controller: authController.phoneController,
-                    decoration: ResponsiveWidget.isSmallScreen(context)
+                    decoration: isSmallScreen(context)
                         ? ThemeHelper().textInputDecoration(
                             "Mobile Number*", "Enter your mobile number")
                         : ThemeHelper().textInputDecorationDesktop(
@@ -155,7 +155,7 @@ class SignUp extends StatelessWidget {
                     controller: authController.passwordController,
                     keyboardType: TextInputType.text,
                     obscureText: true,
-                    decoration: ResponsiveWidget.isSmallScreen(context)
+                    decoration: isSmallScreen(context)
                         ? ThemeHelper().textInputDecoration(
                             "Password*", "Enter your password")
                         : ThemeHelper().textInputDecorationDesktop(

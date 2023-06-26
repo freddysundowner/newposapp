@@ -115,7 +115,7 @@ class ForgotPassword extends StatelessWidget {
                     return null;
                   },
                   keyboardType: TextInputType.emailAddress,
-                  decoration: ResponsiveWidget.isSmallScreen(context)
+                  decoration: isSmallScreen(context)
                       ? ThemeHelper()
                           .textInputDecoration('Email', 'Enter your email')
                       : ThemeHelper().textInputDecorationDesktop(
@@ -134,7 +134,7 @@ class ForgotPassword extends StatelessWidget {
                     return null;
                   },
                   keyboardType: TextInputType.emailAddress,
-                  decoration: ResponsiveWidget.isSmallScreen(context)
+                  decoration: isSmallScreen(context)
                       ? ThemeHelper().textInputDecoration(
                           'new password', 'Enter your new password')
                       : ThemeHelper().textInputDecorationDesktop(
@@ -156,7 +156,7 @@ class ForgotPassword extends StatelessWidget {
                     return null;
                   },
                   keyboardType: TextInputType.emailAddress,
-                  decoration: ResponsiveWidget.isSmallScreen(context)
+                  decoration: isSmallScreen(context)
                       ? ThemeHelper().textInputDecoration(
                           'confirm password', 'Please confirm password')
                       : ThemeHelper().textInputDecorationDesktop(

@@ -109,7 +109,7 @@ class AdminLogin extends StatelessWidget {
                         return null;
                       },
                       keyboardType: TextInputType.emailAddress,
-                      decoration: ResponsiveWidget.isSmallScreen(context)
+                      decoration: isSmallScreen(context)
                           ? ThemeHelper()
                               .textInputDecoration('Email', 'Enter your email')
                           : ThemeHelper().textInputDecorationDesktop(
@@ -128,7 +128,7 @@ class AdminLogin extends StatelessWidget {
                         }
                         return null;
                       },
-                      decoration: ResponsiveWidget.isSmallScreen(context)
+                      decoration:isSmallScreen(context)
                           ? ThemeHelper().textInputDecoration(
                               'Password', 'Enter your password')
                           : ThemeHelper().textInputDecorationDesktop(

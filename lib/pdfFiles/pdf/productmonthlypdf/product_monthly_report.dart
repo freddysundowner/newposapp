@@ -13,6 +13,7 @@ import 'package:pointify/controllers/shop_controller.dart';
 
 import '../../../functions/functions.dart';
 
+
 Future<Uint8List> ProductMonthlyReport(data,
     {required Product product, String? title, int? total}) async {
   ShopController shopController = Get.find<ShopController>();

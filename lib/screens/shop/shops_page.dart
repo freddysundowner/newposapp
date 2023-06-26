@@ -189,21 +189,21 @@ class ShopsPage extends StatelessWidget {
         }
       },
       child: Container(
-        padding: ResponsiveWidget.isSmallScreen(context)
+        padding: isSmallScreen(context)
             ? EdgeInsets.symmetric(horizontal: 10, vertical: 2)
             : EdgeInsets.symmetric(horizontal: 10, vertical: 10),
         decoration: BoxDecoration(
-          color: ResponsiveWidget.isSmallScreen(context)
+          color: isSmallScreen(context)
               ? Colors.white
               : AppColors.mainColor,
-          borderRadius: ResponsiveWidget.isSmallScreen(context)
+          borderRadius: isSmallScreen(context)
               ? BorderRadius.circular(10)
               : BorderRadius.circular(8),
           border: Border.all(color: AppColors.mainColor, width: 2),
         ),
         child: minorTitle(
             title: "+ Add Shop",
-            color: ResponsiveWidget.isSmallScreen(context)
+            color: isSmallScreen(context)
                 ? AppColors.mainColor
                 : Colors.white),
       ),

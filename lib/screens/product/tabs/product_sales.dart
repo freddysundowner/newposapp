@@ -8,7 +8,6 @@ import 'package:pointify/widgets/months_filter.dart';
 import '../../../Real/schema.dart';
 import '../../../controllers/sales_controller.dart';
 import '../../../functions/functions.dart';
-import '../../../pdfFiles/pdf/productmonthlypdf/monthlypreview.dart';
 import '../../../pdfFiles/pdf/productmonthlypdf/product_monthly_report.dart';
 import '../../../pdfFiles/pdfpreview.dart';
 import '../../../utils/colors.dart';

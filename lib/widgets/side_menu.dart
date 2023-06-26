@@ -19,7 +19,8 @@ class SideMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.only(left: 20, top: 20),
+      padding: EdgeInsets.only(top: 10),
+      color: Color(0xff3a3055),
       child: ListView(
         children: sidePages
             .map((e) => sideMenuItems(
@@ -54,26 +55,42 @@ class SideMenu extends StatelessWidget {
             }
           },
           child: Container(
-            padding: EdgeInsets.only(bottom: 20),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
+            decoration: BoxDecoration(
+              color: homeController.activeItem.value == title
+                  ? Color(0xffbe741f)
+                  : Color(0xff3a3055),
+              borderRadius: BorderRadius.circular(10)
+            ),
+            
+            padding: EdgeInsets.symmetric(vertical: 2,horizontal: 3).copyWith(left: 6),
+            margin: EdgeInsets.symmetric(horizontal: 3).copyWith(top: 3),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(
-                  icon,
-                  color: homeController.activeItem.value == title
-                      ? AppColors.mainColor
-                      : Colors.grey,
+                const SizedBox(
+                  height: 10,
                 ),
-                SizedBox(
-                  width: 5,
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Icon(
+                      icon,
+                      color: Colors.white,
+                    ),
+                    SizedBox(
+                      width: 5,
+                    ),
+                    Text(
+                      "${title}",
+                      style: TextStyle(
+                          color: Colors.white),
+                    )
+                  ],
                 ),
-                Text(
-                  "${title}",
-                  style: TextStyle(
-                      color: homeController.activeItem.value == title
-                          ? AppColors.mainColor
-                          : Colors.grey),
-                )
+                const SizedBox(
+                  height: 10,
+                ),
+                // const Divider(color: Colors.white, height: 0.5),
               ],
             ),
           ),
