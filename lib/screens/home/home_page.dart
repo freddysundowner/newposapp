@@ -40,8 +40,29 @@ class HomePage extends StatelessWidget {
   final DateTime now = DateTime.now();
 
   var fromDate = DateTime.parse(DateFormat("yyy-MM-dd").format(DateTime.now()));
-  var toDate = DateTime.parse(
-      DateFormat("yyy-MM-dd").format(DateTime.now().add(Duration(days: 1))));
+  var toDate = DateTime.parse(DateFormat("yyy-MM-dd")
+      .format(DateTime.now().add(const Duration(days: 1))));
+
+  List<Map<String, dynamic>> enterpriseOperations = [
+    {"title": "Sale", "icon": Icons.sell_rounded, "category": "sales"},
+    {
+      "title": "Cashflow",
+      "icon": Icons.request_quote_outlined,
+      "category": "accounts"
+    },
+    {
+      "title": "Stock",
+      "icon": Icons.production_quantity_limits,
+      "category": "stocks"
+    },
+    {"title": "Suppliers", "icon": Icons.people_alt, "category": "suppliers"},
+    {
+      "title": "Customers",
+      "icon": Icons.people_outline_outlined,
+      "category": "customers"
+    },
+    {"title": "Usage", "icon": Icons.data_usage, "category": "usage"},
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -125,38 +146,21 @@ class HomePage extends StatelessWidget {
                   children: [
                     Obx(
                       () {
-                        return isSmallScreen(context)
-                            ? Expanded(
-                                child: PageView.builder(
-                                    scrollDirection: Axis.horizontal,
-                                    controller: PageController(
-                                        viewportFraction: 0.8,
-                                        initialPage: 1,
-                                        keepPage: false),
-                                    onPageChanged: (value) {},
-                                    itemCount: salesController.homecards.length,
-                                    itemBuilder: (context, index) {
-                                      return showTodaySales(
-                                          context,
-                                          index,
-                                          salesController.homecards
-                                              .elementAt(index));
-                                    }),
-                              )
-                            : Expanded(
-                                child: ListView.builder(
-                                    shrinkWrap: true,
-                                    scrollDirection: Axis.horizontal,
-                                    itemCount: salesController.homecards.length,
-                                    physics: ScrollPhysics(),
-                                    itemBuilder: (context, index) {
-                                      return showTodaySales(
-                                          context,
-                                          index,
-                                          salesController.homecards
-                                              .elementAt(index));
-                                    }),
-                              );
+                        return Expanded(
+                          child: PageView.builder(
+                              scrollDirection: Axis.horizontal,
+                              controller: PageController(
+                                  viewportFraction:
+                                      isSmallScreen(context) ? 0.8 : 0.45,
+                                  initialPage: 1,
+                                  keepPage: false),
+                              onPageChanged: (value) {},
+                              itemCount: salesController.homecards.length,
+                              itemBuilder: (context, index) {
+                                return showTodaySales(context, index,
+                                    salesController.homecards.elementAt(index));
+                              }),
+                        );
                       },
                     ),
                   ],
@@ -178,89 +182,76 @@ class HomePage extends StatelessWidget {
                           borderRadius: BorderRadius.circular(20)),
                       child: Column(
                         children: [
-                          Obx(
-                            () => GridView.count(
-                              crossAxisCount: 3,
-                              padding: EdgeInsets.zero,
-                              crossAxisSpacing: 13,
-                              mainAxisSpacing: 8,
-                              shrinkWrap: true,
-                              physics: const ScrollPhysics(),
-                              children: [
-                                if (checkPermission(
-                                    category: "sales", permission: "add"))
-                                  gridItems(
-                                      title: "Sell",
-                                      iconData: Icons.sell_rounded,
+                          GridView.count(
+                            crossAxisCount: 3,
+                            padding: EdgeInsets.zero,
+                            crossAxisSpacing: 13,
+                            mainAxisSpacing: 8,
+                            shrinkWrap: true,
+                            physics: const ScrollPhysics(),
+                            children: enterpriseOperations.map((e) {
+                              return checkPermission(
+                                      category: e["category"],
+                                      permission: "add")
+                                  ? gridItems(
+                                      title: e["title"],
+                                      iconData: e["icon"],
                                       isSmallScreen: true,
                                       function: () {
-                                        Get.to(() => CreateSale());
-                                      }),
-                                if (checkPermission(
-                                    category: "accounts", group: true))
-                                  gridItems(
-                                      title: "Cashflow",
-                                      isSmallScreen: true,
-                                      iconData: Icons.request_quote_outlined,
-                                      function: () {
-                                        Get.find<CashflowController>()
-                                            .getCashflowSummary(
-                                          shopId: shopController
-                                              .currentShop.value!.id,
-                                          from: DateTime.parse(
-                                              DateFormat("yyyy-MM-dd").format(
-                                                  Get.find<CashflowController>()
-                                                      .fromDate
-                                                      .value)),
-                                          to: DateTime.parse(DateFormat(
-                                                      "yyyy-MM-dd")
-                                                  .format(Get.find<
-                                                          CashflowController>()
-                                                      .toDate
-                                                      .value))
-                                              .add(const Duration(days: 1)),
-                                        );
-                                        Get.to(() => CashFlowManager());
-                                      }),
-                                if (checkPermission(
-                                    category: "stocks", group: true))
-                                  gridItems(
-                                      title: "Stock",
-                                      isSmallScreen: true,
-                                      iconData:
-                                          Icons.production_quantity_limits,
-                                      function: () {
-                                        Get.to(() => StockPage());
-                                      }),
-                                if (checkPermission(
-                                    category: "suppliers", group: true))
-                                  gridItems(
-                                      title: "Suppliers",
-                                      iconData: Icons.people_alt,
-                                      isSmallScreen: true,
-                                      function: () {
-                                        Get.to(() => SuppliersPage());
-                                      }),
-                                if (checkPermission(
-                                    category: "customers", group: true))
-                                  gridItems(
-                                      title: "Customers",
-                                      iconData: Icons.people_outline_outlined,
-                                      isSmallScreen: true,
-                                      function: () {
-                                        Get.to(() => CustomersPage());
-                                      }),
-                                if (checkPermission(
-                                    category: "usage", group: true))
-                                  gridItems(
-                                      title: "Usage",
-                                      iconData: Icons.data_usage,
-                                      isSmallScreen: true,
-                                      function: () {
-                                        Get.to(() => ExtendUsage());
-                                      }),
-                              ],
-                            ),
+                                        switch (e["title"]
+                                            .toString()
+                                            .toLowerCase()) {
+                                          case "sale":
+                                            Get.to(() => CreateSale());
+                                            break;
+                                          case "cashflow":
+                                            {
+                                              Get.find<CashflowController>()
+                                                  .getCashflowSummary(
+                                                shopId: shopController
+                                                    .currentShop.value!.id,
+                                                from: DateTime.parse(DateFormat(
+                                                        "yyyy-MM-dd")
+                                                    .format(Get.find<
+                                                            CashflowController>()
+                                                        .fromDate
+                                                        .value)),
+                                                to: DateTime.parse(DateFormat(
+                                                            "yyyy-MM-dd")
+                                                        .format(Get.find<
+                                                                CashflowController>()
+                                                            .toDate
+                                                            .value))
+                                                    .add(const Duration(
+                                                        days: 1)),
+                                              );
+                                              Get.to(() => CashFlowManager());
+                                            }
+                                            break;
+                                          case "stock":
+                                            {
+                                              Get.to(() => StockPage());
+                                            }
+                                            break;
+                                          case "suppliers":
+                                            {
+                                              Get.to(() => SuppliersPage());
+                                            }
+                                            break;
+                                          case "customers":
+                                            {
+                                              Get.to(() => CustomersPage());
+                                            }
+                                            break;
+                                          case "usage":
+                                            {
+                                              Get.to(() => StockPage());
+                                            }
+                                            break;
+                                        }
+                                      })
+                                  : Container();
+                            }).toList(),
                           ),
                           if (checkPermission(
                               category: "accounts", group: true))
@@ -337,11 +328,13 @@ class HomePage extends StatelessWidget {
                       width: MediaQuery.of(context).size.width * 0.8,
                       height: MediaQuery.of(context).size.height * 0.2,
                       padding: const EdgeInsets.only(top: 10),
-                      child: ListView(
+                      child: ListView.builder(
                         shrinkWrap: true,
                         scrollDirection: Axis.horizontal,
-                        children: [
-                          Container(
+                        itemCount: enterpriseOperations.length,
+                        itemBuilder: (context, index) {
+                          var e = enterpriseOperations[index];
+                          return Container(
                             margin: EdgeInsets.only(right: 20),
                             width: MediaQuery.of(context).size.height * 0.2,
                             decoration: BoxDecoration(
@@ -349,113 +342,72 @@ class HomePage extends StatelessWidget {
                                 color: Colors.grey.withOpacity(0.1)),
                             padding: EdgeInsets.all(10),
                             child: gridItems(
-                                title: "Sell",
-                                iconData: Icons.sell_rounded,
+                                title: e["title"],
+                                iconData: e["icon"],
                                 isSmallScreen: false,
                                 function: () {
-                                  Get.find<HomeController>()
-                                      .selectedWidget
-                                      .value = CreateSale();
+                                  switch (e["title"].toString().toLowerCase()) {
+                                    case "sale":
+                                      Get.find<HomeController>()
+                                          .selectedWidget
+                                          .value = CreateSale();
+                                      break;
+                                    case "cashflow":
+                                      {
+                                        Get.find<CashflowController>()
+                                            .getCashflowSummary(
+                                          shopId: shopController
+                                              .currentShop.value!.id,
+                                          from: DateTime.parse(
+                                              DateFormat("yyyy-MM-dd").format(
+                                                  Get.find<CashflowController>()
+                                                      .fromDate
+                                                      .value)),
+                                          to: DateTime.parse(DateFormat(
+                                                      "yyyy-MM-dd")
+                                                  .format(Get.find<
+                                                          CashflowController>()
+                                                      .toDate
+                                                      .value))
+                                              .add(const Duration(days: 1)),
+                                        );
+                                        Get.find<HomeController>()
+                                            .selectedWidget
+                                            .value = CashFlowManager();
+                                      }
+                                      break;
+                                    case "stock":
+                                      {
+                                        Get.find<HomeController>()
+                                            .selectedWidget
+                                            .value = StockPage();
+                                      }
+                                      break;
+                                    case "suppliers":
+                                      {
+                                        Get.find<HomeController>()
+                                            .selectedWidget
+                                            .value = SuppliersPage();
+                                      }
+                                      break;
+                                    case "customers":
+                                      {
+                                        Get.find<HomeController>()
+                                            .selectedWidget
+                                            .value = CustomersPage();
+                                      }
+                                      break;
+                                    case "usage":
+                                      {
+                                        Get.find<HomeController>()
+                                            .selectedWidget
+                                            .value = ExtendUsage();
+                                      }
+                                      break;
+                                  }
                                 }),
-                          ),
-                          Container(
-                            margin: EdgeInsets.only(right: 20),
-                            width: MediaQuery.of(context).size.height * 0.2,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                color: Colors.grey.withOpacity(0.1)),
-                            padding: EdgeInsets.all(10),
-                            child: gridItems(
-                                title: "Cashflow",
-                                isSmallScreen: false,
-                                iconData: Icons.request_quote_outlined,
-                                function: () {
-                                  Get.find<CashflowController>()
-                                      .getCashflowSummary(
-                                    shopId:
-                                        shopController.currentShop.value!.id,
-                                    from: DateTime.parse(
-                                        DateFormat("yyyy-MM-dd").format(
-                                            Get.find<CashflowController>()
-                                                .fromDate
-                                                .value)),
-                                    to: DateTime.parse(DateFormat("yyyy-MM-dd")
-                                            .format(
-                                                Get.find<CashflowController>()
-                                                    .toDate
-                                                    .value))
-                                        .add(const Duration(days: 1)),
-                                  );
-                                  Get.find<HomeController>()
-                                      .selectedWidget
-                                      .value = CashFlowManager();
-                                }),
-                          ),
-                          Container(
-                              margin: EdgeInsets.only(right: 20),
-                              width: MediaQuery.of(context).size.height * 0.2,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  color: Colors.grey.withOpacity(0.1)),
-                              padding: EdgeInsets.all(10),
-                              child: gridItems(
-                                  title: "Stock",
-                                  isSmallScreen: false,
-                                  iconData: Icons.production_quantity_limits,
-                                  function: () {
-                                    Get.find<HomeController>()
-                                        .selectedWidget
-                                        .value = StockPage();
-                                  })),
-                          Container(
-                            margin: EdgeInsets.only(right: 20),
-                            width: MediaQuery.of(context).size.height * 0.2,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                color: Colors.grey.withOpacity(0.1)),
-                            padding: EdgeInsets.all(10),
-                            child: gridItems(
-                                title: "Suppliers",
-                                iconData: Icons.people_alt,
-                                isSmallScreen: false,
-                                function: () {
-                                  Get.find<HomeController>()
-                                      .selectedWidget
-                                      .value = SuppliersPage();
-                                }),
-                          ),
-                          Container(
-                              margin: EdgeInsets.only(right: 20),
-                              width: MediaQuery.of(context).size.height * 0.2,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  color: Colors.grey.withOpacity(0.1)),
-                              padding: EdgeInsets.all(10),
-                              child: gridItems(
-                                  title: "Customers",
-                                  iconData: Icons.people_outline_outlined,
-                                  isSmallScreen: false,
-                                  function: () {
-                                    Get.find<HomeController>()
-                                        .selectedWidget
-                                        .value = CustomersPage();
-                                  })),
-                          Container(
-                            margin: EdgeInsets.only(right: 20),
-                            width: MediaQuery.of(context).size.height * 0.2,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                color: Colors.grey.withOpacity(0.1)),
-                            padding: EdgeInsets.all(10),
-                            child: gridItems(
-                                title: "Usage",
-                                iconData: Icons.data_usage,
-                                isSmallScreen: false,
-                                function: () {
-                                  Get.to(() => ExtendUsage());
-                                }),
-                          ),
-                        ],
+                          );
+                        },
                       )),
               SizedBox(height: 20),
               Row(
@@ -471,11 +423,11 @@ class HomePage extends StatelessWidget {
                           Get.to(() => AllSalesPage(
                                 page: "homePage",
                               ));
-                        }  else {
+                        } else {
                           Get.find<HomeController>().selectedWidget.value =
                               AllSalesPage(
-                              page: "homePage",
-                              ) ;
+                            page: "homePage",
+                          );
                         }
                       },
                       child: minorTitle(
