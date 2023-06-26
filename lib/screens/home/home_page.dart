@@ -372,19 +372,18 @@ class HomePage extends StatelessWidget {
                                 function: () {
                                   Get.find<CashflowController>()
                                       .getCashflowSummary(
-                                    shopId: shopController
-                                        .currentShop.value!.id,
+                                    shopId:
+                                        shopController.currentShop.value!.id,
                                     from: DateTime.parse(
                                         DateFormat("yyyy-MM-dd").format(
                                             Get.find<CashflowController>()
                                                 .fromDate
                                                 .value)),
-                                    to: DateTime.parse(DateFormat(
-                                        "yyyy-MM-dd")
-                                        .format(Get.find<
-                                        CashflowController>()
-                                        .toDate
-                                        .value))
+                                    to: DateTime.parse(DateFormat("yyyy-MM-dd")
+                                            .format(
+                                                Get.find<CashflowController>()
+                                                    .toDate
+                                                    .value))
                                         .add(const Duration(days: 1)),
                                   );
                                   Get.find<HomeController>()
@@ -468,10 +467,16 @@ class HomePage extends StatelessWidget {
                       onTap: () {
                         salesController.salesInitialIndex.value = 0;
                         salesController.getSales();
-
-                        Get.to(() => AllSalesPage(
+                        if (isSmallScreen(context)) {
+                          Get.to(() => AllSalesPage(
+                                page: "homePage",
+                              ));
+                        }  else {
+                          Get.find<HomeController>().selectedWidget.value =
+                              AllSalesPage(
                               page: "homePage",
-                            ));
+                              ) ;
+                        }
                       },
                       child: minorTitle(
                           title: "See all", color: AppColors.lightDeepPurple))
