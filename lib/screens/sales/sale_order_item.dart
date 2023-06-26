@@ -4,13 +4,13 @@ import 'package:pointify/controllers/sales_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/home/home_page.dart';
-import 'package:pointify/screens/sales/all_sales_page.dart';
+import 'package:pointify/screens/sales/all_sales.dart';
 import 'package:pointify/utils/colors.dart';
 import 'package:pointify/widgets/no_items_found.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
-import '../../models/invoice_items.dart';
+import '../../Real/schema.dart';
 import '../../widgets/bigtext.dart';
 import '../../widgets/sales_history_card.dart';
 
@@ -25,7 +25,7 @@ class SaleOrderItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    salesController.getSalesBySaleId(uid: id);
+    // salesController.getSalesBySaleId(uid: id);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -111,7 +111,7 @@ class SaleOrderItem extends StatelessWidget {
                                 final z =
                                     saleOrderItemModel.itemCount.toString();
                                 final w = saleOrderItemModel.createdAt;
-                                // final a = saleOrderItemModel.attendantid?.fullnames;
+                                // final a = saleOrderItemModel.attendantid?.username;
 
                                 return DataRow(cells: [
                                   DataCell(

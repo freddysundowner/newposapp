@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/controllers/sales_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
-import 'package:pointify/models/customer_model.dart';
-import 'package:pointify/models/payment_history.dart';
 import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/customers/customer_info_page.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+
+import '../../Real/schema.dart';
 
 class PaymentHistory extends StatelessWidget {
   final String id;
@@ -22,7 +22,6 @@ class PaymentHistory extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    salesController.getPaymentHistory(id: id, type: type);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -131,9 +130,9 @@ class PaymentHistory extends StatelessWidget {
                                       style: const TextStyle(
                                         color: Colors.black,
                                       )),
-                                  if (payHistory.attendant?.fullnames != null)
+                                  if (payHistory.attendant?.username != null)
                                     Text(
-                                        "by: ${payHistory.attendant!.fullnames}",
+                                        "by: ${payHistory.attendant!.username}",
                                         style: const TextStyle(
                                           color: Colors.black,
                                         )),

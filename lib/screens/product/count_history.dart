@@ -5,21 +5,21 @@ import 'package:pointify/widgets/no_items_found.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
+import '../../Real/schema.dart';
 import '../../controllers/home_controller.dart';
 import '../../controllers/product_controller.dart';
-import '../../models/product_count_model.dart';
 import '../../utils/colors.dart';
-import 'counting_page.dart';
+import 'stock_counts.dart';
 
 class CountHistory extends StatelessWidget {
-  CountHistory({Key? key}) : super(key: key);
+  CountHistory({Key? key}) : super(key: key) {
+    productController.getCountHistory();
+  }
   ProductController productController = Get.find<ProductController>();
   ShopController createShopController = Get.find<ShopController>();
 
   @override
   Widget build(BuildContext context) {
-    productController
-        .getProductCount(createShopController.currentShop.value?.id);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -28,7 +28,7 @@ class CountHistory extends StatelessWidget {
               onPressed: () {
                 if (MediaQuery.of(context).size.width > 600) {
                   Get.find<HomeController>().selectedWidget.value =
-                      CountingPage();
+                      StockCount();
                 } else {
                   Get.back();
                 }
@@ -65,7 +65,7 @@ class CountHistory extends StatelessWidget {
               ? Center(
                   child: CircularProgressIndicator(),
                 )
-              : productController.countHistoryList.length == 0
+              : productController.productHistoryList.isEmpty
                   ? noItemsFound(context, true)
                   : SingleChildScrollView(
                       child: Container(
@@ -97,21 +97,21 @@ class CountHistory extends StatelessWidget {
                                       textAlign: TextAlign.center)),
                             ],
                             rows: List.generate(
-                                productController.countHistoryList.length,
+                                productController.productHistoryList.length,
                                 (index) {
-                              ProductCountModel productBody = productController
-                                  .countHistoryList
-                                  .elementAt(index);
+                              ProductHistoryModel productBody =
+                                  productController.productHistoryList
+                                      .elementAt(index);
                               final y = productBody.product?.name;
                               final x = productBody.quantity;
                               final z = productBody.createdAt!;
-                              final a =
-                                  productBody.attendantId!.fullnames ?? "";
+                              // final a =
+                              //     productBody.attendantId!.username ?? "";
 
                               return DataRow(cells: [
                                 DataCell(Container(child: Text(y!))),
                                 DataCell(Container(child: Text(x.toString()))),
-                                DataCell(Container(child: Text(a))),
+                                // DataCell(Container(child: Text(a))),
                                 DataCell(Container(
                                     child: Text(
                                         DateFormat("yyyy-MM-dd").format(z)))),
@@ -130,22 +130,18 @@ class CountHistory extends StatelessWidget {
 
   Widget historyWidget(context) {
     return Obx(() {
-      return productController.loadingCountHistory.value
-          ? Center(
-              child: CircularProgressIndicator(),
-            )
-          : productController.countHistoryList.isEmpty
-              ? noItemsFound(context, true)
-              : ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: productController.countHistoryList.length,
-                  // physics: NeverScrollableScrollPhysics(),
-                  itemBuilder: (context, index) {
-                    ProductCountModel productBody =
-                        productController.countHistoryList.elementAt(index);
+      return productController.countHistory.isEmpty
+          ? noItemsFound(context, true)
+          : ListView.builder(
+              shrinkWrap: true,
+              itemCount: productController.countHistory.length,
+              // physics: NeverScrollableScrollPhysics(),
+              itemBuilder: (context, index) {
+                ProductCountModel productBody =
+                    productController.countHistory.elementAt(index);
 
-                    return productHistoryContainer(productBody);
-                  });
+                return productHistoryContainer(productBody);
+              });
       ;
     });
   }
@@ -189,9 +185,20 @@ class CountHistory extends StatelessWidget {
                             fontWeight: FontWeight.bold,
                             fontSize: 18),
                       ),
-                      Text('Qty ${productBody.quantity}'),
-                      Text(
-                          '${DateFormat("MMM dd,yyyy, hh:m a").format(productBody.createdAt!)} '),
+                      Container(
+                        padding:
+                            EdgeInsets.symmetric(vertical: 2, horizontal: 5),
+                        decoration: BoxDecoration(
+                            color: Colors.black12,
+                            borderRadius: BorderRadius.circular(5)),
+                        child: Text(
+                          'System Count ${productBody.initialquantity}, Physical Count ${productBody.quantity}',
+                          style: TextStyle(fontSize: 13),
+                        ),
+                      ),
+                      if (productBody.createdAt != null)
+                        Text(
+                            '${DateFormat("MMM dd,yyyy, hh:m a").format(productBody.createdAt!)} '),
                     ],
                   )
                 ],
@@ -200,7 +207,7 @@ class CountHistory extends StatelessWidget {
               Column(
                 children: [
                   Text('BP/= ${productBody.product!.buyingPrice}'),
-                  Text('SP/= ${productBody.product!.sellingPrice![0]}')
+                  Text('SP/= ${productBody.product!.selling}')
                 ],
               )
             ],

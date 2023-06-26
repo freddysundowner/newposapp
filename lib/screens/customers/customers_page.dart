@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:pointify/controllers/AuthController.dart';
 import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/responsive/responsiveness.dart';
@@ -9,9 +8,12 @@ import 'package:pointify/screens/home/home_page.dart';
 import 'package:pointify/widgets/no_items_found.dart';
 import 'package:get/get.dart';
 
+import '../../Real/schema.dart';
 import '../../controllers/CustomerController.dart';
 import '../../controllers/supplierController.dart';
-import '../../models/customer_model.dart';
+import '../../controllers/user_controller.dart';
+import '../../functions/functions.dart';
+import '../../services/customer.dart';
 import '../../utils/colors.dart';
 import '../../widgets/bigtext.dart';
 import '../../widgets/customer_card.dart';
@@ -19,8 +21,7 @@ import '../../widgets/smalltext.dart';
 
 class CustomersPage extends StatelessWidget {
   CustomersPage({Key? key}) : super(key: key) {
-    customersController.getCustomersInShop(
-        shopController.currentShop.value?.id, "all");
+    customersController.getCustomersInShop("all");
   }
 
   ShopController createShopController = Get.find<ShopController>();
@@ -45,23 +46,24 @@ class CustomersPage extends StatelessWidget {
           titleSpacing: 0.0,
           elevation: 0.3,
           centerTitle: false,
-          leading: Get.find<AuthController>().usertype.value == "attendant" &&
-                  MediaQuery.of(context).size.width > 600
-              ? Container()
-              : IconButton(
-                  onPressed: () {
-                    if (types == "large") {
-                      Get.find<HomeController>().selectedWidget.value =
-                          HomePage();
-                    } else {
-                      Get.back();
-                    }
-                  },
-                  icon: Icon(
-                    Icons.arrow_back_ios,
-                    color: Colors.black,
-                  ),
-                ),
+          leading:
+              Get.find<UserController>().user.value?.usertype == "attendant" &&
+                      MediaQuery.of(context).size.width > 600
+                  ? Container()
+                  : IconButton(
+                      onPressed: () {
+                        if (types == "large") {
+                          Get.find<HomeController>().selectedWidget.value =
+                              HomePage();
+                        } else {
+                          Get.back();
+                        }
+                      },
+                      icon: Icon(
+                        Icons.arrow_back_ios,
+                        color: Colors.black,
+                      ),
+                    ),
           title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -72,45 +74,46 @@ class CustomersPage extends StatelessWidget {
             ],
           ),
           actions: [
-            InkWell(
-              onTap: () {
-                if (types == "large") {
-                  Get.find<HomeController>().selectedWidget.value =
-                      CreateCustomer(
-                    page: "customersPage",
-                  );
-                } else {
-                  Get.to(() => CreateCustomer(
-                        page: "customersPage",
-                      ));
-                }
-              },
-              child: Padding(
-                padding: const EdgeInsets.all(10),
-                child: Container(
-                  padding: EdgeInsets.fromLTRB(5, 2, 5, 2),
-                  decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: (BorderRadius.circular(10)),
-                      border: Border.all(color: AppColors.mainColor, width: 1)),
-                  child: Center(
-                    child: majorTitle(
-                        title: "Add Customer",
-                        color: AppColors.mainColor,
-                        size: 12.0),
+            if (checkPermission(category: "customers", permission: "manage"))
+              InkWell(
+                onTap: () {
+                  if (types == "large") {
+                    Get.find<HomeController>().selectedWidget.value =
+                        CreateCustomer(
+                      page: "customersPage",
+                    );
+                  } else {
+                    Get.to(() => CreateCustomer(
+                          page: "customersPage",
+                        ));
+                  }
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: Container(
+                    padding: EdgeInsets.fromLTRB(5, 2, 5, 2),
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: (BorderRadius.circular(10)),
+                        border:
+                            Border.all(color: AppColors.mainColor, width: 1)),
+                    child: Center(
+                      child: majorTitle(
+                          title: "Add Customer",
+                          color: AppColors.mainColor,
+                          size: 12.0),
+                    ),
                   ),
                 ),
-              ),
-            )
+              )
           ],
           bottom: TabBar(
             indicatorColor: AppColors.mainColor,
             labelColor: AppColors.mainColor,
             unselectedLabelColor: Colors.grey,
             onTap: (value) {
-              customersController.getCustomersInShop(
-                  shopController.currentShop.value?.id,
-                  value == 0 ? "all" : "debtors");
+              customersController
+                  .getCustomersInShop(value == 0 ? "all" : "debtors");
             },
             tabs: [
               Tab(text: "All"),
@@ -120,7 +123,12 @@ class CustomersPage extends StatelessWidget {
         ),
         body: TabBarView(
           physics: const NeverScrollableScrollPhysics(),
-          children: [Customers(), Customers()],
+          children: [
+            Customers(
+              type: "",
+            ),
+            Debtors()
+          ],
         ),
       ),
     );
@@ -128,10 +136,9 @@ class CustomersPage extends StatelessWidget {
 }
 
 class Customers extends StatelessWidget {
-  Customers({Key? key}) : super(key: key);
+  String type;
+  Customers({Key? key, required this.type}) : super(key: key);
   CustomerController customersController = Get.find<CustomerController>();
-  ShopController shopController = Get.find<ShopController>();
-  SupplierController supplierController = Get.find<SupplierController>();
 
   @override
   Widget build(BuildContext context) {
@@ -150,16 +157,103 @@ class Customers extends StatelessWidget {
                       : customerTable(
                           customers: customersController.customers,
                           context: context)
-                  : customersController.customers.isEmpty
+                  : StreamBuilder(
+                      stream: Customer().getCustomersByShopId("all").changes,
+                      builder: (context, snapshot) {
+                        final data = snapshot.data;
+                        print("data $data");
+                        if (data == null || data.results.isEmpty) {
+                          return Center(
+                            child: InkWell(
+                              onTap: () {
+                                Get.to(() => CreateCustomer(
+                                      page: "",
+                                    ));
+                              },
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    "Add",
+                                    style: TextStyle(
+                                        color: AppColors.mainColor,
+                                        fontSize: 21),
+                                  ),
+                                  Icon(
+                                    Icons.add_circle_outline_outlined,
+                                    size: 60,
+                                    color: AppColors.mainColor,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        } else {
+                          final results = data.results;
+                          return ListView.builder(
+                              itemCount:
+                                  results.realm.isClosed ? 0 : results.length,
+                              itemBuilder: (context, index) {
+                                CustomerModel customerModel =
+                                    results.elementAt(index);
+                                return customerWidget(
+                                    customerModel: customerModel,
+                                    context: context,
+                                    type: type);
+                              });
+                        }
+                      });
+        }),
+      ),
+    );
+  }
+}
+
+class Debtors extends StatelessWidget {
+  Debtors({Key? key}) : super(key: key);
+  CustomerController customersController = Get.find<CustomerController>();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: Padding(
+        padding: EdgeInsets.only(top: 5),
+        child: Obx(() {
+          return customersController.gettingCustomersLoad.value
+              ? const Center(
+                  child: CircularProgressIndicator(),
+                )
+              : MediaQuery.of(context).size.width > 600
+                  ? customersController.customers.isEmpty
                       ? noItemsFound(context, true)
-                      : ListView.builder(
-                          itemCount: customersController.customers.length,
-                          itemBuilder: (context, index) {
-                            CustomerModel customerModel =
-                                customersController.customers.elementAt(index);
-                            return customerWidget(
-                                customerModel: customerModel, context: context);
-                          });
+                      : customerTable(
+                          customers: customersController.customers,
+                          context: context)
+                  : StreamBuilder(
+                      stream:
+                          Customer().getCustomersByShopId("debtors").changes,
+                      builder: (context, snapshot) {
+                        final data = snapshot.data;
+                        if (data == null) {
+                          return minorTitle(
+                              title: "This shop doesn't have products yet",
+                              color: Colors.black);
+                        } else {
+                          final results = data.results;
+                          return ListView.builder(
+                              itemCount:
+                                  results.realm.isClosed ? 0 : results.length,
+                              itemBuilder: (context, index) {
+                                CustomerModel customerModel =
+                                    results.elementAt(index);
+                                return customerWidget(
+                                    customerModel: customerModel,
+                                    context: context);
+                              });
+                        }
+                      });
         }),
       ),
     );

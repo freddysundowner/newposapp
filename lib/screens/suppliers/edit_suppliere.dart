@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:pointify/models/customer_model.dart';
 import 'package:get/get.dart';
-import 'package:pointify/models/supplier.dart';
 
-import '../../controllers/CustomerController.dart';
+import '../../Real/schema.dart';
 import '../../controllers/supplierController.dart';
 
 class EditSupplier extends StatelessWidget {
   final userType;
-  final SupplierModel supplierModel;
+  final Supplier supplierModel;
   EditSupplier({Key? key, this.userType, required this.supplierModel}) {
     supplierController.nameController.text = supplierModel.fullName!;
   }
@@ -20,7 +18,7 @@ class EditSupplier extends StatelessWidget {
       appBar: AppBar(
         elevation: 0.0,
         title: Text(
-          "Edit $userType".capitalize!,
+          "Edit Supplier".capitalize!,
           style:
               const TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
         ),
@@ -51,6 +49,7 @@ class EditSupplier extends StatelessWidget {
             ),
             TextFormField(
               controller: supplierController.phoneController,
+              keyboardType: TextInputType.phone,
               decoration: InputDecoration(
                   hintText: "phone number",
                   border: OutlineInputBorder(
@@ -61,6 +60,7 @@ class EditSupplier extends StatelessWidget {
             ),
             TextFormField(
               controller: supplierController.emailController,
+              keyboardType: TextInputType.emailAddress,
               decoration: InputDecoration(
                   hintText: "Email",
                   border: OutlineInputBorder(
@@ -98,8 +98,7 @@ class EditSupplier extends StatelessWidget {
                 TextButton(
                     onPressed: () {
                       Navigator.pop(context);
-                      supplierController.updateSupplier(
-                          context, supplierModel.id!);
+                      supplierController.updateSupplier(supplierModel);
                     },
                     child: Text("Save Changes".toUpperCase(),
                         style: const TextStyle(

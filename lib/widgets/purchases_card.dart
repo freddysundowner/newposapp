@@ -1,23 +1,24 @@
-// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 import 'package:flutter/material.dart';
-import 'package:pointify/controllers/AuthController.dart';
-import 'package:pointify/controllers/attendant_controller.dart';
+import 'package:pointify/controllers/user_controller.dart';
 import 'package:pointify/controllers/purchase_controller.dart';
-import 'package:pointify/controllers/shop_controller.dart';
-import 'package:pointify/models/product_model.dart';
-import 'package:pointify/screens/product/create_product.dart';
+import 'package:pointify/functions/functions.dart';
+import 'package:pointify/services/product.dart';
+import 'package:pointify/widgets/alert.dart';
 import 'package:pointify/widgets/smalltext.dart';
 import 'package:get/get.dart';
 
+import '../Real/schema.dart';
+import '../utils/colors.dart';
+import '../utils/themer.dart';
 import 'bigtext.dart';
 import 'normal_text.dart';
 
-Widget purchasesCard(
-    {required context, required ProductModel productModel, required index}) {
-  PurchaseController salesController = Get.find<PurchaseController>();
-  ShopController shopController = Get.find<ShopController>();
-  AuthController authController = Get.find<AuthController>();
-  AttendantController attendantController = Get.find<AttendantController>();
+Widget purchasesItemCard({required InvoiceItem invoiceItem, required index}) {
+  PurchaseController purchaseController = Get.find<PurchaseController>();
+  UserController attendantController = Get.find<UserController>();
+  UserController userController = Get.find<UserController>();
+  TextEditingController buyingProceController = TextEditingController();
+  TextEditingController sellingPriceController = TextEditingController();
   return Padding(
     padding: const EdgeInsets.all(10.0),
     child: Card(
@@ -29,14 +30,14 @@ Widget purchasesCard(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               majorTitle(
-                  title: "${productModel.name}",
+                  title: "${invoiceItem.product?.name}",
                   color: Colors.black,
                   size: 16.0),
               IconButton(
                 color: Colors.grey,
                 icon: Icon(Icons.clear),
                 onPressed: () {
-                  salesController.removeFromList(index);
+                  purchaseController.removeFromList(index);
                 },
               )
             ],
@@ -48,7 +49,8 @@ Widget purchasesCard(
                 majorTitle(title: "Qty", color: Colors.black54, size: 13.0),
                 SizedBox(height: 5),
                 minorTitle(
-                    title: "${productModel.quantity}", color: Colors.grey)
+                    title: "${invoiceItem.product?.quantity}",
+                    color: Colors.grey)
               ]),
               SizedBox(width: 15),
               Column(
@@ -66,20 +68,105 @@ Widget purchasesCard(
                   Row(
                     children: [
                       normalText(
-                          title:
-                              "${shopController.currentShop.value?.currency}.${productModel.buyingPrice}",
+                          title: htmlPrice(invoiceItem.product?.buyingPrice),
                           color: Colors.grey,
                           size: 14.0),
                       SizedBox(width: 10),
-                      if (authController.usertype == "admin" ||
-                          (authController.usertype == "attendant" &&
-                              attendantController.checkRole("edit_entries")))
+                      if (checkPermission(
+                          category: "stocks", permission: "edit_price"))
                         InkWell(
                             onTap: () {
-                              Get.to(() => CreateProduct(
-                                  page: "edit", productModel: productModel));
+                              buyingProceController.text =
+                                  invoiceItem.product!.buyingPrice!.toString();
+                              sellingPriceController.text =
+                                  invoiceItem.product!.selling.toString();
+
+                              showDialog(
+                                  context: Get.context!,
+                                  builder: (_) {
+                                    return AlertDialog(
+                                      title: const Text("Edit product prices?"),
+                                      content: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Container(
+                                            decoration: ThemeHelper()
+                                                .inputBoxDecorationShaddow(),
+                                            child: TextFormField(
+                                              keyboardType:
+                                                  TextInputType.number,
+                                              controller: buyingProceController,
+                                              decoration: ThemeHelper()
+                                                  .textInputDecorationDesktop(
+                                                      'Buying Price',
+                                                      'Enter buyinng price'),
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            height: 20,
+                                          ),
+                                          Container(
+                                            decoration: ThemeHelper()
+                                                .inputBoxDecorationShaddow(),
+                                            child: TextFormField(
+                                              keyboardType:
+                                                  TextInputType.number,
+                                              controller:
+                                                  sellingPriceController,
+                                              decoration: ThemeHelper()
+                                                  .textInputDecorationDesktop(
+                                                      'Selling Price',
+                                                      'Enter selling price'),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      actions: [
+                                        TextButton(
+                                            onPressed: () {
+                                              Get.back();
+                                            },
+                                            child: Text(
+                                              "Cancel".toUpperCase(),
+                                              style: TextStyle(
+                                                  color: AppColors.mainColor),
+                                            )),
+                                        TextButton(
+                                            onPressed: () {
+                                              var buyingprice = int.parse(
+                                                  buyingProceController.text);
+                                              var sellingprice = int.parse(
+                                                  sellingPriceController.text);
+                                              if (buyingprice > sellingprice) {
+                                                generalAlert(
+                                                    title: "Erro",
+                                                    message:
+                                                        "Buying price cannot be more than selling price");
+                                                return;
+                                              }
+                                              Products().updateProductPart(
+                                                  product: invoiceItem.product!,
+                                                  buyingPrice: buyingprice,
+                                                  sellingPrice: sellingprice);
+                                              invoiceItem.price = buyingprice;
+
+                                              Get.back();
+                                              purchaseController
+                                                  .calculateAmount(
+                                                      index: index);
+                                              purchaseController.invoice
+                                                  .refresh();
+                                            },
+                                            child: Text(
+                                              "Update".toUpperCase(),
+                                              style: TextStyle(
+                                                  color: AppColors.mainColor),
+                                            ))
+                                      ],
+                                    );
+                                  });
                             },
-                            child: Text(
+                            child: const Text(
                               "Edit Price",
                               style: TextStyle(color: Colors.red),
                             )),
@@ -95,30 +182,41 @@ Widget purchasesCard(
               Row(children: [
                 IconButton(
                     onPressed: () {
-                      salesController.decrementItem(index);
+                      purchaseController.decrementItem(index);
                     },
-                    icon: Icon(Icons.remove, color: Colors.black, size: 16)),
-                Container(
-                    padding:
-                        EdgeInsets.only(top: 5, bottom: 5, right: 8, left: 8),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(5),
-                      border: Border.all(color: Colors.black, width: 0.1),
-                      color: Colors.grey,
-                    ),
-                    child: majorTitle(
-                        title: "${productModel.cartquantity}",
-                        color: Colors.black,
-                        size: 12.0)),
+                    icon: const Icon(Icons.remove,
+                        color: Colors.black, size: 16)),
+                SizedBox(
+                    width: 60,
+                    height: 30,
+                    child: TextFormField(
+                      onChanged: (value) {
+                        invoiceItem.itemCount = int.parse(value);
+                        purchaseController.calculateAmount(index: index);
+                      },
+                      textAlign: TextAlign.center,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        contentPadding: EdgeInsets.fromLTRB(10, 2, 10, 2),
+                        hintText: invoiceItem.itemCount.toString(),
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(5),
+                            borderSide:
+                                BorderSide(color: Colors.grey, width: 1)),
+                        focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(5),
+                            borderSide:
+                                BorderSide(color: Colors.grey, width: 1)),
+                      ),
+                    )),
                 IconButton(
                     onPressed: () {
-                      salesController.incrementItem(index);
+                      purchaseController.incrementItem(index);
                     },
                     icon: Icon(Icons.add, color: Colors.black, size: 16)),
               ]),
               normalText(
-                  title:
-                      "Total=  ${shopController.currentShop.value?.currency}.${productModel.amount}",
+                  title: "Total=  ${htmlPrice(invoiceItem.total)}",
                   color: Colors.black,
                   size: 17.0)
             ],

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:pointify/controllers/cashflow_controller.dart';
-import 'package:pointify/models/cashflow_category.dart';
 import 'package:get/get.dart';
 import 'package:pointify/screens/cash_flow/cashflow_category_history.dart';
 
+import '../../../Real/schema.dart';
 import '../../../controllers/home_controller.dart';
 import '../../../utils/colors.dart';
 import '../../../widgets/delete_dialog.dart';
@@ -19,9 +19,7 @@ cashFlowCategoryDialog(context, {required CashFlowCategory cashflowCategory}) {
             Get.back();
             Get.find<HomeController>().selectedWidget.value =
                 CashCategoryHistory(
-              title: cashflowCategory.name,
-              subtitle: "All records",
-              id: cashflowCategory.id,
+              cashFlowCategory: cashflowCategory,
               page: "cashflowcategory",
             );
           },
@@ -89,7 +87,7 @@ cashFlowCategoryDialog(context, {required CashFlowCategory cashflowCategory}) {
                                         .text
                                         .isNotEmpty) {
                                       cashflowController
-                                          .editCategory(cashflowCategory.id);
+                                          .editCategory(cashflowCategory);
                                     }
                                   },
                                   child: Text(
@@ -116,7 +114,7 @@ cashFlowCategoryDialog(context, {required CashFlowCategory cashflowCategory}) {
             deleteDialog(
                 context: context,
                 onPressed: () {
-                  cashflowController.deleteCategory(cashflowCategory.id);
+                  cashflowController.deleteCategory(cashflowCategory);
                 });
           },
           title: Text("Delete"),

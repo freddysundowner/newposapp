@@ -3,10 +3,10 @@ import 'package:pointify/controllers/shop_controller.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
+import '../Real/schema.dart';
 import '../controllers/AuthController.dart';
-import '../controllers/attendant_controller.dart';
+import '../controllers/user_controller.dart';
 import '../controllers/expense_controller.dart';
-import '../models/expense_model.dart';
 import 'delete_dialog.dart';
 
 Widget expenseCard({required context, required ExpenseModel expense}) {
@@ -66,20 +66,22 @@ Widget expenseCard({required context, required ExpenseModel expense}) {
                       SizedBox(height: 3),
                       Row(
                         children: [
-                          Expanded(
-                            flex: 6,
-                            child: Text(
-                              "${DateFormat("yyyy-MM-dd hh:mm a").format(expense.updatedAt!)}",
-                              style: TextStyle(color: Colors.grey),
+                          if (expense.createdAt != null)
+                            Expanded(
+                              flex: 6,
+                              child: Text(
+                                DateFormat("yyyy-MM-dd hh:mm a")
+                                    .format(expense.createdAt!),
+                                style: TextStyle(color: Colors.grey),
+                              ),
                             ),
-                          ),
                           Expanded(
                             flex: 3,
                             child: Text(
                               expense.attendantId == null
                                   ? ""
-                                  : "By-${expense.attendantId!.fullnames}",
-                              style: TextStyle(
+                                  : "By-${expense.attendantId!.username}",
+                              style: const TextStyle(
                                   color: Color.fromRGBO(158, 158, 158, 1)),
                             ),
                           ),
@@ -97,7 +99,7 @@ Widget expenseCard({required context, required ExpenseModel expense}) {
 
 showBottomSheet(BuildContext context, expense) {
   ExpenseController expensesController = Get.find<ExpenseController>();
-  AttendantController attendantController = Get.find<AttendantController>();
+  UserController attendantController = Get.find<UserController>();
   AuthController authController = Get.find<AuthController>();
   return showModalBottomSheet<void>(
       context: context,

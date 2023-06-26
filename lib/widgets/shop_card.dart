@@ -1,21 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:pointify/models/shop_model.dart';
 import 'package:pointify/screens/shop/shop_details.dart';
 import 'package:pointify/widgets/smalltext.dart';
 import 'package:get/get.dart';
 
+import '../Real/schema.dart';
 import '../screens/stock/products_selection.dart';
 import '../utils/colors.dart';
 import 'bigtext.dart';
 
-Widget shopCard(
-    {required ShopModel shopModel, required page, required context}) {
+Widget shopCard({required Shop shopModel, required page, required context}) {
   return InkWell(
     onTap: () {
       if (page == "shop") {
         Get.to(() => ShopDetails(shopModel: shopModel));
       } else {
-        Get.to(() => ProductSelections(shopModel: shopModel));
+        Get.to(() => ProductSelections(toShop: shopModel));
       }
     },
     child: Container(
@@ -27,7 +26,7 @@ Widget shopCard(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Icon(
                 Icons.shopping_basket,
@@ -36,15 +35,26 @@ Widget shopCard(
               SizedBox(
                 width: 10,
               ),
-              majorTitle(title: shopModel.name, color: Colors.white, size: 14.0)
+              majorTitle(
+                  title: shopModel.name!.capitalize,
+                  color: Colors.white,
+                  size: 14.0)
             ],
           ),
           SizedBox(height: 10),
-          minorTitle(
-              title: "Location- ${shopModel.location}", color: Colors.white),
+          Row(
+            children: [
+              minorTitle(
+                  title: "Location- ${shopModel.location}",
+                  color: Colors.white),
+              SizedBox(
+                width: 20,
+              ),
+              minorTitle(title: "${shopModel.type?.title}", color: Colors.white)
+            ],
+          ),
           SizedBox(height: 10),
-          minorTitle(
-              title: "Type- ${shopModel.category?.title}", color: Colors.white)
+          // minorTitle(title: "Type- ${shopModel.category}", color: Colors.white)
         ],
       ),
     ),

@@ -1,24 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:pointify/controllers/cashflow_controller.dart';
 import 'package:pointify/controllers/expense_controller.dart';
 import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/cash_flow/cash_flow_manager.dart';
-import 'package:pointify/screens/finance/components/date_picker.dart';
+import 'package:pointify/screens/finance/product_comparison.dart';
 import 'package:pointify/screens/finance/profit_page.dart';
 import 'package:pointify/utils/helper.dart';
 import 'package:get/get.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
+import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 import '../../controllers/sales_controller.dart';
+import '../../functions/functions.dart';
 import '../../utils/colors.dart';
-import '../../utils/dates.dart';
 import '../../widgets/bigtext.dart';
 import '../../widgets/normal_text.dart';
 import '../../widgets/smalltext.dart';
 import '../home/home_page.dart';
-import '../sales/all_sales_page.dart';
+import '../sales/all_sales.dart';
 import 'expense_page.dart';
+import 'graph_analysis.dart';
 
 class FinancePage extends StatelessWidget {
   SalesController salesController = Get.find<SalesController>();
@@ -26,13 +30,27 @@ class FinancePage extends StatelessWidget {
   ExpenseController expenseController = Get.find<ExpenseController>();
 
   FinancePage({Key? key}) : super(key: key) {
-    var startDate = converTimeToMonth()["startDate"];
-    var endDate = converTimeToMonth()["endDate"];
-    salesController.getProfitTransaction(
-        start: DateTime.parse(startDate),
-        end: DateTime.parse(endDate),
-        type: "finance",
-        shopId: shopController.currentShop.value?.id);
+    salesController.getFinanceSummary(
+      fromDate: DateTime.parse(DateFormat("yyy-MM-dd").format(DateTime.now())),
+      toDate: DateTime.parse(DateFormat("yyy-MM-dd")
+          .format(DateTime.now().add(Duration(days: 1)))),
+    );
+  }
+  String _range = '';
+  void _onSelectionChanged(DateRangePickerSelectionChangedArgs args) {
+    if (args.value is PickerDateRange) {
+      _range = '${DateFormat('dd/MM/yyyy').format(args.value.startDate)} -'
+          ' ${DateFormat('dd/MM/yyyy').format(args.value.endDate ?? args.value.startDate)}';
+
+      if (args.value.startDate != null && args.value.endDate != null) {
+        salesController.getProfitTransaction(
+          fromDatee: DateFormat('yyy-MM-dd').format(args.value.startDate),
+          toDatee: DateFormat('yyy-MM-dd')
+              .format(args.value.endDate ?? args.value.startDate),
+        );
+        Get.to(() => ProfitPage(headline: "from\n$_range"));
+      }
+    }
   }
 
   @override
@@ -48,11 +66,6 @@ class FinancePage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                majorTitle(
-                    title: "Weekly Profit Trajectory",
-                    color: Colors.black,
-                    size: 16.0),
-                SizedBox(height: 10),
                 Container(
                   height: MediaQuery.of(context).size.height * 0.5,
                   width: MediaQuery.of(context).size.width * 0.98,
@@ -83,10 +96,10 @@ class FinancePage extends StatelessWidget {
                                 },
                                 color: Colors.amber.shade100,
                                 icon: Icons.query_stats,
-                                amount: salesController.profitModel.value ==
+                                amount: salesController.salesSummary.value ==
                                         null
                                     ? 0
-                                    : "${salesController.profitModel.value?.grossProfit}"),
+                                    : "${salesController.salesSummary.value?.grossProfit}"),
                           )),
                       Obx(() {
                         return Padding(
@@ -100,9 +113,9 @@ class FinancePage extends StatelessWidget {
                             },
                             color: Colors.purple.shade100,
                             icon: Icons.show_chart,
-                            amount: salesController.profitModel.value == null
+                            amount: salesController.salesSummary.value == null
                                 ? 0
-                                : "${salesController.profitModel.value?.totalExpense}",
+                                : "${salesController.salesSummary.value?.totalExpense}",
                           ),
                         );
                       }),
@@ -111,7 +124,7 @@ class FinancePage extends StatelessWidget {
                           padding: const EdgeInsets.only(right: 18.0),
                           child: financeCards(
                             title: "Sales",
-                            subtitle: "sales",
+                            subtitle: "services",
                             onPresssed: () {
                               Get.find<HomeController>().selectedWidget.value =
                                   AllSalesPage(
@@ -121,9 +134,9 @@ class FinancePage extends StatelessWidget {
                             },
                             color: Colors.blue.shade100,
                             icon: Icons.sell_rounded,
-                            amount: salesController.profitModel.value == null
+                            amount: salesController.salesSummary.value == null
                                 ? 0
-                                : "${salesController.profitModel.value?.sales}",
+                                : "${salesController.salesSummary.value?.sales}",
                           ),
                         );
                       }),
@@ -197,109 +210,137 @@ class FinancePage extends StatelessWidget {
                     color: Colors.black,
                     size: 16.0),
                 SizedBox(height: 10),
-                financeChat(context),
-                SizedBox(height: 10),
-                majorTitle(
-                    title: "Financial Operations",
-                    color: Colors.black,
-                    size: 16.0),
-                SizedBox(height: 10),
+                SfDateRangePicker(
+                    onSelectionChanged: _onSelectionChanged,
+                    selectionMode: DateRangePickerSelectionMode.range,
+                    monthViewSettings: DateRangePickerMonthViewSettings(),
+                    headerStyle: DateRangePickerHeaderStyle(
+                        textAlign: TextAlign.center,
+                        textStyle: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.mainColor,
+                            fontSize: 18)),
+                    onSubmit: (v) {
+                      print(v);
+                    }),
                 Obx(() {
                   return financeCards(
-                      title: "Profits",
+                      title: "Today",
                       subtitle: "Gross & Net profits",
+                      showsummary: false,
                       onPresssed: () {
-                        Get.to(() => ProfitPage());
+                        salesController.getProfitTransaction(
+                          fromDate: DateTime.parse(
+                              DateFormat("yyy-MM-dd").format(DateTime.now())),
+                          toDate: DateTime.parse(DateFormat("yyy-MM-dd")
+                              .format(DateTime.now().add(Duration(days: 1)))),
+                        );
+                        Get.to(() => ProfitPage(headline: "Today"));
                       },
                       color: Colors.amber.shade100,
-                      icon: Icons.query_stats,
-                      amount: salesController.profitModel.value == null
-                          ? 0
-                          : "${salesController.profitModel.value?.grossProfit}");
+                      icon: Icons.today,
+                      amount: "${salesController.grossProfit}");
                 }),
                 Obx(() {
                   return financeCards(
-                    title: "Expenses",
-                    subtitle: "Expenditure",
+                      title: "Current Month",
+                      subtitle: "Gross & Net profits",
+                      showsummary: false,
+                      onPresssed: () {
+                        DateTime now = DateTime.now();
+                        var lastday = DateTime(now.year, now.month + 1, 0);
+
+                        final noww = DateTime.now();
+
+                        var firstday = DateTime(noww.year, noww.month, 1);
+                        salesController.getProfitTransaction(
+                          fromDate: firstday,
+                          toDate: lastday,
+                        );
+                        Get.to(() => ProfitPage(
+                              headline:
+                                  '\n${DateFormat("yyy-MM-dd").format(firstday)}-${DateFormat("yyy-MM-dd").format(lastday)}',
+                            ));
+                      },
+                      color: Colors.amber.shade100,
+                      icon: Icons.calendar_month,
+                      amount: "${salesController.grossProfit}");
+                }),
+                Obx(() {
+                  return financeCards(
+                      title: "Monthly Profit & Expenses",
+                      subtitle: "Monthly profits versus expenses",
+                      showsummary: false,
+                      onPresssed: () {
+                        return Get.to(() => MonthFilter());
+                        // salesController.getProfitTransaction(
+                        //   fromDate: DateTime.parse(
+                        //       DateFormat("yyy-MM-dd").format(DateTime.now())),
+                        //   toDate: DateTime.parse(DateFormat("yyy-MM-dd")
+                        //       .format(DateTime.now().add(Duration(days: 1)))),
+                        // );
+                        // Get.to(() => ProfitPage());
+                      },
+                      color: Colors.blue.shade100,
+                      icon: Icons.menu,
+                      amount: "${salesController.grossProfit}");
+                }),
+                Obx(() {
+                  return financeCards(
+                    title: "Graphical Analysis",
+                    subtitle: "Analyze shop perfomance in a graph",
+                    showsummary: false,
                     onPresssed: () {
-                      Get.to(() => ExpensePage());
+                      Get.to(() => GraphAnalysis());
                     },
                     color: Colors.purple.shade100,
                     icon: Icons.show_chart,
-                    amount: salesController.profitModel.value == null
-                        ? 0
-                        : "${salesController.profitModel.value?.totalExpense}",
+                    amount: expenseController.totalExpenses.value,
                   );
                 }),
                 Obx(() {
                   return financeCards(
-                    title: "Sales",
-                    subtitle: "sales",
+                    title: "Products Movement",
+                    showsummary: false,
+                    subtitle: "view fast and slow moving products",
                     onPresssed: () {
-                      salesController.salesInitialIndex.value = 0;
-                      salesController.getSales(onCredit: "", startingDate: "");
+                      salesController.selectedMonth.value =
+                          DateTime.now().month;
+                      salesController.currentYear.value = DateTime.now().year;
 
-                      Get.to(() => AllSalesPage(
-                            page: "financePage",
-                          ));
+                      Get.to(() => ProductAnalysis());
                     },
                     color: Colors.blue.shade100,
                     icon: Icons.sell_rounded,
-                    amount: salesController.profitModel.value == null
-                        ? 0
-                        : "${salesController.profitModel.value?.sales}",
+                    amount: "${salesController.totalSalesByDate.value}",
                   );
                 }),
-                InkWell(
-                  onTap: () {
-                    Get.to(() => CashFlowManager());
-                  },
-                  child: Container(
-                    width: double.infinity,
-                    margin: const EdgeInsets.only(top: 10),
-                    padding: EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                        color: Colors.deepPurple.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(10)),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              height: 40,
-                              width: 40,
-                              child: Center(child: Icon(Icons.margin_outlined)),
-                              decoration: BoxDecoration(
-                                  color: Colors.amberAccent,
-                                  borderRadius: BorderRadius.circular(20)),
-                            ),
-                            SizedBox(
-                              width: 10,
-                            ),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                majorTitle(
-                                    title: "Cashflow Manager",
-                                    color: Colors.black,
-                                    size: 16.0),
-                                SizedBox(height: 5),
-                                minorTitle(
-                                    title: "Track finance", color: Colors.grey)
-                              ],
-                            )
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
               ],
             ),
           ),
         ),
+        bottomNavigationBar: Container(
+          color: Colors.transparent,
+          width: 200,
+          height: 60,
+          child: InkWell(
+            onTap: () {
+              Get.to(() => ExpensePage());
+            },
+            child: Container(
+                margin:
+                    EdgeInsets.only(left: 60, right: 60, bottom: 10, top: 10),
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: AppColors.mainColor),
+                child: Center(
+                    child: Text(
+                  "Add Expense",
+                  style: TextStyle(color: Colors.white),
+                ))),
+          ),
+        ),
+        floatButton: Container(),
         appBar: appBar(context),
       ),
     );
@@ -324,44 +365,42 @@ class FinancePage extends StatelessWidget {
           color: Colors.black,
         ),
       ),
-      title: majorTitle(title: "Financial", color: Colors.black, size: 16.0),
+      title: majorTitle(
+          title: "Financial Statement", color: Colors.black, size: 16.0),
       actions: [
-        InkWell(
-            onTap: () async {
-              final picked = await showDateRangePicker(
-                context: context,
-                lastDate: DateTime(2079),
-                firstDate: DateTime(2019),
-              );
-              expenseController.startdate.value = picked!.start;
-              expenseController.enddate.value = picked.end;
-
-              salesController.getProfitTransaction(
-                  start: expenseController.startdate.value,
-                  end: expenseController.enddate.value,
-                  type: "finance",
-                  shopId: shopController.currentShop.value?.id);
-            },
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              child: Center(
-                child: Row(
-                  children: [
-                    Text(
-                      "Filter",
-                      style: TextStyle(
-                          color: AppColors.mainColor,
-                          fontWeight: FontWeight.bold),
-                    ),
-                    Icon(
-                      Icons.filter_list_alt,
-                      color: AppColors.mainColor,
-                      size: 20,
-                    )
-                  ],
-                ),
-              ),
-            ))
+        // InkWell(
+        //     onTap: () async {
+        //       final picked = await showDateRangePicker(
+        //         context: context,
+        //         lastDate: DateTime(2079),
+        //         firstDate: DateTime(2019),
+        //       );
+        //       salesController.filterStartDate.value = picked!.start;
+        //       salesController.filterEnndStartDate.value = picked.end;
+        //
+        //       salesController.getFinanceSummary(
+        //           fromDate: picked.start, toDate: picked.end);
+        //     },
+        //     child: Container(
+        //       padding: EdgeInsets.symmetric(horizontal: 20),
+        //       child: Center(
+        //         child: Row(
+        //           children: [
+        //             Text(
+        //               "Filter",
+        //               style: TextStyle(
+        //                   color: AppColors.mainColor,
+        //                   fontWeight: FontWeight.bold),
+        //             ),
+        //             Icon(
+        //               Icons.filter_list_alt,
+        //               color: AppColors.mainColor,
+        //               size: 20,
+        //             )
+        //           ],
+        //         ),
+        //       ),
+        //     ))
       ],
     );
   }
@@ -370,6 +409,7 @@ class FinancePage extends StatelessWidget {
       {required title,
       required subtitle,
       required icon,
+      bool? showsummary = true,
       required onPresssed,
       required Color color,
       required amount}) {
@@ -412,11 +452,12 @@ class FinancePage extends StatelessWidget {
             SizedBox(
               height: 10,
             ),
-            normalText(
-                title:
-                    " ${title} summary: ${shopController.currentShop.value?.currency}.${amount} ",
-                color: Colors.black,
-                size: 14.0)
+            if (showsummary == true)
+              normalText(
+                  title:
+                      " ${title} summary: ${shopController.currentShop.value?.currency}.${amount} ",
+                  color: Colors.black,
+                  size: 14.0)
           ],
         ),
       ),
@@ -424,19 +465,157 @@ class FinancePage extends StatelessWidget {
   }
 }
 
+class MonthFilter extends StatelessWidget {
+  MonthFilter({Key? key}) : super(key: key);
+  List<Map<String, dynamic>> monhts = [
+    {"month": "January"},
+    {"month": "February"},
+    {"month": "March"},
+    {"month": "April"},
+    {"month": "May"},
+    {"month": "June"},
+    {"month": "July"},
+    {"month": "August"},
+    {"month": "September"},
+    {"month": "October"},
+    {"month": "November"},
+    {"month": "December"},
+  ];
+  SalesController salesController = Get.find<SalesController>();
+  List<int> getYears(int year) {
+    int currentYear = DateTime.now().year;
+
+    List<int> yearsTilPresent = [];
+
+    while (year <= currentYear) {
+      yearsTilPresent.add(year);
+      year++;
+    }
+
+    return yearsTilPresent;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Pick a month"),
+        actions: [
+          InkWell(
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return Dialog(
+                    child: Container(
+                      height: 300,
+                      width: MediaQuery.of(context).size.width * 0.2,
+                      color: Colors.white,
+                      child: ListView.builder(
+                          itemCount: getYears(2019).length,
+                          itemBuilder: (c, i) {
+                            var year = getYears(2019)[i];
+                            return InkWell(
+                              onTap: () {
+                                salesController.currentYear.value = year;
+                                Get.back();
+                              },
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 20, vertical: 10),
+                                    child: Text(
+                                      year.toString().capitalize!,
+                                      style: const TextStyle(
+                                          color: Colors.black, fontSize: 16),
+                                    ),
+                                  ),
+                                  Divider()
+                                ],
+                              ),
+                            );
+                          }),
+                    ),
+                  );
+                },
+              );
+            },
+            child: Container(
+              padding: EdgeInsets.only(right: 10),
+              child: Row(
+                children: [
+                  Obx(() => Text(salesController.currentYear.value.toString())),
+                  Icon(Icons.arrow_drop_down)
+                ],
+              ),
+            ),
+          )
+        ],
+      ),
+      body: Container(
+        color: Colors.white,
+        child: ListView.builder(
+            itemCount: monhts.length,
+            itemBuilder: (c, i) {
+              var month = monhts[i];
+              return InkWell(
+                onTap: () {
+                  DateTime now =
+                      DateTime(salesController.currentYear.value, i + 1);
+                  var lastday = DateTime(now.year, now.month + 1, 0);
+                  final noww =
+                      DateTime(salesController.currentYear.value, i + 1);
+                  var firstday = DateTime(noww.year, noww.month, 1);
+
+                  var d = DateFormat("yyy-MM-dd").format(
+                      DateTime(salesController.currentYear.value, i + 1));
+
+                  salesController.getProfitTransaction(
+                    fromDate: firstday,
+                    toDate: lastday,
+                  );
+                  Get.to(() => ProfitPage(
+                      headline:
+                          "from\n${'${DateFormat("yyy-MM-dd").format(firstday)}-${DateFormat("yyy-MM-dd").format(lastday)}'}"));
+                },
+                child: Column(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 10),
+                      child: Row(
+                        children: [
+                          Text(month["month"].toString().capitalize!),
+                          Spacer(),
+                          Icon(
+                            Icons.arrow_forward_ios_rounded,
+                            color: Colors.grey,
+                          )
+                        ],
+                      ),
+                    ),
+                    Divider()
+                  ],
+                ),
+              );
+            }),
+      ),
+    );
+  }
+}
+
 financeChat(context) {
   return Container(
-    // padding: EdgeInsets.fromLTRB(10,5,10,5),
     width: MediaQuery.of(context).size.width,
     decoration: BoxDecoration(
         color: AppColors.lightDeepPurple,
         borderRadius: BorderRadius.circular(10)),
     child: SfCartesianChart(
-        // Initialize category axis
         primaryXAxis: CategoryAxis(),
         series: <LineSeries<SalesData, String>>[
           LineSeries<SalesData, String>(
-              // Bind data source
               dataSource: <SalesData>[
                 SalesData('Jan', 0),
                 SalesData('Feb', 2),
@@ -454,8 +633,6 @@ financeChat(context) {
               xValueMapper: (SalesData sales, _) => sales.year,
               yValueMapper: (SalesData sales, _) => sales.sales),
           LineSeries<SalesData, String>(
-
-              // Bind data source
               dataSource: <SalesData>[
                 SalesData('Jan', 25),
                 SalesData('Feb', 27),

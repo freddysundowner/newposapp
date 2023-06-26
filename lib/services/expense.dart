@@ -1,24 +1,27 @@
 import 'dart:convert';
 
-import 'package:pointify/services/apiurls.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:pointify/Real/schema.dart';
+import 'package:realm/realm.dart';
 
-import 'client.dart';
+import '../controllers/realm_controller.dart';
+import '../controllers/shop_controller.dart';
 
 class Expense {
-  createExpense({required Map<String, dynamic> body}) async {
-    var response = await DbBase()
-        .databaseRequest("$expenses", DbBase().postRequestType, body: body);
-    return jsonDecode(response);
+  final RealmController realmService = Get.find<RealmController>();
+  final ShopController shopController = Get.find<ShopController>();
+  createExpense(ExpenseModel expenseModel) async {
+    realmService.realm.write<ExpenseModel>(
+        () => realmService.realm.add<ExpenseModel>(expenseModel));
   }
 
-  getExpenseByDate(
-      {required shopId,
-      required startDate,
-      required endDate,
-      required attendant}) async {
-    var response = await DbBase().databaseRequest(
-        "$expenses?shop=$shopId&fromDate=$startDate&toDate=$endDate&attendant=${attendant ?? ""}",
-        DbBase().getRequestType);
-    return jsonDecode(response);
+  RealmResults<ExpenseModel> getExpenseByDate(
+      {DateTime? fromDate, DateTime? toDate, Shop? shop}) {
+    RealmResults<ExpenseModel> expenses = realmService.realm.query<
+            ExpenseModel>(
+        'shop == \$0 AND date > ${fromDate!.millisecondsSinceEpoch} AND date < ${toDate!.millisecondsSinceEpoch}',
+        [shopController.currentShop.value?.id.toString()]);
+    return expenses;
   }
 }

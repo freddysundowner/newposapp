@@ -1,21 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:pointify/controllers/AuthController.dart';
-import 'package:pointify/controllers/attendant_controller.dart';
 import 'package:pointify/controllers/home_controller.dart';
+import 'package:pointify/controllers/shop_controller.dart';
+import 'package:pointify/controllers/user_controller.dart';
 import 'package:pointify/screens/finance/expense_page.dart';
+import 'package:pointify/widgets/alert.dart';
 import 'package:pointify/widgets/loading_dialog.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:realm/realm.dart';
 
-import '../models/expense_model.dart';
+import '../Real/schema.dart';
 import '../services/expense.dart';
-import '../utils/colors.dart';
-import '../widgets/snackBars.dart';
 
 class ExpenseController extends GetxController {
   final GlobalKey<State> _keyLoader = new GlobalKey<State>();
-  var startdate = DateTime.now().obs;
-  var enddate = DateTime.now().add(Duration(days: 1)).obs;
+  var filterStartDate =
+      DateTime.parse(DateFormat("yyy-MM-dd").format(DateTime.now())).obs;
+  var filterEnndStartDate = DateTime.parse(
+          DateFormat("yyy-MM-dd").format(DateTime.now().add(Duration(days: 1))))
+      .obs;
   RxBool getExpenseByDateLoad = RxBool(false);
   RxInt totalExpenses = RxInt(0);
   RxList<ExpenseModel> expenses = RxList([]);
@@ -27,48 +30,41 @@ class ExpenseController extends GetxController {
 
   RxString selectedExpense = RxString("");
 
-  saveExpense({required shopId, required attendantId, required context}) async {
+  saveExpense() async {
     if (textEditingControllerName.text == "") {
-      showSnackBar(message: "Enter expense name", color: Colors.red);
+      generalAlert(
+        title: "Error",
+        message: "Enter expense name",
+      );
     } else if (textEditingControllerAmount.text == "") {
-      showSnackBar(message: "Enter expense amount", color: Colors.red);
+      generalAlert(
+        title: "Error",
+        message: "Enter expense amount",
+      );
+    } else if (selectedExpense.value == "") {
+      generalAlert(
+        title: "Error",
+        message: "select category",
+      );
     } else {
       try {
-        LoadingDialog.showLoadingDialog(
-            context: context, key: _keyLoader, title: "Creating expense");
-        Map<String, dynamic> body = {
-          "category": selectedExpense.value == ""
-              ? "Not Categorized"
-              : selectedExpense.value,
-          "amount": int.parse(textEditingControllerAmount.text),
-          "shop": shopId,
-          "name": textEditingControllerName.text,
-          "attendantId": attendantId,
-          "date": DateFormat("yyyy-dd-MM").format(DateTime.now()),
-        };
-        var response = await Expense().createExpense(body: body);
-        Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
-        if (response["status"] == true) {
-          textEditingControllerName.text = "";
-          textEditingControllerAmount.text = "";
-          selectedExpense.value = "";
-          getExpenseByDate(
-              shopId: "${shopId}",
-              startingDate: startdate.value,
-              endingDate: enddate.value,
-              attendant: Get.find<AuthController>().usertype.value == "admin"
-                  ? ""
-                  : Get.find<AttendantController>().attendant.value!.id);
-
-          if (MediaQuery.of(context).size.width > 600) {
-            Get.find<HomeController>().selectedWidget.value = ExpensePage();
-          } else {
-            Get.back();
-          }
-        } else {
-          showSnackBar(
-              message: response["message"], color: AppColors.mainColor);
-        }
+        ExpenseModel expenseModel = ExpenseModel(ObjectId(),
+            category: selectedExpense.value,
+            amount: int.parse(textEditingControllerAmount.text),
+            shop: Get.find<ShopController>().currentShop.value!.id.toString(),
+            name: textEditingControllerName.text,
+            attendantId: Get.find<UserController>().user.value,
+            createdAt: DateTime.now(),
+            date: DateTime.now().millisecondsSinceEpoch);
+        await Expense().createExpense(expenseModel);
+        textEditingControllerName.clear();
+        textEditingControllerAmount.clear();
+        selectedExpense.value = '';
+        getExpenseByDate(
+          fromDate: filterStartDate.value,
+          toDate: filterEnndStartDate.value,
+        );
+        Get.back();
       } catch (e) {
         Navigator.of(_keyLoader.currentContext!, rootNavigator: true).pop();
         print(e);
@@ -76,35 +72,24 @@ class ExpenseController extends GetxController {
     }
   }
 
-  getExpenseByDate(
-      {required shopId,
-      required endingDate,
-      required startingDate,
-      String? attendant}) async {
-    try {
-      expenses.clear();
-      totalExpenses.value = 0;
-      getExpenseByDateLoad.value = true;
-      var response = await Expense().getExpenseByDate(
-          shopId: shopId,
-          startDate: DateFormat("yyyy-MM-dd").format(startingDate),
-          endDate: DateFormat("yyyy-MM-dd").format(endingDate),
-          attendant: attendant);
-      if (response["status"] == true) {
-        List fetchedList = response["body"];
-        List<ExpenseModel> expenseBody =
-            fetchedList.map((e) => ExpenseModel.fromJson(e)).toList();
-        for (var i = 0; i < expenseBody.length; i++) {
-          totalExpenses.value += int.parse("${expenseBody[i].amount}");
-        }
-        expenses.assignAll(expenseBody);
-      } else {
-        expenses.value = [];
-      }
-      getExpenseByDateLoad.value = false;
-    } catch (e) {
-      print(e);
-      getExpenseByDateLoad.value = false;
+  getExpenseByDate({
+    DateTime? fromDate,
+    DateTime? toDate,
+  }) async {
+    expenses.clear();
+    if (fromDate == null) {
+      fromDate =
+          DateTime.parse(DateFormat("yyy-MM-dd").format(filterStartDate.value));
+      toDate = DateTime.parse(
+          DateFormat("yyy-MM-dd").format(filterEnndStartDate.value));
     }
+
+    RealmResults<ExpenseModel> response = await Expense().getExpenseByDate(
+      fromDate: fromDate,
+      toDate: toDate,
+    );
+    expenses.value = response.map((e) => e).toList();
+    totalExpenses.value = expenses.fold(
+        0, (previousValue, element) => previousValue + element.amount!);
   }
 }

@@ -2,27 +2,31 @@ import 'package:flutter/material.dart';
 import 'package:pointify/controllers/cashflow_controller.dart';
 import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
-import 'package:pointify/models/cashflow_category.dart';
+import 'package:pointify/functions/functions.dart';
 import 'package:pointify/screens/cash_flow/cash_at_bank.dart';
 import 'package:pointify/screens/cash_flow/cashflow_category_history.dart';
 import 'package:pointify/utils/colors.dart';
 import 'package:pointify/widgets/delete_dialog.dart';
 import 'package:get/get.dart';
 
+import '../../../Real/schema.dart';
+
 Widget categoryCard(context, {required CashFlowCategory cashflowCategory}) {
   return Padding(
     padding: const EdgeInsets.all(8.0),
     child: InkWell(
       onTap: () {
-        if (cashflowCategory.name == "bank") {
-          Get.to(() => CashAtBank());
+        if (cashflowCategory.key == "bank") {
+          Get.to(() => CashAtBank(
+                cashFlowCategory: cashflowCategory,
+              ));
         } else {
           actionsBottomSheet(
               context: context, cashflowCategory: cashflowCategory);
         }
       },
       child: Container(
-        padding: EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 3),
+        padding: const EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 3),
         width: double.infinity,
         decoration: BoxDecoration(
             color: Colors.white,
@@ -44,7 +48,7 @@ Widget categoryCard(context, {required CashFlowCategory cashflowCategory}) {
                   style: const TextStyle(color: Colors.black),
                 ),
                 Text(
-                  "${Get.find<ShopController>().currentShop.value?.currency} ${cashflowCategory.amount!.toString()}",
+                  htmlPrice(cashflowCategory.amount),
                   style: TextStyle(color: Colors.black),
                 ),
               ],
@@ -83,16 +87,12 @@ actionsBottomSheet(
                   if (MediaQuery.of(context).size.width > 600) {
                     Get.find<HomeController>().selectedWidget.value =
                         CashCategoryHistory(
-                            title: cashflowCategory.name,
-                            subtitle: "All records",
-                            page: "cashflowcategory",
-                            id: cashflowCategory.id);
+                      cashFlowCategory: cashflowCategory,
+                      page: "cashflowcategory",
+                    );
                   } else {
                     Get.to(() => CashCategoryHistory(
-                        title: cashflowCategory.name,
-                        subtitle: "All records",
-                        page: "cashflowcategory",
-                        id: cashflowCategory.id));
+                        cashFlowCategory: cashflowCategory, page: "bank"));
                   }
                 },
                 title: Text("View List"),
@@ -157,8 +157,8 @@ actionsBottomSheet(
                                               .textEditingControllerCategory
                                               .text
                                               .isNotEmpty) {
-                                            cashflowController.editCategory(
-                                                cashflowCategory.id);
+                                            cashflowController
+                                                .editCategory(cashflowCategory);
                                           }
                                         },
                                         child: Text(
@@ -183,7 +183,7 @@ actionsBottomSheet(
                   deleteDialog(
                       context: context,
                       onPressed: () {
-                        cashflowController.deleteCategory(cashflowCategory.id);
+                        cashflowController.deleteCategory(cashflowCategory);
                       });
                 },
                 title: Text("Delete"),

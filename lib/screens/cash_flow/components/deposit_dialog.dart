@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:pointify/controllers/CustomerController.dart';
 import 'package:pointify/controllers/wallet_controller.dart';
-import 'package:pointify/models/deposit_model.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:pointify/widgets/alert.dart';
 
+import '../../../Real/schema.dart';
+
 showDepositDialog(
     {required context,
-    required uid,
+    required CustomerModel customerModel,
     required title,
     String? page,
     String? size,
@@ -40,6 +41,7 @@ showDepositDialog(
                 SizedBox(height: 10),
                 TextFormField(
                   controller: walletController.amountController,
+                  keyboardType: TextInputType.number,
                   decoration: InputDecoration(
                       hintText: title == "edit"
                           ? depositModel!.amount.toString()
@@ -75,25 +77,15 @@ showDepositDialog(
                     TextButton(
                       onPressed: () async {
                         Navigator.pop(context);
+                        print("title $title");
                         if (title == "edit") {
-                          var response = await walletController.updateWallet(
-                              amount: walletController.amountController.text,
-                              id: depositModel!.id,
-                              uid: uid);
-                          print(response);
-                          if (response["status"] == false) {
-                            generalAlert(
-                                title: "Error", message: response["message"]);
-                          } else {
-                            await Get.find<CustomerController>()
-                                .getCustomerById(uid);
-                          }
                         } else {
-                          walletController.save(uid, context, page, size);
+                          walletController.deposit(
+                              customerModel, context, page, size);
                         }
                       },
                       child: Text(
-                        "Save Now".toUpperCase(),
+                        "Deposit".toUpperCase(),
                         style: TextStyle(color: Colors.purple),
                       ),
                     )

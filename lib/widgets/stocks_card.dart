@@ -3,13 +3,10 @@
 import 'package:flutter/material.dart';
 import 'package:pointify/controllers/purchase_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
-import 'package:pointify/widgets/alert.dart';
 import 'package:pointify/widgets/snackBars.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-
-import '../controllers/supplierController.dart';
-import '../models/invoice_items.dart';
+import '../Real/schema.dart';
 import '../utils/colors.dart';
 
 Widget stockCard(
@@ -74,7 +71,7 @@ Widget stockCard(
                               .format(supplyOrderModel.createdAt!)
                               .toString()),
                           Text(
-                              ", by: ${supplyOrderModel.attendantid?.fullnames}"),
+                              ", by: ${supplyOrderModel.attendantid?.username}"),
                         ],
                       ),
                     ],

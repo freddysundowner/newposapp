@@ -1,58 +1,74 @@
 import 'dart:convert';
 
-import 'package:pointify/services/apiurls.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:pointify/Real/schema.dart';
 import 'package:pointify/services/client.dart';
+import 'package:realm/realm.dart';
+
+import '../controllers/realm_controller.dart';
+import '../controllers/shop_controller.dart';
 
 class Customer {
-  createCustomer(Map<String, dynamic> body) async {
-    var response = await DbBase()
-        .databaseRequest(customer, DbBase().postRequestType, body: body);
-    return jsonDecode(response);
+  final RealmController realmService = Get.find<RealmController>();
+  final ShopController shopController = Get.find<ShopController>();
+  createCustomer(CustomerModel customerModel) async {
+    realmService.realm.write<CustomerModel>(
+        () => realmService.realm.add<CustomerModel>(customerModel));
   }
 
-  getCustomersByShopId(String shopId, String type) async {
-    var response = await DbBase().databaseRequest(
-        type == "all"
-            ? customer + "shop/${shopId}"
-            : "$customersOnCredit/${shopId}",
-        DbBase().getRequestType);
-    return jsonDecode(response);
+  RealmResults<CustomerModel> getCustomersByShopId(String type) {
+    RealmResults<CustomerModel> customers = realmService.realm
+        .query<CustomerModel>(
+            r'shopId == $0 AND TRUEPREDICATE SORT(createdAt DESC)',
+            [shopController.currentShop.value]);
+    if (type == "debtors") {
+      return customers.query("walletBalance < 0 ");
+    }
+    return customers;
   }
 
-  getCustomersById(id) async {
-    var response =
-        await DbBase().databaseRequest(customer + id, DbBase().getRequestType);
-    return jsonDecode(response);
+  getCustomersById(CustomerModel customerModel) {
+    RealmResults<CustomerModel> customer = realmService.realm
+        .query<CustomerModel>(r'_id == $0', [customerModel.id]);
+    print(customer.first.walletBalance);
+    return customer.first;
   }
 
-  updateCustomer({required Map<String, dynamic> body, required id}) async {
-    var response = await DbBase()
-        .databaseRequest(customer + id, DbBase().patchRequestType, body: body);
-    return jsonDecode(response);
+  updateCustomerWalletbalance(CustomerModel customerModel,
+      {int? amount}) async {
+    realmService.realm.write(() {
+      if (amount != null) {
+        customerModel.walletBalance = amount;
+      }
+    });
   }
 
-  deleteCustomer({required id}) async {
-    var response = await DbBase()
-        .databaseRequest(customer + id, DbBase().deleteRequestType);
-    return jsonDecode(response);
+  updateCustomer(CustomerModel customerModel) async {
+    realmService.realm.write<CustomerModel>(() =>
+        realmService.realm.add<CustomerModel>(customerModel, update: true));
   }
 
-  getPurchases({
-    required uid,
-    required operation,
-    required attendantId,
-  }) async {
-    var response = await DbBase()
-        .databaseRequest(customerPurchase + uid, DbBase().getRequestType);
-    var data = jsonDecode(response);
-    return data;
+  deleteCustomer({required CustomerModel customerModel}) async {
+    realmService.realm.write(() {
+      realmService.realm.delete(customerModel);
+    });
   }
 
-  getReturns({String? uid, String? attendantId}) async {
-    var response = await DbBase().databaseRequest(
-        "$customerReturns?customer=$uid&attendant=$attendantId",
-        DbBase().getRequestType);
-    var data = jsonDecode(response);
-    return data;
+  RealmResults<DepositModel> getCustomerWallets({
+    required bool debtors,
+    DateTime? fromDate,
+    DateTime? toDate,
+  }) {
+    if (debtors == true) {
+      var response = realmService.realm.query<DepositModel>(
+          'type == \$0 AND date > ${fromDate?.millisecondsSinceEpoch} AND date < ${toDate!.millisecondsSinceEpoch}',
+          ['usage']);
+      return response;
+    }
+    var response = realmService.realm.query<DepositModel>(
+        'type == \$0 AND date > ${fromDate?.millisecondsSinceEpoch} AND date < ${toDate!.millisecondsSinceEpoch}',
+        ['deposit']);
+    return response;
   }
 }

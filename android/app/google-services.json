@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "841973566598",
+    "project_id": "pointofsale-123e1",
+    "storage_bucket": "pointofsale-123e1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:841973566598:android:7222ca0935f63661eb1507",
+        "android_client_info": {
+          "package_name": "com.pointify.com"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "841973566598-nftn9pmr71dvgnlq9te83tkmc34qgp8u.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDOoEK-utFGmZbwnB9fqcn8Noq-CHMGwiw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "841973566598-nftn9pmr71dvgnlq9te83tkmc34qgp8u.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

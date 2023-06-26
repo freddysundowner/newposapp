@@ -1,33 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:pointify/controllers/AuthController.dart';
-import 'package:pointify/controllers/attendant_controller.dart';
+import 'package:pointify/controllers/user_controller.dart';
 import 'package:pointify/controllers/product_controller.dart';
-import 'package:pointify/controllers/product_history_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
-import 'package:pointify/models/product_model.dart';
 import 'package:pointify/widgets/pdf/bar_code_pdf.dart';
 import 'package:pointify/widgets/smalltext.dart';
 import 'package:get/get.dart';
 
+import '../Real/schema.dart';
+import '../functions/functions.dart';
 import '../screens/product/create_product.dart';
 import '../screens/product/product_history.dart';
 import '../utils/colors.dart';
 import 'bigtext.dart';
 import 'delete_dialog.dart';
 
-Widget productCard(
-    {required context, required ProductModel product, required shopId}) {
+Widget productCard({required Product product}) {
   ShopController shopController = Get.find<ShopController>();
   return InkWell(
     onTap: () {
-      showProductModal(context, product, shopId);
+      showProductModal(Get.context!, product);
     },
     child: Padding(
       padding: const EdgeInsets.all(3.0),
       child: Card(
         color: product.quantity == 0
             ? Colors.red
-            : product.quantity == product.stockLevel
+            : product.quantity! <= product.stockLevel!
                 ? Colors.amber
                 : AppColors.mainColor,
         elevation: 2,
@@ -56,7 +55,7 @@ Widget productCard(
                           color: Colors.white),
                       SizedBox(height: 5),
                       minorTitle(
-                          title: "By ~ ${product.attendant?.fullnames}",
+                          title: "By ~ ${product.attendant?.username}",
                           color: Colors.white),
                     ],
                   )
@@ -73,7 +72,7 @@ Widget productCard(
                     SizedBox(height: 5),
                     minorTitle(
                         title:
-                            "SP/=  ${shopController.currentShop.value?.currency}.${product.sellingPrice![0]}",
+                            "SP/=  ${shopController.currentShop.value?.currency}.${product.selling}",
                         color: Colors.white),
                   ],
                 ),
@@ -87,10 +86,9 @@ Widget productCard(
   );
 }
 
-showProductModal(context, ProductModel product, shopId) {
+showProductModal(context, Product product) {
   ProductController productController = Get.find<ProductController>();
-  AuthController authController = Get.find<AuthController>();
-  AttendantController attendantController = Get.find<AttendantController>();
+  UserController userController = Get.find<UserController>();
 
   return showModalBottomSheet<void>(
       context: context,
@@ -106,18 +104,15 @@ showProductModal(context, ProductModel product, shopId) {
                   children: [Container(child: Text('Manage ${product.name}'))],
                 ),
               ),
-              if (authController.usertype.value == "admin")
+              if (userController.user.value?.usertype == "admin")
                 ListTile(
                     leading: Icon(Icons.list),
                     onTap: () {
                       Get.back();
-                      Get.find<ProductHistoryController>().tabIndex.value = 0;
                       Get.to(() => ProductHistory(product: product));
                     },
-                    title: Text('Product History')),
-              if (authController.usertype.value == "admin" ||
-                  (authController.usertype.value == "attendant" &&
-                      attendantController.checkRole("edit_entries")))
+                    title: const Text('Product History')),
+              if (checkPermission(category: "products", permission: "manage"))
                 ListTile(
                     leading: Icon(Icons.edit),
                     onTap: () {
@@ -127,8 +122,8 @@ showProductModal(context, ProductModel product, shopId) {
                             productModel: product,
                           ));
                     },
-                    title: Text('Edit')),
-              if (authController.usertype.value == "admin")
+                    title: const Text('Edit')),
+              if (userController.user.value?.usertype == "admin")
                 ListTile(
                     leading: Icon(Icons.code),
                     onTap: () {
@@ -140,10 +135,8 @@ showProductModal(context, ProductModel product, shopId) {
                               .value!
                               .name!);
                     },
-                    title: Text('Generate Barcode')),
-              if (authController.usertype.value == "admin" ||
-                  (authController.usertype.value == "attendant" &&
-                      attendantController.checkRole("edit_entries")))
+                    title: const Text('Generate Barcode')),
+              if (checkPermission(category: "products", permission: "manage"))
                 ListTile(
                     leading: Icon(Icons.delete),
                     onTap: () {
@@ -152,9 +145,8 @@ showProductModal(context, ProductModel product, shopId) {
                           context: context,
                           onPressed: () {
                             productController.deleteProduct(
-                                id: product.id,
-                                context: context,
-                                shopId: shopId);
+                              product: product,
+                            );
                           });
                     },
                     title: Text('Delete')),

@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:pointify/controllers/purchase_controller.dart';
-import 'package:pointify/controllers/sales_controller.dart';
 import 'package:get/get.dart';
-import 'package:pointify/models/invoice.dart';
 import 'package:pointify/utils/themer.dart';
 import 'package:pointify/widgets/alert.dart';
 
-import '../../../models/invoice_items.dart';
+import '../../../Real/schema.dart';
 import '../../../utils/colors.dart';
 
 returnInvoiceItem({required InvoiceItem invoiceItem, Invoice? invoice}) {

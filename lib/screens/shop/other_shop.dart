@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:pointify/controllers/attendant_controller.dart';
-import 'package:pointify/models/product_model.dart';
+import 'package:pointify/controllers/user_controller.dart';
 import 'package:pointify/responsive/responsiveness.dart';
 import 'package:get/get.dart';
 
+import '../../Real/schema.dart';
 import '../../controllers/product_controller.dart';
 import '../../controllers/shop_controller.dart';
 import '../../utils/colors.dart';
@@ -11,18 +11,17 @@ import '../../utils/colors.dart';
 class ViewOtherShop extends StatelessWidget {
   ViewOtherShop({Key? key}) : super(key: key);
   ShopController createShopController = Get.find<ShopController>();
-  AttendantController attendantController = Get.find<AttendantController>();
+  UserController attendantController = Get.find<UserController>();
   ProductController productController = Get.find<ProductController>();
 
   @override
   Widget build(BuildContext context) {
-    createShopController.getShops(
-        adminId: attendantController.attendant.value!.shop!.owner);
+    createShopController.getShops();
     productController.getProductsBySort(type: "all");
     return WillPopScope(
       onWillPop: () async {
-        createShopController.currentShop.value =
-            attendantController.attendant.value?.shop;
+        // createShopController.currentShop.value =
+        //     attendantController.attendant.value?.shop;
         return true;
       },
       child: Scaffold(
@@ -41,8 +40,8 @@ class ViewOtherShop extends StatelessWidget {
               : IconButton(
                   onPressed: () {
                     Get.back();
-                    createShopController.currentShop.value =
-                        attendantController.attendant.value?.shop;
+                    // createShopController.currentShop.value =
+                    //     attendantController.attendant.value?.shop;
                   },
                   icon: Icon(Icons.arrow_back_ios, color: Colors.black),
                 ),
@@ -105,7 +104,7 @@ class ViewOtherShop extends StatelessWidget {
                                           rows: List.generate(
                                               productController.products.length,
                                               (index) {
-                                            ProductModel productBody =
+                                            Product productBody =
                                                 productController.products
                                                     .elementAt(index);
                                             final y = productBody.name;
@@ -114,7 +113,7 @@ class ViewOtherShop extends StatelessWidget {
                                             final w = productBody.quantity;
                                             final z = productBody.buyingPrice;
                                             final a =
-                                                productBody.sellingPrice![0];
+                                                productBody.sellingPrice[0];
 
                                             return DataRow(cells: [
                                               DataCell(Container(
@@ -185,7 +184,7 @@ class ViewOtherShop extends StatelessWidget {
                                             productController.products.length,
                                         shrinkWrap: true,
                                         itemBuilder: ((context, index) {
-                                          ProductModel productBody =
+                                          Product productBody =
                                               productController.products
                                                   .elementAt(index);
 
@@ -272,7 +271,7 @@ class ViewOtherShop extends StatelessWidget {
     );
   }
 
-  Widget productCont(ProductModel productBody) {
+  Widget productCont(Product productBody) {
     return Padding(
       padding: const EdgeInsets.all(3.0),
       child: Card(

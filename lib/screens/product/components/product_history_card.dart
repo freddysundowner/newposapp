@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:pointify/functions/functions.dart';
 
+import '../../../Real/schema.dart';
 import '../../../controllers/shop_controller.dart';
-import '../../../models/invoice_items.dart';
 
-Widget productHistoryContainer(productBody) {
-  ShopController shopController = Get.find<ShopController>();
+Widget productHistoryContainer(ProductHistoryModel productHistoryModel) {
   return Padding(
     padding: const EdgeInsets.all(3.0),
     child: Card(
@@ -23,15 +23,21 @@ Widget productHistoryContainer(productBody) {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "${productBody.product!.name}".capitalize!,
+                      "${productHistoryModel.product!.name}".capitalize!,
                       style: const TextStyle(
                           color: Colors.black,
                           fontWeight: FontWeight.bold,
                           fontSize: 16),
                     ),
-                    Text('Qty ${productBody.quantity}'),
-                    Text(
-                        '${DateFormat("MMM dd,yyyy, hh:m a").format(productBody.createdAt!)} '),
+                    Text('Qty ${productHistoryModel.quantity}'),
+                    if (productHistoryModel.toShop != null)
+                      Text(
+                        "to ${productHistoryModel.toShop!.name!}",
+                        style: TextStyle(color: Colors.amber),
+                      ),
+                    if (productHistoryModel.createdAt != null)
+                      Text(
+                          '${DateFormat("MMM dd,yyyy, hh:m a").format(productHistoryModel.createdAt!)} '),
                   ],
                 )
               ],
@@ -40,9 +46,8 @@ Widget productHistoryContainer(productBody) {
             Column(
               children: [
                 Text(
-                    'BP/=  ${shopController.currentShop.value?.currency}.${productBody.product!.buyingPrice}'),
-                Text(
-                    'SP/=  ${shopController.currentShop.value?.currency}.${productBody.product!.sellingPrice![0]}')
+                    'BP/=  ${htmlPrice(productHistoryModel.product!.buyingPrice)}'),
+                Text('SP/=  ${htmlPrice(productHistoryModel.product!.selling)}')
               ],
             )
           ],
@@ -52,8 +57,7 @@ Widget productHistoryContainer(productBody) {
   );
 }
 
-Widget productPurchaseHistoryContainer(InvoiceItem productBody) {
-  ShopController shopController = Get.find<ShopController>();
+Widget productPurchaseHistoryContainer(InvoiceItem invoiceItem) {
   return Padding(
     padding: const EdgeInsets.all(3.0),
     child: Card(
@@ -70,15 +74,57 @@ Widget productPurchaseHistoryContainer(InvoiceItem productBody) {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "${productBody.product!.name}".capitalize!,
+                      "${invoiceItem.product!.name}".capitalize!,
                       style: const TextStyle(
                           color: Colors.black,
                           fontWeight: FontWeight.bold,
                           fontSize: 16),
                     ),
-                    Text('Qty ${productBody.itemCount}'),
                     Text(
-                        '${DateFormat("MMM dd,yyyy, hh:m a").format(productBody.createdAt!)} ')
+                        'Qty ${invoiceItem.itemCount} @ ${htmlPrice(invoiceItem.product?.selling)}'),
+                    if (invoiceItem.createdAt != null)
+                      Text('${invoiceItem.createdAt} ')
+                  ],
+                )
+              ],
+            ),
+            Spacer(),
+            Column(
+              children: [Text('by ~  ${invoiceItem.attendantid?.username}')],
+            )
+          ],
+        )),
+      ),
+    ),
+  );
+}
+
+Widget productBadStockHistory(BadStock badStock) {
+  return Padding(
+    padding: const EdgeInsets.all(3.0),
+    child: Card(
+      color: Colors.white.withOpacity(0.9),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Container(
+            child: Row(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "${badStock.product!.name}".capitalize!,
+                      style: const TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16),
+                    ),
+                    Text('Qty ${badStock.quantity}'),
+                    Text(
+                        '${DateFormat("MMM dd,yyyy, hh:m a").format(badStock.createdAt!)} '),
                   ],
                 )
               ],
@@ -86,10 +132,8 @@ Widget productPurchaseHistoryContainer(InvoiceItem productBody) {
             Spacer(),
             Column(
               children: [
-                Text(
-                    'BP/=  ${shopController.currentShop.value?.currency}.${productBody.product!.buyingPrice}'),
-                Text(
-                    'SP/=  ${shopController.currentShop.value?.currency}.${productBody.product!.sellingPrice![0]}')
+                Text('BP/=  ${htmlPrice(badStock.product!.buyingPrice)}'),
+                Text('SP/=  ${htmlPrice(badStock.product!.selling)}')
               ],
             )
           ],

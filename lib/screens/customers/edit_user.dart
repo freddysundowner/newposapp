@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:pointify/models/customer_model.dart';
 import 'package:get/get.dart';
 
+import '../../Real/schema.dart';
 import '../../controllers/CustomerController.dart';
-import '../../controllers/supplierController.dart';
 
 class EditCustomer extends StatelessWidget {
   final userType;
@@ -93,7 +92,7 @@ class EditCustomer extends StatelessWidget {
                     onPressed: () {
                       Navigator.pop(context);
                       customersController.updateCustomer(
-                          context, customerModel.id!);
+                          context, customerModel);
                     },
                     child: Text("Save Changes".toUpperCase(),
                         style: const TextStyle(

@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:pointify/responsive/responsiveness.dart';
-import 'package:pointify/screens/authentication/admin_login.dart';
+import 'package:pointify/screens/authentication/admin/admin_login.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
-
 import '../../utils/colors.dart';
-import 'login_attendant.dart';
+import 'attendant/login_attendant.dart';
 
 class Landing extends StatelessWidget {
   Landing({Key? key}) : super(key: key);
@@ -119,18 +117,11 @@ class Landing extends StatelessWidget {
       children: [
         Text(
           "Pointify",
-          style:
-              GoogleFonts.fredokaOne(fontSize: 40, color: AppColors.mainColor),
         ),
         SizedBox(
           height: 5,
         ),
-        Text(
-          "An enterprise at your fingertips.",
-          style: GoogleFonts.sofia(
-            fontSize: 19,
-          ),
-        ),
+        Text("An enterprise at your fingertips."),
         SizedBox(
           height: 20,
         ),

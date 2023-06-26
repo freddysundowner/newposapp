@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pointify/controllers/AuthController.dart';
+import 'package:pointify/controllers/realm_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
-import 'package:pointify/models/shop_model.dart';
 import 'package:pointify/widgets/bigtext.dart';
+
+import '../Real/schema.dart';
 
 showShopModalBottomSheet(context) {
   ShopController shopController = Get.find<ShopController>();
+  RealmController realmService = Get.find<RealmController>();
   showModalBottomSheet(
     context: context,
     shape: const RoundedRectangleBorder(
@@ -21,13 +24,11 @@ showShopModalBottomSheet(context) {
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             itemBuilder: (context, index) {
-              ShopModel shopBody = shopController.allShops.elementAt(index);
+              Shop shopBody = shopController.allShops.elementAt(index);
               return InkWell(
                 onTap: () {
                   Get.back();
-                  shopController.setDefaulShop(shopBody);
-                  Get.find<AuthController>()
-                      .init(Get.find<AuthController>().usertype.value);
+                  realmService.setDefaulShop(shopBody);
                 },
                 child: Container(
                   padding: const EdgeInsets.all(10),

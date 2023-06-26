@@ -1,9 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:pointify/controllers/AuthController.dart';
 import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
-import 'package:pointify/models/deposit_model.dart';
+import 'package:pointify/functions/functions.dart';
 import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/customers/customer_info_page.dart';
 import 'package:pointify/screens/sales/create_sale.dart';
@@ -12,9 +11,10 @@ import 'package:pointify/widgets/pdf/wallet_pdf.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
+import '../../Real/schema.dart';
 import '../../controllers/CustomerController.dart';
+import '../../controllers/user_controller.dart';
 import '../../controllers/wallet_controller.dart';
-import '../../models/customer_model.dart';
 import '../../utils/colors.dart';
 import 'components/deposit_dialog.dart';
 import 'components/wallet_card.dart';
@@ -27,12 +27,13 @@ class WalletPage extends StatelessWidget {
       : super(key: key) {
     walletController.initialPage.value = 0;
     customersController.customer.value = null;
-    customersController.getCustomerById(customerModel.id);
-    walletController.getWallet(customerModel.id, "deposit");
+    customersController.getCustomerById(customerModel);
+    walletController.getWallet(customerModel, "deposit");
   }
 
   WalletController walletController = Get.find<WalletController>();
   CustomerController customersController = Get.find<CustomerController>();
+  UserController userController = Get.find<UserController>();
 
   @override
   Widget build(BuildContext context) {
@@ -82,10 +83,9 @@ class WalletPage extends StatelessWidget {
                       indicatorWeight: 3,
                       onTap: (index) {
                         if (index == 0) {
-                          walletController.getWallet(
-                              customerModel.id, "deposit");
+                          walletController.getWallet(customerModel, "deposit");
                         } else {
-                          walletController.getWallet(customerModel.id, "usage");
+                          walletController.getWallet(customerModel, "usage");
                         }
                       },
                       tabs: const [
@@ -136,38 +136,42 @@ class WalletPage extends StatelessWidget {
                 fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 5),
-          Text(
-            "${Get.find<ShopController>().currentShop.value?.currency} ${customersController.customer.value?.walletBalance ?? 0}"
-                .toUpperCase(),
-            style: TextStyle(
-                color: type == "small" ? Colors.white : Colors.black,
-                fontWeight: FontWeight.bold),
+          Obx(
+            () => Text(
+              htmlPrice(customersController.customer.value?.walletBalance ?? 0)
+                  .toUpperCase(),
+              style: TextStyle(
+                  color: type == "small" ? Colors.white : Colors.black,
+                  fontWeight: FontWeight.bold),
+            ),
           ),
           SizedBox(height: 10),
-          InkWell(
-            onTap: () {
-              showDepositDialog(
-                  context: context,
-                  uid: customerModel.id,
-                  title: "Add a deposit",
-                  page: page,
-                  size: MediaQuery.of(context).size.width <= 600
-                      ? "small"
-                      : "large");
-            },
-            child: Container(
-              padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(15),
-                  color: type == "large" ? AppColors.mainColor : Colors.white),
-              child: Text(
-                "Make Deposit",
-                style: TextStyle(
-                    color: type == "large" ? Colors.white : Colors.black,
-                    fontWeight: FontWeight.bold),
+          if (checkPermission(category: "customers", permission: "deposit"))
+            InkWell(
+              onTap: () {
+                showDepositDialog(
+                    context: context,
+                    customerModel: customerModel,
+                    title: "Deposit",
+                    page: page,
+                    size: MediaQuery.of(context).size.width <= 600
+                        ? "small"
+                        : "large");
+              },
+              child: Container(
+                padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(15),
+                    color:
+                        type == "large" ? AppColors.mainColor : Colors.white),
+                child: Text(
+                  "Make Deposit",
+                  style: TextStyle(
+                      color: type == "large" ? Colors.white : Colors.black,
+                      fontWeight: FontWeight.bold),
+                ),
               ),
-            ),
-          )
+            )
         ],
       ),
     );
@@ -180,7 +184,11 @@ class WalletPage extends StatelessWidget {
       leading: IconButton(
           onPressed: () {
             if (page != null && page == "makesale") {
-              Get.find<HomeController>().selectedWidget.value = CreateSale();
+              if (MediaQuery.of(Get.context!).size.width > 600) {
+                Get.find<HomeController>().selectedWidget.value = CreateSale();
+              } else {
+                Get.back();
+              }
             } else if (type == "large") {
               Get.find<HomeController>().selectedWidget.value =
                   CustomerInfoPage(
@@ -200,7 +208,7 @@ class WalletPage extends StatelessWidget {
       ),
       centerTitle: false,
       actions: [
-        if (Get.find<AuthController>().usertype == "admin")
+        if (userController.user.value?.usertype == "admin")
           IconButton(
               onPressed: () {
                 showModalSheet(
@@ -385,7 +393,7 @@ class DepositHistory extends StatelessWidget {
                       itemBuilder: (context, index) {
                         DepositModel depositModel =
                             walletController.deposits.elementAt(index);
-                        return WalletCard(
+                        return WalletUsageCard(
                             context: context,
                             uid: uid,
                             depositBody: depositModel);

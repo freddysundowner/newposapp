@@ -1,23 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:pointify/controllers/AuthController.dart';
-import 'package:pointify/controllers/attendant_controller.dart';
+import 'package:pointify/controllers/user_controller.dart';
 import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
-import 'package:pointify/models/badstock.dart';
 import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/product/products_screen.dart';
-import 'package:pointify/screens/sales/all_sales_page.dart';
-import 'package:pointify/screens/stock/products_selection.dart';
+import 'package:pointify/screens/sales/all_sales.dart';
 import 'package:pointify/screens/stock/stock_page.dart';
 import 'package:pointify/utils/colors.dart';
 import 'package:pointify/utils/helper.dart';
 import 'package:get/get.dart';
-import 'package:pointify/widgets/alert.dart';
 
+import '../../Real/schema.dart';
 import '../../controllers/product_controller.dart';
-import '../../models/product_history_model.dart';
-import '../../models/product_model.dart';
 import '../../utils/themer.dart';
 import '../../widgets/bigtext.dart';
 import '../../widgets/no_items_found.dart';
@@ -25,18 +22,11 @@ import '../../widgets/no_items_found.dart';
 class BadStockPage extends StatelessWidget {
   final page;
 
-  BadStockPage({Key? key, required this.page}) : super(key: key) {
-    productController.getBadStock(
-        shopId: shopController.currentShop.value!.id,
-        attendant: authController.usertype.value == "admin"
-            ? ""
-            : attendantController.attendant.value?.id!,
-        product: "");
-  }
+  BadStockPage({Key? key, required this.page}) : super(key: key) {}
 
   ProductController productController = Get.find<ProductController>();
   ShopController shopController = Get.find<ShopController>();
-  AttendantController attendantController = Get.find<AttendantController>();
+  UserController attendantController = Get.find<UserController>();
   AuthController authController = Get.find<AuthController>();
 
   @override
@@ -59,7 +49,7 @@ class BadStockPage extends StatelessWidget {
           leading: IconButton(
               onPressed: () {
                 if (MediaQuery.of(context).size.width > 600) {
-                  if (page == "sales") {
+                  if (page == "services") {
                     Get.find<HomeController>().selectedWidget.value =
                         AllSalesPage(page: "badstock");
                   } else {
@@ -83,6 +73,67 @@ class BadStockPage extends StatelessWidget {
             child:
                 majorTitle(title: "Bad Stock", color: Colors.black, size: 18.0),
           ),
+          actions: [
+            Align(
+              alignment: Alignment.topRight,
+              child: InkWell(
+                onTap: () {
+                  productController.showBadStockWidget.value = true;
+                  productController.getProductsBySort(type: "all");
+                  Get.to(() => Scaffold(
+                        appBar: AppBar(
+                          backgroundColor: Colors.transparent,
+                          elevation: 0,
+                          title: Text(
+                            "Add Bad Stock",
+                            style: TextStyle(color: Colors.black),
+                          ),
+                          leading: IconButton(
+                            onPressed: () => Get.back(),
+                            icon: Icon(
+                              Icons.clear,
+                              color: Colors.black,
+                              size: 23,
+                            ),
+                          ),
+                        ),
+                        body: badStockWidget(context: context),
+                      ));
+                },
+                child: Container(
+                  padding: EdgeInsets.all(10),
+                  margin: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                  decoration: BoxDecoration(
+                      color: AppColors.mainColor,
+                      borderRadius: BorderRadius.circular(10)),
+                  child: const Text(
+                    "Add New",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              ),
+            ),
+            IconButton(
+                onPressed: () async {
+                  final picked = await showDateRangePicker(
+                    context: Get.context!,
+                    lastDate: DateTime(2079),
+                    firstDate: DateTime(2019),
+                  );
+                  Get.find<ProductController>().getBadStock(
+                      shopId: shopController.currentShop.value!.id,
+                      attendant: '',
+                      product: null,
+                      fromDate: DateTime.parse(
+                          DateFormat("yyy-MM-dd").format(picked!.start)),
+                      toDate: DateTime.parse(DateFormat("yyy-MM-dd")
+                          .format(picked.end.add(Duration(days: 1)))));
+                },
+                icon: Icon(
+                  Icons.date_range,
+                  color: AppColors.mainColor,
+                )),
+          ],
         ),
         body: ResponsiveWidget(
           smallScreen: _body(context),
@@ -96,31 +147,6 @@ class BadStockPage extends StatelessWidget {
     return SingleChildScrollView(
       child: Column(
         children: [
-          Obx(() {
-            return productController.showBadStockWidget.value
-                ? badStockWidget(context: context)
-                : Align(
-                    alignment: Alignment.topRight,
-                    child: InkWell(
-                      onTap: () {
-                        productController.showBadStockWidget.value = true;
-                        productController.getProductsBySort(type: "all");
-                      },
-                      child: Container(
-                        padding: EdgeInsets.all(10),
-                        margin:
-                            EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                        decoration: BoxDecoration(
-                            color: AppColors.mainColor,
-                            borderRadius: BorderRadius.circular(10)),
-                        child: const Text(
-                          "Add New",
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      ),
-                    ),
-                  );
-          }),
           Obx(() {
             return productController.saveBadstockLoad.value
                 ? Column(
@@ -165,11 +191,20 @@ class BadStockPage extends StatelessWidget {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Text(
-                                        badstock.product!.name!.capitalize!,
-                                        style: const TextStyle(
-                                            color: Colors.black,
-                                            fontWeight: FontWeight.w500),
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            child: Text(
+                                              badstock
+                                                  .product!.name!.capitalize!,
+                                              style: const TextStyle(
+                                                  color: Colors.black,
+                                                  fontWeight: FontWeight.w500),
+                                            ),
+                                          ),
+                                          Text(DateFormat("yyyy-MM-dd H:mm a")
+                                              .format(badstock.createdAt!))
+                                        ],
                                       ),
                                       SizedBox(
                                         height: 5,
@@ -194,7 +229,7 @@ class BadStockPage extends StatelessWidget {
                                           Align(
                                             alignment: Alignment.bottomRight,
                                             child: Text(
-                                              "By: ${badstock.attendantId!.fullnames}",
+                                              "By: ${badstock.attendantId!.username}",
                                               style: const TextStyle(
                                                   color: Colors.black,
                                                   fontSize: 15),
@@ -217,19 +252,7 @@ class BadStockPage extends StatelessWidget {
 
   Widget badStockWidget({required BuildContext context}) {
     return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(1.0),
-        color: Colors.white,
-        boxShadow: const [
-          BoxShadow(
-            color: Colors.grey,
-            offset: Offset(0.0, 0.0), //(x,y)
-            blurRadius: 1.0,
-          ),
-        ],
-      ),
-      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      padding: const EdgeInsets.all(20),
+      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
       width: MediaQuery.of(context).size.width > 600
           ? MediaQuery.of(context).size.width * 0.4
           : double.infinity,
@@ -263,10 +286,12 @@ class BadStockPage extends StatelessWidget {
                           );
                         });
                   } else {
+                    productController.getProductsBySort(
+                      type: "all",
+                    );
                     Get.to(() => ProductsScreen(
-                          shopId: shopController.currentShop.value!.id,
                           type: "badstock",
-                          function: (ProductModel product) {
+                          function: (Product product) {
                             productController.selectedBadStock.value = product;
                             Navigator.pop(context);
                           },
@@ -302,7 +327,7 @@ class BadStockPage extends StatelessWidget {
               ),
               TextFormField(
                 controller: productController.qtyController,
-                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                keyboardType: TextInputType.number,
                 decoration: InputDecoration(
                   hintText: "Quantity Spoiled",
                   fillColor: Colors.white,
@@ -384,6 +409,7 @@ class BadStockPage extends StatelessWidget {
                             } else {
                               productController.saveBadStock(
                                   page: page, context: context);
+                              Get.back();
                             }
                           },
                         );

@@ -1,10 +1,10 @@
 import 'package:pointify/controllers/CustomerController.dart';
-import 'package:pointify/controllers/attendant_controller.dart';
+import 'package:pointify/controllers/realm_controller.dart';
+import 'package:pointify/controllers/user_controller.dart';
 import 'package:pointify/controllers/cashflow_controller.dart';
 import 'package:pointify/controllers/expense_controller.dart';
 import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/controllers/product_controller.dart';
-import 'package:pointify/controllers/product_history_controller.dart';
 import 'package:pointify/controllers/purchase_controller.dart';
 import 'package:pointify/controllers/sales_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
@@ -19,15 +19,14 @@ class AuthBinding extends Bindings {
   @override
   void dependencies() {
     Get.put<AuthController>(AuthController(), permanent: true);
-    Get.put<AttendantController>(AttendantController(), permanent: true);
+    Get.put<RealmController>(RealmController(), permanent: true);
+    Get.put<UserController>(UserController(), permanent: true);
 
     Get.put<ShopController>(ShopController(), permanent: true);
     Get.put<HomeController>(HomeController(), permanent: true);
     Get.put<ProductController>(ProductController(), permanent: true);
     Get.put<CustomerController>(CustomerController(), permanent: true);
     Get.put<SupplierController>(SupplierController(), permanent: true);
-    Get.put<ProductHistoryController>(ProductHistoryController(),
-        permanent: true);
     Get.put<SalesController>(SalesController(), permanent: true);
     Get.put<PurchaseController>(PurchaseController(), permanent: true);
     Get.put<StockTransferController>(StockTransferController(),

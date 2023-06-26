@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:pointify/controllers/AuthController.dart';
-import 'package:pointify/controllers/attendant_controller.dart';
+import 'package:pointify/controllers/user_controller.dart';
 import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
-import 'package:pointify/models/product_model.dart';
+import 'package:pointify/functions/functions.dart';
 import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/product/product_history.dart';
 import 'package:pointify/screens/stock/stock_page.dart';
 import 'package:pointify/utils/constants.dart';
 import 'package:get/get.dart';
+import 'package:realm/realm.dart';
 
+import '../../Real/schema.dart';
+import '../../controllers/AuthController.dart';
 import '../../controllers/product_controller.dart';
+import '../../services/product.dart';
 import '../../utils/colors.dart';
 import '../../widgets/bigtext.dart';
 import '../../widgets/delete_dialog.dart';
@@ -21,14 +24,12 @@ import 'create_product.dart';
 class ProductPage extends StatelessWidget {
   ProductPage({Key? key}) : super(key: key) {
     productController.searchProductController.text = "";
-    productController.getProductsBySort(
-        type: productController.selectedSortOrderSearch.value);
   }
 
   ShopController createShopController = Get.find<ShopController>();
   ProductController productController = Get.find<ProductController>();
   AuthController authController = Get.find<AuthController>();
-  AttendantController attendantController = Get.find<AttendantController>();
+  UserController usercontroller = Get.find<UserController>();
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +46,7 @@ class ProductPage extends StatelessWidget {
               elevation: 0.3,
               titleSpacing: 0.0,
               centerTitle: false,
-              leading: authController.usertype == "attendant"
+              leading: usercontroller.user.value?.usertype == "attendant"
                   ? null
                   : IconButton(
                       onPressed: () {
@@ -57,7 +58,7 @@ class ProductPage extends StatelessWidget {
                         }
                         productController.getProductsBySort(type: "all");
                       },
-                      icon: Icon(
+                      icon: const Icon(
                         Icons.arrow_back_ios,
                         color: Colors.black,
                       ),
@@ -81,12 +82,11 @@ class ProductPage extends StatelessWidget {
                     ),
                   ),
                   Spacer(),
-                  if (authController.usertype == "attendant")
+                  if (usercontroller.user.value?.usertype == "attendant")
                     InkWell(
                         onTap: () {
                           Get.find<HomeController>().selectedWidget.value =
-                              CreateProduct(
-                                  page: "create", productModel: ProductModel());
+                              CreateProduct(page: "create", productModel: null);
                         },
                         child: majorTitle(
                             title: "Add Product",
@@ -113,13 +113,13 @@ class ProductPage extends StatelessWidget {
                         ],
                       ),
                     ),
-                    SizedBox(height: 30),
+                    const SizedBox(height: 30),
                     Obx(() {
                       return productController.getProductLoad.value
-                          ? Center(
+                          ? const Center(
                               child: CircularProgressIndicator(),
                             )
-                          : productController.products.length == 0
+                          : productController.products.isEmpty
                               ? Center(
                                   child: Text(
                                   "No Entries found",
@@ -162,9 +162,9 @@ class ProductPage extends StatelessWidget {
                                       rows: List.generate(
                                           productController.products.length,
                                           (index) {
-                                        ProductModel productBody =
-                                            productController.products
-                                                .elementAt(index);
+                                        Product productBody = productController
+                                            .products
+                                            .elementAt(index);
                                         final y = productBody.name;
                                         final x = productBody.category!.name;
                                         final w = productBody.quantity;
@@ -248,11 +248,11 @@ class ProductPage extends StatelessWidget {
                       ],
                     ),
                     Spacer(),
-                    if (authController.usertype.value == "attendant")
+                    if (usercontroller.user.value?.usertype == "attendant")
                       InkWell(
                           onTap: () {
                             Get.to(() => CreateProduct(
-                                page: "create", productModel: ProductModel()));
+                                page: "create", productModel: null));
                           },
                           child: majorTitle(
                               title: "Add Product",
@@ -270,7 +270,7 @@ class ProductPage extends StatelessWidget {
                     child: Row(
                       children: [
                         searchWidget(),
-                        if (authController.usertype == "admin")
+                        if (usercontroller.user.value?.usertype == "admin")
                           IconButton(
                               onPressed: () async {
                                 productController.scanQR(
@@ -299,8 +299,8 @@ class ProductPage extends StatelessWidget {
                   SizedBox(height: 20),
                   Obx(() {
                     return productController.getProductLoad.value
-                        ? Center(child: CircularProgressIndicator())
-                        : productController.products.length == 0
+                        ? const Center(child: CircularProgressIndicator())
+                        : productController.products.isEmpty
                             ? Center(
                                 child: Text(
                                 "No Entries found",
@@ -309,18 +309,14 @@ class ProductPage extends StatelessWidget {
                             : Container(
                                 // height: MediaQuery.of(context).size.height*0.6,
                                 child: ListView.builder(
-                                  physics: NeverScrollableScrollPhysics(),
+                                  physics: const NeverScrollableScrollPhysics(),
                                   itemCount: productController.products.length,
                                   shrinkWrap: true,
                                   itemBuilder: ((context, index) {
-                                    ProductModel productModel =
-                                        productController.products
-                                            .elementAt(index);
-                                    return productCard(
-                                        shopId:
-                                            "${createShopController.currentShop.value!.id}",
-                                        context: context,
-                                        product: productModel);
+                                    Product productModel = productController
+                                        .products
+                                        .elementAt(index);
+                                    return productCard(product: productModel);
                                   }),
                                 ),
                               );
@@ -382,7 +378,7 @@ class ProductPage extends StatelessWidget {
       builder: (_) {
         return SimpleDialog(
           children: [
-            if (authController.usertype.value == "admin")
+            if (usercontroller.user.value?.usertype == "admin")
               ListTile(
                 leading: Icon(Icons.list),
                 onTap: () {
@@ -392,9 +388,7 @@ class ProductPage extends StatelessWidget {
                 },
                 title: Text("Product History"),
               ),
-            if (authController.usertype.value == "admin" ||
-                (authController.usertype.value == "attendant" &&
-                    attendantController.checkRole("edit_entries")))
+            if (checkPermission(category: "products", permission: "manage"))
               ListTile(
                   leading: Icon(Icons.edit),
                   title: const Text("Edit"),
@@ -403,16 +397,14 @@ class ProductPage extends StatelessWidget {
                     Get.find<HomeController>().selectedWidget.value =
                         CreateProduct(page: "edit", productModel: product);
                   }),
-            if (authController.usertype.value == "admin")
+            if (usercontroller.user.value?.usertype == "admin")
               ListTile(
                   leading: Icon(Icons.code),
                   onTap: () {
                     Get.back();
                   },
                   title: const Text('Generate Barcode')),
-            if (authController.usertype.value == "admin" ||
-                (authController.usertype.value == "attendant" &&
-                    attendantController.checkRole("edit_entries")))
+            if (checkPermission(category: "products", permission: "manage"))
               ListTile(
                 leading: Icon(Icons.delete),
                 onTap: () {
@@ -420,8 +412,7 @@ class ProductPage extends StatelessWidget {
                   deleteDialog(
                       context: context,
                       onPressed: () {
-                        productController.deleteProduct(
-                            id: product.id, context: context, shopId: shopId);
+                        productController.deleteProduct(product: product);
                       });
                 },
                 title: Text("Delete"),
@@ -445,24 +436,22 @@ class ProductPage extends StatelessWidget {
         controller: productController.searchProductController,
         onChanged: (value) {
           if (value == "") {
-            productController.products.clear();
+            productController.getProductsBySort(
+              type: "all",
+            );
           } else {
-            productController.searchProduct(
-                createShopController.currentShop.value == null
-                    ? ""
-                    : "${createShopController.currentShop.value!.id}",
-                "product");
+            productController.getProductsBySort(
+                type: "search",
+                text: productController.searchProductController.text);
           }
         },
         decoration: InputDecoration(
           contentPadding: EdgeInsets.fromLTRB(10, 2, 10, 2),
           suffixIcon: IconButton(
             onPressed: () {
-              productController.searchProduct(
-                  createShopController.currentShop.value == null
-                      ? ""
-                      : "${createShopController.currentShop.value?.id}",
-                  "product");
+              productController.getProductsBySort(
+                  type: "search",
+                  text: productController.searchProductController.text);
             },
             icon: Icon(Icons.search),
           ),

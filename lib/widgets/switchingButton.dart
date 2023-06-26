@@ -16,7 +16,7 @@ Widget switchingButtons({required title, required value, required function}) {
           offColor: Colors.grey,
           value: value,
           onChange: (value) {
-            function();
+            function(value);
           },
         )
       ],

@@ -3,7 +3,7 @@ import 'package:pointify/widgets/smalltext.dart';
 import 'package:get/get.dart';
 
 import '../../../../utils/colors.dart';
-import '../models/customer_model.dart';
+import '../Real/schema.dart';
 import '../screens/customers/customer_info_page.dart';
 import 'bigtext.dart';
 

@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:pointify/controllers/attendant_controller.dart';
+import 'package:pointify/controllers/user_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/functions/functions.dart';
-import 'package:pointify/models/product_model.dart';
-import 'package:pointify/models/receipt_item.dart';
 import 'package:pointify/screens/sales/components/discount_dialog.dart';
 import 'package:pointify/screens/sales/components/edit_price_dialog.dart';
 import 'package:pointify/widgets/smalltext.dart';
 import 'package:get/get.dart';
 
+import '../Real/schema.dart';
 import '../controllers/AuthController.dart';
 import '../controllers/sales_controller.dart';
 import 'bigtext.dart';
@@ -17,11 +16,8 @@ import 'normal_text.dart';
 Widget SalesContainer(
     {required ReceiptItem receiptItem, required index, required type}) {
   SalesController salesController = Get.find<SalesController>();
-  ShopController shopController = Get.find<ShopController>();
-  AuthController authController = Get.find<AuthController>();
-  AttendantController attendantController = Get.find<AttendantController>();
   TextEditingController textEditingController = TextEditingController();
-  ProductModel productModel = receiptItem.product!;
+  Product productModel = receiptItem.product!;
   return Padding(
     padding: const EdgeInsets.all(5.0),
     child: Card(
@@ -48,6 +44,7 @@ Widget SalesContainer(
           ),
           SizedBox(height: 3),
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 majorTitle(title: "Qty", color: Colors.black54, size: 13.0),
@@ -66,9 +63,7 @@ Widget SalesContainer(
                 ],
               ),
               SizedBox(width: 15),
-              if (authController.usertype.value == "admin" ||
-                  (authController.usertype.value == "attendant" &&
-                      attendantController.checkRole("edit_entries")))
+              if (checkPermission(category: "sales", permission: "edit_price"))
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -88,28 +83,47 @@ Widget SalesContainer(
                         )),
                   ],
                 ),
+              Spacer(),
+              if (checkPermission(category: "sales", permission: "discount"))
+                Align(
+                  alignment: Alignment.topRight,
+                  child: InkWell(
+                    onTap: () {
+                      discountDialog(
+                          controller: textEditingController,
+                          receiptItem: receiptItem,
+                          index: index);
+                    },
+                    child: receiptItem.discount! > 0
+                        ? InkWell(
+                            onTap: () {
+                              receiptItem.discount = 0;
+                              salesController.calculateAmount(index);
+                            },
+                            child: Row(
+                              children: [
+                                Text(
+                                  htmlPrice(receiptItem.discount!),
+                                  style: TextStyle(
+                                      color: Colors.red, fontSize: 12),
+                                ),
+                                const Icon(
+                                  Icons.clear,
+                                  color: Colors.red,
+                                  size: 14,
+                                ),
+                              ],
+                            ))
+                        : const Text(
+                            "Discount",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(color: Colors.blue),
+                          ),
+                  ),
+                ),
             ],
           ),
           const SizedBox(height: 10),
-          if ((authController.usertype.value == "attendant" &&
-                  attendantController.checkRole("discounts") == true) ||
-              authController.usertype.value == "admin")
-            Align(
-              alignment: Alignment.topRight,
-              child: InkWell(
-                onTap: () {
-                  discountDialog(
-                      controller: textEditingController,
-                      receiptItem: receiptItem,
-                      index: index);
-                },
-                child: const Text(
-                  "Discount",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.blue),
-                ),
-              ),
-            ),
           type == "small"
               ? Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -119,10 +133,10 @@ Widget SalesContainer(
                           onPressed: () {
                             salesController.decrementItem(index);
                           },
-                          icon: Icon(Icons.remove,
+                          icon: const Icon(Icons.remove,
                               color: Colors.black, size: 16)),
                       Container(
-                          padding: EdgeInsets.only(
+                          padding: const EdgeInsets.only(
                               top: 5, bottom: 5, right: 8, left: 8),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(5),
@@ -155,10 +169,10 @@ Widget SalesContainer(
                               onPressed: () {
                                 salesController.decrementItem(index);
                               },
-                              icon: Icon(Icons.remove,
+                              icon: const Icon(Icons.remove,
                                   color: Colors.black, size: 16)),
                           Container(
-                              padding: EdgeInsets.only(
+                              padding: const EdgeInsets.only(
                                   top: 5, bottom: 5, right: 8, left: 8),
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(5),
@@ -174,7 +188,7 @@ Widget SalesContainer(
                               onPressed: () {
                                 salesController.incrementItem(index);
                               },
-                              icon: Icon(Icons.add,
+                              icon: const Icon(Icons.add,
                                   color: Colors.black, size: 16)),
                         ]),
                     normalText(

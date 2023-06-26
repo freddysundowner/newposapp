@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:pointify/Real/schema.dart';
 import 'package:pointify/controllers/AuthController.dart';
 import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
-import 'package:pointify/models/shop_category.dart';
-import 'package:pointify/models/shop_model.dart';
 import 'package:pointify/responsive/responsiveness.dart';
-import 'package:pointify/screens/authentication/shop_cagories.dart';
-import 'package:pointify/screens/home/shops_page.dart';
-import 'package:pointify/services/shop.dart';
+import 'package:pointify/screens/shop/shop_cagories.dart';
+import 'package:pointify/screens/shop/shops_page.dart';
 import 'package:pointify/utils/constants.dart';
 import 'package:pointify/widgets/shop_delete_dialog.dart';
 import 'package:get/get.dart';
@@ -17,7 +15,7 @@ import '../../widgets/bigtext.dart';
 import '../../widgets/shop_widget.dart';
 
 class ShopDetails extends StatelessWidget {
-  final ShopModel shopModel;
+  final Shop shopModel;
 
   ShopDetails({Key? key, required this.shopModel}) : super(key: key) {
     shopController.initializeControllers(shopModel: shopModel);
@@ -131,9 +129,7 @@ class ShopDetails extends StatelessWidget {
           : InkWell(
               splashColor: Colors.transparent,
               onTap: () {
-                shopController.updateShop(
-                    adminId: authController.currentUser.value?.id,
-                    shopId: shopModel.id);
+                shopController.updateShop(shop: shopModel);
               },
               child: Container(
                 padding: const EdgeInsets.all(10),
@@ -169,15 +165,11 @@ class ShopDetails extends StatelessWidget {
         InkWell(
           onTap: () {
             Get.to(() => ShopCategories(
-                  selectedItemsCallback: (ShopCategory s) async {
+                  selectedItemsCallback: (ShopTypes s) async {
                     Get.back();
                     shopController.selectedCategory.value = s;
                     shopController.selectedCategory.refresh();
-                    Map<String, dynamic> body = {
-                      "category": shopController.selectedCategory.value?.id,
-                    };
-                    print(body);
-                    await Shop().updateShops(shopId: shopModel.id, body: body);
+                    await shopController.updateShop(shop: shopModel);
                   },
                 ));
           },
@@ -197,7 +189,7 @@ class ShopDetails extends StatelessWidget {
                 Obx(
                   () => Text(shopController.selectedCategory.value == null
                       ? ""
-                      : shopController.selectedCategory.value!.title),
+                      : shopController.selectedCategory.value!.title!),
                 ),
                 const Icon(
                   Icons.arrow_forward_ios_rounded,
@@ -265,9 +257,7 @@ class ShopDetails extends StatelessWidget {
                   onTap: () {
                     deleteShopDialog(context, () {
                       shopController.deleteShop(
-                          id: shopModel.id,
-                          adminId: authController.currentUser.value?.id,
-                          context: context);
+                          shop: shopModel, context: context);
                     });
                   },
                   child: Container(

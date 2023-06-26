@@ -1,71 +1,74 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:pointify/Real/schema.dart';
 import 'package:pointify/controllers/home_controller.dart';
+import 'package:pointify/controllers/product_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
+import 'package:pointify/functions/functions.dart';
 import 'package:pointify/responsive/responsiveness.dart';
-import 'package:pointify/screens/finance/components/date_picker.dart';
 import 'package:pointify/screens/finance/expense_page.dart';
 import 'package:pointify/screens/finance/finance_page.dart';
+import 'package:pointify/screens/stock/badstocks.dart';
 import 'package:pointify/utils/colors.dart';
 import 'package:pointify/utils/helper.dart';
 import 'package:get/get.dart';
+import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 import '../../controllers/expense_controller.dart';
 import '../../controllers/sales_controller.dart';
 import '../../utils/dates.dart';
 import '../../widgets/bigtext.dart';
-import '../sales/all_sales_page.dart';
+import '../sales/all_sales.dart';
 
 class ProfitPage extends StatelessWidget {
-  ProfitPage({Key? key}) : super(key: key) {
-    var startDate = converTimeToMonth()["startDate"];
-    var endDate = converTimeToMonth()["endDate"];
-    salesController.getProfitTransaction(
-        start: DateTime.parse(startDate),
-        end: DateTime.parse(endDate),
-        type: "finance",
-        shopId: shopController.currentShop.value?.id);
-  }
+  String? headline;
+  ProfitPage({Key? key, this.headline}) : super(key: key) {}
 
   SalesController salesController = Get.find<SalesController>();
   ShopController shopController = Get.find<ShopController>();
   ExpenseController expensesController = Get.find<ExpenseController>();
 
+  String _range = '';
+  void _onSelectionChanged(DateRangePickerSelectionChangedArgs args) {
+    if (args.value is PickerDateRange) {
+      _range = '${DateFormat('dd/MM/yyyy').format(args.value.startDate)} -'
+          ' ${DateFormat('dd/MM/yyyy').format(args.value.endDate ?? args.value.startDate)}';
+
+      if (args.value.startDate != null && args.value.endDate != null) {
+        salesController.getProfitTransaction(
+          fromDatee: DateFormat('yyy-MM-dd').format(args.value.startDate),
+          toDatee: DateFormat('yyy-MM-dd')
+              .format(args.value.endDate ?? args.value.startDate),
+        );
+        Get.to(() => ProfitPage(headline: "from\n$_range"));
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-        onWillPop: () async {
-          var startDate = converTimeToMonth()["startDate"];
-          var endDate = converTimeToMonth()["endDate"];
-          salesController.getProfitTransaction(
-              start: startDate,
-              end: endDate,
-              type: "finance",
-              shopId: shopController.currentShop.value?.id);
-          return true;
-        },
-        child: ResponsiveWidget(
-          largeScreen: Scaffold(
-            backgroundColor: Colors.white,
-            appBar: _appBar(context),
-            body: Container(
-              padding: EdgeInsets.symmetric(horizontal: 80, vertical: 10),
-              child: body(context),
-            ),
-          ),
-          smallScreen: Helper(
-            widget: Container(
-              padding: EdgeInsets.all(10),
-              child: body(context),
-            ),
-            appBar: _appBar(context),
-          ),
-        ));
+    return ResponsiveWidget(
+      largeScreen: Scaffold(
+        backgroundColor: Colors.white,
+        appBar: _appBar(context),
+        body: Container(
+          padding: EdgeInsets.symmetric(horizontal: 80, vertical: 10),
+          child: body(context),
+        ),
+      ),
+      smallScreen: Helper(
+        widget: Container(
+          child: body(context),
+        ),
+        appBar: _appBar(context),
+      ),
+    );
   }
 
   AppBar _appBar(context) {
     return AppBar(
       titleSpacing: 0,
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.mainColor,
       elevation: 0.3,
       centerTitle: false,
       leading: IconButton(
@@ -75,52 +78,67 @@ class ProfitPage extends StatelessWidget {
           } else {
             Get.back();
           }
-          var startDate = converTimeToMonth()["startDate"];
-          var endDate = converTimeToMonth()["endDate"];
-          salesController.getProfitTransaction(
-              start: startDate,
-              end: endDate,
-              type: "finance",
-              shopId: shopController.currentShop.value);
         },
         icon: Icon(
           Icons.arrow_back_ios,
-          color: Colors.black,
+          color: Colors.white,
         ),
       ),
-      title: majorTitle(title: "Profit", color: Colors.black, size: 16.0),
       actions: [
         InkWell(
-            onTap: () {
-              showDatePickers(
-                  context: context,
-                  function: () {
-                    salesController.getProfitTransaction(
-                        start: expensesController.startdate.value,
-                        end: expensesController.enddate.value,
-                        type: "finance",
-                        shopId: shopController.currentShop.value?.id);
-                  });
-            },
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
-                  Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Text(
-                      "Choose Date Range",
-                      style: TextStyle(color: Colors.black),
+            onTap: () async {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  print(salesController.currentYear.value);
+                  return Scaffold(
+                    body: Container(
+                      color: Colors.white,
+                      // child: SfDateRangePicker(
+                      //   initialSelectedDate:
+                      //       DateTime(salesController.currentYear.value),
+                      //   confirmText: "Filter",
+                      //   showActionButtons: true,
+                      //   onSelectionChanged: _onSelectionChanged,
+                      //   selectionMode: DateRangePickerSelectionMode.range,
+                      //   monthViewSettings: DateRangePickerMonthViewSettings(),
+                      //   headerStyle: DateRangePickerHeaderStyle(
+                      //       textAlign: TextAlign.center,
+                      //       textStyle: TextStyle(
+                      //           fontWeight: FontWeight.bold,
+                      //           color: AppColors.mainColor,
+                      //           fontSize: 18)),
+                      //   onSubmit: (v) {
+                      //     print(v);
+                      //   },
+                      //   onCancel: () {
+                      //     Get.back();
+                      //   },
+                      // ),
                     ),
-                  ),
-                  Icon(
-                    Icons.arrow_drop_down,
-                    color: Colors.black,
-                  ),
-                ],
+                  );
+                },
+              );
+            },
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: const Center(
+                child: Row(
+                  children: [
+                    Text(
+                      "Filter",
+                      style: TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.bold),
+                    ),
+                    Icon(
+                      Icons.filter_list_alt,
+                      color: Colors.white,
+                      size: 20,
+                    )
+                  ],
+                ),
               ),
-            ))
+            )),
       ],
     );
   }
@@ -130,6 +148,52 @@ class ProfitPage extends StatelessWidget {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Container(
+            height: MediaQuery.of(context).size.height * 0.2,
+            color: AppColors.mainColor,
+            child: Column(
+              children: [
+                SizedBox(height: 30),
+                Center(
+                    child: Text(
+                  "Net Profit $headline",
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                )),
+                SizedBox(height: 15),
+                Container(
+                  width: double.infinity,
+                  padding: EdgeInsets.only(left: 20, right: 20, bottom: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.only(
+                            top: 5, bottom: 5, left: 10, right: 15),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(50),
+                            color: Colors.white.withOpacity(0.2)),
+                        child: Row(
+                          children: [
+                            Icon(Icons.credit_card, color: Colors.white),
+                            const SizedBox(width: 10),
+                            Text(
+                              htmlPrice(salesController.grossProfit.value -
+                                  expensesController.totalExpenses.value),
+                              style: const TextStyle(color: Colors.white),
+                            )
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
           Card(
             elevation: 5,
             shape: RoundedRectangleBorder(
@@ -147,6 +211,9 @@ class ProfitPage extends StatelessWidget {
                         Get.find<HomeController>().selectedWidget.value =
                             AllSalesPage(page: "profitPage");
                       } else {
+                        salesController.getSales(
+                            fromDate: salesController.filterStartDate.value,
+                            toDate: salesController.filterEndDate.value);
                         Get.to(AllSalesPage(
                           page: "profitPage",
                         ));
@@ -156,9 +223,9 @@ class ProfitPage extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Column(
+                        const Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: const [
+                          children: [
                             Text(
                               "Total Sales",
                               style: TextStyle(
@@ -177,7 +244,7 @@ class ProfitPage extends StatelessWidget {
                           ],
                         ),
                         Text(
-                          "${shopController.currentShop.value?.currency} ${salesController.profitModel.value!.sales ?? "0"}",
+                          htmlPrice(salesController.allSalesTotal.value),
                           style: TextStyle(color: Colors.black),
                         )
                       ],
@@ -188,9 +255,9 @@ class ProfitPage extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Column(
+                      const Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
+                        children: [
                           Text(
                             "Profit On Sales",
                             style: TextStyle(
@@ -209,21 +276,33 @@ class ProfitPage extends StatelessWidget {
                         ],
                       ),
                       Text(
-                        "${shopController.currentShop.value?.currency} ${salesController.profitModel.value?.profitOnSales ?? "0"}",
+                        htmlPrice(salesController.grossProfit),
                         style: const TextStyle(color: Colors.black),
                       )
                     ],
                   ),
                   SizedBox(height: 15),
                   InkWell(
-                    onTap: () {},
+                    onTap: () {
+                      Get.find<ProductController>().getBadStock(
+                          shopId: shopController.currentShop.value!.id,
+                          attendant: '',
+                          product: null,
+                          fromDate: DateTime.parse(
+                              DateFormat("yyy-MM-dd").format(DateTime.now())),
+                          toDate: DateTime.parse(DateFormat("yyy-MM-dd")
+                              .format(DateTime.now().add(Duration(days: 1)))));
+                      Get.to(() => BadStockPage(
+                            page: "profitspage",
+                          ));
+                    },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Column(
+                        const Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: const [
+                          children: [
                             Text(
                               "Bad Stock",
                               style: TextStyle(
@@ -242,7 +321,7 @@ class ProfitPage extends StatelessWidget {
                           ],
                         ),
                         Text(
-                          "${shopController.currentShop.value?.currency} ${salesController.profitModel.value?.badStockValue ?? "0"}",
+                          htmlPrice(salesController.totalbadStock.value),
                           style: const TextStyle(color: Colors.black),
                         )
                       ],
@@ -251,16 +330,15 @@ class ProfitPage extends StatelessWidget {
                   const SizedBox(height: 15),
                   InkWell(
                     onTap: () {
-                      Get.find<HomeController>().selectedWidget.value =
-                          ExpensePage();
+                      Get.to(() => ExpensePage());
                     },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Column(
+                        const Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: const [
+                          children: [
                             Text(
                               "Expenses",
                               style: TextStyle(
@@ -279,7 +357,7 @@ class ProfitPage extends StatelessWidget {
                           ],
                         ),
                         Text(
-                          "${shopController.currentShop.value?.currency} ${salesController.profitModel.value?.totalExpense ?? "0"}",
+                          htmlPrice(expensesController.totalExpenses.value),
                           style: const TextStyle(color: Colors.black),
                         )
                       ],

@@ -4,9 +4,6 @@ import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/controllers/purchase_controller.dart';
 import 'package:pointify/controllers/sales_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
-import 'package:pointify/models/customer_model.dart';
-import 'package:pointify/models/receipt.dart';
-import 'package:pointify/models/sales_return.dart';
 import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/cash_flow/wallet_page.dart';
 import 'package:pointify/screens/customers/customers_page.dart';
@@ -20,10 +17,12 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../controllers/AuthController.dart';
+import '../../Real/schema.dart';
 import '../../controllers/CustomerController.dart';
-import '../../controllers/attendant_controller.dart';
+import '../../controllers/AuthController.dart';
+import '../../controllers/user_controller.dart';
 import '../../controllers/supplierController.dart';
+import '../../functions/functions.dart';
 import '../../utils/colors.dart';
 import '../../widgets/delete_dialog.dart';
 import '../../widgets/snackBars.dart';
@@ -34,15 +33,13 @@ class CustomerInfoPage extends StatelessWidget {
   final CustomerModel customerModel;
 
   CustomerInfoPage({Key? key, required this.customerModel}) : super(key: key) {
-    customerController.initialPage.value = 0;
-    salesController.getSales(
-        onCredit: true, customer: customerModel.id, startingDate: "");
+    salesController.getSales(onCredit: true, customer: customerModel);
   }
 
   CustomerController customerController = Get.find<CustomerController>();
   SupplierController supplierController = Get.find<SupplierController>();
   ShopController shopController = Get.find<ShopController>();
-  AttendantController attendantController = Get.find<AttendantController>();
+  UserController attendantController = Get.find<UserController>();
   ShopController createShopController = Get.find<ShopController>();
   AuthController authController = Get.find<AuthController>();
   SalesController salesController = Get.find<SalesController>();
@@ -134,10 +131,7 @@ class CustomerInfoPage extends StatelessWidget {
                       title:
                           "Are you sure you want to delete ${customerModel.fullName}",
                       function: () {
-                        customerController.deleteCustomer(
-                            context: context,
-                            id: customerModel.id,
-                            shopId: shopController.currentShop.value?.id);
+                        customerController.deleteCustomer(customerModel);
                       });
                 },
                 icon: Icon(
@@ -175,11 +169,10 @@ class CustomerInfoPage extends StatelessWidget {
                       Center(
                           child: Text(
                         customerModel.fullName!,
-                        style: TextStyle(
+                        style: const TextStyle(
                             color: Colors.white, fontWeight: FontWeight.bold),
                       )),
-                      SizedBox(height: 5),
-                      SizedBox(height: 10),
+                      SizedBox(height: 15),
                       Container(
                         width: double.infinity,
                         padding:
@@ -192,7 +185,7 @@ class CustomerInfoPage extends StatelessWidget {
                                   launchMessage(
                                       number: customerModel.phoneNumber,
                                       message:
-                                          "Aquick reminde that you owe our shop please pay your debt ");
+                                          "A quick reminde that you owe our shop please pay your debt ");
                                 },
                                 icon: Icon(Icons.message),
                                 color: Colors.white),
@@ -201,7 +194,7 @@ class CustomerInfoPage extends StatelessWidget {
                                   launchWhatsApp(
                                       number: customerModel.phoneNumber,
                                       message:
-                                          "Aquick reminde that you owe our shop please pay your debt ");
+                                          "A quick reminde that you owe our shop please pay your debt ");
                                 },
                                 icon: Icon(Icons.whatshot),
                                 color: Colors.white),
@@ -225,12 +218,12 @@ class CustomerInfoPage extends StatelessWidget {
                                 );
                               },
                               child: Container(
-                                padding: EdgeInsets.only(
+                                padding: const EdgeInsets.only(
                                     top: 5, bottom: 5, left: 10, right: 15),
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(50),
                                     color: Colors.white.withOpacity(0.2)),
-                                child: Row(
+                                child: const Row(
                                   children: [
                                     Icon(Icons.credit_card,
                                         color: Colors.white),
@@ -258,7 +251,6 @@ class CustomerInfoPage extends StatelessWidget {
             backgroundColor: AppColors.mainColor,
             leading: IconButton(
                 onPressed: () {
-                  customerController.initialPage.value = 0;
                   Get.back();
                 },
                 icon: Icon(Icons.arrow_back_ios)),
@@ -266,23 +258,20 @@ class CustomerInfoPage extends StatelessWidget {
               IconButton(
                   onPressed: () {
                     customerController.assignTextFields(customerModel);
-
                     Get.to(() => EditCustomer(customerModel: customerModel));
                   },
                   icon: Icon(Icons.edit)),
-              IconButton(
-                  onPressed: () {
-                    generalAlert(
-                        title:
-                            "Are you sure you want to delete ${customerModel.fullName}",
-                        function: () {
-                          customerController.deleteCustomer(
-                              context: context,
-                              id: customerModel.id,
-                              shopId: shopController.currentShop.value?.id);
-                        });
-                  },
-                  icon: Icon(Icons.delete)),
+              if (checkPermission(category: "customers", permission: "manage"))
+                IconButton(
+                    onPressed: () {
+                      generalAlert(
+                          title:
+                              "Are you sure you want to delete ${customerModel.fullName}",
+                          function: () {
+                            customerController.deleteCustomer(customerModel);
+                          });
+                    },
+                    icon: Icon(Icons.delete)),
             ],
           )),
     );
@@ -291,55 +280,76 @@ class CustomerInfoPage extends StatelessWidget {
   Widget customerInfoBody(context) {
     return SizedBox(
       height: MediaQuery.of(context).size.height * 0.9,
-      child: Column(
-        children: [
-          Container(
-            color: Colors.white,
-            width: double.infinity,
-            height: kToolbarHeight,
-            child: Obx(() => DefaultTabController(
-                  length: customerController.tabs.length,
-                  initialIndex: customerController.initialPage.value,
-                  child: TabBar(
-                      controller: customerController.tabController,
-                      unselectedLabelColor: Colors.grey,
-                      labelColor: Colors.purple,
-                      indicatorColor: Colors.purple,
-                      indicatorWeight: 3,
-                      onTap: (index) {
-                        customerController.initialPage.value = index;
-                        if (index == 0) {
-                          salesController.getSales(
-                            onCredit: true,
-                            customer: customerModel.id,
-                          );
-                        } else if (index == 1) {
-                          salesController.getSales(customer: customerModel.id);
-                        } else {
-                          customerController.getCustomerReturns(
-                            uid: customerModel.id,
-                          );
-                        }
-                      },
-                      tabs: customerController.tabs),
-                )),
-          ),
-          Expanded(
-            flex: 1,
-            child: Container(
-              color: Colors.white,
-              child: TabBarView(
-                physics: NeverScrollableScrollPhysics(),
-                controller: customerController.tabController,
-                children: [
-                  CreditInfo(customerModel: customerModel),
-                  SalesTab(),
-                  RetunsTab()
-                ],
-              ),
-            ),
-          )
-        ],
+      child: Container(
+        color: Colors.white,
+        width: double.infinity,
+        height: kToolbarHeight,
+        child: DefaultTabController(
+          initialIndex: 0,
+          length: 3,
+          child: Builder(builder: (context) {
+            return Column(
+              children: [
+                TabBar(
+                    controller: DefaultTabController.of(context),
+                    onTap: (index) {
+                      if (index == 0) {
+                        salesController.getSales(
+                          onCredit: true,
+                          customer: customerModel,
+                        );
+                      } else if (index == 1) {
+                        salesController.getSales(customer: customerModel);
+                      } else {
+                        salesController.getReturns(
+                          customerModel: customerModel,
+                        );
+                      }
+                    },
+                    tabs: const [
+                      Tab(
+                          child: Text(
+                        "Credit",
+                        style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black),
+                      )),
+                      Tab(
+                          child: Text(
+                        "Sales",
+                        style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black),
+                      )),
+                      Tab(
+                          child: Text(
+                        "Returns",
+                        style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black),
+                      )),
+                    ]),
+                Expanded(
+                  flex: 1,
+                  child: Container(
+                    color: Colors.white,
+                    child: TabBarView(
+                      physics: const NeverScrollableScrollPhysics(),
+                      children: [
+                        CreditInfo(customerModel: customerModel),
+                        SalesTab(),
+                        RetunsTab()
+                      ],
+                    ),
+                  ),
+                )
+              ],
+            );
+          }),
+        ),
       ),
     );
   }
@@ -521,97 +531,83 @@ class RetunsTab extends StatelessWidget {
   RetunsTab({Key? key}) : super(key: key);
 
   SalesController salesController = Get.find<SalesController>();
-  CustomerController customerController = Get.find<CustomerController>();
-  SupplierController supplierController = Get.find<SupplierController>();
-  ShopController createShopController = Get.find<ShopController>();
 
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      return customerController.loadingcustomerReturns.value
-          ? const Center(child: CircularProgressIndicator())
-          : customerController.customerReturns.isEmpty
-              ? Container(
-                  margin: const EdgeInsets.only(top: 50),
-                  child: const Text(
-                    "No entries",
-                    textAlign: TextAlign.center,
-                  ))
-              : MediaQuery.of(context).size.width > 600
-                  ? SingleChildScrollView(
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 15, vertical: 10),
-                        width: double.infinity,
-                        child: Theme(
-                          data: Theme.of(context)
-                              .copyWith(dividerColor: Colors.grey),
-                          child: DataTable(
-                            decoration: BoxDecoration(
-                                border: Border.all(
-                              width: 1,
-                              color: Colors.black,
-                            )),
-                            columnSpacing: 30.0,
-                            columns: const [
-                              DataColumn(
-                                  label: Text('Name',
-                                      textAlign: TextAlign.center)),
-                              DataColumn(
-                                  label:
-                                      Text('Qty', textAlign: TextAlign.center)),
-                              DataColumn(
-                                  label: Text('Total',
-                                      textAlign: TextAlign.center)),
-                              DataColumn(
-                                  label: Text('Date',
-                                      textAlign: TextAlign.center)),
-                            ],
-                            rows: List.generate(
-                                customerController.customerReturns.length,
-                                (index) {
-                              SalesReturn saleOrder = customerController
-                                  .customerReturns
-                                  .elementAt(index);
-                              final y = saleOrder.productModel!.name;
-                              // final x = saleOrder.shop;
-                              // final z = saleOrder.total;
-                              // final a = saleOrder.createdAt!;
+      return salesController.currentReceiptReturns.isEmpty
+          ? Container(
+              margin: const EdgeInsets.only(top: 50),
+              child: const Text(
+                "No entries",
+                textAlign: TextAlign.center,
+              ))
+          : MediaQuery.of(context).size.width > 600
+              ? SingleChildScrollView(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 15, vertical: 10),
+                    width: double.infinity,
+                    child: Theme(
+                      data:
+                          Theme.of(context).copyWith(dividerColor: Colors.grey),
+                      child: DataTable(
+                        decoration: BoxDecoration(
+                            border: Border.all(
+                          width: 1,
+                          color: Colors.black,
+                        )),
+                        columnSpacing: 30.0,
+                        columns: const [
+                          DataColumn(
+                              label: Text('Name', textAlign: TextAlign.center)),
+                          DataColumn(
+                              label: Text('Qty', textAlign: TextAlign.center)),
+                          DataColumn(
+                              label:
+                                  Text('Total', textAlign: TextAlign.center)),
+                          DataColumn(
+                              label: Text('Date', textAlign: TextAlign.center)),
+                        ],
+                        rows: List.generate(
+                            salesController.currentReceiptReturns.length,
+                            (index) {
+                          ReceiptItem saleOrder = salesController
+                              .currentReceiptReturns
+                              .elementAt(index);
+                          final y = saleOrder.product!.name;
+                          // final x = saleOrder.shop;
+                          // final z = saleOrder.total;
+                          // final a = saleOrder.createdAt!;
 
-                              return DataRow(cells: [
-                                // DataCell(Text(y!)),
-                                // DataCell(Text(x.toString())),
-                                // DataCell(Text(z.toString())),
-                                // DataCell(
-                                //     Text(DateFormat("dd-MM-yyyy").format(a))),
-                              ]);
-                            }),
-                          ),
-                        ),
+                          return DataRow(cells: [
+                            // DataCell(Text(y!)),
+                            // DataCell(Text(x.toString())),
+                            // DataCell(Text(z.toString())),
+                            // DataCell(
+                            //     Text(DateFormat("dd-MM-yyyy").format(a))),
+                          ]);
+                        }),
                       ),
-                    )
-                  : ListView.builder(
-                      itemCount: customerController.customerReturns.length,
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemBuilder: (context, index) {
-                        SalesReturn saleOrder =
-                            customerController.customerReturns.elementAt(index);
-                        return SaleReturnCard(saleOrder);
-                      });
+                    ),
+                  ),
+                )
+              : ListView.builder(
+                  itemCount: salesController.currentReceiptReturns.length,
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemBuilder: (context, index) {
+                    ReceiptItem receiptItem =
+                        salesController.currentReceiptReturns.elementAt(index);
+                    return SaleReturnCard(receiptItem);
+                  });
     });
   }
 }
 
 class CreditInfo extends StatelessWidget {
   final CustomerModel customerModel;
-  SupplierController supplierController = Get.find<SupplierController>();
-  CustomerController customerController = Get.find<CustomerController>();
-  AttendantController attendantController = Get.find<AttendantController>();
-  ShopController createShopController = Get.find<ShopController>();
-  AuthController authController = Get.find<AuthController>();
   SalesController salesController = Get.find<SalesController>();
-  PurchaseController purchaseController = Get.find<PurchaseController>();
 
   CreditInfo({Key? key, required this.customerModel}) : super(key: key);
 
@@ -620,7 +616,7 @@ class CreditInfo extends StatelessWidget {
     return Obx(() {
       return salesController.loadingSales.value
           ? const Center(child: CircularProgressIndicator())
-          : salesController.creditSales.isEmpty
+          : salesController.allSales.isEmpty
               ? Center(
                   child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -728,20 +724,20 @@ class CreditInfo extends StatelessWidget {
                                             leading: Icon(Icons.wallet),
                                             onTap: () {
                                               Navigator.pop(context);
-                                              if (MediaQuery.of(context)
-                                                      .size
-                                                      .width >
-                                                  600) {
-                                                Get.find<HomeController>()
-                                                    .selectedWidget
-                                                    .value = PaymentHistory(
-                                                  id: salesBody.id!,
-                                                );
-                                              } else {
-                                                Get.to(() => PaymentHistory(
-                                                      id: salesBody.id!,
-                                                    ));
-                                              }
+                                              // if (MediaQuery.of(context)
+                                              //         .size
+                                              //         .width >
+                                              //     600) {
+                                              //   Get.find<HomeController>()
+                                              //       .selectedWidget
+                                              //       .value = PaymentHistory(
+                                              //     id: salesBody.id!,
+                                              //   );
+                                              // } else {
+                                              //   Get.to(() => PaymentHistory(
+                                              //         id: salesBody.id!,
+                                              //       ));
+                                              // }
                                             },
                                             title: Text('Payment History'),
                                           ),
@@ -768,12 +764,12 @@ class CreditInfo extends StatelessWidget {
                       ),
                     )
                   : ListView.builder(
-                      itemCount: salesController.creditSales.length,
+                      itemCount: salesController.allSales.length,
                       shrinkWrap: true,
                       physics: NeverScrollableScrollPhysics(),
                       itemBuilder: (context, index) {
                         SalesModel salesBody =
-                            salesController.creditSales.elementAt(index);
+                            salesController.allSales.elementAt(index);
 
                         return SalesCard(salesModel: salesBody);
                       });

@@ -1,50 +1,38 @@
-// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 import 'package:flutter/material.dart';
 import 'package:pointify/controllers/cashflow_controller.dart';
 import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/controllers/sales_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
-import 'package:pointify/models/bank_transactions.dart';
+import 'package:pointify/functions/functions.dart';
 import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/cash_flow/cash_at_bank.dart';
 import 'package:pointify/screens/cash_flow/cashflow_categories.dart';
 import 'package:pointify/utils/helper.dart';
-import 'package:pointify/widgets/loading_dialog.dart';
 import 'package:pointify/widgets/no_items_found.dart';
-import 'package:pointify/widgets/pdf/history_pdf.dart';
-import 'package:pointify/widgets/pdf/sales_pdf.dart';
 import 'package:pointify/widgets/snackBars.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
-import '../../models/receipt.dart';
+import '../../Real/schema.dart';
 import '../../utils/colors.dart';
 import '../../widgets/sales_card.dart';
 
 class CashCategoryHistory extends StatelessWidget {
-  final title;
-  final subtitle;
-  final id;
+  final CashFlowCategory? cashFlowCategory;
+  BankModel? bank;
   final page;
   ShopController shopController = Get.find<ShopController>();
   SalesController salesController = Get.find<SalesController>();
   CashflowController cashflowController = Get.find<CashflowController>();
 
   CashCategoryHistory(
-      {Key? key,
-      required this.title,
-      required this.subtitle,
-      required this.id,
-      required this.page})
+      {Key? key, this.page, required this.cashFlowCategory, this.bank})
       : super(key: key) {
-    if (title == "sales") {
-      salesController.getSales(total: "true");
-    } else if (page == "cashflowcategory") {
-      cashflowController.getCategoryHistory(id);
-    } else {
-      cashflowController.getBankTransactions(id);
-    }
+    cashflowController.getCategoryHistory(
+        bankModel: bank, cashFlowCategory: cashFlowCategory);
+    title = bank != null ? bank!.name! : cashFlowCategory!.name!;
   }
+  String title = "";
 
   @override
   Widget build(BuildContext context) {
@@ -59,55 +47,55 @@ class CashCategoryHistory extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Obx(() {
-                  return cashflowController.loadingBankHistory.value
-                      ? Center(
-                          child: CircularProgressIndicator(),
-                        )
-                      : cashflowController.bankTransactions.isEmpty
-                          ? noItemsFound(context, true)
-                          : Container(
-                              width: double.infinity,
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 5, vertical: 10),
-                              child: Theme(
-                                data: Theme.of(context)
-                                    .copyWith(dividerColor: Colors.grey),
-                                child: DataTable(
-                                  decoration: BoxDecoration(
-                                      border: Border.all(
-                                    width: 1,
-                                    color: Colors.black,
-                                  )),
-                                  columnSpacing: 30.0,
-                                  columns: [
-                                    DataColumn(
-                                        label: Text(
-                                            'Amount(${shopController.currentShop.value?.currency})',
-                                            textAlign: TextAlign.center)),
-                                    DataColumn(
-                                        label: Text('Date',
-                                            textAlign: TextAlign.center)),
-                                  ],
-                                  rows: List.generate(
-                                      cashflowController
-                                          .bankTransactions.length, (index) {
-                                    BankTransactions bankTransactions =
-                                        cashflowController.bankTransactions
-                                            .elementAt(index);
-                                    final y = bankTransactions.amount;
-                                    final x = bankTransactions.createdAt;
+                  return cashflowController.categoryCashflowTransactions.isEmpty
+                      ? noItemsFound(context, true)
+                      : Container(
+                          width: double.infinity,
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+                          child: Theme(
+                            data: Theme.of(context)
+                                .copyWith(dividerColor: Colors.grey),
+                            child: DataTable(
+                              decoration: BoxDecoration(
+                                  border: Border.all(
+                                width: 1,
+                                color: Colors.black,
+                              )),
+                              columnSpacing: 30.0,
+                              columns: [
+                                DataColumn(
+                                    label: Text(
+                                        'Amount(${shopController.currentShop.value?.currency})',
+                                        textAlign: TextAlign.center)),
+                                DataColumn(
+                                    label: Text('Date',
+                                        textAlign: TextAlign.center)),
+                              ],
+                              rows: List.generate(
+                                  cashflowController
+                                      .categoryCashflowTransactions
+                                      .length, (index) {
+                                CashFlowTransaction cashFlowTransaction =
+                                    cashflowController
+                                        .categoryCashflowTransactions
+                                        .elementAt(index);
+                                final y = cashFlowTransaction.amount;
+                                final x = cashFlowTransaction.date;
 
-                                    return DataRow(cells: [
-                                      DataCell(
-                                          Container(child: Text(y.toString()))),
-                                      DataCell(Container(
-                                          child: Text(DateFormat("yyyy-dd-MM")
-                                              .format(x!)))),
-                                    ]);
-                                  }),
-                                ),
-                              ),
-                            );
+                                return DataRow(cells: [
+                                  DataCell(
+                                      Container(child: Text(y.toString()))),
+                                  DataCell(Container(
+                                      child: Text(DateFormat("yyyy-dd-MM")
+                                          .format(DateTime
+                                              .fromMillisecondsSinceEpoch(
+                                                  x!))))),
+                                ]);
+                              }),
+                            ),
+                          ),
+                        );
                 }),
                 SizedBox(height: 60),
               ],
@@ -117,22 +105,14 @@ class CashCategoryHistory extends StatelessWidget {
       ),
       smallScreen: Helper(
         widget: Obx(() {
-          if (title == "sales") {
-            return salesController.loadingSales.value
-                ? Center(
-                    child: CircularProgressIndicator(),
-                  )
-                : salesController.allSales.isEmpty
-                    ? noItemsFound(context, true)
-                    : _sales();
+          if (title == "services") {
+            return salesController.allSales.isEmpty
+                ? noItemsFound(context, true)
+                : _sales();
           }
-          return cashflowController.loadingBankHistory.value
-              ? Center(
-                  child: CircularProgressIndicator(),
-                )
-              : cashflowController.bankTransactions.isEmpty
-                  ? noItemsFound(context, true)
-                  : _sales();
+          return cashflowController.categoryCashflowTransactions.isEmpty
+              ? noItemsFound(context, true)
+              : _sales();
         }),
         appBar: _appBar("small", context),
         bottomNavigationBar: BottomAppBar(
@@ -141,7 +121,7 @@ class CashCategoryHistory extends StatelessWidget {
             height: kToolbarHeight,
             color: Colors.white,
             child: Row(
-              mainAxisAlignment: title == "sales"
+              mainAxisAlignment: title == "services"
                   ? MainAxisAlignment.spaceBetween
                   : MainAxisAlignment.center,
               children: [
@@ -161,11 +141,11 @@ class CashCategoryHistory extends StatelessWidget {
                           color: Colors.green.withOpacity(0.8),
                           borderRadius: BorderRadius.circular(20)),
                       child: Obx(() => Text(
-                          "${shopController.currentShop.value!.currency!} ${title == "sales" ? salesController.allSalesTotal : cashflowController.totalcashAtBankHistory.value}")),
+                          "${shopController.currentShop.value!.currency!} ${title == "services" ? salesController.allSalesTotal : cashflowController.categoryCashflowTransactions.fold(0, (previousValue, element) => previousValue + element.amount!)}")),
                     )
                   ],
                 ),
-                if (title == "sales")
+                if (title == "services")
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -182,7 +162,7 @@ class CashCategoryHistory extends StatelessWidget {
                             color: Colors.red.withOpacity(0.8),
                             borderRadius: BorderRadius.circular(20)),
                         child: Obx(() => Text(
-                            "${shopController.currentShop.value!.currency!} ${title == "sales" ? salesController.totalSalesReturned : cashflowController.totalcashAtBankHistory.value}")),
+                            "${shopController.currentShop.value!.currency!} ${title == "services" ? salesController.totalSalesReturned : cashflowController.totalcashAtBankHistory.value}")),
                       )
                     ],
                   ),
@@ -195,7 +175,7 @@ class CashCategoryHistory extends StatelessWidget {
   }
 
   ListView _sales() {
-    if (title == "sales") {
+    if (title == "services") {
       return ListView.builder(
           shrinkWrap: true,
           itemCount: salesController.allSales.length,
@@ -205,12 +185,12 @@ class CashCategoryHistory extends StatelessWidget {
           });
     }
     return ListView.builder(
-        itemCount: cashflowController.bankTransactions.length,
+        itemCount: cashflowController.categoryCashflowTransactions.length,
         shrinkWrap: true,
         itemBuilder: (context, index) {
-          BankTransactions bankTransactions =
-              cashflowController.bankTransactions.elementAt(index);
-          return bankTransactionsCard(bankTransactions: bankTransactions);
+          CashFlowTransaction cashFlowTransaction =
+              cashflowController.categoryCashflowTransactions.elementAt(index);
+          return bankTransactionsCard(cashFlowTransaction: cashFlowTransaction);
         });
   }
 
@@ -259,7 +239,8 @@ class CashCategoryHistory extends StatelessWidget {
         });
   }
 
-  Widget bankTransactionsCard({required BankTransactions bankTransactions}) {
+  Widget bankTransactionsCard(
+      {required CashFlowTransaction cashFlowTransaction}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -281,13 +262,14 @@ class CashCategoryHistory extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    DateFormat("MMM dd yyyy hh:mm a")
-                        .format(bankTransactions.createdAt!),
+                    DateFormat("MMM dd yyyy hh:mm a").format(
+                        DateTime.fromMillisecondsSinceEpoch(
+                            cashFlowTransaction.date!)),
                     style: TextStyle(
                         color: Colors.grey, fontWeight: FontWeight.w600),
                   ),
                   Text(
-                    "@${Get.find<ShopController>().currentShop.value?.currency} ${bankTransactions.amount}",
+                    "@${htmlPrice(cashFlowTransaction.amount)}",
                     style: TextStyle(
                         color: Colors.grey, fontWeight: FontWeight.w600),
                   ),
@@ -338,7 +320,7 @@ class CashCategoryHistory extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               )),
           Text(
-            subtitle,
+            "All Records",
             style: TextStyle(
               fontSize: 10,
             ),
@@ -353,26 +335,26 @@ class CashCategoryHistory extends StatelessWidget {
                   contentPadding: const EdgeInsets.all(10),
                   content: const CircularProgressIndicator(),
                   barrierDismissible: false);
-              if (title == "sales") {
+              if (title == "services") {
                 if (salesController.allSales.isEmpty) {
                   showSnackBar(
                       message: "No Items to download", color: Colors.black);
                 } else {
-                  SalesPdf(
-                      shop: shopController.currentShop.value!.name!,
-                      sales: salesController.allSales,
-                      type: "All");
+                  // SalesPdf(
+                  //     shop: shopController.currentShop.value!.name!,
+                  //     sales: salesController.allSales,
+                  //     type: "All");
                 }
               } else {
-                if (cashflowController.bankTransactions.isEmpty) {
-                  showSnackBar(
-                      message: "No Items to download", color: Colors.black);
-                } else {
-                  HistoryPdf(
-                      shop: shopController.currentShop.value!.name!,
-                      name: title,
-                      sales: cashflowController.bankTransactions);
-                }
+                // if (cashflowController.bankTransactions.isEmpty) {
+                //   showSnackBar(
+                //       message: "No Items to download", color: Colors.black);
+                // } else {
+                //   HistoryPdf(
+                //       shop: shopController.currentShop.value!.name!,
+                //       name: title,
+                //       sales: cashflowController.bankTransactions);
+                // }
               }
               Get.back();
             },

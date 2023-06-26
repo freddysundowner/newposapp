@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:pointify/controllers/product_controller.dart';
 import 'package:pointify/controllers/purchase_controller.dart';
 import 'package:pointify/controllers/sales_controller.dart';
-import 'package:pointify/models/product_model.dart';
 import 'package:pointify/widgets/snackBars.dart';
 import 'package:get/get.dart';
+
+import '../Real/schema.dart';
 
 Widget searchWidget(
     {required autoCompletKey,
@@ -12,17 +13,16 @@ Widget searchWidget(
     required shopId,
     required page}) {
   ProductController productController = Get.find<ProductController>();
-  SalesController salesController = Get.find<SalesController>();
-  PurchaseController purchaseController = Get.find<PurchaseController>();
   productController.products.clear();
   productController.products.refresh();
-  return RawAutocomplete<ProductModel>(
+  return RawAutocomplete<Product>(
     key: autoCompletKey,
     focusNode: focusNode,
     textEditingController: productController.searchProductController,
     optionsBuilder: (TextEditingValue textEditingValue) async {
       if (productController.searchProductController.text.isNotEmpty) {
-        await productController.searchProduct("${shopId}", "product");
+        await productController.getProductsBySort(
+            type: "all", text: productController.searchProductController.text);
       }
       return productController.products;
     },
@@ -44,8 +44,7 @@ Widget searchWidget(
       );
     },
     optionsViewBuilder: (BuildContext context,
-        void Function(ProductModel) onSelected,
-        Iterable<ProductModel> options) {
+        void Function(Product) onSelected, Iterable<Product> options) {
       return Material(
           child: SizedBox(
               height: 200,
@@ -55,7 +54,7 @@ Widget searchWidget(
                   return InkWell(
                       onTap: () {
                         if (page == "purchase") {
-                          purchaseController.changesaleItem(opt);
+                          // purchaseController.addNewPurchase(opt);
                           onSelected(opt);
                           productController.searchProductController.text = "";
                         } else {

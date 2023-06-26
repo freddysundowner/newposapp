@@ -1,29 +1,51 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'package:pointify/controllers/AuthController.dart';
-import 'package:pointify/controllers/attendant_controller.dart';
+import 'package:intl/intl.dart';
+import 'package:pointify/controllers/user_controller.dart';
 import 'package:pointify/controllers/sales_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/responsive/responsiveness.dart';
+import 'package:pointify/screens/attendant/attendants_page.dart';
 import 'package:pointify/utils/helper.dart';
 import 'package:pointify/widgets/bigtext.dart';
 import 'package:pointify/widgets/side_menu.dart';
 import 'package:get/get.dart';
-
+import '../../controllers/AuthController.dart';
+import '../../controllers/realm_controller.dart';
 import '../../controllers/home_controller.dart';
 import '../../utils/colors.dart';
+import '../../widgets/shop_list_bottomsheet.dart';
+import '../../widgets/smalltext.dart';
 
-class Home extends StatelessWidget {
+class Home extends StatefulWidget {
   Home({Key? key}) : super(key: key);
+
+  @override
+  State<Home> createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
   HomeController homeControler = Get.put(HomeController());
+
   SalesController salesController = Get.put(SalesController());
+
   ShopController shopController = Get.put(ShopController());
-  AttendantController attendantController = Get.find<AttendantController>();
+
+  UserController userController = Get.find<UserController>();
+
   AuthController authController = Get.find<AuthController>();
+
+  final RealmController realmService = Get.put(RealmController());
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    userController.getUser();
+  }
 
   @override
   Widget build(BuildContext context) {
-    attendantController.getAttendantRoles();
-
     return ResponsiveWidget(
         largeScreen: Obx(() => Scaffold(
               backgroundColor: Colors.white,
@@ -31,7 +53,7 @@ class Home extends StatelessWidget {
               body: Row(
                 children: [
                   Expanded(
-                    flex: 1,
+                    flex: 2,
                     child: SideMenu(),
                   ),
                   Expanded(flex: 4, child: homeControler.selectedWidget.value!)
@@ -58,8 +80,10 @@ class Home extends StatelessWidget {
                 children: [
                   InkWell(
                     onTap: () {
+                      final DateTime now = DateTime.now();
+                      salesController.getSalesByDate(
+                          fromDate: now, toDate: now);
                       homeControler.selectedIndex.value = 0;
-                      authController.init(authController.usertype.value);
                     },
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
@@ -79,8 +103,7 @@ class Home extends StatelessWidget {
                   InkWell(
                     onTap: () {
                       homeControler.selectedIndex.value = 1;
-                      shopController.getShops(
-                          adminId: authController.currentUser.value?.id);
+                      shopController.getShops();
                     },
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
@@ -98,9 +121,6 @@ class Home extends StatelessWidget {
                   InkWell(
                     onTap: () {
                       homeControler.selectedIndex.value = 2;
-
-                      attendantController.getAttendantsByShopId(
-                          shopId: shopController.currentShop.value?.id);
                     },
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
@@ -146,7 +166,46 @@ class Home extends StatelessWidget {
         Icons.electric_bolt,
         color: AppColors.mainColor,
       ),
-      title: majorTitle(title: "Store Admin", color: Colors.black, size: 16.0),
+      title: Row(
+        children: [
+          majorTitle(title: "Store Admin", color: Colors.black, size: 16.0),
+          Spacer(),
+          InkWell(
+            onTap: () async {
+              Get.to(() => AttendantsPage(type: "switch"));
+            },
+            child: Row(
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Obx(
+                      () {
+                        return userController.switcheduser.value != null
+                            ? minorTitle(
+                                title:
+                                    "logged in as ${userController.switcheduser.value?.username}",
+                                color: Colors.red,
+                                size: 12)
+                            : minorTitle(
+                                title: "Switch Account",
+                                color: AppColors.mainColor);
+                      },
+                    )
+                  ],
+                ),
+                Icon(
+                  Icons.repeat_sharp,
+                  color: AppColors.mainColor,
+                )
+              ],
+            ),
+          ),
+          SizedBox(
+            width: 20,
+          )
+        ],
+      ),
       elevation: 0.2,
       backgroundColor: Colors.white,
     );

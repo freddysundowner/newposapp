@@ -1,8 +1,6 @@
-// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
-
 import 'package:flutter/material.dart';
 import 'package:pointify/controllers/cashflow_controller.dart';
-import 'package:pointify/models/cashflow_category.dart';
+import 'package:pointify/functions/functions.dart';
 import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/cash_flow/cash_flow_manager.dart';
 import 'package:pointify/screens/cash_flow/components/cashflow_category_dialog.dart';
@@ -10,6 +8,7 @@ import 'package:pointify/utils/helper.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
+import '../../Real/schema.dart';
 import '../../controllers/home_controller.dart';
 import '../../controllers/shop_controller.dart';
 import 'components/category_card.dart';
@@ -20,8 +19,7 @@ class CashFlowCategories extends StatelessWidget {
     cashflowController.cashFlowCategories.clear();
     cashflowController.cashFlowCategories.refresh();
     cashflowController.initialPage.refresh();
-    cashflowController.getCategory(
-        "cash-in", createShopController.currentShop.value!.id);
+    cashflowController.getCategory("cash-in");
   }
 
   ShopController createShopController = Get.find<ShopController>();
@@ -36,99 +34,98 @@ class CashFlowCategories extends StatelessWidget {
   }
 
   Widget _tabLayout(context) {
-    return Obx(() => DefaultTabController(
-          length: 2,
-          initialIndex: cashflowController.initialPage.value,
-          child: Helper(
-            widget: Column(
-              children: [
-                Expanded(
-                  flex: 1,
-                  child: Container(
-                    color: MediaQuery.of(context).size.width > 600
-                        ? Colors.white
-                        : Colors.grey.withOpacity(0.1),
-                    child: TabBarView(
-                      physics: NeverScrollableScrollPhysics(),
-                      controller: cashflowController.tabController,
-                      children: [
-                        CashInUi(
-                          type: "in",
-                        ),
-                        CashInUi(type: "out")
-                      ],
-                    ),
-                  ),
-                )
-              ],
-            ),
-            appBar: AppBar(
-              elevation: 0.3,
-              backgroundColor: Colors.white,
-              foregroundColor: Colors.black,
-              titleSpacing: 0.0,
-              centerTitle: false,
-              iconTheme: IconThemeData(color: Colors.black),
-              titleTextStyle: TextStyle(color: Colors.black),
-              title: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text("Cashflow Category",
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                      )),
-                  Obx(() {
-                    return Text(
-                      createShopController.currentShop.value == null
-                          ? ""
-                          : "${createShopController.currentShop.value!.name!}"
-                              .capitalize!,
-                      style: TextStyle(
-                        fontSize: 12,
-                      ),
-                    );
-                  })
-                ],
-              ),
-              bottom: TabBar(
-                indicatorColor: Theme.of(context).primaryColor,
-                indicatorWeight: 3,
-                controller: cashflowController.tabController,
-                labelColor: Theme.of(context).primaryColor,
-                unselectedLabelColor: Colors.grey,
+    return DefaultTabController(
+      length: 2,
+      initialIndex: 0,
+      child: Helper(
+        widget: Column(
+          children: [
+            TabBar(
                 onTap: (index) {
                   cashflowController.initialPage.value = index;
                   if (index == 0) {
-                    cashflowController.getCategory(
-                        "cash-in", createShopController.currentShop.value!.id);
+                    cashflowController.getCategory("cash-in");
                   } else {
-                    cashflowController.getCategory(
-                        "cash-out", createShopController.currentShop.value!.id);
+                    cashflowController.getCategory("cash-out");
                   }
                 },
-                tabs: [
+                tabs: const [
                   Tab(
-                    text: "CashIn",
-                  ),
+                      child: Text(
+                    "Cash in",
+                    style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black),
+                  )),
                   Tab(
-                    text: "CashOut",
-                  )
-                ],
+                      child: Text(
+                    "Cash out",
+                    style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black),
+                  )),
+                ]),
+            Expanded(
+              flex: 1,
+              child: Container(
+                color: Colors.white,
+                child: TabBarView(
+                  physics: const NeverScrollableScrollPhysics(),
+                  children: [
+                    CashInUi(
+                      type: "in",
+                    ),
+                    CashInUi(type: "out")
+                  ],
+                ),
               ),
-              leading: IconButton(
-                  onPressed: () {
-                    if (MediaQuery.of(context).size.width > 600) {
-                      Get.find<HomeController>().selectedWidget.value =
-                          CashFlowManager();
-                    } else {
-                      Get.back();
-                    }
-                  },
-                  icon: Icon(Icons.arrow_back_ios)),
             ),
+          ],
+        ),
+        appBar: AppBar(
+          elevation: 0.3,
+          backgroundColor: Colors.white,
+          foregroundColor: Colors.black,
+          titleSpacing: 0.0,
+          centerTitle: false,
+          iconTheme: IconThemeData(color: Colors.black),
+          titleTextStyle: TextStyle(color: Colors.black),
+          title: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text("Cashflow Category",
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  )),
+              Obx(() {
+                return Text(
+                  createShopController.currentShop.value == null
+                      ? ""
+                      : createShopController
+                          .currentShop.value!.name!.capitalize!,
+                  style: TextStyle(
+                    fontSize: 12,
+                  ),
+                );
+              })
+            ],
           ),
-        ));
+          leading: IconButton(
+              onPressed: () {
+                if (MediaQuery.of(context).size.width > 600) {
+                  Get.find<HomeController>().selectedWidget.value =
+                      CashFlowManager();
+                } else {
+                  Get.back();
+                }
+              },
+              icon: Icon(Icons.arrow_back_ios)),
+        ),
+      ),
+    );
   }
 }
 
@@ -149,27 +146,32 @@ class CashInUi extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.only(top: 25.0, bottom: 10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text("${createShopController.currentShop.value!.currency!} "),
-                  Obx(() {
-                    return Text(
-                      "${cashflowController.cashflowTotal.value}",
-                      style: TextStyle(
-                          color: Colors.black, fontWeight: FontWeight.bold),
-                    );
-                  })
-                ],
-              ),
+              padding: const EdgeInsets.symmetric(vertical: 25, horizontal: 10),
+              child: Obx(() {
+                return Text(
+                  type == "in"
+                      ? htmlPrice(cashflowController.cashInflowOtherTransactions
+                          .fold(
+                              0,
+                              (previousValue, element) =>
+                                  previousValue + element.amount!))
+                      : htmlPrice(
+                          cashflowController.cashOutflowOtherTransactions.fold(
+                                  0,
+                                  (previousValue, element) =>
+                                      previousValue + element.amount!) +
+                              cashflowController.totalcashAtBankHistory.value),
+                  style: const TextStyle(
+                      color: Colors.black, fontWeight: FontWeight.bold),
+                );
+              }),
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text("Cash ${type} categories"),
+                  Text("Cash $type categories"),
                   TextButton(
                     onPressed: () {
                       showDialog(
@@ -204,9 +206,7 @@ class CashInUi extends StatelessWidget {
                                   onPressed: () {
                                     Navigator.pop(context);
                                     cashflowController.createCategory(
-                                        type == "in" ? "cash-in" : "cash-out",
-                                        createShopController.currentShop.value,
-                                        context);
+                                        type == "in" ? "cash-in" : "cash-out");
                                   },
                                   child: Text(
                                     "Save now".toUpperCase(),
@@ -249,90 +249,83 @@ class CashInUi extends StatelessWidget {
               ),
             ),
             Obx(() {
-              return cashflowController.loadingCashFlowCategories.value
-                  ? Center(
-                      child: CircularProgressIndicator(),
-                    )
-                  : MediaQuery.of(context).size.width > 600
-                      ? Container(
-                          width: double.infinity,
-                          padding:
-                              EdgeInsets.symmetric(horizontal: 5, vertical: 10),
-                          child: Theme(
-                            data: Theme.of(context)
-                                .copyWith(dividerColor: Colors.grey),
-                            child: DataTable(
-                              decoration: BoxDecoration(
-                                  border: Border.all(
-                                width: 1,
-                                color: Colors.black,
+              return MediaQuery.of(context).size.width > 600
+                  ? Container(
+                      width: double.infinity,
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+                      child: Theme(
+                        data: Theme.of(context)
+                            .copyWith(dividerColor: Colors.grey),
+                        child: DataTable(
+                          decoration: BoxDecoration(
+                              border: Border.all(
+                            width: 1,
+                            color: Colors.black,
+                          )),
+                          columnSpacing: 30.0,
+                          columns: [
+                            const DataColumn(
+                                label:
+                                    Text('Name', textAlign: TextAlign.center)),
+                            DataColumn(
+                                label: Text(
+                                    'Amount(${createShopController.currentShop.value?.currency})',
+                                    textAlign: TextAlign.center)),
+                            const DataColumn(
+                                label:
+                                    Text('Date', textAlign: TextAlign.center)),
+                            DataColumn(
+                                label: Text('', textAlign: TextAlign.center)),
+                          ],
+                          rows: List.generate(
+                              cashflowController.cashFlowCategories.length,
+                              (index) {
+                            CashFlowCategory cashflowCategory =
+                                cashflowController.cashFlowCategories
+                                    .elementAt(index);
+                            final y = cashflowCategory.name.toString();
+                            final x = cashflowCategory.amount.toString();
+                            final z = cashflowCategory.createdAt!;
+                            return DataRow(cells: [
+                              DataCell(Container(child: Text(y))),
+                              DataCell(Container(child: Text(x))),
+                              DataCell(Container(
+                                  child: Text(
+                                      DateFormat("MM-dd-yyyy").format(z)))),
+                              DataCell(Align(
+                                alignment: Alignment.topRight,
+                                child: Container(
+                                    padding: EdgeInsets.only(top: 10),
+                                    child: cashFlowCategoryDialog(context,
+                                        cashflowCategory: cashflowCategory)),
                               )),
-                              columnSpacing: 30.0,
-                              columns: [
-                                DataColumn(
-                                    label: Text('Name',
-                                        textAlign: TextAlign.center)),
-                                DataColumn(
-                                    label: Text(
-                                        'Amount(${createShopController.currentShop.value?.currency})',
-                                        textAlign: TextAlign.center)),
-                                DataColumn(
-                                    label: Text('Date',
-                                        textAlign: TextAlign.center)),
-                                DataColumn(
-                                    label:
-                                        Text('', textAlign: TextAlign.center)),
-                              ],
-                              rows: List.generate(
-                                  cashflowController.cashFlowCategories.length,
-                                  (index) {
-                                CashFlowCategory cashflowCategory =
-                                    cashflowController.cashFlowCategories
-                                        .elementAt(index);
-                                final y = cashflowCategory.name.toString();
-                                final x = cashflowCategory.amount.toString();
-                                final z = cashflowCategory.createdAt!;
-                                return DataRow(cells: [
-                                  DataCell(Container(child: Text(y))),
-                                  DataCell(Container(child: Text(x))),
-                                  DataCell(Container(
-                                      child: Text(
-                                          DateFormat("MM-dd-yyyy").format(z)))),
-                                  DataCell(Align(
-                                    alignment: Alignment.topRight,
-                                    child: Container(
-                                        padding: EdgeInsets.only(top: 10),
-                                        child: cashFlowCategoryDialog(context,
-                                            cashflowCategory:
-                                                cashflowCategory)),
-                                  )),
-                                ]);
-                              }),
-                            ),
-                          ),
-                        )
-                      : Expanded(
-                          child: GridView.builder(
-                              gridDelegate:
-                                  SliverGridDelegateWithFixedCrossAxisCount(
-                                      childAspectRatio: MediaQuery.of(context)
-                                              .size
-                                              .width *
+                            ]);
+                          }),
+                        ),
+                      ),
+                    )
+                  : Expanded(
+                      child: GridView.builder(
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                                  childAspectRatio:
+                                      MediaQuery.of(context).size.width *
                                           6 /
                                           MediaQuery.of(context).size.height,
-                                      crossAxisCount: 2,
-                                      crossAxisSpacing: 10,
-                                      mainAxisSpacing: 10),
-                              itemBuilder: (context, index) {
-                                CashFlowCategory cashflowCategory =
-                                    cashflowController.cashFlowCategories
-                                        .elementAt(index);
-                                return categoryCard(context,
-                                    cashflowCategory: cashflowCategory);
-                              },
-                              itemCount:
-                                  cashflowController.cashFlowCategories.length),
-                        );
+                                  crossAxisCount: 2,
+                                  crossAxisSpacing: 10,
+                                  mainAxisSpacing: 10),
+                          itemBuilder: (context, index) {
+                            CashFlowCategory cashflowCategory =
+                                cashflowController.cashFlowCategories
+                                    .elementAt(index);
+                            return categoryCard(context,
+                                cashflowCategory: cashflowCategory);
+                          },
+                          itemCount:
+                              cashflowController.cashFlowCategories.length),
+                    );
             })
           ],
         ),

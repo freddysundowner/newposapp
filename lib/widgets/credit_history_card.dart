@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:pointify/controllers/home_controller.dart';
-import 'package:pointify/models/customer_model.dart';
-import 'package:pointify/models/receipt.dart';
 import 'package:pointify/widgets/pdf/payment_history_pdf.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
+import '../Real/schema.dart';
 import '../controllers/CustomerController.dart';
 import '../controllers/sales_controller.dart';
 import '../controllers/shop_controller.dart';
@@ -47,10 +46,10 @@ Widget CreditHistoryCard(
                     SizedBox(
                       width: 50,
                     ),
-                    if (salesBody.returnedItems != null &&
-                        salesBody.returnedItems!.isNotEmpty)
+                    if (salesBody.returnsCount != null &&
+                        salesBody.returnsCount! > 0)
                       Text(
-                        "returned items : ${salesBody.returnedItems}",
+                        "returns : (${salesBody.returnsCount})",
                         style: TextStyle(color: Colors.red),
                       ),
                   ],
@@ -120,18 +119,18 @@ showBottomSheet(
                   leading: Icon(Icons.wallet),
                   onTap: () {
                     Navigator.pop(context);
-                    if (MediaQuery.of(context).size.width > 600) {
-                      Get.find<HomeController>().selectedWidget.value =
-                          PaymentHistory(
-                        id: salesBody.id!,
-                      );
-                    } else {
-                      print(salesBody.id!);
-                      Get.to(() => PaymentHistory(
-                            id: salesBody.id!,
-                            type: "sales",
-                          ));
-                    }
+                    // if (MediaQuery.of(context).size.width > 600) {
+                    //   Get.find<HomeController>().selectedWidget.value =
+                    //       PaymentHistory(
+                    //     id: salesBody.id!,
+                    //   );
+                    // } else {
+                    //   print(salesBody.id!);
+                    //   Get.to(() => PaymentHistory(
+                    //         id: salesBody.id!,
+                    //         type: "services",
+                    //       ));
+                    // }
                   },
                   title: Text('Payment History'),
                 ),
@@ -139,8 +138,8 @@ showBottomSheet(
                   leading: Icon(Icons.file_copy_outlined),
                   onTap: () async {
                     Navigator.pop(context);
-                    await salesController.getPaymentHistory(
-                        id: salesBody.id!, type: "");
+                    // await salesController.getPaymentHistory(
+                    //     id: salesBody.id!, type: "");
 
                     PaymentHistoryPdf(
                         shop:
@@ -209,7 +208,8 @@ showAmountDialog(context, SalesModel salesBody) {
                 } else {
                   salesController.payCredit(
                       salesBody: salesBody,
-                      amount: customerController.amountController.text);
+                      amount:
+                          int.parse(customerController.amountController.text));
                 }
               },
               child: Text(
