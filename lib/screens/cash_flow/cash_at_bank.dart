@@ -24,110 +24,113 @@ class CashAtBank extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ResponsiveWidget(
-      largeScreen: Scaffold(
-        backgroundColor: Colors.white,
-        appBar: _appBar(context),
-        body: Obx(() {
-          return cashflowController.cashAtBanks.isEmpty
-              ? noItemsFound(context, true)
-              : SingleChildScrollView(
-                  child: Container(
-                    width: double.infinity,
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
-                    child: Theme(
-                      data:
-                          Theme.of(context).copyWith(dividerColor: Colors.grey),
-                      child: DataTable(
-                        decoration: BoxDecoration(
-                            border: Border.all(
-                          width: 1,
-                          color: Colors.black,
-                        )),
-                        columnSpacing: 30.0,
-                        columns: [
-                          DataColumn(
-                              label: Text('Name', textAlign: TextAlign.center)),
-                          DataColumn(
-                              label: Text(
-                                  'Amount(${createShopController.currentShop.value?.currency})',
-                                  textAlign: TextAlign.center)),
-                          DataColumn(
-                              label: Text('', textAlign: TextAlign.center)),
-                        ],
-                        rows: List.generate(
-                            cashflowController.cashAtBanks.length, (index) {
-                          BankModel bankModel =
-                              cashflowController.cashAtBanks.elementAt(index);
-                          final y = bankModel.name;
-                          final x = bankModel.amount.toString();
-                          return DataRow(cells: [
-                            DataCell(Container(child: Text(y!))),
-                            DataCell(Container(child: Text(x))),
-                            DataCell(
-                              Align(
-                                child: Container(
-                                    padding: EdgeInsets.only(top: 10),
-                                    child: showPopUpdialog(context)),
-                                alignment: Alignment.topRight,
-                              ),
-                            ),
-                          ]);
-                        }),
-                      ),
-                    ),
-                  ),
-                );
-        }),
-      ),
-      smallScreen: Helper(
-        widget: Obx(() {
-          return cashflowController.loadingCashAtBank.value
-              ? ListView.builder(
-                  shrinkWrap: true,
-                  itemBuilder: (context, index) {
-                    return loadingShimmer();
-                  },
-                  itemCount: 5,
-                )
-              : ListView.builder(
-                  itemCount: cashflowController.cashAtBanks.length,
-                  shrinkWrap: true,
-                  scrollDirection: Axis.vertical,
-                  itemBuilder: (context, index) {
-                    BankModel bankModel =
-                        cashflowController.cashAtBanks.elementAt(index);
-                    return bankCard(context, bankModel: bankModel);
-                  });
-        }),
-        appBar: _appBar(context),
-        bottomNavigationBar: BottomAppBar(
-          child: Container(
-            padding: EdgeInsets.all(10),
-            height: kToolbarHeight,
-            color: Colors.white,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "Totals",
-                  style: TextStyle(color: Colors.black),
-                ),
-                Container(
-                  padding: EdgeInsets.all(5),
-                  decoration: BoxDecoration(
-                      color: Colors.grey.withOpacity(0.8),
-                      borderRadius: BorderRadius.circular(20)),
-                  child: Obx(() => Text(
-                      "${createShopController.currentShop.value!.currency!}  ${cashflowController.totalcashAtBank.value}")),
-                )
-              ],
-            ),
+    return  Helper(
+      widget: Obx(() {
+        return cashflowController.loadingCashAtBank.value
+            ? ListView.builder(
+          shrinkWrap: true,
+          itemBuilder: (context, index) {
+            return loadingShimmer();
+          },
+          itemCount: 5,
+        )
+            : ListView.builder(
+            itemCount: cashflowController.cashAtBanks.length,
+            shrinkWrap: true,
+            scrollDirection: Axis.vertical,
+            itemBuilder: (context, index) {
+              BankModel bankModel =
+              cashflowController.cashAtBanks.elementAt(index);
+              return bankCard(context, bankModel: bankModel);
+            });
+      }),
+      appBar: _appBar(context),
+      bottomNavigationBar: BottomAppBar(
+        child: Container(
+          padding: EdgeInsets.all(10),
+          height: kToolbarHeight,
+          color: Colors.white,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                "Totals",
+                style: TextStyle(color: Colors.black),
+              ),
+              Container(
+                padding: EdgeInsets.all(5),
+                decoration: BoxDecoration(
+                    color: Colors.grey.withOpacity(0.8),
+                    borderRadius: BorderRadius.circular(20)),
+                child: Obx(() => Text(
+                    "${createShopController.currentShop.value!.currency!}  ${cashflowController.totalcashAtBank.value}")),
+              )
+            ],
           ),
         ),
       ),
     );
+
+    //   ResponsiveWidget(
+    //   largeScreen: Scaffold(
+    //     backgroundColor: Colors.white,
+    //     appBar: _appBar(context),
+    //     body: Obx(() {
+    //       return cashflowController.cashAtBanks.isEmpty
+    //           ? noItemsFound(context, true)
+    //           : SingleChildScrollView(
+    //               child: Container(
+    //                 width: double.infinity,
+    //                 padding:
+    //                     const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+    //                 child: Theme(
+    //                   data:
+    //                       Theme.of(context).copyWith(dividerColor: Colors.grey),
+    //                   child: DataTable(
+    //                     decoration: BoxDecoration(
+    //                         border: Border.all(
+    //                       width: 1,
+    //                       color: Colors.black,
+    //                     )),
+    //                     columnSpacing: 30.0,
+    //                     columns: [
+    //                       DataColumn(
+    //                           label: Text('Name', textAlign: TextAlign.center)),
+    //                       DataColumn(
+    //                           label: Text(
+    //                               'Amount(${createShopController.currentShop.value?.currency})',
+    //                               textAlign: TextAlign.center)),
+    //                       DataColumn(
+    //                           label: Text('', textAlign: TextAlign.center)),
+    //                     ],
+    //                     rows: List.generate(
+    //                         cashflowController.cashAtBanks.length, (index) {
+    //                       BankModel bankModel =
+    //                           cashflowController.cashAtBanks.elementAt(index);
+    //                       final y = bankModel.name;
+    //                       final x = bankModel.amount.toString();
+    //                       return DataRow(cells: [
+    //                         DataCell(Container(child: Text(y!))),
+    //                         DataCell(Container(child: Text(x))),
+    //                         DataCell(
+    //                           Align(
+    //                             child: Container(
+    //                                 padding: EdgeInsets.only(top: 10),
+    //                                 child: showPopUpdialog(context)),
+    //                             alignment: Alignment.topRight,
+    //                           ),
+    //                         ),
+    //                       ]);
+    //                     }),
+    //                   ),
+    //                 ),
+    //               ),
+    //             );
+    //     }),
+    //   ),
+    //   smallScreen:
+    //   ,
+    // );
   }
 
   Widget loadingShimmer() {
@@ -290,6 +293,9 @@ class CashAtBank extends StatelessWidget {
               ],
             )
           ],
+
+
+
         ),
       ),
     );
