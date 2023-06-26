@@ -92,8 +92,7 @@ class CreateSale extends StatelessWidget {
                                   function: (Product product) {
                                     addToCart(product);
                                   }));
-                            }
-                            else {
+                            } else {
                               Get.find<HomeController>().selectedWidget.value =
                                   ProductsScreen(
                                       type: "sale",
@@ -174,8 +173,7 @@ class CreateSale extends StatelessWidget {
                                           function: (Product product) {
                                             addToCart(product);
                                           }));
-                                    }
-                                    else {
+                                    } else {
                                       Get.find<HomeController>().selectedWidget.value =
                                           ProductsScreen(
                                               type: "sale",
@@ -394,8 +392,7 @@ class CreateSale extends StatelessWidget {
                     ),
             );
           }),
-        )
-        );
+        ));
   }
 
   confirmPayment(context, type) {
@@ -832,11 +829,10 @@ class CreateSale extends StatelessWidget {
         shop: Get.find<ShopController>().currentShop.value,
         createdAt: DateTime.now(),
         price: product.selling);
-    if(isSmallScreen(Get.context!)){
+    if (isSmallScreen(Get.context!)) {
       Get.back();
-    }else{
-      Get.find<HomeController>().selectedWidget.value =
-          CreateSale();
+    } else {
+      Get.find<HomeController>().selectedWidget.value = CreateSale();
     }
 
     salesController.changesaleItem(re);
