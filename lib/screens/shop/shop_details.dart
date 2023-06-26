@@ -88,14 +88,31 @@ class ShopDetails extends StatelessWidget {
               const SizedBox(height: 10),
               InkWell(
                 onTap: () {
-                  Get.to(() => ShopCategories(
-                        selectedItemsCallback: (ShopTypes s) async {
-                          Get.back();
-                          shopController.selectedCategory.value = s;
-                          shopController.selectedCategory.refresh();
-                          await shopController.updateShop(shop: shopModel);
-                        },
-                      ));
+                  if (isSmallScreen(context)) {
+                    Get.to(() => ShopCategories(
+                          shopModel: shopModel,
+                          page: "details",
+                          selectedItemsCallback: (ShopTypes s) async {
+                            Get.back();
+                            shopController.selectedCategory.value = s;
+                            shopController.selectedCategory.refresh();
+                            // await shopController.updateShop(shop: shopModel);
+                          },
+                        ));
+                  } else {
+                    Get.find<HomeController>().selectedWidget.value =
+                        ShopCategories(
+                      shopModel: shopModel,
+                      page: "details",
+                      selectedItemsCallback: (ShopTypes s) async {
+                        Get.find<HomeController>().selectedWidget.value =
+                            ShopDetails(shopModel: shopModel);
+                        shopController.selectedCategory.value = s;
+                        shopController.selectedCategory.refresh();
+                        // await shopController.updateShop(shop: shopModel);
+                      },
+                    );
+                  }
                 },
                 child: Container(
                   padding:
@@ -258,63 +275,5 @@ class ShopDetails extends StatelessWidget {
         ),
       ),
     );
-
-    // ResponsiveWidget(
-    //     largeScreen: Container(
-    //       padding: EdgeInsets.all(20),
-    //       margin: EdgeInsets.all(20),
-    //       decoration: BoxDecoration(
-    //           color: Colors.white,
-    //           borderRadius: BorderRadius.circular(8),
-    //           boxShadow: [
-    //             BoxShadow(
-    //                 color: Colors.black26,
-    //                 offset: Offset(0, 1),
-    //                 blurRadius: 1.0)
-    //           ]),
-    //       child: SingleChildScrollView(
-    //         physics: NeverScrollableScrollPhysics(),
-    //         child: Column(
-    //           crossAxisAlignment: CrossAxisAlignment.start,
-    //           children: [
-    //             Container(
-    //               child: Row(
-    //                 children: [
-    //                   InkWell(
-    //                     onTap: () {
-    //                       Get.find<HomeController>().selectedWidget.value =
-    //                           ShopsPage();
-    //                     },
-    //                     child: Icon(
-    //                       Icons.arrow_back_ios,
-    //                       color: Colors.black,
-    //                     ),
-    //                   ),
-    //                   SizedBox(width: 10),
-    //                   majorTitle(
-    //                       title: "${shopModel.name}",
-    //                       color: Colors.black,
-    //                       size: 16.0),
-    //                   Spacer(),
-    //                   updateShopWidget(context),
-    //                   SizedBox(width: 5)
-    //                 ],
-    //               ),
-    //             ),
-    //             SizedBox(height: 3),
-    //             SingleChildScrollView(
-    //               child: Column(
-    //                 crossAxisAlignment: CrossAxisAlignment.start,
-    //                 children: [
-    //                   shopDetails(context),
-    //                   SizedBox(height: 5),
-    //                 ],
-    //               ),
-    //             )
-    //           ],
-    //         ),
-    //       ),
-    //     ),
-    //     smallScreen:);
   }
 }

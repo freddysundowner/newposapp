@@ -1,15 +1,27 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pointify/Real/schema.dart';
 import 'package:pointify/controllers/shop_controller.dart';
+import 'package:pointify/responsive/responsiveness.dart';
+import 'package:pointify/screens/shop/create_shop.dart';
+import 'package:pointify/screens/shop/shop_details.dart';
 import 'package:pointify/utils/colors.dart';
 
 import '../../controllers/AuthController.dart';
+import '../../controllers/home_controller.dart';
 
 //ignore: must_be_immutable
 class ShopCategories extends StatelessWidget {
+  final String page;
+  final Shop? shopModel;
   final Function? selectedItemsCallback;
-  ShopCategories({this.selectedItemsCallback}) {
+
+  ShopCategories(
+      {super.key,
+      this.selectedItemsCallback,
+      required this.page,
+      this.shopModel}) {
     shopController.getCategories();
   }
 
@@ -26,7 +38,19 @@ class ShopCategories extends StatelessWidget {
         leading: IconButton(
           icon: const Icon(Icons.clear, color: Colors.black),
           onPressed: () {
-            Navigator.of(context).pop();
+            if (isSmallScreen(context)) {
+              Get.back();
+            } else {
+              if (page == "details") {
+                Get.find<HomeController>().selectedWidget.value =
+                    ShopDetails(shopModel: shopModel!);
+              } else {
+                Get.find<HomeController>().selectedWidget.value =
+                    CreateShop(page: page);
+              }
+            }
+
+            // Navigator.of(context).pop();
           },
         ),
         iconTheme: const IconThemeData(
