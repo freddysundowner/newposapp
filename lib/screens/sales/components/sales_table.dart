@@ -3,6 +3,7 @@ import 'package:pointify/controllers/sales_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:pointify/screens/sales/components/sales_receipt.dart';
 
 import '../../../Real/schema.dart';
 import '../../../controllers/home_controller.dart';
@@ -58,9 +59,9 @@ Widget salesTable(context, page) {
                 child: Text(DateFormat("yyyy-dd-MMM hh:mm a").format(w!)))),
             DataCell(InkWell(
               onTap: () {
-                Get.find<HomeController>().selectedWidget.value = SaleOrderItem(
-                  id: salesModel.id,
-                  page: page,
+                Get.find<HomeController>().selectedWidget.value = SalesReceipt(
+                  salesModel: salesModel,
+                  type: "",
                 );
               },
               child: Container(

@@ -471,10 +471,16 @@ class HomePage extends StatelessWidget {
                       onTap: () {
                         salesController.salesInitialIndex.value = 0;
                         salesController.getSales();
-
-                        Get.to(() => AllSalesPage(
+                        if (isSmallScreen(context)) {
+                          Get.to(() => AllSalesPage(
+                                page: "homePage",
+                              ));
+                        }  else {
+                          Get.find<HomeController>().selectedWidget.value =
+                              AllSalesPage(
                               page: "homePage",
-                            ));
+                              ) ;
+                        }
                       },
                       child: minorTitle(
                           title: "See all", color: AppColors.lightDeepPurple))
