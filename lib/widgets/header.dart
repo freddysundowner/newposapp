@@ -109,9 +109,6 @@ class _HeaderState extends State<Header> {
                     ),
                     border: Border.all(width: 1, color: Colors.white),
                   ),
-                  // child: SvgPicture.asset(
-                  //   _imagePath,
-                  // ),
                 ),
               ),
             ),
