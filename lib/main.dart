@@ -37,7 +37,7 @@ void main() async {
     setWindowMinSize(const Size(512,  700));
   }
 
-  runApp(MyApp());
+  runApp(MyApp()); 
 }
 
 class MyApp extends StatelessWidget {

@@ -353,7 +353,13 @@ class HomePage extends StatelessWidget {
                       child: ListView.builder(
                         shrinkWrap: true,
                         scrollDirection: Axis.horizontal,
-                        itemCount: enterpriseOperations.length,
+                        itemCount: enterpriseOperations
+                            .where((e) =>
+                                checkPermission(
+                                    category: e["category"], group: true) ==
+                                true)
+                            .toList()
+                            .length,
                         itemBuilder: (context, index) {
                           var e = enterpriseOperations[index];
                           return Container(
