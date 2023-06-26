@@ -188,6 +188,7 @@ class ShopDetails extends StatelessWidget {
                   ),
                 ),
               ),
+
               const SizedBox(height: 20),
               Card(
                 elevation: 1,
