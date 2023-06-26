@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/authentication/admin/admin_login.dart';
 import 'package:get/get.dart';
@@ -103,13 +102,7 @@ class Landing extends StatelessWidget {
   }
 
   Widget landingImage() {
-    return Container(
-      child: SvgPicture.asset(
-        "assets/images/finance.svg",
-        height: 200,
-        width: 200,
-      ),
-    );
+    return Container();
   }
 
   Widget landingContent() {
