@@ -302,8 +302,7 @@ class CustomerInfoPage extends StatelessWidget {
                         salesController.getSales(customer: customerModel);
                       } else {
                         salesController.getReturns(
-                          customerModel: customerModel,
-                        );
+                            customerModel: customerModel, type: "return");
                       }
                     },
                     tabs: const [

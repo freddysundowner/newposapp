@@ -8,7 +8,6 @@ import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/stock/purchase_order_item.dart';
 import 'package:pointify/screens/stock/stock_page.dart';
 import 'package:pointify/widgets/no_items_found.dart';
-import 'package:pointify/widgets/pdf/purchases_pdf.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:realm/realm.dart';
@@ -76,8 +75,8 @@ class AllPurchases extends StatelessWidget {
         actions: [
           InkWell(
               onTap: () {
-                PurchasesPdf(
-                    sales: purchaseController.purchasedItems, type: "type");
+                // PurchasesPdf(
+                //     sales: purchaseController.purchasedItems, type: "type");
               },
               child: Icon(
                 Icons.download,

@@ -136,8 +136,12 @@ class _ProductCategory {
   @MapTo("_id")
   ObjectId? id;
   String? name;
+  _ShopTypes? shopTypes;
+  @Ignored()
   _Shop? shop;
+  @Ignored()
   DateTime? createdAt;
+  @Ignored()
   DateTime? updatedAt;
 }
 
@@ -388,6 +392,8 @@ class _ReceiptItem {
   int? quantity;
   _Shop? shop;
   String? type;
+  String? receiptNo;
+  ObjectId? receiptId;
   String? date;
   int? soldOn;
   int? total;

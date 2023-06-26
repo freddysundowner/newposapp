@@ -522,48 +522,71 @@ class CreatePurchase extends StatelessWidget {
                                 SizedBox(
                                   height: 10,
                                 ),
-                              if (purchaseController.invoice.value!.supplier !=
-                                  null)
-                                InkWell(
-                                  onTap: () {
-                                    _gotoSupplierPage(context);
-                                  },
-                                  child: Row(
-                                    children: [
-                                      majorTitle(
-                                          title: purchaseController.invoice
-                                              .value!.supplier?.fullName,
-                                          color: AppColors.mainColor,
-                                          size: 18.0),
-                                      SizedBox(
-                                        width: 20,
-                                      ),
-                                      Container(
-                                        padding:
-                                            EdgeInsets.symmetric(horizontal: 5),
-                                        decoration: BoxDecoration(
-                                            color: Colors.white,
-                                            borderRadius:
-                                                (BorderRadius.circular(10)),
-                                            border: Border.all(
+                              Row(
+                                children: [
+                                  if (purchaseController
+                                          .invoice.value!.supplier !=
+                                      null)
+                                    InkWell(
+                                      onTap: () {
+                                        _gotoSupplierPage(context);
+                                      },
+                                      child: Row(
+                                        children: [
+                                          Obx(
+                                            () => majorTitle(
+                                                title: purchaseController
+                                                    .invoice
+                                                    .value!
+                                                    .supplier
+                                                    ?.fullName,
                                                 color: AppColors.mainColor,
-                                                width: 1)),
-                                        child: Row(
-                                          children: [
-                                            majorTitle(
-                                                title: "Change",
-                                                color: Colors.red,
-                                                size: 12.0),
-                                            Icon(
-                                              Icons.edit,
-                                              size: 15,
-                                            )
-                                          ],
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                ),
+                                                size: 18.0),
+                                          ),
+                                          SizedBox(
+                                            width: 20,
+                                          ),
+                                          Container(
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 5),
+                                            decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                borderRadius:
+                                                    (BorderRadius.circular(10)),
+                                                border: Border.all(
+                                                    color: AppColors.mainColor,
+                                                    width: 1)),
+                                            child: Row(
+                                              children: [
+                                                majorTitle(
+                                                    title: "Change",
+                                                    color: Colors.red,
+                                                    size: 12.0),
+                                                Icon(
+                                                  Icons.edit,
+                                                  size: 15,
+                                                )
+                                              ],
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                  if (purchaseController
+                                          .invoice.value!.supplier !=
+                                      null)
+                                    IconButton(
+                                        onPressed: () {
+                                          purchaseController
+                                              .invoice.value!.supplier = null;
+                                          purchaseController.invoice.refresh();
+                                        },
+                                        icon: Icon(
+                                          Icons.delete,
+                                          color: Colors.red,
+                                        )),
+                                ],
+                              ),
                               SizedBox(
                                 height: 20,
                               ),

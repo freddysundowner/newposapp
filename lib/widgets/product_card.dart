@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:pointify/controllers/AuthController.dart';
+import 'package:pointify/controllers/sales_controller.dart';
 import 'package:pointify/controllers/user_controller.dart';
 import 'package:pointify/controllers/product_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
-import 'package:pointify/widgets/pdf/bar_code_pdf.dart';
 import 'package:pointify/widgets/smalltext.dart';
 import 'package:get/get.dart';
 
@@ -89,6 +88,7 @@ Widget productCard({required Product product}) {
 showProductModal(context, Product product) {
   ProductController productController = Get.find<ProductController>();
   UserController userController = Get.find<UserController>();
+  SalesController salesController = Get.find<SalesController>();
 
   return showModalBottomSheet<void>(
       context: context,
@@ -109,6 +109,17 @@ showProductModal(context, Product product) {
                     leading: Icon(Icons.list),
                     onTap: () {
                       Get.back();
+
+                      getYearlyRecords(product, function: (Product product,
+                          DateTime firstday, DateTime lastday) {
+                        salesController.filterStartDate.value = firstday;
+                        salesController.filterEndDate.value = lastday;
+                        salesController.getSalesByProductId(
+                            product: product,
+                            fromDate: firstday,
+                            toDate: lastday);
+                      }, year: salesController.currentYear.value);
+
                       Get.to(() => ProductHistory(product: product));
                     },
                     title: const Text('Product History')),
@@ -128,12 +139,12 @@ showProductModal(context, Product product) {
                     leading: Icon(Icons.code),
                     onTap: () {
                       Get.back();
-                      BarcodePdf(
-                          productname: product.name,
-                          shop: Get.find<ShopController>()
-                              .currentShop
-                              .value!
-                              .name!);
+                      // BarcodePdf(
+                      //     productname: product.name,
+                      //     shop: Get.find<ShopController>()
+                      //         .currentShop
+                      //         .value!
+                      //         .name!);
                     },
                     title: const Text('Generate Barcode')),
               if (checkPermission(category: "products", permission: "manage"))

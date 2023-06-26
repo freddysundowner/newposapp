@@ -14,6 +14,7 @@ import 'package:pointify/screens/product/tabs/count_history.dart';
 import '../../Real/schema.dart';
 import '../../controllers/stock_transfer_controller.dart';
 import '../../widgets/smalltext.dart';
+import '../../widgets/tab_view.dart';
 
 class ProductHistory extends StatelessWidget {
   final Product product;
@@ -168,7 +169,7 @@ class ProductHistory extends StatelessWidget {
                         },
                         tabs: [
                           Tab(
-                            child: _tabView(
+                            child: tabView(
                                 title: "Sales",
                                 subtitle: htmlPrice(salesController.productSales
                                     .fold(
@@ -177,7 +178,7 @@ class ProductHistory extends StatelessWidget {
                                             previousValue + element.total!))),
                           ),
                           Tab(
-                              child: _tabView(
+                              child: tabView(
                                   title: "IN",
                                   subtitle: htmlPrice(
                                       productController.productInvoices.fold(
@@ -186,7 +187,7 @@ class ProductHistory extends StatelessWidget {
                                               previousValue +
                                               element.total!)))),
                           Tab(
-                              child: _tabView(
+                              child: tabView(
                                   title: "Bad",
                                   subtitle: htmlPrice(
                                       productController.badstocks.fold(
@@ -197,8 +198,8 @@ class ProductHistory extends StatelessWidget {
                                                   element.product!
                                                       .buyingPrice!))))),
                           Tab(
-                              child: _tabView(
-                                  title: "Count", subtitle: "History")),
+                              child:
+                                  tabView(title: "Count", subtitle: "History")),
                         ],
                       ),
                     ),
@@ -223,22 +224,5 @@ class ProductHistory extends StatelessWidget {
                     )
                   ]);
             })));
-  }
-
-  Column _tabView({required String title, required var subtitle}) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text(
-          title,
-          style: TextStyle(fontSize: 13, color: Colors.black),
-        ),
-        Text(
-          subtitle,
-          style: const TextStyle(fontSize: 11, color: Colors.black),
-        ),
-      ],
-    );
   }
 }

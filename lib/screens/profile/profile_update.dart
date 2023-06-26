@@ -13,9 +13,10 @@ import '../../widgets/shopWidget.dart';
 
 class ProfileUpdate extends StatelessWidget {
   ProfileUpdate({Key? key}) : super(key: key) {
-    authController.nameController.text = userController.user.value!.fullnames!;
+    authController.nameController.text =
+        userController.user.value!.username ?? "";
     authController.emailController.text =
-        authController.app.value!.currentUser!.profile.email!;
+        authController.app.value!.currentUser!.profile.email ?? "";
     authController.phoneController.text =
         userController.user.value!.phonenumber ?? "";
   }
@@ -117,10 +118,10 @@ class ProfileUpdate extends StatelessWidget {
                   SizedBox(height: 10),
                   profileInputWidget(
                       controller: authController.nameController, name: "Name"),
-                  SizedBox(height: 10),
-                  profileInputWidget(
-                      controller: authController.emailController,
-                      name: "Email"),
+                  // SizedBox(height: 10),
+                  // profileInputWidget(
+                  //     controller: authController.emailController,
+                  //     name: "Email"),
                   SizedBox(height: 10),
                   profileInputWidget(
                       controller: authController.phoneController,
@@ -153,9 +154,10 @@ class ProfileUpdate extends StatelessWidget {
               splashColor: Colors.transparent,
               onTap: () {
                 Users().updateAdmin(userController.user.value!,
-                    fullnames: authController.nameController.text,
+                    username: authController.nameController.text,
                     email: authController.emailController.text,
                     phonenumber: authController.phoneController.text);
+                userController.user.refresh();
                 Get.back();
               },
               child: Container(

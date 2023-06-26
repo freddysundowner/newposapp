@@ -73,7 +73,7 @@ class FinancePage extends StatelessWidget {
                 ),
                 SizedBox(height: 20),
                 majorTitle(
-                    title: "Financial Operations",
+                    title: "Profit & expenses",
                     color: Colors.black,
                     size: 16.0),
                 SizedBox(height: 10),
@@ -205,10 +205,6 @@ class FinancePage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                majorTitle(
-                    title: "Weekly Profit Trajectory",
-                    color: Colors.black,
-                    size: 16.0),
                 SizedBox(height: 10),
                 SfDateRangePicker(
                     onSelectionChanged: _onSelectionChanged,
@@ -273,13 +269,6 @@ class FinancePage extends StatelessWidget {
                       showsummary: false,
                       onPresssed: () {
                         return Get.to(() => MonthFilter());
-                        // salesController.getProfitTransaction(
-                        //   fromDate: DateTime.parse(
-                        //       DateFormat("yyy-MM-dd").format(DateTime.now())),
-                        //   toDate: DateTime.parse(DateFormat("yyy-MM-dd")
-                        //       .format(DateTime.now().add(Duration(days: 1)))),
-                        // );
-                        // Get.to(() => ProfitPage());
                       },
                       color: Colors.blue.shade100,
                       icon: Icons.menu,
@@ -333,7 +322,7 @@ class FinancePage extends StatelessWidget {
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
                     color: AppColors.mainColor),
-                child: Center(
+                child: const Center(
                     child: Text(
                   "Add Expense",
                   style: TextStyle(color: Colors.white),
@@ -366,42 +355,7 @@ class FinancePage extends StatelessWidget {
         ),
       ),
       title: majorTitle(
-          title: "Financial Statement", color: Colors.black, size: 16.0),
-      actions: [
-        // InkWell(
-        //     onTap: () async {
-        //       final picked = await showDateRangePicker(
-        //         context: context,
-        //         lastDate: DateTime(2079),
-        //         firstDate: DateTime(2019),
-        //       );
-        //       salesController.filterStartDate.value = picked!.start;
-        //       salesController.filterEnndStartDate.value = picked.end;
-        //
-        //       salesController.getFinanceSummary(
-        //           fromDate: picked.start, toDate: picked.end);
-        //     },
-        //     child: Container(
-        //       padding: EdgeInsets.symmetric(horizontal: 20),
-        //       child: Center(
-        //         child: Row(
-        //           children: [
-        //             Text(
-        //               "Filter",
-        //               style: TextStyle(
-        //                   color: AppColors.mainColor,
-        //                   fontWeight: FontWeight.bold),
-        //             ),
-        //             Icon(
-        //               Icons.filter_list_alt,
-        //               color: AppColors.mainColor,
-        //               size: 20,
-        //             )
-        //           ],
-        //         ),
-        //       ),
-        //     ))
-      ],
+          title: "Profit & expenses", color: Colors.black, size: 16.0),
     );
   }
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pointify/controllers/product_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/responsive/responsiveness.dart';
+import 'package:pointify/screens/stock/import_products.dart';
 import 'package:pointify/screens/stock/stock_transfer.dart';
 import 'package:pointify/screens/purchases/all_purchases.dart';
 import 'package:pointify/utils/helper.dart';
@@ -412,6 +413,20 @@ class StockPage extends StatelessWidget {
                   ),
                 ),
               ),
+            SizedBox(height: 20),
+            InkWell(
+              splashColor: Colors.transparent,
+              onTap: () {
+                Get.to(() => ImportProducts());
+              },
+              child: Center(
+                child: Center(
+                    child: majorTitle(
+                        title: "Import Products",
+                        color: AppColors.mainColor,
+                        size: 13.0)),
+              ),
+            ),
             const SizedBox(height: 20),
           ],
         ),

@@ -10,7 +10,6 @@ import 'package:pointify/screens/customers/customers_page.dart';
 import 'package:pointify/screens/suppliers/edit_suppliere.dart';
 import 'package:pointify/utils/helper.dart';
 import 'package:pointify/widgets/alert.dart';
-import 'package:pointify/widgets/pdf/payment_history_pdf.dart';
 import 'package:pointify/widgets/purchase_order_card.dart';
 import 'package:pointify/widgets/smalltext.dart';
 import 'package:get/get.dart';
@@ -860,10 +859,10 @@ showBottomSheet(
                     // await salesController.getPaymentHistory(
                     //     id: salesBody.id!, type: "");
 
-                    PaymentHistoryPdf(
-                        shop:
-                            Get.find<ShopController>().currentShop.value!.name,
-                        deposits: salesController.paymenHistory.value);
+                    // PaymentHistoryPdf(
+                    //     shop:
+                    //         Get.find<ShopController>().currentShop.value!.name,
+                    //     deposits: salesController.paymenHistory.value);
                   },
                   title: Text('Generate Report'),
                 ),

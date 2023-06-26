@@ -3,7 +3,6 @@ import 'package:pointify/controllers/sales_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/screens/stock/purchase_order_item.dart';
 import 'package:pointify/widgets/alert.dart';
-import 'package:pointify/widgets/pdf/payment_history_pdf.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
@@ -113,10 +112,10 @@ showBottomSheet(BuildContext context, Invoice salesBody) {
                     // await salesController.getPaymentHistory(
                     //     id: salesBody.id!, type: "purchase");
 
-                    PaymentHistoryPdf(
-                        shop:
-                            Get.find<ShopController>().currentShop.value!.name,
-                        deposits: salesController.paymenHistory.value);
+                    // PaymentHistoryPdf(
+                    //     shop:
+                    //         Get.find<ShopController>().currentShop.value!.name,
+                    //     deposits: salesController.paymenHistory.value);
                   },
                   title: Text('Generate Report'),
                 ),

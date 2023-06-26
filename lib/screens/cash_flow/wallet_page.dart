@@ -7,7 +7,6 @@ import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/customers/customer_info_page.dart';
 import 'package:pointify/screens/sales/create_sale.dart';
 import 'package:pointify/utils/helper.dart';
-import 'package:pointify/widgets/pdf/wallet_pdf.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
@@ -243,10 +242,10 @@ class WalletPage extends StatelessWidget {
                       onTap: () async {
                         Navigator.pop(context);
                         walletController.initialPage.value = 0;
-                        WalletPdf(
-                            shop: shopController.currentShop.value!.name!,
-                            deposits: walletController.deposits,
-                            type: "deposit");
+                        // WalletPdf(
+                        //     shop: shopController.currentShop.value!.name!,
+                        //     deposits: walletController.deposits,
+                        //     type: "deposit");
                       },
                       child: Container(
                         width: double.infinity,
@@ -268,10 +267,10 @@ class WalletPage extends StatelessWidget {
                       onTap: () async {
                         Navigator.pop(context);
                         walletController.initialPage.value = 1;
-                        WalletPdf(
-                            shop: shopController.currentShop.value!.name!,
-                            deposits: walletController.deposits,
-                            type: "usage");
+                        // WalletPdf(
+                        //     shop: shopController.currentShop.value!.name!,
+                        //     deposits: walletController.deposits,
+                        //     type: "usage");
                       },
                       child: Container(
                         width: double.infinity,

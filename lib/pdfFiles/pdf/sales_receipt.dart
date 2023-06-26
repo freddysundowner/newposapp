@@ -8,9 +8,7 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:pointify/Real/schema.dart';
 import 'package:pointify/functions/functions.dart';
 
-import '../../widgets/normal_text.dart';
-
-Future<Uint8List> salesReceipt(SalesModel invoice) async {
+Future<Uint8List> salesReceipt(SalesModel invoice, type) async {
   final pdf = Document();
   final imageLogo = MemoryImage(
       (await rootBundle.load('assets/images/logo.png')).buffer.asUint8List());
@@ -42,7 +40,7 @@ Future<Uint8List> salesReceipt(SalesModel invoice) async {
                 ],
               ),
               Center(
-                  child: Text("RECEIPT",
+                  child: Text(type,
                       style:
                           TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
                       textAlign: TextAlign.center)),
@@ -77,7 +75,7 @@ Future<Uint8List> salesReceipt(SalesModel invoice) async {
                       ],
                       data: invoice.items
                           .map((e) => [
-                                e.receipt!.quantity,
+                                e.quantity,
                                 "${e.product!.name}",
                                 htmlPrice(e.price),
                               ])
@@ -101,7 +99,7 @@ Future<Uint8List> salesReceipt(SalesModel invoice) async {
                         ])),
               ),
               SizedBox(height: 10),
-              Text("Served by : ${invoice.attendantId!.username!}"),
+              Text("Served by : ${invoice.attendantId!.username ?? ""}"),
               Spacer(),
               Align(
                   alignment: Alignment.center,

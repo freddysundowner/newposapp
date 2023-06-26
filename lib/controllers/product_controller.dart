@@ -146,15 +146,6 @@ class ProductController extends GetxController {
     }
   }
 
-  createCategory({required Shop shop, required BuildContext context}) async {
-    LoadingDialog.showLoadingDialog(
-        context: context, title: "Creating category...", key: _keyLoader);
-    ProductCategory productCategoryModel =
-        ProductCategory(ObjectId(), name: category.text, shop: shop);
-    Categories().createProductCategory(productCategoryModel);
-    Get.back();
-  }
-
   clearControllers() {
     itemNameController.text = "";
     qtyController.text = "";
@@ -313,7 +304,7 @@ class ProductController extends GetxController {
   }
 
   getBadStock(
-      { shopId,
+      {shopId,
       String? attendant,
       Product? product,
       DateTime? fromDate,
