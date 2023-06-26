@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:pointify/Real/schema.dart';
+import 'package:pointify/responsive/Appbehaviour.dart';
 import 'package:pointify/services/shop_services.dart';
 import 'package:pointify/bindings.dart';
 import 'package:pointify/controllers/user_controller.dart';
@@ -56,6 +57,7 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       title: 'Pointify:',
       debugShowCheckedModeBanner: false,
+      scrollBehavior: AppScrollBehavior(),
       theme: ThemeData(
           primarySwatch: AppColors.mainColor,
           splashColor: Colors.transparent,

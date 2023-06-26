@@ -20,6 +20,7 @@ import '../../controllers/expense_controller.dart';
 import '../../controllers/product_controller.dart';
 import '../../controllers/sales_controller.dart';
 import '../../controllers/shop_controller.dart';
+import '../home/home_page.dart';
 import 'cash_at_bank.dart';
 import 'cash_in_layout.dart';
 import 'cashflow_categories.dart';
@@ -60,52 +61,76 @@ class CashFlowManager extends StatelessWidget {
 // sitiweshen  pale bird app
   @override
   Widget build(BuildContext context) {
-    return ResponsiveWidget(
-        largeScreen: Scaffold(
-          backgroundColor: Colors.white,
-          appBar: appBar(context),
-          body: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Center(child: cashInHandWidget(context, "large")),
-                SizedBox(height: 20),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 15),
-                  child: cashFlowCategory(context),
-                ),
-                SizedBox(height: 20),
-                Container(
-                    margin: EdgeInsets.symmetric(horizontal: 25),
-                    width: double.infinity,
-                    child: dataTable()),
-                SizedBox(height: 20),
-                Center(child: cashTotals("large")),
-              ],
-            ),
+    return Scaffold(
+      appBar: AppBar(
+        elevation: 0.3,
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
+        titleSpacing: 0.0,
+        iconTheme: IconThemeData(color: Colors.black),
+        titleTextStyle: TextStyle(color: Colors.black),
+        leading: IconButton(
+          onPressed: () {
+            if (isSmallScreen(context)) {
+              Get.back();
+            } else {
+              Get.find<HomeController>().selectedWidget.value = HomePage();
+            }
+          },
+          icon: Icon(
+            Icons.arrow_back_ios,
           ),
         ),
-        smallScreen: Helper(
-            widget: SingleChildScrollView(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  cashInHandWidget(context, "small"),
-                  cashFlowCategory(context),
-                  dataTable(),
-                ],
-              ),
-            ),
-            appBar: appBar(context),
-            bottomNavigationBar: BottomAppBar(
-              child: Container(
-                height: kToolbarHeight,
-                padding: EdgeInsets.all(10),
-                color: Colors.white,
-                child: cashTotals("small"),
-              ),
-            )));
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text("Cash flow",
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                )),
+            Obx(() {
+              return Text(
+                shopController.currentShop.value == null
+                    ? ""
+                    : shopController.currentShop.value!.name!.capitalize!,
+                style: TextStyle(
+                  fontSize: 10,
+                ),
+              );
+            })
+          ],
+        ),
+        actions: [
+          IconButton(
+              onPressed: () {
+                // if (cashFlowController.cashflowSummary.value == null) {
+                //   showSnackBar(
+                //       message: "no data to display", color: Colors.black);
+                // } else {
+                //   CashFlowPdf(
+                //       shop: shopController.currentShop.value!.name,
+                //       type: "type",
+                //       currency: shopController.currentShop.value!.currency,
+                //       cashflowSummary: cashFlowController.cashflowSummary.value!,
+                //       date: DateFormat("MM-dd-yyyy")
+                //           .format(cashFlowController.fromDate.value));
+                // }
+              },
+              icon: Icon(Icons.download))
+        ],
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            cashInHandWidget(context, "small"),
+            cashFlowCategory(context),
+            dataTable(),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget cashTotals(String size) {
@@ -248,7 +273,7 @@ class CashFlowManager extends StatelessWidget {
               padding: const EdgeInsets.only(left: 30.0, right: 30),
               child: InkWell(
                 onTap: () {
-                  if (type == "small") {
+                  if (isSmallScreen(context)) {
                     Get.to(() => CashAtBank());
                   } else {
                     Get.find<HomeController>().selectedWidget.value =
@@ -561,66 +586,5 @@ class CashFlowManager extends StatelessWidget {
         ],
       );
     });
-  }
-
-  AppBar appBar(context) {
-    return AppBar(
-      elevation: 0.3,
-      backgroundColor: Colors.white,
-      foregroundColor: Colors.black,
-      titleSpacing: 0.0,
-      iconTheme: IconThemeData(color: Colors.black),
-      titleTextStyle: TextStyle(color: Colors.black),
-      leading: IconButton(
-        onPressed: () {
-          if (MediaQuery.of(context).size.width > 600) {
-            Get.find<HomeController>().selectedWidget.value = FinancePage();
-          } else {
-            Get.back();
-          }
-        },
-        icon: Icon(
-          Icons.arrow_back_ios,
-        ),
-      ),
-      title: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text("Cash flow",
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-              )),
-          Obx(() {
-            return Text(
-              shopController.currentShop.value == null
-                  ? ""
-                  : shopController.currentShop.value!.name!.capitalize!,
-              style: TextStyle(
-                fontSize: 10,
-              ),
-            );
-          })
-        ],
-      ),
-      actions: [
-        IconButton(
-            onPressed: () {
-              // if (cashFlowController.cashflowSummary.value == null) {
-              //   showSnackBar(
-              //       message: "no data to display", color: Colors.black);
-              // } else {
-              //   CashFlowPdf(
-              //       shop: shopController.currentShop.value!.name,
-              //       type: "type",
-              //       currency: shopController.currentShop.value!.currency,
-              //       cashflowSummary: cashFlowController.cashflowSummary.value!,
-              //       date: DateFormat("MM-dd-yyyy")
-              //           .format(cashFlowController.fromDate.value));
-              // }
-            },
-            icon: Icon(Icons.download))
-      ],
-    );
   }
 }

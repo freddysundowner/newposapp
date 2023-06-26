@@ -5,6 +5,7 @@ import 'package:pointify/controllers/cashflow_controller.dart';
 import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/cash_flow/cash_flow_manager.dart';
+import 'package:pointify/widgets/alert.dart';
 import 'package:pointify/widgets/snackBars.dart';
 import 'package:get/get.dart';
 
@@ -54,71 +55,61 @@ class CashInLayout extends StatelessWidget {
                 cashflowController.clearInputs();
               },
               icon: Icon(Icons.arrow_back_ios)),
+          actions: [
+            if (!isSmallScreen(context))
+              InkWell(
+                onTap: () {
+                  saveFunction(context: context);
+                },
+                child: Container(
+                  margin:
+                      EdgeInsets.symmetric(vertical: 10).copyWith(right: 10),
+                  height: kTextTabBarHeight * 0.5,
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                  decoration: BoxDecoration(
+                      color: AppColors.mainColor,
+                      border: Border.all(color: AppColors.mainColor),
+                      borderRadius: BorderRadius.circular(5)),
+                  child: Text(
+                    "Save",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              )
+          ],
         ),
-        body: ResponsiveWidget(
-          largeScreen: Scaffold(
-            backgroundColor: Colors.white,
-            body: SizedBox(
-              width: MediaQuery.of(context).size.width * 0.5,
-              height: MediaQuery.of(context).size.height * 0.7,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  inputFields(context),
-                  SizedBox(height: 50),
-                  Center(child: saveButton(context)),
-                ],
-              ),
-            ),
-          ),
-          smallScreen: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: inputFields(context),
-            ),
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: inputFields(context),
           ),
         ),
         bottomNavigationBar: BottomAppBar(
           child: Container(
             width: double.infinity,
             padding: EdgeInsets.all(10),
-            height: MediaQuery.of(context).size.width > 600
-                ? 0
-                : kToolbarHeight * 1.5,
+            height: isSmallScreen(context) ? kToolbarHeight * 1.5 : 0.0,
             decoration:
                 BoxDecoration(border: Border.all(width: 1, color: Colors.grey)),
-            child: saveButton(context),
+            child: InkWell(
+              onTap: () {
+                saveFunction(context: context);
+              },
+              child: Container(
+                padding: EdgeInsets.all(10),
+                width: MediaQuery.of(context).size.width > 600
+                    ? 300
+                    : double.infinity,
+                decoration: BoxDecoration(
+                    border: Border.all(width: 3, color: AppColors.mainColor),
+                    borderRadius: BorderRadius.circular(40)),
+                child: Center(
+                    child: majorTitle(
+                        title: "Save", color: AppColors.mainColor, size: 18.0)),
+              ),
+            ),
           ),
         ),
-      ),
-    );
-  }
-
-  Widget saveButton(context) {
-    return InkWell(
-      onTap: () {
-        if (cashflowController.textEditingControllerName.text.isEmpty ||
-            cashflowController.textEditingControllerAmount.text.isEmpty) {
-          showSnackBar(message: "Please fill all fields", color: Colors.black);
-        } else {
-          if (cashflowController.selectedcashOutGroups.value == null) {
-            showSnackBar(message: "Select Category", color: Colors.black);
-          } else {
-            cashflowController.createTransaction(
-              type: "cash-in",
-            );
-          }
-        }
-      },
-      child: Container(
-        padding: EdgeInsets.all(10),
-        width: MediaQuery.of(context).size.width > 600 ? 300 : double.infinity,
-        decoration: BoxDecoration(
-            border: Border.all(width: 3, color: AppColors.mainColor),
-            borderRadius: BorderRadius.circular(40)),
-        child: Center(
-            child: majorTitle(
-                title: "Save", color: AppColors.mainColor, size: 18.0)),
       ),
     );
   }
@@ -336,29 +327,29 @@ class CashInLayout extends StatelessWidget {
                       ],
                     ),
                   ),
-
-                  // Expanded(
-                  //   flex: 1,
-                  //   child: Column(
-                  //     crossAxisAlignment: CrossAxisAlignment.start,
-                  //     children: [
-                  //       Text("Date", style: TextStyle(color: Colors.grey)),
-                  //       TextField(
-                  //         enabled: false,
-                  //         decoration: InputDecoration(
-                  //             hintText:
-                  //                 "${DateFormat("dd-MMM-yyyy").format(DateTime.now())}",
-                  //             border: OutlineInputBorder(
-                  //                 borderSide: BorderSide(color: Colors.grey),
-                  //                 borderRadius: BorderRadius.circular(10))),
-                  //       ),
-                  //     ],
-                  //   ),
-                  // ),
                 ],
               ),
             ],
           ),
         ));
+  }
+
+  saveFunction({required context}) {
+    if (cashflowController.textEditingControllerName.text.isEmpty ||
+        cashflowController.textEditingControllerAmount.text.isEmpty) {
+      isSmallScreen(context)
+          ? showSnackBar(message: "Please fill all fields", color: Colors.black)
+          : generalAlert(title: "Error", message: "Please fill all fields");
+    } else {
+      if (cashflowController.selectedcashOutGroups.value == null) {
+        isSmallScreen(context)
+            ? showSnackBar(message: "Select Category", color: Colors.black)
+            : generalAlert(title: "Error", message: "Select Category");
+      } else {
+        cashflowController.createTransaction(
+          type: "cash-in",
+        );
+      }
+    }
   }
 }
