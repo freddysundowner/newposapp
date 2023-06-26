@@ -238,9 +238,7 @@ class ProductPage extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         majorTitle(
-                            title: "Shop Products",
-                            color: Colors.black,
-                            size: 16.0),
+                            title: "Products", color: Colors.black, size: 16.0),
                         minorTitle(
                             title:
                                 "${createShopController.currentShop.value?.name}",

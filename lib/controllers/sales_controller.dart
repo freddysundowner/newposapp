@@ -54,6 +54,8 @@ class SalesController extends GetxController
   RxList<SalesModel> allSales = RxList([]);
   RxList<ReceiptItem> allSalesReturns = RxList([]);
   RxnInt allSalesTotal = RxnInt(0);
+  RxnInt change = RxnInt(0);
+  RxString changeText = RxString("Change: ");
   RxnInt netProfit = RxnInt(0);
   RxnInt totalbadStock = RxnInt(0);
   RxnInt totalSalesReturned = RxnInt(0);
@@ -359,10 +361,26 @@ class SalesController extends GetxController
     calculateAmount(index);
   }
 
+  getTotalCredit() {
+    var amountPaidTotal =
+        int.parse(amountPaid.value.text.isEmpty ? "0" : amountPaid.value.text);
+    if (amountPaidTotal > 0) {
+      receipt.value!.creditTotal = receipt.value!.grandTotal! - amountPaidTotal;
+    } else {
+      receipt.value!.creditTotal = receipt.value!.grandTotal;
+    }
+
+    if (receipt.value!.creditTotal! < amountPaidTotal) {
+      change.value = amountPaidTotal - receipt.value!.grandTotal!;
+      changeText.value = "Change: ";
+    } else {
+      changeText.value = "Credit Total: ";
+    }
+  }
+
   calculateAmount(index) {
     receipt.value!.grandTotal = 0;
     receipt.value!.creditTotal = 0;
-    amountPaid.text = "0";
 
     receipt.value!.grandTotal = receipt.value!.items.fold(
         0,
@@ -371,10 +389,11 @@ class SalesController extends GetxController
             ((element.product!.selling! - element.discount!) *
                 element.quantity!));
 
-    amountPaid.text = receipt.value!.grandTotal.toString();
+    // amountPaid.text = receipt.value!.grandTotal.toString();
 
-    receipt.value!.creditTotal =
-        receipt.value!.grandTotal! - int.parse(amountPaid.text);
+    // receipt.value!.creditTotal =
+    //     receipt.value!.grandTotal! - int.parse(amountPaid.text);
+    getTotalCredit();
     if (index == -1) {
       return;
     }
@@ -552,12 +571,13 @@ class SalesController extends GetxController
           type: "",
         ));
     receipt.value = null;
+    amountPaid.text = "";
     refresh();
     getSalesByDate(type: "today");
   }
 
   _paymentType(SalesModel salesModel) {
-    if (salesModel.creditTotal! < 0) {
+    if (salesModel.creditTotal! > 0) {
       return salesModel.paymentMethod != "Wallet"
           ? "Credit"
           : salesModel.paymentMethod;
@@ -873,7 +893,7 @@ class SalesController extends GetxController
 
   payCredit({required SalesModel salesBody, required int amount}) async {
     var newbalance = salesBody.creditTotal!.abs() - amount;
-    Sales().updateReceipt(receipt: salesBody, creditBalance: -newbalance);
+    Sales().updateReceipt(receipt: salesBody, creditBalance: newbalance);
     PayHistory payHistory = PayHistory(ObjectId(),
         attendant: Get.find<UserController>().user.value,
         amountPaid: amount,

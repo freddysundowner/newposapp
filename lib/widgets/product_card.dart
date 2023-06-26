@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:pointify/controllers/AuthController.dart';
 import 'package:pointify/controllers/sales_controller.dart';
 import 'package:pointify/controllers/user_controller.dart';
 import 'package:pointify/controllers/product_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
-import 'package:pointify/widgets/pdf/bar_code_pdf.dart';
 import 'package:pointify/widgets/smalltext.dart';
 import 'package:get/get.dart';
 
@@ -141,12 +139,12 @@ showProductModal(context, Product product) {
                     leading: Icon(Icons.code),
                     onTap: () {
                       Get.back();
-                      BarcodePdf(
-                          productname: product.name,
-                          shop: Get.find<ShopController>()
-                              .currentShop
-                              .value!
-                              .name!);
+                      // BarcodePdf(
+                      //     productname: product.name,
+                      //     shop: Get.find<ShopController>()
+                      //         .currentShop
+                      //         .value!
+                      //         .name!);
                     },
                     title: const Text('Generate Barcode')),
               if (checkPermission(category: "products", permission: "manage"))

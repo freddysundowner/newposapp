@@ -96,10 +96,10 @@ class StockTransfer extends StatelessWidget {
                   SizedBox(height: 10),
                   Obx(() {
                     return shopController.gettingShopsLoad.value
-                        ? Align(
+                        ? const Align(
                             alignment: Alignment.center,
                             child: CircularProgressIndicator())
-                        : shopController.allShops.length == 0
+                        : shopController.allShops.isEmpty
                             ? Center(
                                 child: majorTitle(
                                     title: "You do not have shop yet",

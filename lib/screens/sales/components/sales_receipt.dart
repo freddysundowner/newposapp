@@ -108,9 +108,7 @@ class SalesReceipt extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       normalText(
-                          title: "Total Amount",
-                          color: Colors.black,
-                          size: 14.0),
+                          title: "Total", color: Colors.black, size: 14.0),
                       SizedBox(
                         height: 10,
                       ),
@@ -122,7 +120,30 @@ class SalesReceipt extends StatelessWidget {
                     ],
                   ),
                   SizedBox(
-                    width: 80,
+                    width: 40,
+                  ),
+                  if (salesController.currentReceipt.value!.creditTotal! > 0)
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        normalText(
+                            title: "Total Paid",
+                            color: Colors.black,
+                            size: 14.0),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        majorTitle(
+                            title: htmlPrice(salesController
+                                    .currentReceipt.value!.grandTotal! -
+                                salesController
+                                    .currentReceipt.value!.creditTotal!),
+                            color: Colors.black,
+                            size: 18.0)
+                      ],
+                    ),
+                  SizedBox(
+                    width: 40,
                   ),
                   if (onCredit(salesController.currentReceipt.value!) &&
                       type != "returns")
@@ -363,7 +384,7 @@ String _chechPayment(SalesModel salesModel, String? type) {
   return "";
 }
 
-onCredit(SalesModel salesModel) => salesModel.creditTotal! < 0;
+onCredit(SalesModel salesModel) => salesModel.creditTotal! > 0;
 Color _chechPaymentColor(SalesModel salesModel, String? type) {
   if (salesModel.grandTotal! == 0 || type == "returns") return Colors.red;
   if (salesModel.creditTotal == 0) return Colors.green;

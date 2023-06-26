@@ -33,8 +33,6 @@ class StockCount extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(
-        "productController.productsCount.length ${productController.productsCount.length}");
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -291,7 +289,7 @@ class StockCount extends StatelessWidget {
         ),
         smallScreen: SingleChildScrollView(
           child: Column(children: [
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Container(
               padding: EdgeInsets.all(10),
               child: Row(
@@ -316,7 +314,7 @@ class StockCount extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Items Available'),
+                  const Text('Items Available'),
                   Obx(() {
                     return Text("${productController.productsCount.length}");
                   })
@@ -330,7 +328,7 @@ class StockCount extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('Count History'),
+                    const Text('Count History'),
                     InkWell(
                       onTap: () {
                         Get.to(() => CountHistory());
@@ -346,7 +344,7 @@ class StockCount extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text("Sort By"),
+                  const Text("Sort By"),
                   sortWidget(context),
                 ],
               ),
@@ -378,7 +376,7 @@ class StockCount extends StatelessWidget {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(productCount.product!.name!),
-                                      Text('System Count'),
+                                      const Text('System Count'),
                                       Text('${productCount.product!.quantity}')
                                     ],
                                   ),
@@ -386,7 +384,7 @@ class StockCount extends StatelessWidget {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Text('Physical Count'),
+                                      const Text('Physical Count'),
                                       Row(children: [
                                         IconButton(
                                             onPressed: () {
@@ -482,8 +480,8 @@ class StockCount extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
             color: Colors.blue[300], borderRadius: BorderRadius.circular(20)),
-        child: Padding(
-          padding: const EdgeInsets.all(4.0),
+        child: const Padding(
+          padding: EdgeInsets.all(4.0),
           child: Row(
             children: [Icon(Icons.check), Text('OK')],
           ),

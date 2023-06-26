@@ -278,6 +278,8 @@ class Products {
   }
 
   void createProductCount({required ProductCountModel productCountModel}) {
+    productCountModel.attendantId = userController.user.value;
+
     realmService.realm.write<ProductCountModel>(
         () => realmService.realm.add<ProductCountModel>(productCountModel));
     final DateTime now = DateTime.now();

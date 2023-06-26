@@ -14,15 +14,9 @@ Widget customerWidget(
     {required CustomerModel customerModel, required context, String? type}) {
   return InkWell(
     onTap: () {
-      if (MediaQuery.of(context).size.width > 600) {
-        Get.find<HomeController>().selectedWidget.value = CustomerInfoPage(
-          customerModel: customerModel,
-        );
-      } else {
-        Get.to(() => CustomerInfoPage(
-              customerModel: customerModel,
-            ));
-      }
+      Get.to(() => CustomerInfoPage(
+            customerModel: customerModel,
+          ));
     },
     child: Card(
         child: Container(

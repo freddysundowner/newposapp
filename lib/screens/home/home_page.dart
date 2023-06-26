@@ -299,7 +299,20 @@ class HomePage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // SizedBox(height: 50),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: Container(
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: Colors.blueGrey),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 4),
+                      child: Text(
+                        "Welcome ${userController.user.value!.username}",
+                        style: const TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ),
                   Row(
                     children: [
                       majorTitle(
@@ -420,7 +433,6 @@ class HomePage extends StatelessWidget {
                       ],
                     ),
                   ),
-
                   SizedBox(height: 20),
                   majorTitle(
                       title: "Enterprise Operations",

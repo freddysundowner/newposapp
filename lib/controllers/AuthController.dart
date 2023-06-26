@@ -201,10 +201,10 @@ class AuthController extends GetxController {
   }
 
   Future<void> logOut() async {
-    Get.offAll(() => Landing());
     await Get.find<RealmController>().currentUser!.value?.logOut();
     // shopController.currentShop.value = null;
     Get.find<RealmController>().currentUser?.value = null;
+    Get.offAll(() => Landing());
     refresh();
   }
 

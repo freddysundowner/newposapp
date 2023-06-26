@@ -8,7 +8,6 @@ import 'package:pointify/functions/functions.dart';
 import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/finance/finance_page.dart';
 import 'package:pointify/widgets/no_items_found.dart';
-import 'package:pointify/widgets/pdf/expense_pdf.dart';
 import 'package:pointify/widgets/snackBars.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -325,9 +324,9 @@ class ExpensePage extends StatelessWidget {
                 showSnackBar(
                     message: "No items to download", color: Colors.black);
               } else {
-                ExpensePdf(
-                    shop: shopController.currentShop.value!.name!,
-                    expenses: expenseController.expenses);
+                // ExpensePdf(
+                //     shop: shopController.currentShop.value!.name!,
+                //     expenses: expenseController.expenses);
               }
             },
             child: Icon(

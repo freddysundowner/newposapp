@@ -5,6 +5,7 @@ import 'package:pointify/controllers/AuthController.dart';
 import 'package:pointify/controllers/user_controller.dart';
 import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
+import 'package:pointify/functions/functions.dart';
 import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/product/products_screen.dart';
 import 'package:pointify/screens/sales/all_sales.dart';
@@ -222,7 +223,7 @@ class BadStockPage extends StatelessWidget {
                                             MainAxisAlignment.spaceBetween,
                                         children: [
                                           Text(
-                                            "Quantity: ${badstock.quantity!.toString()}",
+                                            "Quantity: ${badstock.quantity!.toString()} @${htmlPrice(badstock.product!.buyingPrice)} = ${htmlPrice(badstock.product!.buyingPrice! * badstock.quantity!)}",
                                             style:
                                                 TextStyle(color: Colors.black),
                                           ),

@@ -161,7 +161,6 @@ class Customers extends StatelessWidget {
                       stream: Customer().getCustomersByShopId("all").changes,
                       builder: (context, snapshot) {
                         final data = snapshot.data;
-                        print("data $data");
                         if (data == null || data.results.isEmpty) {
                           return Center(
                             child: InkWell(
