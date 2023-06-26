@@ -6,14 +6,17 @@ import 'package:pointify/controllers/sales_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/functions/functions.dart';
 import 'package:pointify/pdfFiles/pdf/sales_receipt.dart';
+import 'package:pointify/responsive/responsiveness.dart';
 import 'package:realm/realm.dart';
 import '../../../Real/schema.dart';
+import '../../../controllers/home_controller.dart';
 import '../../../pdfFiles/pdfpreview.dart';
 import '../../../utils/colors.dart';
 import '../../../utils/themer.dart';
 import '../../../widgets/alert.dart';
 import '../../../widgets/bigtext.dart';
 import '../../../widgets/normal_text.dart';
+import '../../home/home_page.dart';
 
 class SalesReceipt extends StatelessWidget {
   SalesModel? salesModel;
@@ -45,7 +48,14 @@ class SalesReceipt extends StatelessWidget {
         leading: IconButton(
           color: Colors.black,
           onPressed: () {
-            Get.back();
+            if(isSmallScreen(context)){
+              Get.back();
+            }
+          else{
+              Get.find<HomeController>()
+                  .selectedWidget
+                  .value = HomePage();
+            }
           },
           icon: Icon(Icons.clear),
         ),

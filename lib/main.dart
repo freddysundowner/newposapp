@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:pointify/Real/schema.dart';
+import 'package:pointify/responsive/Appbehaviour.dart';
 import 'package:pointify/services/shop_services.dart';
 import 'package:pointify/bindings.dart';
 import 'package:pointify/controllers/user_controller.dart';
@@ -13,6 +16,8 @@ import 'package:pointify/services/users.dart';
 import 'package:pointify/utils/colors.dart';
 import 'package:get/get.dart';
 import 'package:realm/realm.dart';
+
+import 'package:window_size/window_size.dart';
 import 'controllers/AuthController.dart';
 import 'controllers/realm_controller.dart';
 
@@ -26,6 +31,11 @@ String appId = 'application-0-iosyj';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   appController.initialize(appId);
+
+  if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+    // setWindowMaxSize(const Size(1024, 768));
+    setWindowMinSize(const Size(512,  700));
+  }
 
   runApp(MyApp());
 }
@@ -47,6 +57,7 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       title: 'Pointify:',
       debugShowCheckedModeBanner: false,
+      scrollBehavior: AppScrollBehavior(),
       theme: ThemeData(
           primarySwatch: AppColors.mainColor,
           splashColor: Colors.transparent,

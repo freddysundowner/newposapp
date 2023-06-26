@@ -102,13 +102,7 @@ class Landing extends StatelessWidget {
   }
 
   Widget landingImage() {
-    return Container(
-        // child: SvgPicture.asset(
-        //   "assets/images/finance.svg",
-        //   height: 200,
-        //   width: 200,
-        // ),
-        );
+    return Container();
   }
 
   Widget landingContent() {

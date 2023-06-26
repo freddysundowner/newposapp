@@ -5,6 +5,7 @@ import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/controllers/purchase_controller.dart';
 import 'package:pointify/controllers/sales_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
+import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/cash_flow/cash_flow_manager.dart';
 import 'package:pointify/widgets/alert.dart';
 import 'package:get/get.dart';
@@ -19,6 +20,7 @@ class CashflowController extends GetxController
     with GetTickerProviderStateMixin {
   final GlobalKey<State> _keyLoader = new GlobalKey<State>();
   RxList<CashFlowCategory> cashFlowCategories = RxList([]);
+
   // RxList<CashFlowCategory> cashOutGroups = RxList([]);
   // RxList<BankTransactions> bankTransactions = RxList([]);
   RxList<CashFlowTransaction> cashflowTransactions = RxList([]);
@@ -130,7 +132,12 @@ class CashflowController extends GetxController
       toDate: DateTime.parse(DateFormat("yyyy-MM-dd").format(toDate.value))
           .add(const Duration(days: 1)),
     );
-    Get.back();
+
+    if (isSmallScreen(Get.context)) {
+      Get.back();
+    } else {
+      Get.find<HomeController>().selectedWidget.value = CashFlowManager();
+    }
     textEditingControllerAmount.clear();
   }
 

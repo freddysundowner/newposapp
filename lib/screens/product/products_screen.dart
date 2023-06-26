@@ -5,10 +5,13 @@ import 'package:pointify/controllers/purchase_controller.dart';
 import 'package:pointify/controllers/sales_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
 import 'package:get/get.dart';
+import 'package:pointify/responsive/responsiveness.dart';
+import 'package:pointify/screens/sales/create_sale.dart';
 import 'package:pointify/screens/sales/sale_order_item.dart';
 import 'package:realm/realm.dart';
 
 import '../../Real/schema.dart';
+import '../../controllers/home_controller.dart';
 import '../../controllers/user_controller.dart';
 import '../../services/product.dart';
 import '../../widgets/bigtext.dart';
@@ -25,6 +28,7 @@ class ProductsScreen extends StatelessWidget {
   PurchaseController purchaseController = Get.find<PurchaseController>();
   ProductController productController = Get.find<ProductController>();
   ShopController shopController = Get.find<ShopController>();
+
   Widget searchWidget() {
     return TextFormField(
       controller: productController.searchProductController,
@@ -70,7 +74,16 @@ class ProductsScreen extends StatelessWidget {
             title: "Select Product", color: Colors.black, size: 16.0),
         elevation: 0.5,
         leading: IconButton(
-            onPressed: () => Get.back(),
+            onPressed: () {
+              if (isSmallScreen(context)) {
+                Get.back();
+              } else {
+                if (type == "sale") {
+                  Get.find<HomeController>().selectedWidget.value =
+                      CreateSale();
+                }
+              }
+            },
             icon: Icon(Icons.arrow_back_ios, color: Colors.black)),
       ),
       body: Column(
@@ -95,6 +108,7 @@ class ProductsScreen extends StatelessWidget {
                                 return function!(product);
                               }
                             : (Product product) {
+                                print("hello");
                                 InvoiceItem invoiceItem = InvoiceItem(
                                     ObjectId(),
                                     product: product,

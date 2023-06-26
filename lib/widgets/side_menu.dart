@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pointify/controllers/AuthController.dart';
 import 'package:pointify/controllers/home_controller.dart';
+import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/screens/attendant/attendants_page.dart';
 import 'package:pointify/screens/shop/shops_page.dart';
 import 'package:pointify/utils/colors.dart';
@@ -15,11 +16,13 @@ import 'delete_dialog.dart';
 class SideMenu extends StatelessWidget {
   SideMenu({Key? key}) : super(key: key);
   HomeController homeController = Get.find<HomeController>();
+  ShopController shopController = Get.find<ShopController>();
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.only(left: 20, top: 20),
+      padding: const EdgeInsets.only(top: 10),
+      color: const Color(0xff3a3055),
       child: ListView(
         children: sidePages
             .map((e) => sideMenuItems(
@@ -37,6 +40,7 @@ class SideMenu extends StatelessWidget {
             if (title == "Home") {
               homeController.selectedWidget.value = HomePage();
             } else if (title == "Shops") {
+              shopController.getShops();
               homeController.selectedWidget.value = ShopsPage();
             } else if (title == "Attendants") {
               homeController.selectedWidget.value = AttendantsPage();
@@ -54,26 +58,42 @@ class SideMenu extends StatelessWidget {
             }
           },
           child: Container(
-            padding: EdgeInsets.only(bottom: 20),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
+            decoration: BoxDecoration(
+              color: homeController.activeItem.value == title
+                  ? const Color(0xffbe741f)
+                  : const Color(0xff3a3055),
+              borderRadius: BorderRadius.circular(10)
+            ),
+            
+            padding: const EdgeInsets.symmetric(vertical: 2,horizontal: 3).copyWith(left: 6),
+            margin: const EdgeInsets.symmetric(horizontal: 3).copyWith(top: 3),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(
-                  icon,
-                  color: homeController.activeItem.value == title
-                      ? AppColors.mainColor
-                      : Colors.grey,
+                const SizedBox(
+                  height: 10,
                 ),
-                SizedBox(
-                  width: 5,
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Icon(
+                      icon,
+                      color: Colors.white,
+                    ),
+                    const SizedBox(
+                      width: 5,
+                    ),
+                    Text(
+                      "$title",
+                      style: const TextStyle(
+                          color: Colors.white),
+                    )
+                  ],
                 ),
-                Text(
-                  "${title}",
-                  style: TextStyle(
-                      color: homeController.activeItem.value == title
-                          ? AppColors.mainColor
-                          : Colors.grey),
-                )
+                const SizedBox(
+                  height: 10,
+                ),
+                // const Divider(color: Colors.white, height: 0.5),
               ],
             ),
           ),

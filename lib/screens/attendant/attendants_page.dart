@@ -19,7 +19,9 @@ import 'attendant_details.dart';
 
 class AttendantsPage extends StatelessWidget {
   String? type;
-  AttendantsPage({this.type});
+
+  AttendantsPage({super.key, this.type});
+
   UserController attendantController = Get.find<UserController>();
   ShopController shopController = Get.find<ShopController>();
 
@@ -27,127 +29,38 @@ class AttendantsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: Colors.white,
-        body: ResponsiveWidget(
-            largeScreen: Container(
-              padding: EdgeInsets.all(10),
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    createAttendantWidget(context),
-                    Obx(() {
-                      return attendantController.users.isEmpty
-                          ? noItemsFound(context, true)
-                          : Container(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 15, vertical: 10),
-                              width: double.infinity,
-                              child: Theme(
-                                data: Theme.of(context)
-                                    .copyWith(dividerColor: Colors.grey),
-                                child: DataTable(
-                                  decoration: BoxDecoration(
-                                      border: Border.all(
-                                    width: 1,
-                                    color: Colors.black,
-                                  )),
-                                  columnSpacing: 30.0,
-                                  columns: const [
-                                    DataColumn(
-                                        label: Text('Name',
-                                            textAlign: TextAlign.center)),
-                                    DataColumn(
-                                        label: Text('Location',
-                                            textAlign: TextAlign.center)),
-                                    DataColumn(
-                                        label: Text('',
-                                            textAlign: TextAlign.center)),
-                                  ],
-                                  rows: List.generate(
-                                      attendantController.users.length,
-                                      (index) {
-                                    UserModel attendantModel =
-                                        attendantController.users
-                                            .elementAt(index);
-                                    final y = attendantModel.username;
+        body: SafeArea(
+            child: SingleChildScrollView(
+          child: Container(
+            padding: const EdgeInsets.all(10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                createAttendantWidget(context),
+                const Divider(),
+                Obx(() {
+                  return StreamBuilder<RealmResultsChanges<UserModel>>(
+                      stream: Users.getAllAttendandsByShop().changes,
+                      builder: (context, snapshot) {
+                        final data = snapshot.data;
 
-                                    return DataRow(cells: [
-                                      DataCell(Container(child: Text(y!))),
-                                      // DataCell(Container(
-                                      //     child: Text(x.toString()))),
-                                      DataCell(
-                                        InkWell(
-                                          onTap: () {
-                                            Get.find<HomeController>()
-                                                    .selectedWidget
-                                                    .value =
-                                                AttendantDetails(
-                                                    userModel: attendantModel);
-                                          },
-                                          child: Align(
-                                            child: Center(
-                                              child: Container(
-                                                padding: EdgeInsets.all(5),
-                                                margin: EdgeInsets.all(5),
-                                                decoration: BoxDecoration(
-                                                    color: AppColors.mainColor,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            3)),
-                                                width: 75,
-                                                child: Text(
-                                                  "Edit",
-                                                  style: TextStyle(
-                                                      color: Colors.white),
-                                                  textAlign: TextAlign.center,
-                                                ),
-                                              ),
-                                            ),
-                                            alignment: Alignment.topRight,
-                                          ),
-                                        ),
-                                      ),
-                                    ]);
-                                  }),
+                        if (data == null) {
+                          return Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Center(
+                                child: minorTitle(
+                                  title: "No attendants",
+                                  color: Colors.black,
                                 ),
                               ),
-                            );
-                    })
-                  ],
-                ),
-              ),
-            ),
-            smallScreen: SafeArea(
-                child: SingleChildScrollView(
-              child: Container(
-                padding: const EdgeInsets.all(10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    createAttendantWidget(context),
-                    Divider(),
-                    Obx(() {
-                      return StreamBuilder<RealmResultsChanges<UserModel>>(
-                          stream: Users.getAllAttendandsByShop().changes,
-                          builder: (context, snapshot) {
-                            final data = snapshot.data;
+                            ],
+                          );
+                        }
 
-                            if (data == null) {
-                              return Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Center(
-                                    child: minorTitle(
-                                      title: "No attendants",
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                ],
-                              );
-                            }
-
-                            final results = data.results;
-                            return ListView.builder(
+                        final results = data.results;
+                        return isSmallScreen(context)
+                            ? ListView.builder(
                                 shrinkWrap: true,
                                 physics: const NeverScrollableScrollPhysics(),
                                 itemCount:
@@ -162,13 +75,87 @@ class AttendantsPage extends StatelessWidget {
                                           : (UserModel usermodel) {
                                               switchInit(usermodel: usermodel);
                                             });
-                                });
-                          });
-                    })
-                  ],
-                ),
-              ),
-            ))));
+                                })
+                            : Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 15, vertical: 10),
+                                width: double.infinity,
+                                child: Theme(
+                                  data: Theme.of(context)
+                                      .copyWith(dividerColor: Colors.grey),
+                                  child: DataTable(
+                                    decoration: BoxDecoration(
+                                        border: Border.all(
+                                      width: 1,
+                                      color: Colors.black,
+                                    )),
+                                    columnSpacing: 30.0,
+                                    columns: const [
+                                      DataColumn(
+                                          label: Text('Name',
+                                              textAlign: TextAlign.center)),
+                                      DataColumn(
+                                          label: Text('Id',
+                                              textAlign: TextAlign.center)),
+                                      DataColumn(
+                                          label: Text('',
+                                              textAlign: TextAlign.center)),
+                                    ],
+                                    rows:
+                                        List.generate(results.length, (index) {
+                                      UserModel attendantModel =
+                                          results.elementAt(index);
+                                      final y = attendantModel.username;
+                                      final x = attendantModel.UNID;
+
+                                      return DataRow(cells: [
+                                        DataCell(Text(y!)),
+                                        DataCell(Text(x.toString())),
+                                        DataCell(
+                                          InkWell(
+                                            onTap: () {
+                                              Get.find<HomeController>()
+                                                      .selectedWidget
+                                                      .value =
+                                                  AttendantDetails(
+                                                      userModel:
+                                                          attendantModel);
+                                            },
+                                            child: Align(
+                                              child: Center(
+                                                child: Container(
+                                                  padding: EdgeInsets.all(5),
+                                                  margin: EdgeInsets.all(5),
+                                                  decoration: BoxDecoration(
+                                                      color:
+                                                          AppColors.mainColor,
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              3)),
+                                                  width: 75,
+                                                  child: Text(
+                                                    "Edit",
+                                                    style: TextStyle(
+                                                        color: Colors.white),
+                                                    textAlign: TextAlign.center,
+                                                  ),
+                                                ),
+                                              ),
+                                              alignment: Alignment.topRight,
+                                            ),
+                                          ),
+                                        ),
+                                      ]);
+                                    }),
+                                  ),
+                                ),
+                              );
+                      });
+                })
+              ],
+            ),
+          ),
+        )));
   }
 
   void switchInit({UserModel? usermodel}) {

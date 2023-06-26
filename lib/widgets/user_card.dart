@@ -26,10 +26,10 @@ Widget attendantCard({required UserModel userModel, Function? function}) {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(
+              const Icon(
                 Icons.person,
               ),
-              SizedBox(width: 10),
+              const SizedBox(width: 10),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -37,19 +37,19 @@ Widget attendantCard({required UserModel userModel, Function? function}) {
                       title: "Name: ${userModel.username}",
                       color: Colors.black,
                       size: 16.0),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   minorTitle(
                       title: "Id: ${userModel.UNID}", color: Colors.black)
                 ],
               ),
-              Spacer(),
-              Icon(
+              const Spacer(),
+              const Icon(
                 Icons.arrow_forward_ios_rounded,
                 color: Colors.grey,
               )
             ],
           ),
-          Divider()
+          const Divider()
         ],
       ),
     ),
