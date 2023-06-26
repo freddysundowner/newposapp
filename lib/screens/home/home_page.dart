@@ -67,6 +67,16 @@ class HomePage extends StatelessWidget {
     },
     {"title": "Usage", "icon": Icons.data_usage, "category": "usage"},
   ];
+  List<Map<String, dynamic>> enterpriseOperationsShow = [];
+
+  getCategoryPermissions(category) {
+    List permissions = userController.permissions
+        .where((element) => element["key"] == category)
+        .toList();
+    List p = permissions.map((e) => e["value"]).toList().first;
+    print(userController.roles);
+    return checkPermission(category: category);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -186,76 +196,84 @@ class HomePage extends StatelessWidget {
                           borderRadius: BorderRadius.circular(20)),
                       child: Column(
                         children: [
-                          GridView.count(
-                            crossAxisCount: 3,
+                          GridView.builder(
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                                    // childAspectRatio:
+                                    //     MediaQuery.of(context).size.width *
+                                    //         6 /
+                                    //         MediaQuery.of(context).size.height,
+                                    crossAxisCount: 3,
+                                    crossAxisSpacing: 10,
+                                    mainAxisSpacing: 10),
                             padding: EdgeInsets.zero,
-                            crossAxisSpacing: 13,
-                            mainAxisSpacing: 8,
+                            itemCount: enterpriseOperations
+                                .where((e) =>
+                                    checkPermission(
+                                        category: e["category"], group: true) ==
+                                    true)
+                                .toList()
+                                .length,
                             shrinkWrap: true,
                             physics: const ScrollPhysics(),
-                            children: enterpriseOperations.map((e) {
-                              return checkPermission(
-                                      category: e["category"],
-                                      permission: "add")
-                                  ? gridItems(
-                                      title: e["title"],
-                                      iconData: e["icon"],
-                                      isSmallScreen: true,
-                                      function: () {
-                                        switch (e["title"]
-                                            .toString()
-                                            .toLowerCase()) {
-                                          case "sale":
-                                            Get.to(() => CreateSale());
-                                            break;
-                                          case "cashflow":
-                                            {
-                                              Get.find<CashflowController>()
-                                                  .getCashflowSummary(
-                                                shopId: shopController
-                                                    .currentShop.value!.id,
-                                                from: DateTime.parse(DateFormat(
+                            itemBuilder: (c, i) {
+                              var e = enterpriseOperations.elementAt(i);
+                              return gridItems(
+                                  title: e["title"],
+                                  iconData: e["icon"],
+                                  isSmallScreen: true,
+                                  function: () {
+                                    switch (
+                                        e["title"].toString().toLowerCase()) {
+                                      case "sale":
+                                        Get.to(() => CreateSale());
+                                        break;
+                                      case "cashflow":
+                                        {
+                                          Get.find<CashflowController>()
+                                              .getCashflowSummary(
+                                            shopId: shopController
+                                                .currentShop.value!.id,
+                                            from: DateTime.parse(DateFormat(
+                                                    "yyyy-MM-dd")
+                                                .format(Get.find<
+                                                        CashflowController>()
+                                                    .fromDate
+                                                    .value)),
+                                            to: DateTime.parse(DateFormat(
                                                         "yyyy-MM-dd")
                                                     .format(Get.find<
                                                             CashflowController>()
-                                                        .fromDate
-                                                        .value)),
-                                                to: DateTime.parse(DateFormat(
-                                                            "yyyy-MM-dd")
-                                                        .format(Get.find<
-                                                                CashflowController>()
-                                                            .toDate
-                                                            .value))
-                                                    .add(const Duration(
-                                                        days: 1)),
-                                              );
-                                              Get.to(() => CashFlowManager());
-                                            }
-                                            break;
-                                          case "stock":
-                                            {
-                                              Get.to(() => StockPage());
-                                            }
-                                            break;
-                                          case "suppliers":
-                                            {
-                                              Get.to(() => SuppliersPage());
-                                            }
-                                            break;
-                                          case "customers":
-                                            {
-                                              Get.to(() => CustomersPage());
-                                            }
-                                            break;
-                                          case "usage":
-                                            {
-                                              Get.to(() => StockPage());
-                                            }
-                                            break;
+                                                        .toDate
+                                                        .value))
+                                                .add(const Duration(days: 1)),
+                                          );
+                                          Get.to(() => CashFlowManager());
                                         }
-                                      })
-                                  : Container();
-                            }).toList(),
+                                        break;
+                                      case "stock":
+                                        {
+                                          Get.to(() => StockPage());
+                                        }
+                                        break;
+                                      case "suppliers":
+                                        {
+                                          Get.to(() => SuppliersPage());
+                                        }
+                                        break;
+                                      case "customers":
+                                        {
+                                          Get.to(() => CustomersPage());
+                                        }
+                                        break;
+                                      case "usage":
+                                        {
+                                          Get.to(() => StockPage());
+                                        }
+                                        break;
+                                    }
+                                  });
+                            },
                           ),
                           if (checkPermission(
                               category: "accounts", group: true))
