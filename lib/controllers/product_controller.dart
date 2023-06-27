@@ -6,6 +6,7 @@ import 'package:pointify/controllers/realm_controller.dart';
 import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/controllers/user_controller.dart';
+import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/stock/stock_page.dart';
 import 'package:pointify/services/category.dart';
 import 'package:pointify/utils/colors.dart';
@@ -132,10 +133,11 @@ class ProductController extends GetxController {
         } else {
           await Products().updateProduct(product: product);
         }
-        if (MediaQuery.of(Get.context!).size.width > 600) {
-          Get.find<HomeController>().selectedWidget.value = StockPage();
-        } else {
+        if (isSmallScreen(Get.context)) {
           Get.back();
+        } else {
+          Get.find<HomeController>().selectedWidget.value = StockPage();
+
         }
         await getProductsBySort(type: "all");
         creatingProductLoad.value = false;
