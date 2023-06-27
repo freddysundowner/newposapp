@@ -181,6 +181,9 @@ class ProductController extends GetxController {
     category.text = "";
     minsellingPriceController.text = "";
     selectedSupplier.clear();
+    supplierName.value = "None";
+    selectedMeasure.value = "Kg";
+    categoryId.value = null;
   }
 
   getProductsBySort({required String type, String text = ""}) {
