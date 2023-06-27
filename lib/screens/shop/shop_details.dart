@@ -242,7 +242,7 @@ class ShopDetails extends StatelessWidget {
         color: Colors.white,
         child: Container(
           width: double.infinity,
-          padding: EdgeInsets.all(10),
+          padding:   const EdgeInsets.all(10),
           height: isSmallScreen(context) ? kToolbarHeight * 1.5 : 0.0,
           decoration: BoxDecoration(
             border: Border.all(width: 1, color: Colors.grey),
