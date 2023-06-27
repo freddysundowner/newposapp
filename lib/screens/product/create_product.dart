@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:pointify/controllers/user_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/responsive/responsiveness.dart';
@@ -62,7 +63,7 @@ class CreateProduct extends StatelessWidget {
           centerTitle: false,
           leading: IconButton(
             onPressed: () {
-              if (MediaQuery.of(context).size.width > 600) {
+              if (!isSmallScreen(context)) {
                 if (page == "edit") {
                   Get.find<HomeController>().selectedWidget.value =
                       ProductPage();
@@ -94,6 +95,29 @@ class CreateProduct extends StatelessWidget {
                   color: Colors.grey)
             ],
           ),
+          actions: [
+            if (!isSmallScreen(context))
+              InkWell(
+                splashColor: Colors.transparent,
+                onTap: () {
+                  productController.saveProducts(productData: productModel);
+                },
+                child: Container(
+                  height: kTextTabBarHeight,
+                  padding: const EdgeInsets.all(10),
+                  margin: const EdgeInsets.symmetric(vertical: 5)
+                      .copyWith(right: 15),
+                  decoration: BoxDecoration(
+                      border: Border.all(width: 3, color: AppColors.mainColor),
+                      borderRadius: BorderRadius.circular(10)),
+                  child: Center(
+                      child: majorTitle(
+                          title: page == "create" ? "Save product" : "Update",
+                          color: AppColors.mainColor,
+                          size: 14.0)),
+                ),
+              )
+          ],
         ),
         body: Container(
           padding: const EdgeInsets.only(
@@ -101,88 +125,94 @@ class CreateProduct extends StatelessWidget {
           child: ListView(
             shrinkWrap: true,
             children: [
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               const Text("Product Name *"),
-              SizedBox(height: 5),
+              const SizedBox(height: 5),
               TextFormField(
                 controller: productController.itemNameController,
                 keyboardType: TextInputType.text,
                 decoration: InputDecoration(
                   fillColor: Colors.white,
                   filled: true,
-                  labelStyle: TextStyle(
+                  labelStyle: const TextStyle(
                       fontFamily: 'Montserrat',
                       fontWeight: FontWeight.bold,
                       color: Colors.grey),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(color: Colors.grey),
+                    borderSide: const BorderSide(color: Colors.grey),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(color: Colors.grey),
+                    borderSide: const BorderSide(color: Colors.grey),
                   ),
                 ),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Row(
                 children: [
-                  SizedBox(width: 3),
+                  const SizedBox(width: 3),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text("Buying Price *"),
-                        SizedBox(height: 5),
+                        const Text("Buying Price *"),
+                        const SizedBox(height: 5),
                         TextFormField(
                           controller: productController.buyingPriceController,
                           keyboardType: TextInputType.number,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly
+                          ],
                           decoration: InputDecoration(
                             hintText: "0",
                             fillColor: Colors.white,
                             filled: true,
-                            labelStyle: TextStyle(
+                            labelStyle: const TextStyle(
                                 fontFamily: 'Montserrat',
                                 fontWeight: FontWeight.bold,
                                 color: Colors.grey),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(color: Colors.grey),
+                              borderSide: const BorderSide(color: Colors.grey),
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(color: Colors.grey),
+                              borderSide: const BorderSide(color: Colors.grey),
                             ),
                           ),
                         ),
                       ],
                     ),
                   ),
-                  SizedBox(width: 15),
+                  const SizedBox(width: 15),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text("Selling price *"),
-                        SizedBox(height: 5),
+                        const Text("Selling price *"),
+                        const SizedBox(height: 5),
                         TextFormField(
                           controller: productController.sellingPriceController,
                           keyboardType: TextInputType.number,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly
+                          ],
                           decoration: InputDecoration(
                             hintText: "0",
                             fillColor: Colors.white,
                             filled: true,
-                            labelStyle: TextStyle(
+                            labelStyle: const TextStyle(
                                 fontFamily: 'Montserrat',
                                 fontWeight: FontWeight.bold,
                                 color: Colors.grey),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(color: Colors.grey),
+                              borderSide: const BorderSide(color: Colors.grey),
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(color: Colors.grey),
+                              borderSide: const BorderSide(color: Colors.grey),
                             ),
                           ),
                         ),
@@ -191,65 +221,72 @@ class CreateProduct extends StatelessWidget {
                   ),
                 ],
               ),
-              SizedBox(height: 15),
+              const SizedBox(height: 15),
               Row(
                 children: [
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text("Min Selling price "),
-                        SizedBox(height: 5),
+                        const Text("Min Selling price "),
+                        const SizedBox(height: 5),
                         TextFormField(
                           controller:
                               productController.minsellingPriceController,
                           keyboardType: TextInputType.number,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly
+                          ],
                           decoration: InputDecoration(
                             hintText: "0",
                             fillColor: Colors.white,
                             filled: true,
-                            labelStyle: TextStyle(
+                            labelStyle: const TextStyle(
                                 fontFamily: 'Montserrat',
                                 fontWeight: FontWeight.bold,
                                 color: Colors.grey),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(color: Colors.grey),
+                              borderSide: const BorderSide(color: Colors.grey),
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(color: Colors.grey),
+                              borderSide: const BorderSide(color: Colors.grey),
                             ),
                           ),
                         ),
                       ],
                     ),
                   ),
-                  SizedBox(width: 15),
+                  const SizedBox(width: 15),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text("Qty *"),
-                        SizedBox(height: 5),
+                        const Text("Qty *"),
+                        const SizedBox(height: 5),
                         TextFormField(
                           controller: productController.qtyController,
                           keyboardType: TextInputType.number,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly
+                          ],
+
                           decoration: InputDecoration(
                             fillColor: Colors.white,
                             filled: true,
                             hintText: "0",
-                            labelStyle: TextStyle(
+                            labelStyle: const TextStyle(
                                 fontFamily: 'Montserrat',
                                 fontWeight: FontWeight.bold,
                                 color: Colors.grey),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(color: Colors.grey),
+                              borderSide: const BorderSide(color: Colors.grey),
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(color: Colors.grey),
+                              borderSide: const BorderSide(color: Colors.grey),
                             ),
                           ),
                         ),
@@ -258,64 +295,70 @@ class CreateProduct extends StatelessWidget {
                   ),
                 ],
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Row(
                 children: [
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text("Max Discount "),
-                        SizedBox(height: 5),
+                        const Text("Max Discount "),
+                        const SizedBox(height: 5),
                         TextFormField(
                           controller: productController.discountController,
                           keyboardType: TextInputType.number,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly
+                          ],
                           decoration: InputDecoration(
                             fillColor: Colors.white,
                             filled: true,
                             hintText: "0",
-                            labelStyle: TextStyle(
+                            labelStyle: const TextStyle(
                                 fontFamily: 'Montserrat',
                                 fontWeight: FontWeight.bold,
                                 color: Colors.grey),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(color: Colors.grey),
+                              borderSide: const BorderSide(color: Colors.grey),
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(color: Colors.grey),
+                              borderSide: const BorderSide(color: Colors.grey),
                             ),
                           ),
                         ),
                       ],
                     ),
                   ),
-                  SizedBox(width: 15),
+                  const SizedBox(width: 15),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text("Re-Order Level "),
-                        SizedBox(height: 5),
+                        const Text("Re-Order Level "),
+                        const SizedBox(height: 5),
                         TextFormField(
                           controller: productController.reOrderController,
                           keyboardType: TextInputType.number,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly
+                          ],
                           decoration: InputDecoration(
                             fillColor: Colors.white,
                             filled: true,
                             hintText: "0",
-                            labelStyle: TextStyle(
+                            labelStyle: const TextStyle(
                                 fontFamily: 'Montserrat',
                                 fontWeight: FontWeight.bold,
                                 color: Colors.grey),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(color: Colors.grey),
+                              borderSide: const BorderSide(color: Colors.grey),
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(color: Colors.grey),
+                              borderSide: const BorderSide(color: Colors.grey),
                             ),
                           ),
                         ),
@@ -324,7 +367,7 @@ class CreateProduct extends StatelessWidget {
                   ),
                 ],
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Row(
                 children: [
                   Expanded(
@@ -332,9 +375,9 @@ class CreateProduct extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text("Category *",
+                        const Text("Category *",
                             style: TextStyle(color: Colors.black)),
-                        SizedBox(height: 5),
+                        const SizedBox(height: 5),
                         InkWell(
                           onTap: () {
                             showDialog(
@@ -377,7 +420,7 @@ class CreateProduct extends StatelessWidget {
                                 });
                           },
                           child: Container(
-                            padding: EdgeInsets.all(8),
+                            padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
                                 border: Border.all(
                                   color: Colors.grey,
@@ -393,7 +436,8 @@ class CreateProduct extends StatelessWidget {
                                               .categoryId.value!.name!
                                           : "choose category");
                                 }),
-                                Icon(Icons.arrow_drop_down, color: Colors.grey)
+                                const Icon(Icons.arrow_drop_down,
+                                    color: Colors.grey)
                               ],
                             ),
                           ),
@@ -401,14 +445,14 @@ class CreateProduct extends StatelessWidget {
                       ],
                     ),
                   ),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   Expanded(
                     flex: 2,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text("Unit Of Measure "),
-                        SizedBox(height: 5),
+                        const SizedBox(height: 5),
                         InkWell(
                           onTap: () {
                             showDialog(
@@ -432,7 +476,7 @@ class CreateProduct extends StatelessWidget {
                                 });
                           },
                           child: Container(
-                            padding: EdgeInsets.all(8),
+                            padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
                                 border: Border.all(
                                   color: Colors.grey,
@@ -445,7 +489,8 @@ class CreateProduct extends StatelessWidget {
                                   return Text(
                                       productController.selectedMeasure.value);
                                 }),
-                                Icon(Icons.arrow_drop_down, color: Colors.grey)
+                                const Icon(Icons.arrow_drop_down,
+                                    color: Colors.grey)
                               ],
                             ),
                           ),
@@ -466,7 +511,7 @@ class CreateProduct extends StatelessWidget {
                         children: [
                           const Text("Supplier",
                               style: TextStyle(color: Colors.black)),
-                          SizedBox(height: 5),
+                          const SizedBox(height: 5),
                           InkWell(
                             onTap: () {
                               showDialog(
@@ -522,7 +567,7 @@ class CreateProduct extends StatelessWidget {
                                   });
                             },
                             child: Container(
-                              padding: EdgeInsets.all(8),
+                              padding: const EdgeInsets.all(8),
                               decoration: BoxDecoration(
                                   border: Border.all(
                                     color: Colors.grey,
@@ -536,7 +581,7 @@ class CreateProduct extends StatelessWidget {
                                     return Text(
                                         productController.supplierName.value);
                                   }),
-                                  Icon(Icons.arrow_drop_down,
+                                  const Icon(Icons.arrow_drop_down,
                                       color: Colors.grey)
                                 ],
                               ),
@@ -545,7 +590,7 @@ class CreateProduct extends StatelessWidget {
                         ],
                       ),
                     ),
-                    SizedBox(width: 10),
+                    const SizedBox(width: 10),
                     Expanded(
                       flex: 2,
                       child: Padding(
@@ -570,9 +615,9 @@ class CreateProduct extends StatelessWidget {
                     ),
                   ],
                 ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               const Text("Description"),
-              SizedBox(height: 5),
+              const SizedBox(height: 5),
               TextFormField(
                 controller: productController.descriptionController,
                 keyboardType: TextInputType.text,
@@ -588,15 +633,15 @@ class CreateProduct extends StatelessWidget {
                       color: Colors.grey),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(color: Colors.grey),
+                    borderSide: const BorderSide(color: Colors.grey),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(color: Colors.grey),
+                    borderSide: const BorderSide(color: Colors.grey),
                   ),
                 ),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Obx(() {
                 return productController.creatingProductLoad.value ||
                         productController.updateProductLoad.value
@@ -611,7 +656,7 @@ class CreateProduct extends StatelessWidget {
                                   productData: productModel);
                             },
                             child: Container(
-                              padding: EdgeInsets.all(10),
+                              padding: const EdgeInsets.all(10),
                               decoration: BoxDecoration(
                                   border: Border.all(
                                       width: 3, color: AppColors.mainColor),

@@ -18,6 +18,7 @@ import 'package:realm/realm.dart';
 import '../Real/schema.dart';
 import '../screens/sales/all_sales.dart';
 import '../services/product.dart';
+import '../widgets/alert.dart';
 import '../widgets/loading_dialog.dart';
 
 class ProductController extends GetxController {
@@ -85,24 +86,46 @@ class ProductController extends GetxController {
         buying.isEmpty ||
         selling.isEmpty ||
         categoryId.value == null) {
-      showSnackBar(
-          message: "Please fill all fields marked by *", color: Colors.red);
+      isSmallScreen(Get.context)
+          ? showSnackBar(
+              message: "Please fill all fields marked by *", color: Colors.red)
+          : generalAlert(
+              title: "Error", message: "Please fill all fields marked by *");
     } else if (int.parse(buying) > int.parse(selling)) {
-      showSnackBar(
-          message: "Selling price cannot be lower than buying price",
-          color: Colors.red);
+      isSmallScreen(Get.context)
+          ? showSnackBar(
+              message: "Selling price cannot be lower than buying price",
+              color: Colors.red)
+          : generalAlert(
+              title: "Error",
+              message: "Selling price cannot be lower than buying price");
     } else if (minSelling != "" && int.parse(minSelling) > int.parse(selling)) {
-      showSnackBar(
-          message: "minimum selling price cannot be greater than selling price",
-          color: Colors.red);
+      isSmallScreen(Get.context)
+          ? showSnackBar(
+              message:
+                  "minimum selling price cannot be greater than selling price",
+              color: Colors.red)
+          : generalAlert(
+              title: "Error",
+              message:
+                  "minimum selling price cannot be greater than selling price");
     } else if (minSelling != "" && int.parse(buying) > int.parse(minSelling)) {
-      showSnackBar(
-          message: "minimum selling price cannot be less than buying price",
-          color: Colors.red);
+      isSmallScreen(Get.context)
+          ? showSnackBar(
+              message: "minimum selling price cannot be less than buying price",
+              color: Colors.red)
+          : generalAlert(
+              title: "Error",
+              message:
+                  "minimum selling price cannot be less than buying price");
     } else if (discount != "" && int.parse(discount) > int.parse(selling)) {
-      showSnackBar(
-          message: "discount cannot be greater than selling price",
-          color: Colors.red);
+      isSmallScreen(Get.context)
+          ? showSnackBar(
+              message: "discount cannot be greater than selling price",
+              color: Colors.red)
+          : generalAlert(
+              title: "Error",
+              message: "discount cannot be greater than selling price");
     } else {
       try {
         creatingProductLoad.value = true;
@@ -137,7 +160,6 @@ class ProductController extends GetxController {
           Get.back();
         } else {
           Get.find<HomeController>().selectedWidget.value = StockPage();
-
         }
         await getProductsBySort(type: "all");
         creatingProductLoad.value = false;
