@@ -390,7 +390,7 @@ class StockPage extends StatelessWidget {
               InkWell(
                 splashColor: Colors.transparent,
                 onTap: () {
-                  if (type == "small") {
+                  if (isSmallScreen(Get.context)) {
                     Get.to(() => ProductPage());
                   } else {
                     Get.find<HomeController>().selectedWidget.value =
