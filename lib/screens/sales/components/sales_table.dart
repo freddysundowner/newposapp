@@ -23,9 +23,9 @@ Widget salesTable(context, page) {
         child: DataTable(
           decoration: BoxDecoration(
               border: Border.all(
-            width: 1,
-            color: Colors.black,
-          )),
+                width: 1,
+                color: Colors.black,
+              )),
           columnSpacing: 30.0,
           columns: [
             const DataColumn(
@@ -44,10 +44,10 @@ Widget salesTable(context, page) {
               page != "home"
                   ? salesController.allSales.length
                   : salesController.allSales.isEmpty
-                      ? 0
-                      : salesController.allSales.length > 4
-                          ? 4
-                          : salesController.allSales.length, (index) {
+                  ? 0
+                  : salesController.allSales.length > 4
+                  ? 4
+                  : salesController.allSales.length, (index) {
             SalesModel salesModel = salesController.allSales.elementAt(index);
             final y = salesModel.receiptNumber;
             final h = salesModel.attendantId?.username?.capitalize;
