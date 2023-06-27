@@ -185,7 +185,12 @@ class StockPage extends StatelessWidget {
                           subtitle: "View purchased items",
                           icon: Icons.remove_red_eye_rounded,
                           onPresssed: () {
-                            Get.to(() => AllPurchases());
+                            if (isSmallScreen(context)) {
+                              Get.to(() => AllPurchases());
+                            } else {
+                              Get.find<HomeController>().selectedWidget.value =
+                                  AllPurchases();
+                            }
                           },
                           color: Colors.white),
                     if (checkPermission(

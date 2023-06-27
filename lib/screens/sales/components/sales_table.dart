@@ -16,10 +16,10 @@ Widget salesTable(context, page) {
   ShopController shopController = Get.find<ShopController>();
   return Container(
     width: double.infinity,
-    padding: EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+    padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
     child: Theme(
       data: Theme.of(context).copyWith(dividerColor: Colors.grey),
-      child: Expanded(
+      child: FittedBox(
         child: DataTable(
           decoration: BoxDecoration(
               border: Border.all(
@@ -38,7 +38,7 @@ Widget salesTable(context, page) {
             const DataColumn(
                 label: Text('Payment Method', textAlign: TextAlign.center)),
             const DataColumn(label: Text('Date', textAlign: TextAlign.center)),
-            const DataColumn(label: Text('', textAlign: TextAlign.center)),
+            const DataColumn(label: Text('Actions', textAlign: TextAlign.center)),
           ],
           rows: List.generate(
               page != "home"
