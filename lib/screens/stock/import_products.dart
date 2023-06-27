@@ -3,10 +3,14 @@ import 'package:excel/excel.dart' as ex;
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:pointify/controllers/home_controller.dart';
+import 'package:pointify/responsive/responsiveness.dart';
+import 'package:pointify/screens/stock/stock_page.dart';
 import 'package:syncfusion_flutter_xlsio/xlsio.dart' as exo;
 import 'package:path_provider/path_provider.dart' as path_provider;
 import 'package:url_launcher/url_launcher.dart';
@@ -21,7 +25,24 @@ class ImportProducts extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Import Products"),
+        title: Text(
+          "Import Products",
+          style: TextStyle(
+              color: isSmallScreen(context) ? Colors.white : Colors.black),
+        ),
+        elevation: 0.2,
+        backgroundColor:
+            isSmallScreen(context) ? AppColors.mainColor : Colors.white,
+        leading: isSmallScreen(context)
+            ? null
+            : IconButton(
+                onPressed: () {
+                  Get.find<HomeController>().selectedWidget.value = StockPage();
+                },
+                icon: const Icon(
+                  Icons.arrow_back_ios,
+                  color: Colors.black,
+                )),
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -30,7 +51,7 @@ class ImportProducts extends StatelessWidget {
             "Select Source",
             style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
           ),
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
           InkWell(
@@ -40,7 +61,7 @@ class ImportProducts extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.all(10),
                 width: double.infinity,
-                margin: EdgeInsets.symmetric(horizontal: 20),
+                margin: const EdgeInsets.symmetric(horizontal: 20),
                 decoration: BoxDecoration(
                     border: Border.all(width: 3, color: AppColors.mainColor),
                     borderRadius: BorderRadius.circular(40)),
@@ -52,7 +73,7 @@ class ImportProducts extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
           InkWell(
@@ -81,7 +102,7 @@ class ImportProducts extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.all(10),
                 width: double.infinity,
-                margin: EdgeInsets.symmetric(horizontal: 20),
+                margin: const EdgeInsets.symmetric(horizontal: 20),
                 decoration: BoxDecoration(
                     border: Border.all(width: 3, color: AppColors.mainColor),
                     borderRadius: BorderRadius.circular(40),
@@ -91,11 +112,11 @@ class ImportProducts extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(
+                      const Icon(
                         Icons.receipt_long,
                         color: Colors.white,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 10,
                       ),
                       majorTitle(
@@ -108,7 +129,7 @@ class ImportProducts extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
           const Center(
@@ -117,7 +138,7 @@ class ImportProducts extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
           InkWell(
