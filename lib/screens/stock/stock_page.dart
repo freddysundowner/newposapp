@@ -30,116 +30,116 @@ class StockPage extends StatelessWidget {
   Widget build(BuildContext context) {
     productController.getProductsBySort(type: "all");
     return ResponsiveWidget(
-        // largeScreen: Scaffold(
-        //   backgroundColor: Colors.white,
-        //   appBar: AppBar(
-        //     backgroundColor: Colors.white,
-        //     elevation: 0.0,
-        //     leading: IconButton(
-        //         onPressed: () {
-        //           Get.find<HomeController>().selectedWidget.value = HomePage();
-        //         },
-        //         icon: Icon(
-        //           Icons.arrow_back_ios,
-        //           color: Colors.black,
-        //         )),
-        //   ),
-        //   body: Container(
-        //     padding: const EdgeInsets.all(20),
-        //     child: Column(
-        //       crossAxisAlignment: CrossAxisAlignment.start,
-        //       children: [
-        //         SizedBox(
-        //           height: 20,
-        //         ),
-        //         Container(
-        //           child: stockValueCard(type: "large"),
-        //         ),
-        //         SizedBox(
-        //           height: 20,
-        //         ),
-        //         majorTitle(
-        //             title: "Stock Actions", color: Colors.black, size: 18.0),
-        //         SizedBox(
-        //           height: 20,
-        //         ),
-        //         SizedBox(
-        //           height: MediaQuery.of(context).size.height * 0.2,
-        //           child: ListView(
-        //             scrollDirection: Axis.horizontal,
-        //             children: [
-        //               if (checkPermission(
-        //                   category: "products", permission: "add"))
-        //                 Padding(
-        //                   padding: const EdgeInsets.only(left: 10.0),
-        //                   child: stockContainerDesktop(
-        //                     title: "Add New",
-        //                     subtitle: "Introduce new product",
-        //                     icon: Icons.production_quantity_limits,
-        //                     onPresssed: () {
-        //                       Get.find<HomeController>().selectedWidget.value =
-        //                           CreateProduct(
-        //                         page: "create",
-        //                         productModel: null,
-        //                       );
-        //                     },
-        //                     color: Colors.amberAccent,
-        //                   ),
-        //                 ),
-        //               stockContainerDesktop(
-        //                   title: "Purchase",
-        //                   subtitle: "Add to an existing stock",
-        //                   icon: Icons.add,
-        //                   onPresssed: () {
-        //                     Get.find<HomeController>().selectedWidget.value =
-        //                         CreatePurchase();
-        //                   },
-        //                   color: Colors.blueAccent),
-        //               stockContainerDesktop(
-        //                   title: "Purchase",
-        //                   subtitle: "View purchased items",
-        //                   icon: Icons.remove_red_eye_rounded,
-        //                   onPresssed: () {
-        //                     Get.find<HomeController>().selectedWidget.value =
-        //                         AllPurchases();
-        //                   },
-        //                   color: Colors.white),
-        //               stockContainerDesktop(
-        //                   title: "Count ",
-        //                   subtitle: "Tally with physical count",
-        //                   icon: Icons.calculate_outlined,
-        //                   onPresssed: () {
-        //                     Get.find<HomeController>().selectedWidget.value =
-        //                         StockCount();
-        //                   },
-        //                   color: Colors.amberAccent),
-        //               stockContainerDesktop(
-        //                   title: "Bad Stock",
-        //                   subtitle: "View/Add faulty goods",
-        //                   icon: Icons.remove_circle_outline,
-        //                   onPresssed: () {
-        //                     Get.find<HomeController>().selectedWidget.value =
-        //                         BadStockPage(
-        //                       page: "stock",
-        //                     );
-        //                   },
-        //                   color: Colors.redAccent),
-        //               stockContainerDesktop(
-        //                   title: "Transfer",
-        //                   subtitle: "Transfer stock to  another shop",
-        //                   icon: Icons.compare_arrows,
-        //                   onPresssed: () {
-        //                     Get.find<HomeController>().selectedWidget.value =
-        //                         StockTransfer();
-        //                   },
-        //                   color: Colors.green),
-        //             ],
-        //           ),
-        //         )
-        //       ],
-        //     ),
-        //   ),
-        // ),
+      // largeScreen: Scaffold(
+      //   backgroundColor: Colors.white,
+      //   appBar: AppBar(
+      //     backgroundColor: Colors.white,
+      //     elevation: 0.0,
+      //     leading: IconButton(
+      //         onPressed: () {
+      //           Get.find<HomeController>().selectedWidget.value = HomePage();
+      //         },
+      //         icon: Icon(
+      //           Icons.arrow_back_ios,
+      //           color: Colors.black,
+      //         )),
+      //   ),
+      //   body: Container(
+      //     padding: const EdgeInsets.all(20),
+      //     child: Column(
+      //       crossAxisAlignment: CrossAxisAlignment.start,
+      //       children: [
+      //         SizedBox(
+      //           height: 20,
+      //         ),
+      //         Container(
+      //           child: stockValueCard(type: "large"),
+      //         ),
+      //         SizedBox(
+      //           height: 20,
+      //         ),
+      //         majorTitle(
+      //             title: "Stock Actions", color: Colors.black, size: 18.0),
+      //         SizedBox(
+      //           height: 20,
+      //         ),
+      //         SizedBox(
+      //           height: MediaQuery.of(context).size.height * 0.2,
+      //           child: ListView(
+      //             scrollDirection: Axis.horizontal,
+      //             children: [
+      //               if (checkPermission(
+      //                   category: "products", permission: "add"))
+      //                 Padding(
+      //                   padding: const EdgeInsets.only(left: 10.0),
+      //                   child: stockContainerDesktop(
+      //                     title: "Add New",
+      //                     subtitle: "Introduce new product",
+      //                     icon: Icons.production_quantity_limits,
+      //                     onPresssed: () {
+      //                       Get.find<HomeController>().selectedWidget.value =
+      //                           CreateProduct(
+      //                         page: "create",
+      //                         productModel: null,
+      //                       );
+      //                     },
+      //                     color: Colors.amberAccent,
+      //                   ),
+      //                 ),
+      //               stockContainerDesktop(
+      //                   title: "Purchase",
+      //                   subtitle: "Add to an existing stock",
+      //                   icon: Icons.add,
+      //                   onPresssed: () {
+      //                     Get.find<HomeController>().selectedWidget.value =
+      //                         CreatePurchase();
+      //                   },
+      //                   color: Colors.blueAccent),
+      //               stockContainerDesktop(
+      //                   title: "Purchase",
+      //                   subtitle: "View purchased items",
+      //                   icon: Icons.remove_red_eye_rounded,
+      //                   onPresssed: () {
+      //                     Get.find<HomeController>().selectedWidget.value =
+      //                         AllPurchases();
+      //                   },
+      //                   color: Colors.white),
+      //               stockContainerDesktop(
+      //                   title: "Count ",
+      //                   subtitle: "Tally with physical count",
+      //                   icon: Icons.calculate_outlined,
+      //                   onPresssed: () {
+      //                     Get.find<HomeController>().selectedWidget.value =
+      //                         StockCount();
+      //                   },
+      //                   color: Colors.amberAccent),
+      //               stockContainerDesktop(
+      //                   title: "Bad Stock",
+      //                   subtitle: "View/Add faulty goods",
+      //                   icon: Icons.remove_circle_outline,
+      //                   onPresssed: () {
+      //                     Get.find<HomeController>().selectedWidget.value =
+      //                         BadStockPage(
+      //                       page: "stock",
+      //                     );
+      //                   },
+      //                   color: Colors.redAccent),
+      //               stockContainerDesktop(
+      //                   title: "Transfer",
+      //                   subtitle: "Transfer stock to  another shop",
+      //                   icon: Icons.compare_arrows,
+      //                   onPresssed: () {
+      //                     Get.find<HomeController>().selectedWidget.value =
+      //                         StockTransfer();
+      //                   },
+      //                   color: Colors.green),
+      //             ],
+      //           ),
+      //         )
+      //       ],
+      //     ),
+      //   ),
+      // ),
         largeScreen: Container(),
         smallScreen: Helper(
             widget: SingleChildScrollView(
@@ -163,7 +163,8 @@ class StockPage extends StatelessWidget {
                           subtitle: "Introduce new product",
                           icon: Icons.production_quantity_limits,
                           onPresssed: () {
-                            Get.to(() => CreateProduct(
+                            Get.to(() =>
+                                CreateProduct(
                                   page: "create",
                                   productModel: null,
                                 ));
@@ -188,7 +189,10 @@ class StockPage extends StatelessWidget {
                             if (isSmallScreen(context)) {
                               Get.to(() => AllPurchases());
                             } else {
-                              Get.find<HomeController>().selectedWidget.value =
+                              Get
+                                  .find<HomeController>()
+                                  .selectedWidget
+                                  .value =
                                   AllPurchases();
                             }
                           },
@@ -200,7 +204,14 @@ class StockPage extends StatelessWidget {
                           subtitle: "Tally with physical count",
                           icon: Icons.calculate_outlined,
                           onPresssed: () {
-                            Get.to(() => StockCount());
+                            if (isSmallScreen(context)) {
+                              Get.to(() => StockCount());
+                            } else {
+                              Get
+                                  .find<HomeController>()
+                                  .selectedWidget
+                                  .value = StockCount();
+                            }
                           },
                           color: Colors.amberAccent),
                     if (checkPermission(
@@ -210,7 +221,8 @@ class StockPage extends StatelessWidget {
                           subtitle: "View/Add faulty goods",
                           icon: Icons.remove_circle_outline,
                           onPresssed: () {
-                            Get.to(() => BadStockPage(
+                            Get.to(() =>
+                                BadStockPage(
                                   page: "stock",
                                 ));
                           },
@@ -255,12 +267,11 @@ class StockPage extends StatelessWidget {
             )));
   }
 
-  Widget stockContainers(
-      {required title,
-      required subtitle,
-      required icon,
-      required onPresssed,
-      required Color color}) {
+  Widget stockContainers({required title,
+    required subtitle,
+    required icon,
+    required onPresssed,
+    required Color color}) {
     return InkWell(
       onTap: () {
         onPresssed();
@@ -298,12 +309,11 @@ class StockPage extends StatelessWidget {
     );
   }
 
-  Widget stockContainerDesktop(
-      {required title,
-      required subtitle,
-      required icon,
-      required onPresssed,
-      required Color color}) {
+  Widget stockContainerDesktop({required title,
+    required subtitle,
+    required icon,
+    required onPresssed,
+    required Color color}) {
     return InkWell(
       onTap: () {
         onPresssed();
@@ -398,7 +408,10 @@ class StockPage extends StatelessWidget {
                   if (type == "small") {
                     Get.to(() => ProductPage());
                   } else {
-                    Get.find<HomeController>().selectedWidget.value =
+                    Get
+                        .find<HomeController>()
+                        .selectedWidget
+                        .value =
                         ProductPage();
                   }
                 },
@@ -408,7 +421,7 @@ class StockPage extends StatelessWidget {
                     width: type == "small" ? double.infinity : 200,
                     decoration: BoxDecoration(
                         border:
-                            Border.all(width: 3, color: AppColors.mainColor),
+                        Border.all(width: 3, color: AppColors.mainColor),
                         borderRadius: BorderRadius.circular(40)),
                     child: Center(
                         child: majorTitle(
