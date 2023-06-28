@@ -205,9 +205,16 @@ class StockPage extends StatelessWidget {
                           subtitle: "View/Add faulty goods",
                           icon: Icons.remove_circle_outline,
                           onPresssed: () {
-                            Get.to(() => BadStockPage(
-                                  page: "stock",
-                                ));
+                            if (isSmallScreen(context)) {
+                              Get.to(() => BadStockPage(
+                                    page: "stock",
+                                  ));
+                            } else {
+                              Get.find<HomeController>().selectedWidget.value =
+                                  BadStockPage(
+                                page: "stock",
+                              );
+                            }
                           },
                           color: Colors.redAccent),
                     if (checkPermission(
