@@ -67,16 +67,6 @@ class HomePage extends StatelessWidget {
     },
     {"title": "Usage", "icon": Icons.data_usage, "category": "usage"},
   ];
-  List<Map<String, dynamic>> enterpriseOperationsShow = [];
-
-  getCategoryPermissions(category) {
-    List permissions = userController.permissions
-        .where((element) => element["key"] == category)
-        .toList();
-    List p = permissions.map((e) => e["value"]).toList().first;
-    print(userController.roles);
-    return checkPermission(category: category);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -529,45 +519,39 @@ class HomePage extends StatelessWidget {
   Widget showTodaySales(context, int index, HomeCard homeCard) {
     var c =
         Color((math.Random().nextDouble() * 0xFFFFFF).toInt()).withOpacity(1.0);
-    return InkWell(
-      onTap: () {
-        print(homeCard.color);
-      },
-      child: Container(
-        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-        margin: EdgeInsets.only(right: 20),
-        decoration: BoxDecoration(
-            color: homeCard.color, borderRadius: BorderRadius.circular(10)),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Icon(
-              homeCard.iconData,
-              size: 40,
-              color: c,
-            ),
-            SizedBox(
-              width: 40,
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                majorTitle(
-                    title: homeCard.name, color: Colors.white, size: 13.0),
-                SizedBox(height: 10),
-                Obx(() {
-                  return salesController.getSalesByLoad.value
-                      ? minorTitle(title: "Calculating...", color: Colors.white)
-                      : normalText(
-                          title: htmlPrice(homeCard.total),
-                          color: Colors.white,
-                          size: 20.0);
-                }),
-              ],
-            ),
-          ],
-        ),
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+      margin: EdgeInsets.only(right: 20),
+      decoration: BoxDecoration(
+          color: homeCard.color, borderRadius: BorderRadius.circular(10)),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Icon(
+            homeCard.iconData,
+            size: 40,
+            color: c,
+          ),
+          SizedBox(
+            width: 40,
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              majorTitle(title: homeCard.name, color: Colors.white, size: 13.0),
+              SizedBox(height: 10),
+              Obx(() {
+                return salesController.getSalesByLoad.value
+                    ? minorTitle(title: "Calculating...", color: Colors.white)
+                    : normalText(
+                        title: htmlPrice(homeCard.total),
+                        color: Colors.white,
+                        size: 20.0);
+              }),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -594,6 +578,7 @@ class HomePage extends StatelessWidget {
                 scrollDirection: Axis.vertical,
                 itemBuilder: (context, index) {
                   SalesModel salesModel = results.elementAt(index);
+                  // return Container();
                   return SalesCard(salesModel: salesModel);
                 });
           }
