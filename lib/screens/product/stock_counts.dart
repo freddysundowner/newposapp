@@ -133,7 +133,12 @@ class StockCount extends StatelessWidget {
                     const Text('Count History'),
                     InkWell(
                       onTap: () {
-                        Get.to(() => CountHistory());
+                        if (isSmallScreen(context)) {
+                          Get.to(() => CountHistory());
+                        } else {
+                          Get.find<HomeController>().selectedWidget.value =
+                              CountHistory();
+                        }
                       },
                       child:
                           minorTitle(title: "View", color: AppColors.mainColor),
@@ -256,8 +261,8 @@ class StockCount extends StatelessWidget {
                             DataColumn(
                                 label: Text('', textAlign: TextAlign.center)),
                           ],
-                          rows: List.generate(productController.productsCount.length,
-                              (index) {
+                          rows: List.generate(
+                              productController.productsCount.length, (index) {
                             ProductCountModel productBody = productController
                                 .productsCount
                                 .elementAt(index);
@@ -305,9 +310,7 @@ class StockCount extends StatelessWidget {
                                       margin: const EdgeInsets.only(
                                           top: 10, right: 3),
                                       child: _incrementQuantityWidget(
-                                          productCountModel: productBody))
-
-                                  )),
+                                          productCountModel: productBody)))),
                             ]);
                           }),
                         ),
