@@ -225,82 +225,80 @@ class ProductSelections extends StatelessWidget {
                               width: double.infinity,
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 10).copyWith(top: 10),
-                              child: FittedBox(
-                                child: DataTable(
-                                  decoration: BoxDecoration(
-                                      border: Border.all(
-                                    width: 1,
-                                    color: Colors.black,
-                                  )),
-                                  columnSpacing: 30.0,
-                                  columns: const [
-                                    DataColumn(
-                                        label: Text('Name',
-                                            textAlign: TextAlign.center)),
-                                    DataColumn(
-                                        label: Text('Category',
-                                            textAlign: TextAlign.center)),
-                                    DataColumn(
-                                        label: Text('Quantity',
-                                            textAlign: TextAlign.center)),
-                                    DataColumn(
-                                        label: Text('',
-                                            textAlign: TextAlign.center)),
-                                  ],
-                                  rows: List.generate(
-                                      productController.products.length,
-                                      (index) {
-                                    Product productBody = productController
-                                        .products
-                                        .elementAt(index);
-                                    final y = productBody.name;
-                                    final x = productBody.category!.name;
-                                    final z = productBody.quantity;
+                              child: DataTable(
+                                decoration: BoxDecoration(
+                                    border: Border.all(
+                                  width: 1,
+                                  color: Colors.black,
+                                )),
+                                columnSpacing: 30.0,
+                                columns: const [
+                                  DataColumn(
+                                      label: Text('Name',
+                                          textAlign: TextAlign.center)),
+                                  DataColumn(
+                                      label: Text('Category',
+                                          textAlign: TextAlign.center)),
+                                  DataColumn(
+                                      label: Text('Quantity',
+                                          textAlign: TextAlign.center)),
+                                  DataColumn(
+                                      label: Text('',
+                                          textAlign: TextAlign.center)),
+                                ],
+                                rows: List.generate(
+                                    productController.products.length,
+                                    (index) {
+                                  Product productBody = productController
+                                      .products
+                                      .elementAt(index);
+                                  final y = productBody.name;
+                                  final x = productBody.category!.name;
+                                  final z = productBody.quantity;
 
-                                    return DataRow(cells: [
-                                      DataCell(SizedBox(
-                                          width: 75, child: Text(y!))),
-                                      DataCell(SizedBox(
-                                          width: 75,
-                                          child: Text(x.toString()))),
-                                      DataCell(SizedBox(
-                                          width: 75,
-                                          child: Text(z.toString()))),
-                                      DataCell(SizedBox(
-                                          width: 75,
-                                          child: Align(
-                                            alignment: Alignment.topRight,
-                                            child: Center(
-                                              child: Checkbox(
-                                                value: stockTransferController
-                                                            .selectedProducts
-                                                            .indexWhere(
-                                                                (element) =>
-                                                                    element
-                                                                        .product!
-                                                                        .id ==
-                                                                    productBody
-                                                                        .id) !=
-                                                        -1
-                                                    ? true
-                                                    : false,
-                                                onChanged: (bool? value) {
-                                                  if (productBody.quantity! > 0) {
-                                                    stockTransferController
-                                                        .addToList(productBody);
-                                                  } else {
-                                                    showSnackBar(
-                                                        message:
-                                                            "You cannot transfer product that is out of stock",
-                                                        color: Colors.red);
-                                                  }
-                                                },
-                                              ),
+                                  return DataRow(cells: [
+                                    DataCell(SizedBox(
+                                        width: 75, child: Text(y!))),
+                                    DataCell(SizedBox(
+                                        width: 75,
+                                        child: Text(x.toString()))),
+                                    DataCell(SizedBox(
+                                        width: 75,
+                                        child: Text(z.toString()))),
+                                    DataCell(SizedBox(
+                                        width: 75,
+                                        child: Align(
+                                          alignment: Alignment.topRight,
+                                          child: Center(
+                                            child: Checkbox(
+                                              value: stockTransferController
+                                                          .selectedProducts
+                                                          .indexWhere(
+                                                              (element) =>
+                                                                  element
+                                                                      .product!
+                                                                      .id ==
+                                                                  productBody
+                                                                      .id) !=
+                                                      -1
+                                                  ? true
+                                                  : false,
+                                              onChanged: (bool? value) {
+                                                if (productBody.quantity! > 0) {
+                                                  stockTransferController
+                                                      .addToList(productBody);
+                                                } else {
+                                                  showSnackBar(
+                                                      message:
+                                                          "You cannot transfer product that is out of stock",
+                                                      color: Colors.red);
+                                                }
+                                              },
                                             ),
-                                          ))),
-                                    ]);
-                                  }),
-                                ),
+                                          ),
+                                        ))),
+                                  ]);
+                                }),
                               ),
                             ),
                           );

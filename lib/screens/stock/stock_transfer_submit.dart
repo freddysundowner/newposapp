@@ -296,106 +296,104 @@ class StockSubmit extends StatelessWidget {
                     width: double.infinity,
                     padding: const EdgeInsets.symmetric(horizontal: 15)
                         .copyWith(top: 10),
-                    child: FittedBox(
-                      child: DataTable(
-                        decoration: BoxDecoration(
-                            border: Border.all(
-                          width: 1,
-                          color: Colors.black,
-                        )),
-                        columnSpacing: 30.0,
-                        columns: const [
-                          DataColumn(
-                              label: Text('Name', textAlign: TextAlign.center)),
-                          DataColumn(
-                              label: Text('System Count',
-                                  textAlign: TextAlign.center)),
-                          DataColumn(
-                              label: Text('Quantity',
-                                  textAlign: TextAlign.center)),
-                          DataColumn(
-                              label: Text('', textAlign: TextAlign.center)),
-                        ],
-                        rows: List.generate(
-                            stockTransferController.selectedProducts.length,
-                            (index) {
-                          ProductTransfer productTransfer =
-                              stockTransferController.selectedProducts
-                                  .elementAt(index);
-                          final y = productTransfer.product?.name;
-                          final x = productTransfer.product?.quantity;
-                          // final z = productTransfer.cartquantity;
+                    child: DataTable(
+                      decoration: BoxDecoration(
+                          border: Border.all(
+                        width: 1,
+                        color: Colors.black,
+                      )),
+                      columnSpacing: 30.0,
+                      columns: const [
+                        DataColumn(
+                            label: Text('Name', textAlign: TextAlign.center)),
+                        DataColumn(
+                            label: Text('System Count',
+                                textAlign: TextAlign.center)),
+                        DataColumn(
+                            label: Text('Quantity',
+                                textAlign: TextAlign.center)),
+                        DataColumn(
+                            label: Text('', textAlign: TextAlign.center)),
+                      ],
+                      rows: List.generate(
+                          stockTransferController.selectedProducts.length,
+                          (index) {
+                        ProductTransfer productTransfer =
+                            stockTransferController.selectedProducts
+                                .elementAt(index);
+                        final y = productTransfer.product?.name;
+                        final x = productTransfer.product?.quantity;
+                        // final z = productTransfer.cartquantity;
 
-                          return DataRow(cells: [
-                            DataCell(SizedBox(width: 75, child: Text(y!))),
-                            DataCell(
-                                SizedBox(width: 75, child: Text(x.toString()))),
-                            DataCell(SizedBox(
-                              width: 75,
-                              child: Row(
-                                children: [
-                                  InkWell(
-                                      onTap: () {
-                                        if (productTransfer.quantity! > 1) {
-                                          productTransfer.quantity =
-                                              productTransfer.quantity! - 1;
-                                          stockTransferController
-                                              .selectedProducts
-                                              .refresh();
-                                        }
-                                      },
-                                      child: const Icon(
-                                          Icons.remove_circle_outline,
-                                          size: 15)),
-                                  const Spacer(),
-                                  Text(
-                                    "${productTransfer.quantity ?? 1}",
-                                    style: const TextStyle(
-                                        color: Colors.grey, fontSize: 15),
-                                  ),
-                                  const Spacer(),
-                                  InkWell(
-                                      onTap: () {
-                                        if (productTransfer.quantity! <
-                                            productTransfer
-                                                .product!.quantity!) {
-                                          productTransfer.quantity =
-                                              productTransfer.quantity! + 1;
-                                          stockTransferController
-                                              .selectedProducts
-                                              .refresh();
-                                        }
-                                      },
-                                      child: const Icon(
-                                          Icons.add_circle_outline,
-                                          size: 15)),
-                                ],
-                              ),
-                            )),
-                            DataCell(Align(
-                              alignment: Alignment.topRight,
-                              child: InkWell(
-                                  onTap: () {
-                                    stockTransferController.selectedProducts
-                                        .removeWhere((element) =>
-                                            element.product!.id ==
-                                            productTransfer.product?.id);
-                                    stockTransferController.selectedProducts
-                                        .refresh();
-                                    productController.products.refresh();
-                                  },
-                                  child: const SizedBox(
-                                    width: 75,
-                                    child: Center(
-                                        child: Icon(
-                                      Icons.clear,
-                                      size: 15,
-                                    )),
+                        return DataRow(cells: [
+                          DataCell(SizedBox(width: 75, child: Text(y!))),
+                          DataCell(
+                              SizedBox(width: 75, child: Text(x.toString()))),
+                          DataCell(SizedBox(
+                            width: 75,
+                            child: Row(
+                              children: [
+                                InkWell(
+                                    onTap: () {
+                                      if (productTransfer.quantity! > 1) {
+                                        productTransfer.quantity =
+                                            productTransfer.quantity! - 1;
+                                        stockTransferController
+                                            .selectedProducts
+                                            .refresh();
+                                      }
+                                    },
+                                    child: const Icon(
+                                        Icons.remove_circle_outline,
+                                        size: 15)),
+                                const Spacer(),
+                                Text(
+                                  "${productTransfer.quantity ?? 1}",
+                                  style: const TextStyle(
+                                      color: Colors.grey, fontSize: 15),
+                                ),
+                                const Spacer(),
+                                InkWell(
+                                    onTap: () {
+                                      if (productTransfer.quantity! <
+                                          productTransfer
+                                              .product!.quantity!) {
+                                        productTransfer.quantity =
+                                            productTransfer.quantity! + 1;
+                                        stockTransferController
+                                            .selectedProducts
+                                            .refresh();
+                                      }
+                                    },
+                                    child: const Icon(
+                                        Icons.add_circle_outline,
+                                        size: 15)),
+                              ],
+                            ),
+                          )),
+                          DataCell(Align(
+                            alignment: Alignment.topRight,
+                            child: InkWell(
+                                onTap: () {
+                                  stockTransferController.selectedProducts
+                                      .removeWhere((element) =>
+                                          element.product!.id ==
+                                          productTransfer.product?.id);
+                                  stockTransferController.selectedProducts
+                                      .refresh();
+                                  productController.products.refresh();
+                                },
+                                child: const SizedBox(
+                                  width: 75,
+                                  child: Center(
+                                      child: Icon(
+                                    Icons.clear,
+                                    size: 15,
                                   )),
-                            )),
-                          ]);
-                        }),
-                      ),
+                                )),
+                          )),
+                        ]);
+                      }),
                     ),
                   ),
                 );

@@ -162,94 +162,92 @@ class StockTransfer extends StatelessWidget {
                                     width: double.infinity,
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 10),
-                                    child: FittedBox(
-                                      child: DataTable(
-                                        decoration: BoxDecoration(
-                                            border: Border.all(
-                                          width: 1,
-                                          color: Colors.black,
-                                        )),
-                                        columnSpacing: 30.0,
-                                        columns: const [
-                                          DataColumn(
-                                              label: Text('Name',
-                                                  textAlign: TextAlign.center)),
-                                          DataColumn(
-                                              label: Text('Location',
-                                                  textAlign: TextAlign.center)),
-                                          DataColumn(
-                                              label: Text('Type',
-                                                  textAlign: TextAlign.center)),
-                                          DataColumn(
-                                              label: Text('',
-                                                  textAlign: TextAlign.center)),
-                                        ],
-                                        rows: List.generate(
-                                            shopController.allShops
-                                                .where((element) =>
-                                                    element.id !=
-                                                    shopController
-                                                        .currentShop.value!.id)
-                                                .length, (index) {
-                                          List<Shop> shops = shopController
-                                              .allShops
+                                    child: DataTable(
+                                      decoration: BoxDecoration(
+                                          border: Border.all(
+                                        width: 1,
+                                        color: Colors.black,
+                                      )),
+                                      columnSpacing: 30.0,
+                                      columns: const [
+                                        DataColumn(
+                                            label: Text('Name',
+                                                textAlign: TextAlign.center)),
+                                        DataColumn(
+                                            label: Text('Location',
+                                                textAlign: TextAlign.center)),
+                                        DataColumn(
+                                            label: Text('Type',
+                                                textAlign: TextAlign.center)),
+                                        DataColumn(
+                                            label: Text('',
+                                                textAlign: TextAlign.center)),
+                                      ],
+                                      rows: List.generate(
+                                          shopController.allShops
                                               .where((element) =>
                                                   element.id !=
                                                   shopController
                                                       .currentShop.value!.id)
-                                              .toList();
-                                          Shop shopModel =
-                                              shops.elementAt(index);
-                                          final y = shopModel.name;
-                                          final x = shopModel.location;
-                                          final z = shopModel.type?.title;
+                                              .length, (index) {
+                                        List<Shop> shops = shopController
+                                            .allShops
+                                            .where((element) =>
+                                                element.id !=
+                                                shopController
+                                                    .currentShop.value!.id)
+                                            .toList();
+                                        Shop shopModel =
+                                            shops.elementAt(index);
+                                        final y = shopModel.name;
+                                        final x = shopModel.location;
+                                        final z = shopModel.type?.title;
 
-                                          return DataRow(cells: [
-                                            DataCell(Text(y!)),
-                                            DataCell(Text(x.toString())),
-                                            DataCell(Text(z.toString())),
-                                            DataCell(
-                                              InkWell(
-                                                onTap: () {
-                                                  Get.find<HomeController>()
-                                                          .selectedWidget
-                                                          .value =
-                                                      ProductSelections(
-                                                          toShop: shopModel);
-                                                },
-                                                child: Align(
-                                                  alignment: Alignment.topRight,
-                                                  child: Center(
-                                                    child: Container(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              5),
-                                                      margin:
-                                                          const EdgeInsets.all(
-                                                              5),
-                                                      decoration: BoxDecoration(
-                                                          color: AppColors
-                                                              .mainColor,
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(3)),
-                                                      width: 75,
-                                                      child: const Text(
-                                                        "Select",
-                                                        style: TextStyle(
-                                                            color:
-                                                                Colors.white),
-                                                        textAlign:
-                                                            TextAlign.center,
-                                                      ),
+                                        return DataRow(cells: [
+                                          DataCell(Text(y!)),
+                                          DataCell(Text(x.toString())),
+                                          DataCell(Text(z.toString())),
+                                          DataCell(
+                                            InkWell(
+                                              onTap: () {
+                                                Get.find<HomeController>()
+                                                        .selectedWidget
+                                                        .value =
+                                                    ProductSelections(
+                                                        toShop: shopModel);
+                                              },
+                                              child: Align(
+                                                alignment: Alignment.topRight,
+                                                child: Center(
+                                                  child: Container(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            5),
+                                                    margin:
+                                                        const EdgeInsets.all(
+                                                            5),
+                                                    decoration: BoxDecoration(
+                                                        color: AppColors
+                                                            .mainColor,
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(3)),
+                                                    width: 75,
+                                                    child: const Text(
+                                                      "Select",
+                                                      style: TextStyle(
+                                                          color:
+                                                              Colors.white),
+                                                      textAlign:
+                                                          TextAlign.center,
                                                     ),
                                                   ),
                                                 ),
                                               ),
                                             ),
-                                          ]);
-                                        }),
-                                      ),
+                                          ),
+                                        ]);
+                                      }),
                                     ),
                                   ),
                                 );
