@@ -258,42 +258,44 @@ class ProductSelections extends StatelessWidget {
                                     final z = productBody.quantity;
 
                                     return DataRow(cells: [
-                                      DataCell(Container(
+                                      DataCell(SizedBox(
                                           width: 75, child: Text(y!))),
-                                      DataCell(Container(
+                                      DataCell(SizedBox(
                                           width: 75,
                                           child: Text(x.toString()))),
-                                      DataCell(Container(
+                                      DataCell(SizedBox(
                                           width: 75,
                                           child: Text(z.toString()))),
-                                      DataCell(Container(
+                                      DataCell(SizedBox(
                                           width: 75,
                                           child: Align(
                                             alignment: Alignment.topRight,
-                                            child: Checkbox(
-                                              value: stockTransferController
-                                                          .selectedProducts
-                                                          .indexWhere(
-                                                              (element) =>
-                                                                  element
-                                                                      .product!
-                                                                      .id ==
-                                                                  productBody
-                                                                      .id) !=
-                                                      -1
-                                                  ? true
-                                                  : false,
-                                              onChanged: (bool? value) {
-                                                if (productBody.quantity! > 0) {
-                                                  stockTransferController
-                                                      .addToList(productBody);
-                                                } else {
-                                                  showSnackBar(
-                                                      message:
-                                                          "You cannot transfer product that is out of stock",
-                                                      color: Colors.red);
-                                                }
-                                              },
+                                            child: Center(
+                                              child: Checkbox(
+                                                value: stockTransferController
+                                                            .selectedProducts
+                                                            .indexWhere(
+                                                                (element) =>
+                                                                    element
+                                                                        .product!
+                                                                        .id ==
+                                                                    productBody
+                                                                        .id) !=
+                                                        -1
+                                                    ? true
+                                                    : false,
+                                                onChanged: (bool? value) {
+                                                  if (productBody.quantity! > 0) {
+                                                    stockTransferController
+                                                        .addToList(productBody);
+                                                  } else {
+                                                    showSnackBar(
+                                                        message:
+                                                            "You cannot transfer product that is out of stock",
+                                                        color: Colors.red);
+                                                  }
+                                                },
+                                              ),
                                             ),
                                           ))),
                                     ]);

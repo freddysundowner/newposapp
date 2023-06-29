@@ -5,6 +5,7 @@ import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/controllers/product_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/controllers/user_controller.dart';
+import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/stock/transfer_history.dart';
 import 'package:pointify/services/product.dart';
 import 'package:pointify/widgets/snackBars.dart';
@@ -120,7 +121,8 @@ class StockTransferController extends GetxController {
     }
     refresh();
 
-    if (MediaQuery.of(context).size.width > 600) {
+    if (!isSmallScreen(context)) {
+      Get.back();
       Get.find<HomeController>().selectedWidget.value = TransferHistory();
     } else {
       Get.back();
