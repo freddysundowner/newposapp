@@ -67,16 +67,6 @@ class HomePage extends StatelessWidget {
     },
     {"title": "Usage", "icon": Icons.data_usage, "category": "usage"},
   ];
-  List<Map<String, dynamic>> enterpriseOperationsShow = [];
-
-  getCategoryPermissions(category) {
-    List permissions = userController.permissions
-        .where((element) => element["key"] == category)
-        .toList();
-    List p = permissions.map((e) => e["value"]).toList().first;
-    print(userController.roles);
-    return checkPermission(category: category);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -594,6 +584,7 @@ class HomePage extends StatelessWidget {
                 scrollDirection: Axis.vertical,
                 itemBuilder: (context, index) {
                   SalesModel salesModel = results.elementAt(index);
+                  // return Container();
                   return SalesCard(salesModel: salesModel);
                 });
           }

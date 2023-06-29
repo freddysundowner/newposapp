@@ -258,7 +258,7 @@ class CashAtBank extends StatelessWidget {
               ],
             ),
             SizedBox(height: 4),
-            Text(
+            Text          (
               "**** **** **** ****",
               style: TextStyle(color: Colors.black),
             ),
