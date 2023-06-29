@@ -14,9 +14,9 @@ Widget InvoiceCard({required Invoice invoice, String? tab}) {
   return InkWell(
     onTap: () {
       Get.to(() => InvoiceScreen(
-            invoice: invoice,
-            type: "",
-          ));
+        invoice: invoice,
+        type: "",
+      ));
     },
     child: Container(
       margin: const EdgeInsets.all(5),
@@ -49,9 +49,9 @@ Widget InvoiceCard({required Invoice invoice, String? tab}) {
                         ),
                         if (invoice.balance! < 0 &&
                             invoice.items.fold(
-                                    0,
+                                0,
                                     (previousValue, element) =>
-                                        previousValue + element.itemCount!) >
+                                previousValue + element.itemCount!) >
                                 0)
                           Container(
                             decoration: BoxDecoration(
@@ -63,7 +63,7 @@ Widget InvoiceCard({required Invoice invoice, String? tab}) {
                               children: [
                                 minorTitle(
                                     title:
-                                        "Unpaid: ${htmlPrice(invoice.balance)}",
+                                    "Unpaid: ${htmlPrice(invoice.balance)}",
                                     color: Colors.red),
                               ],
                             ),
@@ -75,13 +75,13 @@ Widget InvoiceCard({required Invoice invoice, String? tab}) {
                       children: [
                         normalText(
                             title:
-                                "Amount: ${htmlPrice(invoice.items.fold(0, (previousValue, element) => previousValue + (element.price! * element.itemCount!)) == 0 ? invoice.returneditems.fold(0, (previousValue, element) => previousValue + (element.price! * element.itemCount!)) : invoice.items.fold(0, (previousValue, element) => previousValue + (element.price! * element.itemCount!)))}",
+                            "Amount: ${htmlPrice(invoice.items.fold(0, (previousValue, element) => previousValue + (element.price! * element.itemCount!)) == 0 ? invoice.returneditems.fold(0, (previousValue, element) => previousValue + (element.price! * element.itemCount!)) : invoice.items.fold(0, (previousValue, element) => previousValue + (element.price! * element.itemCount!)))}",
                             color: Colors.black,
                             size: 14.0),
                         const SizedBox(width: 30),
                         minorTitle(
                             title:
-                                "Products: ${invoice.items.fold(0, (previousValue, element) => previousValue + element.itemCount!) > 0 ? invoice.items.fold(0, (previousValue, element) => previousValue + element.itemCount!) : invoice.returneditems.fold(0, (previousValue, element) => previousValue + element.itemCount!)}",
+                            "Products: ${invoice.items.fold(0, (previousValue, element) => previousValue + element.itemCount!) > 0 ? invoice.items.fold(0, (previousValue, element) => previousValue + element.itemCount!) : invoice.returneditems.fold(0, (previousValue, element) => previousValue + element.itemCount!)}",
                             color: Colors.black),
                       ],
                     ),
@@ -95,13 +95,13 @@ Widget InvoiceCard({required Invoice invoice, String? tab}) {
             children: [
               normalText(
                   title:
-                      "On :${DateFormat("yyyy-MM-dd hh:mm a").format(invoice.createdAt!)}",
+                  "On :${DateFormat("yyyy-MM-dd hh:mm a").format(invoice.createdAt!)}",
                   color: Colors.black,
                   size: 14.0),
               const Spacer(),
               Container(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
                 decoration: BoxDecoration(
                     color: chechPaymentColor(invoice),
                     borderRadius: BorderRadius.circular(5)),
