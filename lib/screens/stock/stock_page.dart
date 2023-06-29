@@ -217,7 +217,12 @@ class StockPage extends StatelessWidget {
                           subtitle: "Transfer stock to  another shop",
                           icon: Icons.compare_arrows,
                           onPresssed: () {
-                            Get.to(() => StockTransfer());
+                            if (isSmallScreen(context)) {
+                              Get.to(() => StockTransfer());
+                            } else {
+                              Get.find<HomeController>().selectedWidget.value =
+                                  StockTransfer();
+                            }
                           },
                           color: Colors.green)
                   ],
