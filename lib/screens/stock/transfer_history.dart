@@ -24,97 +24,47 @@ class TransferHistory extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ResponsiveWidget(
-        largeScreen: DefaultTabController(
-          length: 2,
-          child: Scaffold(
-            backgroundColor: Colors.white,
-            appBar: AppBar(
-              backgroundColor: Colors.white,
-              elevation: 0.0,
-              centerTitle: false,
-              leading: IconButton(
-                  onPressed: () {
-                    Get.find<HomeController>().selectedWidget.value =
-                        StockTransfer();
-                  },
-                  icon: Icon(
-                    Icons.arrow_back_ios,
-                    color: Colors.black,
-                  )),
-              title: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Stock Transfer',
-                    style: TextStyle(color: Colors.black, fontSize: 14),
-                  ),
-                  Text(
-                    '${createShopController.currentShop.value!.name!}',
-                    style: TextStyle(color: Colors.grey, fontSize: 12),
-                  ),
-                ],
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0.0,
+          centerTitle: false,
+          leading: IconButton(
+              onPressed: () {
+                if (isSmallScreen(context)) {
+                  Get.back();
+                } else {
+                  Get.find<HomeController>().selectedWidget.value =
+                      StockTransfer();
+                }
+              },
+              icon: const Icon(
+                Icons.arrow_back_ios,
+                color: Colors.black,
+              )),
+          title: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Stock Transfer',
+                style: TextStyle(color: Colors.black, fontSize: 14),
               ),
-              bottom: TabBar(
-                indicatorColor: AppColors.mainColor,
-                labelColor: AppColors.mainColor,
-                unselectedLabelColor: Colors.grey,
-                onTap: (value) {
-                  if (value == 0) {
-                    stockTransferController.gettingTransferHistory(type: "in");
-                  } else {
-                    stockTransferController.gettingTransferHistory(type: "out");
-                  }
-                },
-                tabs: [
-                  Tab(text: "In"),
-                  Tab(text: "Out"),
-                ],
+              Text(
+                createShopController.currentShop.value!.name!,
+                style: const TextStyle(color: Colors.grey, fontSize: 12),
               ),
-            ),
-            body: TabBarView(
-              physics: const NeverScrollableScrollPhysics(),
-              children: [
-                INWidget(),
-                INWidget(),
-              ],
-            ),
+            ],
           ),
-        ),
-        smallScreen: DefaultTabController(
-            length: 2,
-            child: Scaffold(
-              appBar: AppBar(
-                backgroundColor: Colors.white,
-                elevation: 0.0,
-                centerTitle: false,
-                leading: IconButton(
-                    onPressed: () {
-                      Get.back();
-                    },
-                    icon: Icon(
-                      Icons.arrow_back_ios,
-                      color: Colors.black,
-                    )),
-                title: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Stock Transfer',
-                      style: TextStyle(color: Colors.black, fontSize: 14),
-                    ),
-                    Text(
-                      '${createShopController.currentShop.value!.name!}',
-                      style: TextStyle(color: Colors.grey, fontSize: 12),
-                    ),
-                  ],
-                ),
-                bottom: PreferredSize(
-                  preferredSize: Size.fromHeight(50.0),
+          bottom: isSmallScreen(context)
+              ? PreferredSize(
+                  preferredSize: const Size.fromHeight(50.0),
                   child: Container(
                     height: 55,
-                    margin:
-                        EdgeInsets.only(top: 2, bottom: 2, right: 5, left: 5),
+                    margin: const EdgeInsets.only(
+                        top: 2, bottom: 2, right: 5, left: 5),
                     decoration: BoxDecoration(
                       color: Colors.grey[300],
                       borderRadius: BorderRadius.circular(
@@ -137,19 +87,41 @@ class TransferHistory extends StatelessWidget {
                         ),
                         color: AppColors.mainColor,
                       ),
-                      tabs: [
+                      tabs: const [
                         Tab(text: 'IN'),
                         Tab(text: 'OUT'),
                       ],
                     ),
                   ),
+                )
+              : TabBar(
+                  indicatorColor: AppColors.mainColor,
+                  labelColor: AppColors.mainColor,
+                  unselectedLabelColor: Colors.grey,
+                  onTap: (value) {
+                    if (value == 0) {
+                      stockTransferController.gettingTransferHistory(
+                          type: "in");
+                    } else {
+                      stockTransferController.gettingTransferHistory(
+                          type: "out");
+                    }
+                  },
+                  tabs: const [
+                    Tab(text: "In"),
+                    Tab(text: "Out"),
+                  ],
                 ),
-              ),
-              body: TabBarView(children: [
-                INWidget(),
-                INWidget(),
-              ]),
-            )));
+        ),
+        body: TabBarView(
+          physics: const NeverScrollableScrollPhysics(),
+          children: [
+            INWidget(),
+            INWidget(),
+          ],
+        ),
+      ),
+    );
   }
 }
 
@@ -173,11 +145,21 @@ class INWidget extends StatelessWidget {
             )
           : stockTransferController.transferHistory.isEmpty
               ? noItemsFound(context, true)
-              : MediaQuery.of(context).size.width > 600
-                  ? SingleChildScrollView(
+              : isSmallScreen(context)
+                  ? ListView.builder(
+                      itemCount: stockTransferController.transferHistory.length,
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) {
+                        StockTransferHistory stockTransferHistory =
+                            stockTransferController.transferHistory
+                                .elementAt(index);
+                        return transferHistoryCard(
+                            stockTransferHistory: stockTransferHistory);
+                      })
+                  : SingleChildScrollView(
                       child: Container(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 15, vertical: 10),
                         width: double.infinity,
                         child: Theme(
                           data: Theme.of(context)
@@ -189,7 +171,7 @@ class INWidget extends StatelessWidget {
                               color: Colors.black,
                             )),
                             columnSpacing: 30.0,
-                            columns: [
+                            columns: const [
                               DataColumn(
                                   label: Text('Transfer',
                                       textAlign: TextAlign.center)),
@@ -229,15 +211,16 @@ class INWidget extends StatelessWidget {
                                               id: stockTransferHistory.id!);
                                     },
                                     child: Align(
+                                      alignment: Alignment.topRight,
                                       child: Center(
                                         child: Container(
-                                          padding: EdgeInsets.all(5),
-                                          margin: EdgeInsets.all(5),
+                                          padding: const EdgeInsets.all(5),
+                                          margin: const EdgeInsets.all(5),
                                           decoration: BoxDecoration(
                                               color: AppColors.mainColor,
                                               borderRadius:
                                                   BorderRadius.circular(3)),
-                                          child: Text(
+                                          child: const Text(
                                             "View",
                                             style:
                                                 TextStyle(color: Colors.white),
@@ -245,7 +228,6 @@ class INWidget extends StatelessWidget {
                                           ),
                                         ),
                                       ),
-                                      alignment: Alignment.topRight,
                                     ),
                                   ),
                                 ),
@@ -254,17 +236,7 @@ class INWidget extends StatelessWidget {
                           ),
                         ),
                       ),
-                    )
-                  : ListView.builder(
-                      itemCount: stockTransferController.transferHistory.length,
-                      shrinkWrap: true,
-                      itemBuilder: (context, index) {
-                        StockTransferHistory stockTransferHistory =
-                            stockTransferController.transferHistory
-                                .elementAt(index);
-                        return transferHistoryCard(
-                            stockTransferHistory: stockTransferHistory);
-                      });
+                    );
     });
   }
 }
