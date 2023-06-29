@@ -14,13 +14,13 @@ Widget InvoiceCard({required Invoice invoice, String? tab}) {
   return InkWell(
     onTap: () {
       Get.to(() => InvoiceScreen(
-            invoice: invoice,
-            type: "",
-          ));
+        invoice: invoice,
+        type: "",
+      ));
     },
     child: Container(
-      margin: EdgeInsets.all(5),
-      padding: EdgeInsets.all(10),
+      margin: const EdgeInsets.all(5),
+      padding: const EdgeInsets.all(10),
       width: double.infinity,
       decoration: BoxDecoration(
         color: Colors.grey.withOpacity(0.2),
@@ -49,39 +49,39 @@ Widget InvoiceCard({required Invoice invoice, String? tab}) {
                         ),
                         if (invoice.balance! < 0 &&
                             invoice.items.fold(
-                                    0,
+                                0,
                                     (previousValue, element) =>
-                                        previousValue + element.itemCount!) >
+                                previousValue + element.itemCount!) >
                                 0)
                           Container(
                             decoration: BoxDecoration(
                                 border: Border.all(color: Colors.red),
                                 borderRadius: BorderRadius.circular(5)),
-                            padding: EdgeInsets.symmetric(
+                            padding: const EdgeInsets.symmetric(
                                 horizontal: 5, vertical: 2),
                             child: Column(
                               children: [
                                 minorTitle(
                                     title:
-                                        "Unpaid: ${htmlPrice(invoice.balance)}",
+                                    "Unpaid: ${htmlPrice(invoice.balance)}",
                                     color: Colors.red),
                               ],
                             ),
                           ),
                       ],
                     ),
-                    SizedBox(height: 3),
+                    const SizedBox(height: 3),
                     Row(
                       children: [
                         normalText(
                             title:
-                                "Amount: ${htmlPrice(invoice.items.fold(0, (previousValue, element) => previousValue + (element.price! * element.itemCount!)) == 0 ? invoice.returneditems.fold(0, (previousValue, element) => previousValue + (element.price! * element.itemCount!)) : invoice.items.fold(0, (previousValue, element) => previousValue + (element.price! * element.itemCount!)))}",
+                            "Amount: ${htmlPrice(invoice.items.fold(0, (previousValue, element) => previousValue + (element.price! * element.itemCount!)) == 0 ? invoice.returneditems.fold(0, (previousValue, element) => previousValue + (element.price! * element.itemCount!)) : invoice.items.fold(0, (previousValue, element) => previousValue + (element.price! * element.itemCount!)))}",
                             color: Colors.black,
                             size: 14.0),
                         const SizedBox(width: 30),
                         minorTitle(
                             title:
-                                "Products: ${invoice.items.fold(0, (previousValue, element) => previousValue + element.itemCount!) > 0 ? invoice.items.fold(0, (previousValue, element) => previousValue + element.itemCount!) : invoice.returneditems.fold(0, (previousValue, element) => previousValue + element.itemCount!)}",
+                            "Products: ${invoice.items.fold(0, (previousValue, element) => previousValue + element.itemCount!) > 0 ? invoice.items.fold(0, (previousValue, element) => previousValue + element.itemCount!) : invoice.returneditems.fold(0, (previousValue, element) => previousValue + element.itemCount!)}",
                             color: Colors.black),
                       ],
                     ),
@@ -90,23 +90,23 @@ Widget InvoiceCard({required Invoice invoice, String? tab}) {
               ),
             ],
           ),
-          SizedBox(height: 5),
+          const SizedBox(height: 5),
           Row(
             children: [
               normalText(
                   title:
-                      "On :${DateFormat("yyyy-MM-dd hh:mm a").format(invoice.createdAt!)}",
+                  "On :${DateFormat("yyyy-MM-dd hh:mm a").format(invoice.createdAt!)}",
                   color: Colors.black,
                   size: 14.0),
               const Spacer(),
               Container(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
                 decoration: BoxDecoration(
-                    color: _chechPaymentColor(invoice),
+                    color: chechPaymentColor(invoice),
                     borderRadius: BorderRadius.circular(5)),
                 child: Text(
-                  _chechPayment(invoice),
+                  chechPayment(invoice),
                   style: const TextStyle(color: Colors.white),
                 ),
               ),
@@ -118,14 +118,14 @@ Widget InvoiceCard({required Invoice invoice, String? tab}) {
   );
 }
 
-String _chechPayment(Invoice salesModel) {
+String chechPayment(Invoice salesModel) {
   if (salesModel.total == 0) return "RETURNED";
   if (salesModel.balance == 0) return "PAID";
   if (salesModel.balance! < 0) return "NOT PAID";
   return "";
 }
 
-Color _chechPaymentColor(Invoice invoice) {
+Color chechPaymentColor(Invoice invoice) {
   if (invoice.total! == 0) return Colors.red;
   if (invoice.balance == 0) return Colors.green;
   if (invoice.balance! < 0) return Colors.red;

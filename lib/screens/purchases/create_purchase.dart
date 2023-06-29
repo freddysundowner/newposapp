@@ -42,206 +42,11 @@ class CreatePurchase extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: () async {
-        purchaseController.invoice.value?.items.clear();
-        return true;
-      },
-      child: ResponsiveWidget(
-        largeScreen: Scaffold(
-          key: _scaffoldKey,
-          backgroundColor: Colors.white,
-          appBar: AppBar(
-            backgroundColor: Colors.white,
-            elevation: 0.3,
-            centerTitle: false,
-            leading: IconButton(
-                onPressed: () {
-                  if (MediaQuery.of(context).size.width > 600) {
-                    if (usercontroller.user.value?.usertype == "attendant") {
-                      Get.find<HomeController>().selectedWidget.value =
-                          AllPurchases();
-                    } else {
-                      Get.find<HomeController>().selectedWidget.value =
-                          StockPage();
-                    }
-                  } else {
-                    Get.back();
-                  }
-                  purchaseController.invoice.value!.items.clear();
-                },
-                icon: Icon(
-                  Icons.arrow_back_ios,
-                  color: Colors.black,
-                )),
-            title: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4.0),
-              child: majorTitle(
-                  title: "Add Purchase", color: Colors.black, size: 20.0),
-            ),
-          ),
-          body: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(height: 10),
-                if (MediaQuery.of(context).size.width > 600)
-                  Container(
-                    child: searchWidget(
-                        autoCompletKey: _autocompleteKey,
-                        focusNode: _focusNode,
-                        shopId: shopController.currentShop.value?.id!,
-                        page: "purchase"),
-                    padding: EdgeInsets.only(left: 30, right: 80),
-                  ),
-                Obx(() {
-                  return purchaseController.invoice.value!.items.isEmpty
-                      ? Container()
-                      : Padding(
-                          padding: const EdgeInsets.only(right: 30.0, top: 10),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              Text(
-                                  "Totals:${purchaseController.calculateSalesAmount()}"),
-                              const SizedBox(
-                                width: 10,
-                              ),
-                              InkWell(
-                                splashColor: Colors.transparent,
-                                onTap: () {
-                                  purchaseController.invoice.value?.supplier ==
-                                      null;
-                                  saveFunction(context);
-                                },
-                                child: majorTitle(
-                                    title: "Create Purchase",
-                                    color: AppColors.mainColor,
-                                    size: 14.0),
-                              )
-                            ],
-                          ),
-                        );
-                }),
-                SizedBox(height: 20),
-                Obx(() {
-                  return productController.getProductLoad.value
-                      ? Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SizedBox(
-                                height:
-                                    MediaQuery.of(context).size.height * 0.4),
-                            Center(child: CircularProgressIndicator()),
-                          ],
-                        )
-                      : purchaseController.invoice.value!.items.isEmpty
-                          ? noItemsFound(context, true)
-                          : Container(
-                              width: double.infinity,
-                              padding: EdgeInsets.symmetric(horizontal: 30),
-                              child: Theme(
-                                data: Theme.of(context)
-                                    .copyWith(dividerColor: Colors.grey),
-                                child: DataTable(
-                                  decoration: BoxDecoration(
-                                      border: Border.all(
-                                    width: 1,
-                                    color: Colors.black,
-                                  )),
-                                  columnSpacing: 50.0,
-                                  columns: [
-                                    DataColumn(
-                                        label: Text('Product',
-                                            textAlign: TextAlign.center)),
-                                    DataColumn(
-                                        label: Text('Qty',
-                                            textAlign: TextAlign.center)),
-                                    DataColumn(
-                                        label: Text('Price',
-                                            textAlign: TextAlign.center)),
-                                    DataColumn(
-                                        label: Text('Purchase Total',
-                                            textAlign: TextAlign.center)),
-                                    DataColumn(
-                                        label: Text('',
-                                            textAlign: TextAlign.center)),
-                                  ],
-                                  rows: List.generate(
-                                      purchaseController.invoice.value!.items
-                                          .length, (index) {
-                                    InvoiceItem productModel =
-                                        purchaseController.invoice.value!.items
-                                            .elementAt(index);
-                                    final y = productModel.product?.name;
-                                    final x = productModel.itemCount.toString();
-                                    final z = productModel.price;
-                                    final w = productModel.price! *
-                                        productModel.itemCount!;
-
-                                    return DataRow(cells: [
-                                      DataCell(Container(
-                                          width: 75, child: Text(y!))),
-                                      DataCell(Container(
-                                        child: Row(children: [
-                                          IconButton(
-                                              onPressed: () {
-                                                purchaseController
-                                                    .decrementItem(index);
-                                              },
-                                              icon: Icon(Icons.remove,
-                                                  color: Colors.black,
-                                                  size: 16)),
-                                          Container(
-                                              padding: EdgeInsets.only(
-                                                  top: 5,
-                                                  bottom: 5,
-                                                  right: 8,
-                                                  left: 8),
-                                              decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(5),
-                                                border: Border.all(
-                                                    color: Colors.black,
-                                                    width: 0.1),
-                                                color: Colors.grey,
-                                              ),
-                                              child: majorTitle(
-                                                  title:
-                                                      "${productModel.itemCount}",
-                                                  color: Colors.black,
-                                                  size: 12.0)),
-                                          IconButton(
-                                              onPressed: () {
-                                                purchaseController
-                                                    .incrementItem(index);
-                                              },
-                                              icon: Icon(Icons.add,
-                                                  color: Colors.black,
-                                                  size: 16)),
-                                        ]),
-                                      )),
-                                      DataCell(
-                                          Container(child: Text(z.toString()))),
-                                      DataCell(
-                                          Container(child: Text(w.toString()))),
-                                      DataCell(Container(
-                                          child: InkWell(
-                                              onTap: () {
-                                                purchaseController
-                                                    .removeFromList(index);
-                                              },
-                                              child: Icon(Icons.clear))))
-                                    ]);
-                                  }),
-                                ),
-                              ),
-                            );
-                }),
-              ],
-            ),
-          ),
-        ),
-        smallScreen: Scaffold(
+        onWillPop: () async {
+          purchaseController.invoice.value?.items.clear();
+          return true;
+        },
+        child: Scaffold(
           backgroundColor: Colors.white,
           appBar: AppBar(
             backgroundColor: Colors.white,
@@ -250,14 +55,44 @@ class CreatePurchase extends StatelessWidget {
             leading: IconButton(
                 onPressed: () {
                   purchaseController.invoice.value = null;
-                  Get.back();
+
+                  if (isSmallScreen(context)) {
+                    Get.back();
+                  } else {
+                    Get.find<HomeController>().selectedWidget.value =
+                        StockPage();
+                  }
                 },
-                icon: Icon(
+                icon: const Icon(
                   Icons.arrow_back_ios,
                   color: Colors.black,
                 )),
             title: majorTitle(
                 title: "Add Purchase", color: Colors.black, size: 20.0),
+            actions: [
+              if (!isSmallScreen(context) &&
+                  purchaseController.invoice.value != null)
+                InkWell(
+                  onTap: () async {
+                    purchaseController.invoice.value?.supplier == null;
+                    saveFunction(context);
+                  },
+                  child: Container(
+                    height: kToolbarHeight * 0.5,
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                    margin: const EdgeInsets.symmetric(vertical: 10)
+                        .copyWith(right: 10),
+                    decoration: BoxDecoration(
+                        border: Border.all(color: AppColors.mainColor),
+                        borderRadius: BorderRadius.circular(5)),
+                    child: Text(
+                      "Create Purchase",
+                      style: TextStyle(color: AppColors.mainColor),
+                    ),
+                  ),
+                )
+            ],
           ),
           body: Stack(
             children: [
@@ -272,7 +107,7 @@ class CreatePurchase extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            SizedBox(
+                            const SizedBox(
                               height: kToolbarHeight * 1.2,
                             ),
                             ListView.builder(
@@ -300,11 +135,11 @@ class CreatePurchase extends StatelessWidget {
                     child: Container(
                       width: double.infinity,
                       color: Colors.white,
-                      padding: EdgeInsets.fromLTRB(5, 0, 5, 5),
+                      padding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          SizedBox(height: 10),
+                          const SizedBox(height: 10),
                           Row(
                             children: [
                               Expanded(
@@ -313,13 +148,21 @@ class CreatePurchase extends StatelessWidget {
                                     productController.getProductsBySort(
                                       type: "all",
                                     );
-                                    Get.to(() => ProductsScreen(
-                                          type: "purchase",
-                                        ));
+                                    if (isSmallScreen(context)) {
+                                      Get.to(() => ProductsScreen(
+                                            type: "purchase",
+                                          ));
+                                    } else {
+                                      Get.find<HomeController>()
+                                          .selectedWidget
+                                          .value = ProductsScreen(
+                                        type: "purchase",
+                                      );
+                                    }
                                   },
                                   child: Container(
-                                    padding:
-                                        EdgeInsets.fromLTRB(15, 10, 15, 10),
+                                    padding: const EdgeInsets.fromLTRB(
+                                        15, 10, 15, 10),
                                     decoration: BoxDecoration(
                                         border: Border.all(color: Colors.grey),
                                         borderRadius:
@@ -345,10 +188,10 @@ class CreatePurchase extends StatelessWidget {
                                               .currentShop.value?.id,
                                           context: context);
                                     },
-                                    icon: Icon(Icons.qr_code))
+                                    icon: const Icon(Icons.qr_code))
                             ],
                           ),
-                          SizedBox(height: 10),
+                          const SizedBox(height: 10),
                         ],
                       ),
                     ),
@@ -362,17 +205,214 @@ class CreatePurchase extends StatelessWidget {
                   ? Container(height: 0)
                   : Container(
                       width: double.infinity,
-                      padding: EdgeInsets.all(10),
-                      height: kToolbarHeight * 1.5,
+                      padding: const EdgeInsets.all(10),
+                      height:
+                          isSmallScreen(context) ? kToolbarHeight * 1.5 : 0.0,
                       decoration: BoxDecoration(
                           border: Border.all(width: 1, color: Colors.grey)),
                       child: createPurchase(context),
                     ),
             );
           }),
-        ),
-      ),
-    );
+        )
+        // ResponsiveWidget(
+        //   largeScreen: Scaffold(
+        //     key: _scaffoldKey,
+        //     backgroundColor: Colors.white,
+        //     appBar: AppBar(
+        //       backgroundColor: Colors.white,
+        //       elevation: 0.3,
+        //       centerTitle: false,
+        //       leading: IconButton(
+        //           onPressed: () {
+        //             if (MediaQuery.of(context).size.width > 600) {
+        //               if (usercontroller.user.value?.usertype == "attendant") {
+        //                 Get.find<HomeController>().selectedWidget.value =
+        //                     AllPurchases();
+        //               } else {
+        //                 Get.find<HomeController>().selectedWidget.value =
+        //                     StockPage();
+        //               }
+        //             } else {
+        //               Get.back();
+        //             }
+        //             purchaseController.invoice.value!.items.clear();
+        //           },
+        //           icon: Icon(
+        //             Icons.arrow_back_ios,
+        //             color: Colors.black,
+        //           )),
+        //       title: Padding(
+        //         padding: const EdgeInsets.symmetric(horizontal: 4.0),
+        //         child: majorTitle(
+        //             title: "Add Purchase", color: Colors.black, size: 20.0),
+        //       ),
+        //     ),
+        //     body: SingleChildScrollView(
+        //       child: Column(
+        //         crossAxisAlignment: CrossAxisAlignment.start,
+        //         children: [
+        //           SizedBox(height: 10),
+        //           if (MediaQuery.of(context).size.width > 600)
+        //             Container(
+        //               child: searchWidget(
+        //                   autoCompletKey: _autocompleteKey,
+        //                   focusNode: _focusNode,
+        //                   shopId: shopController.currentShop.value?.id!,
+        //                   page: "purchase"),
+        //               padding: EdgeInsets.only(left: 30, right: 80),
+        //             ),
+        //           Obx(() {
+        //             return purchaseController.invoice.value!.items.isEmpty
+        //                 ? Container()
+        //                 : Padding(
+        //                     padding: const EdgeInsets.only(right: 30.0, top: 10),
+        //                     child: Row(
+        //                       mainAxisAlignment: MainAxisAlignment.end,
+        //                       children: [
+        //                         Text(
+        //                             "Totals:${purchaseController.calculateSalesAmount()}"),
+        //                         const SizedBox(
+        //                           width: 10,
+        //                         ),
+        //                         InkWell(
+        //                           splashColor: Colors.transparent,
+        //                           onTap: () {
+        //                             purchaseController.invoice.value?.supplier ==
+        //                                 null;
+        //                             saveFunction(context);
+        //                           },
+        //                           child: majorTitle(
+        //                               title: "Create Purchase",
+        //                               color: AppColors.mainColor,
+        //                               size: 14.0),
+        //                         )
+        //                       ],
+        //                     ),
+        //                   );
+        //           }),
+        //           SizedBox(height: 20),
+        //           Obx(() {
+        //             return productController.getProductLoad.value
+        //                 ? Column(
+        //                     mainAxisAlignment: MainAxisAlignment.center,
+        //                     children: [
+        //                       SizedBox(
+        //                           height:
+        //                               MediaQuery.of(context).size.height * 0.4),
+        //                       Center(child: CircularProgressIndicator()),
+        //                     ],
+        //                   )
+        //                 : purchaseController.invoice.value!.items.isEmpty
+        //                     ? noItemsFound(context, true)
+        //                     : Container(
+        //                         width: double.infinity,
+        //                         padding: EdgeInsets.symmetric(horizontal: 30),
+        //                         child: Theme(
+        //                           data: Theme.of(context)
+        //                               .copyWith(dividerColor: Colors.grey),
+        //                           child: DataTable(
+        //                             decoration: BoxDecoration(
+        //                                 border: Border.all(
+        //                               width: 1,
+        //                               color: Colors.black,
+        //                             )),
+        //                             columnSpacing: 50.0,
+        //                             columns: [
+        //                               DataColumn(
+        //                                   label: Text('Product',
+        //                                       textAlign: TextAlign.center)),
+        //                               DataColumn(
+        //                                   label: Text('Qty',
+        //                                       textAlign: TextAlign.center)),
+        //                               DataColumn(
+        //                                   label: Text('Price',
+        //                                       textAlign: TextAlign.center)),
+        //                               DataColumn(
+        //                                   label: Text('Purchase Total',
+        //                                       textAlign: TextAlign.center)),
+        //                               DataColumn(
+        //                                   label: Text('',
+        //                                       textAlign: TextAlign.center)),
+        //                             ],
+        //                             rows: List.generate(
+        //                                 purchaseController.invoice.value!.items
+        //                                     .length, (index) {
+        //                               InvoiceItem productModel =
+        //                                   purchaseController.invoice.value!.items
+        //                                       .elementAt(index);
+        //                               final y = productModel.product?.name;
+        //                               final x = productModel.itemCount.toString();
+        //                               final z = productModel.price;
+        //                               final w = productModel.price! *
+        //                                   productModel.itemCount!;
+        //
+        //                               return DataRow(cells: [
+        //                                 DataCell(Container(
+        //                                     width: 75, child: Text(y!))),
+        //                                 DataCell(Container(
+        //                                   child: Row(children: [
+        //                                     IconButton(
+        //                                         onPressed: () {
+        //                                           purchaseController
+        //                                               .decrementItem(index);
+        //                                         },
+        //                                         icon: Icon(Icons.remove,
+        //                                             color: Colors.black,
+        //                                             size: 16)),
+        //                                     Container(
+        //                                         padding: EdgeInsets.only(
+        //                                             top: 5,
+        //                                             bottom: 5,
+        //                                             right: 8,
+        //                                             left: 8),
+        //                                         decoration: BoxDecoration(
+        //                                           borderRadius:
+        //                                               BorderRadius.circular(5),
+        //                                           border: Border.all(
+        //                                               color: Colors.black,
+        //                                               width: 0.1),
+        //                                           color: Colors.grey,
+        //                                         ),
+        //                                         child: majorTitle(
+        //                                             title:
+        //                                                 "${productModel.itemCount}",
+        //                                             color: Colors.black,
+        //                                             size: 12.0)),
+        //                                     IconButton(
+        //                                         onPressed: () {
+        //                                           purchaseController
+        //                                               .incrementItem(index);
+        //                                         },
+        //                                         icon: Icon(Icons.add,
+        //                                             color: Colors.black,
+        //                                             size: 16)),
+        //                                   ]),
+        //                                 )),
+        //                                 DataCell(
+        //                                     Container(child: Text(z.toString()))),
+        //                                 DataCell(
+        //                                     Container(child: Text(w.toString()))),
+        //                                 DataCell(Container(
+        //                                     child: InkWell(
+        //                                         onTap: () {
+        //                                           purchaseController
+        //                                               .removeFromList(index);
+        //                                         },
+        //                                         child: Icon(Icons.clear))))
+        //                               ]);
+        //                             }),
+        //                           ),
+        //                         ),
+        //                       );
+        //           }),
+        //         ],
+        //       ),
+        //     ),
+        //   ),
+        //   smallScreen: ,
+        // ),
+        );
   }
 
   Widget createPurchase(context) {
@@ -383,7 +423,7 @@ class CreatePurchase extends StatelessWidget {
         saveFunction(context);
       },
       child: Container(
-        padding: EdgeInsets.all(10),
+        padding: const EdgeInsets.all(10),
         width: double.infinity,
         decoration: BoxDecoration(
             border: Border.all(width: 3, color: AppColors.mainColor),
@@ -430,7 +470,7 @@ class CreatePurchase extends StatelessWidget {
                                         minorTitle(
                                             title: "Amount paid",
                                             color: Colors.black),
-                                        SizedBox(
+                                        const SizedBox(
                                           height: 10,
                                         ),
                                         TextFormField(
@@ -457,7 +497,7 @@ class CreatePurchase extends StatelessWidget {
                                       ],
                                     ),
                                   ),
-                                  Spacer(),
+                                  const Spacer(),
                                   Expanded(
                                     flex: 2,
                                     child: Column(
@@ -468,7 +508,7 @@ class CreatePurchase extends StatelessWidget {
                                             title: "Total",
                                             color: Colors.black,
                                             size: 13.0),
-                                        SizedBox(
+                                        const SizedBox(
                                           height: 3,
                                         ),
                                         Obx(() {
@@ -479,7 +519,7 @@ class CreatePurchase extends StatelessWidget {
                                               color: Colors.grey,
                                               size: 14);
                                         }),
-                                        SizedBox(
+                                        const SizedBox(
                                           height: 8,
                                         ),
                                         majorTitle(
@@ -503,7 +543,7 @@ class CreatePurchase extends StatelessWidget {
                               ),
                               if (purchaseController.invoice.value!.supplier ==
                                   null)
-                                SizedBox(
+                                const SizedBox(
                                   height: 20,
                                 ),
                               if (purchaseController.invoice.value!.supplier ==
@@ -519,7 +559,7 @@ class CreatePurchase extends StatelessWidget {
                                 ),
                               if (purchaseController.invoice.value!.supplier !=
                                   null)
-                                SizedBox(
+                                const SizedBox(
                                   height: 10,
                                 ),
                               Row(
@@ -543,11 +583,11 @@ class CreatePurchase extends StatelessWidget {
                                                 color: AppColors.mainColor,
                                                 size: 18.0),
                                           ),
-                                          SizedBox(
+                                          const SizedBox(
                                             width: 20,
                                           ),
                                           Container(
-                                            padding: EdgeInsets.symmetric(
+                                            padding: const EdgeInsets.symmetric(
                                                 horizontal: 5),
                                             decoration: BoxDecoration(
                                                 color: Colors.white,
@@ -562,7 +602,7 @@ class CreatePurchase extends StatelessWidget {
                                                     title: "Change",
                                                     color: Colors.red,
                                                     size: 12.0),
-                                                Icon(
+                                                const Icon(
                                                   Icons.edit,
                                                   size: 15,
                                                 )
@@ -581,13 +621,13 @@ class CreatePurchase extends StatelessWidget {
                                               .invoice.value!.supplier = null;
                                           purchaseController.invoice.refresh();
                                         },
-                                        icon: Icon(
+                                        icon: const Icon(
                                           Icons.delete,
                                           color: Colors.red,
                                         )),
                                 ],
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 height: 20,
                               ),
                               Row(
@@ -613,7 +653,7 @@ class CreatePurchase extends StatelessWidget {
                                           size: 16.0))
                                 ],
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 height: 30,
                               )
                             ],
@@ -642,7 +682,7 @@ class CreatePurchase extends StatelessWidget {
                         Get.back();
                       }
                     },
-                    icon: Icon(
+                    icon: const Icon(
                       Icons.arrow_back_ios,
                       color: Colors.black,
                     ),
@@ -675,7 +715,7 @@ class CreatePurchase extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.all(10),
                     child: Container(
-                      padding: EdgeInsets.fromLTRB(5, 2, 5, 2),
+                      padding: const EdgeInsets.fromLTRB(5, 2, 5, 2),
                       decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: (BorderRadius.circular(10)),
