@@ -44,15 +44,15 @@ Widget productCard({required Product product}) {
                           title: "${product.name}",
                           color: Colors.white,
                           size: 16.0),
-                      SizedBox(height: 5),
+                      const SizedBox(height: 5),
                       minorTitle(
                           title: "Category: ${product.category?.name}",
                           color: Colors.white),
-                      SizedBox(height: 5),
+                      const SizedBox(height: 5),
                       minorTitle(
                           title: "Available: ${product.quantity}",
                           color: Colors.white),
-                      SizedBox(height: 5),
+                      const SizedBox(height: 5),
                       minorTitle(
                           title: "By ~ ${product.attendant?.username}",
                           color: Colors.white),
@@ -60,7 +60,7 @@ Widget productCard({required Product product}) {
                   )
                 ],
               ),
-              Spacer(),
+              const Spacer(),
               Row(children: [
                 Column(
                   children: [
@@ -68,14 +68,14 @@ Widget productCard({required Product product}) {
                         title:
                             "BP/= ${shopController.currentShop.value?.currency}.${product.buyingPrice}",
                         color: Colors.white),
-                    SizedBox(height: 5),
+                    const SizedBox(height: 5),
                     minorTitle(
                         title:
                             "SP/=  ${shopController.currentShop.value?.currency}.${product.selling}",
                         color: Colors.white),
                   ],
                 ),
-                SizedBox(width: 10),
+                const SizedBox(width: 10),
               ])
             ],
           )),
@@ -106,7 +106,7 @@ showProductModal(context, Product product) {
               ),
               if (userController.user.value?.usertype == "admin")
                 ListTile(
-                    leading: Icon(Icons.list),
+                    leading: const Icon(Icons.list),
                     onTap: () {
                       Get.back();
 
@@ -125,7 +125,7 @@ showProductModal(context, Product product) {
                     title: const Text('Product History')),
               if (checkPermission(category: "products", permission: "manage"))
                 ListTile(
-                    leading: Icon(Icons.edit),
+                    leading: const Icon(Icons.edit),
                     onTap: () {
                       Get.back();
                       Get.to(() => CreateProduct(
@@ -136,7 +136,7 @@ showProductModal(context, Product product) {
                     title: const Text('Edit')),
               if (userController.user.value?.usertype == "admin")
                 ListTile(
-                    leading: Icon(Icons.code),
+                    leading: const Icon(Icons.code),
                     onTap: () {
                       Get.back();
                       // BarcodePdf(
@@ -149,7 +149,7 @@ showProductModal(context, Product product) {
                     title: const Text('Generate Barcode')),
               if (checkPermission(category: "products", permission: "manage"))
                 ListTile(
-                    leading: Icon(Icons.delete),
+                    leading: const Icon(Icons.delete),
                     onTap: () {
                       Get.back();
                       deleteDialog(
@@ -160,13 +160,13 @@ showProductModal(context, Product product) {
                             );
                           });
                     },
-                    title: Text('Delete')),
+                    title: const Text('Delete')),
               ListTile(
-                  leading: Icon(Icons.clear),
+                  leading: const Icon(Icons.clear),
                   onTap: () {
                     Get.back();
                   },
-                  title: Text('Close')),
+                  title: const Text('Close')),
             ],
           ),
         );

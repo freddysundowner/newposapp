@@ -4,6 +4,7 @@ import 'package:pointify/controllers/product_controller.dart';
 import 'package:pointify/controllers/sales_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/functions/functions.dart';
+import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/product/products_page.dart';
 import 'package:get/get.dart';
 import 'package:pointify/screens/product/tabs/bad_stock_history.dart';
@@ -27,6 +28,7 @@ class ProductHistory extends StatelessWidget {
   SalesController salesController = Get.find<SalesController>();
 
   ProductController productController = Get.find<ProductController>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,7 +38,7 @@ class ProductHistory extends StatelessWidget {
           centerTitle: false,
           leading: IconButton(
               onPressed: () {
-                if (MediaQuery.of(context).size.width > 600) {
+                if (!isSmallScreen(context)) {
                   Get.find<HomeController>().selectedWidget.value =
                       ProductPage();
                 } else {
