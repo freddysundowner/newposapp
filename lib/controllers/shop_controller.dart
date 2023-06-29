@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pointify/Real/schema.dart';
+import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/services/shop_services.dart';
 import 'package:pointify/controllers/AuthController.dart';
 import 'package:pointify/controllers/home_controller.dart';
@@ -114,7 +115,12 @@ class ShopController extends GetxController {
           location: reqionController.text);
       getShops();
       refresh();
-      Get.back();
+      if (isSmallScreen(Get.context)) {
+        Get.back();
+      } else {
+        Get.find<HomeController>().selectedWidget.value = ShopsPage();
+      }
+
       showSnackBar(message: "shop updated", color: Colors.green);
       updateShopLoad.value = false;
     } catch (e) {
