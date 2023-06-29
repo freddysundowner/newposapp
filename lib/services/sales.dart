@@ -88,10 +88,13 @@ class Sales {
     RealmResults<SalesModel> invoices = realmService.realm.query<SalesModel>(
         'shop == \$0 $filter AND TRUEPREDICATE SORT(createdAt DESC)',
         [shopController.currentShop.value]);
-    if (receipt.isNotEmpty) {
-      var ii = invoices.query("receiptNumber BEGINSWITH \$0 ", [receipt]);
-      return _attendantFilter(ii);
-    }
+    // if (receipt.isNotEmpty) {
+    //   var ii = invoices
+    //       .where(
+    //           (e) => e.receiptNumber.toString().toLowerCase().contains(receipt))
+    //       .toList();
+    //   return _attendantFilter(ii as RealmResults<SalesModel>);
+    // }
 
     if (invoices.isNotEmpty) {
       RealmResults<SalesModel> dateinvoices = invoices.query(
@@ -151,6 +154,18 @@ class Sales {
     });
   }
 
+  deleteReceiptItem(ReceiptItem receiptItem) {
+    realmService.realm.write(() {
+      realmService.realm.delete(receiptItem);
+    });
+  }
+
+  deleteReceipt(SalesModel salesModel) {
+    realmService.realm.write(() {
+      realmService.realm.delete(salesModel);
+    });
+  }
+
   RealmResults<ReceiptItem>? getSalesByProductId(Product product) {
     RealmResults<ReceiptItem>? invoices =
         realmService.realm.query<ReceiptItem>('product == \$0 ', [product]);
@@ -177,10 +192,10 @@ class Sales {
       DateTime? fromDate,
       Product? product,
       DateTime? toDate}) {
-    String filter = "";
+    String filter = " AND type != 'return' AND quantity > 0";
     if (type != null) {
-      filter += " AND type == 'return'";
-    }
+      filter = " AND type == 'return'";
+    } else {}
     if (product != null) {
       RealmResults<ReceiptItem> returns = realmService.realm.query<ReceiptItem>(
           'soldOn > ${fromDate!.millisecondsSinceEpoch} AND soldOn < ${toDate!.millisecondsSinceEpoch} AND product == \$0 $filter',
@@ -193,7 +208,7 @@ class Sales {
           [shopController.currentShop.value]);
       return _attendantFilterReceipts(returns);
     }
-    if (date!.isNotEmpty) {
+    if (date != null) {
       RealmResults<ReceiptItem> returns = realmService.realm.query<ReceiptItem>(
           "date == '$date' AND shop == \$0  $filter",
           [shopController.currentShop.value]);

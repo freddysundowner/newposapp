@@ -8,7 +8,6 @@ import 'package:pointify/functions/functions.dart';
 import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/finance/finance_page.dart';
 import 'package:pointify/widgets/no_items_found.dart';
-import 'package:pointify/widgets/pdf/expense_pdf.dart';
 import 'package:pointify/widgets/snackBars.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -23,17 +22,7 @@ import '../../widgets/smalltext.dart';
 import 'create_expense.dart';
 
 class ExpensePage extends StatelessWidget {
-  ExpensePage({Key? key}) : super(key: key) {
-    expenseController.filterStartDate.value =
-        salesController.filterStartDate.value;
-    expenseController.filterEnndStartDate.value =
-        salesController.filterEndDate.value;
-    expenseController.getExpenseByDate(
-      fromDate: expenseController.filterStartDate.value,
-      toDate: expenseController.filterEnndStartDate.value,
-    );
-  }
-
+  ExpensePage({Key? key}) : super(key: key);
   SalesController salesController = Get.find<SalesController>();
   ExpenseController expenseController = Get.find<ExpenseController>();
   ShopController shopController = Get.find<ShopController>();
@@ -266,7 +255,6 @@ class ExpensePage extends StatelessWidget {
 
   AppBar _appBar(context) {
     return AppBar(
-      backgroundColor: Colors.white,
       elevation: 0.3,
       centerTitle: false,
       leading: Get.find<UserController>().user.value?.usertype == "attendant" &&
@@ -292,10 +280,10 @@ class ExpensePage extends StatelessWidget {
               },
               icon: Icon(
                 Icons.arrow_back_ios,
-                color: Colors.black,
+                color: Colors.white,
               ),
             ),
-      title: majorTitle(title: "Expenses", color: Colors.black, size: 16.0),
+      title: majorTitle(title: "Expenses", color: Colors.white, size: 16.0),
       actions: [
         InkWell(
             onTap: () async {
@@ -336,14 +324,14 @@ class ExpensePage extends StatelessWidget {
                 showSnackBar(
                     message: "No items to download", color: Colors.black);
               } else {
-                ExpensePdf(
-                    shop: shopController.currentShop.value!.name!,
-                    expenses: expenseController.expenses);
+                // ExpensePdf(
+                //     shop: shopController.currentShop.value!.name!,
+                //     expenses: expenseController.expenses);
               }
             },
             child: Icon(
               Icons.download,
-              color: Colors.black,
+              color: Colors.white,
             ),
           ),
         SizedBox(width: 10)

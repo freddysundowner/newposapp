@@ -4,6 +4,7 @@ import 'package:pointify/controllers/product_controller.dart';
 import 'package:pointify/controllers/sales_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/functions/functions.dart';
+import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/product/products_page.dart';
 import 'package:get/get.dart';
 import 'package:pointify/screens/product/tabs/bad_stock_history.dart';
@@ -14,6 +15,7 @@ import 'package:pointify/screens/product/tabs/count_history.dart';
 import '../../Real/schema.dart';
 import '../../controllers/stock_transfer_controller.dart';
 import '../../widgets/smalltext.dart';
+import '../../widgets/tab_view.dart';
 
 class ProductHistory extends StatelessWidget {
   final Product product;
@@ -26,6 +28,7 @@ class ProductHistory extends StatelessWidget {
   SalesController salesController = Get.find<SalesController>();
 
   ProductController productController = Get.find<ProductController>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,7 +38,7 @@ class ProductHistory extends StatelessWidget {
           centerTitle: false,
           leading: IconButton(
               onPressed: () {
-                if (MediaQuery.of(context).size.width > 600) {
+                if (!isSmallScreen(context)) {
                   Get.find<HomeController>().selectedWidget.value =
                       ProductPage();
                 } else {
@@ -168,7 +171,7 @@ class ProductHistory extends StatelessWidget {
                         },
                         tabs: [
                           Tab(
-                            child: _tabView(
+                            child: tabView(
                                 title: "Sales",
                                 subtitle: htmlPrice(salesController.productSales
                                     .fold(
@@ -177,7 +180,7 @@ class ProductHistory extends StatelessWidget {
                                             previousValue + element.total!))),
                           ),
                           Tab(
-                              child: _tabView(
+                              child: tabView(
                                   title: "IN",
                                   subtitle: htmlPrice(
                                       productController.productInvoices.fold(
@@ -186,7 +189,7 @@ class ProductHistory extends StatelessWidget {
                                               previousValue +
                                               element.total!)))),
                           Tab(
-                              child: _tabView(
+                              child: tabView(
                                   title: "Bad",
                                   subtitle: htmlPrice(
                                       productController.badstocks.fold(
@@ -197,8 +200,8 @@ class ProductHistory extends StatelessWidget {
                                                   element.product!
                                                       .buyingPrice!))))),
                           Tab(
-                              child: _tabView(
-                                  title: "Count", subtitle: "History")),
+                              child:
+                                  tabView(title: "Count", subtitle: "History")),
                         ],
                       ),
                     ),
@@ -223,22 +226,5 @@ class ProductHistory extends StatelessWidget {
                     )
                   ]);
             })));
-  }
-
-  Column _tabView({required String title, required var subtitle}) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text(
-          title,
-          style: TextStyle(fontSize: 13, color: Colors.black),
-        ),
-        Text(
-          subtitle,
-          style: const TextStyle(fontSize: 11, color: Colors.black),
-        ),
-      ],
-    );
   }
 }

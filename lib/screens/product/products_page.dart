@@ -34,59 +34,51 @@ class ProductPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: () async {
-        productController.getProductsBySort(type: "all");
-        return true;
-      },
-      child: ResponsiveWidget(
-          largeScreen: Scaffold(
+        onWillPop: () async {
+          productController.getProductsBySort(type: "all");
+          return true;
+        },
+        child: Scaffold(
+          appBar: AppBar(
             backgroundColor: Colors.white,
-            appBar: AppBar(
-              backgroundColor: Colors.white,
-              elevation: 0.3,
-              titleSpacing: 0.0,
-              centerTitle: false,
-              leading: usercontroller.user.value?.usertype == "attendant"
-                  ? null
-                  : IconButton(
-                      onPressed: () {
-                        if (MediaQuery.of(context).size.width > 600) {
-                          Get.find<HomeController>().selectedWidget.value =
-                              StockPage();
-                        } else {
-                          Get.back();
-                        }
-                        productController.getProductsBySort(type: "all");
-                      },
-                      icon: const Icon(
-                        Icons.arrow_back_ios,
-                        color: Colors.black,
-                      ),
-                    ),
-              title: Row(
+            elevation: 0.3,
+            titleSpacing: 0.0,
+            centerTitle: false,
+            leading: IconButton(
+              onPressed: () {
+                productController.getProductsBySort(type: "all");
+                if (!isSmallScreen(context)) {
+                  Get.find<HomeController>().selectedWidget.value = StockPage();
+                } else {
+                  Get.back();
+                }
+              },
+              icon: const Icon(
+                Icons.arrow_back_ios,
+                color: Colors.black,
+              ),
+            ),
+            title: Padding(
+              padding: const EdgeInsets.only(right: 10.0),
+              child: Row(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        majorTitle(
-                            title: "Shop Products",
-                            color: Colors.black,
-                            size: 16.0),
-                        minorTitle(
-                            title:
-                                "${createShopController.currentShop.value?.name}",
-                            color: Colors.grey)
-                      ],
-                    ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      majorTitle(
+                          title: "Products", color: Colors.black, size: 16.0),
+                      minorTitle(
+                          title:
+                              "${createShopController.currentShop.value?.name}",
+                          color: Colors.grey)
+                    ],
                   ),
-                  Spacer(),
+                  const Spacer(),
                   if (usercontroller.user.value?.usertype == "attendant")
                     InkWell(
                         onTap: () {
-                          Get.find<HomeController>().selectedWidget.value =
-                              CreateProduct(page: "create", productModel: null);
+                          Get.to(() => CreateProduct(
+                              page: "create", productModel: null));
                         },
                         child: majorTitle(
                             title: "Add Product",
@@ -95,238 +87,232 @@ class ProductPage extends StatelessWidget {
                 ],
               ),
             ),
-            body: SingleChildScrollView(
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 15),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding:
-                          const EdgeInsets.only(left: 1, right: 10, top: 10),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          searchWidget(),
-                          SizedBox(width: 100),
-                          sortWidget(context)
-                        ],
+          ),
+          body: SingleChildScrollView(
+            child: Column(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: TextFormField(
+                          controller: productController.searchProductController,
+                          onChanged: (value) {
+                            if (value == "") {
+                              productController.getProductsBySort(
+                                type: "all",
+                              );
+                            } else {
+                              productController.getProductsBySort(
+                                  type: "search",
+                                  text: productController
+                                      .searchProductController.text);
+                            }
+                          },
+                          decoration: InputDecoration(
+                            contentPadding:
+                                const EdgeInsets.fromLTRB(10, 2, 10, 2),
+                            suffixIcon: IconButton(
+                              onPressed: () {
+                                productController.getProductsBySort(
+                                    type: "search",
+                                    text: productController
+                                        .searchProductController.text);
+                              },
+                              icon: const Icon(Icons.search),
+                            ),
+                            hintText: "Quick Search Item",
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 30),
-                    Obx(() {
-                      return productController.getProductLoad.value
-                          ? const Center(
-                              child: CircularProgressIndicator(),
-                            )
-                          : productController.products.isEmpty
-                              ? Center(
-                                  child: Text(
-                                  "No Entries found",
-                                  style: TextStyle(color: AppColors.mainColor),
-                                ))
-                              : Theme(
-                                  data: Theme.of(context)
-                                      .copyWith(dividerColor: Colors.grey),
-                                  child: Container(
-                                    width: double.infinity,
-                                    margin: EdgeInsets.only(
-                                        right: 10, left: 5, bottom: 20),
-                                    child: DataTable(
-                                      decoration: BoxDecoration(
-                                          border: Border.all(
-                                        width: 1,
-                                        color: Colors.black,
-                                      )),
-                                      columnSpacing: 30.0,
-                                      columns: [
-                                        DataColumn(
-                                            label: Text('Product',
-                                                textAlign: TextAlign.center)),
-                                        DataColumn(
-                                            label: Text('Category',
-                                                textAlign: TextAlign.center)),
-                                        DataColumn(
-                                            label: Text('Available',
-                                                textAlign: TextAlign.center)),
-                                        DataColumn(
-                                            label: Text('Buying Price',
-                                                textAlign: TextAlign.center)),
-                                        DataColumn(
-                                            label: Text('Selling Price',
-                                                textAlign: TextAlign.center)),
-                                        DataColumn(
-                                            label: Text('',
-                                                textAlign: TextAlign.center)),
-                                      ],
-                                      rows: List.generate(
+                      if (usercontroller.user.value?.usertype == "admin" &&
+                          isSmallScreen(context))
+                        IconButton(
+                            onPressed: () async {
+                              productController.scanQR(
+                                  shopId: createShopController
+                                              .currentShop.value ==
+                                          null
+                                      ? ""
+                                      : "${createShopController.currentShop.value?.id}",
+                                  type: "product",
+                                  context: context);
+                            },
+                            icon: const Icon(Icons.qr_code))
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text("Sort List By"),
+                      sortWidget(context),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Obx(() {
+                  return productController.getProductLoad.value
+                      ? const Center(child: CircularProgressIndicator())
+                      : productController.products.isEmpty
+                          ? Center(
+                              child: Text(
+                              "No Entries found",
+                              style: TextStyle(color: AppColors.mainColor),
+                            ))
+                          : Container(
+                              // height: MediaQuery.of(context).size.height*0.6,
+                              child: isSmallScreen(context)
+                                  ? ListView.builder(
+                                      physics:
+                                          const NeverScrollableScrollPhysics(),
+                                      itemCount:
                                           productController.products.length,
-                                          (index) {
-                                        Product productBody = productController
+                                      shrinkWrap: true,
+                                      itemBuilder: ((context, index) {
+                                        Product productModel = productController
                                             .products
                                             .elementAt(index);
-                                        final y = productBody.name;
-                                        final x = productBody.category!.name;
-                                        final w = productBody.quantity;
-                                        final z = productBody.buyingPrice;
-                                        final a = productBody.sellingPrice![0];
-
-                                        return DataRow(cells: [
-                                          DataCell(Container(
-                                              width: 75, child: Text(y!))),
-                                          DataCell(Container(
-                                              width: 75,
-                                              child: Text(x.toString()))),
-                                          DataCell(Container(
-                                              width: 75,
-                                              child: Text(w.toString()))),
-                                          DataCell(Container(
-                                              width: 75,
-                                              child: Text(z.toString()))),
-                                          DataCell(Container(
-                                              width: 75,
-                                              child: Text(a.toString()))),
-                                          DataCell(Align(
-                                            child: InkWell(
-                                              onTap: () {
-                                                productOperions(
-                                                    context,
-                                                    productBody,
-                                                    createShopController
-                                                        .currentShop.value!.id);
-                                              },
-                                              child: Container(
-                                                  width: 75,
-                                                  child: Center(
-                                                      child: Icon(
-                                                          Icons.more_vert))),
-                                            ),
-                                            alignment: Alignment.topRight,
-                                          )),
-                                        ]);
+                                        return productCard(
+                                            product: productModel);
                                       }),
+                                    )
+                                  : Theme(
+                                      data: Theme.of(context)
+                                          .copyWith(dividerColor: Colors.grey),
+                                      child: Container(
+                                        width: double.infinity,
+                                        margin: const EdgeInsets.only(
+                                            right: 10, left: 5, bottom: 20),
+                                        child: DataTable(
+                                          decoration: BoxDecoration(
+                                              border: Border.all(
+                                            width: 1,
+                                            color: Colors.black,
+                                          )),
+                                          columnSpacing: 30.0,
+                                          columns: const [
+                                            DataColumn(
+                                                label: Text('Product',
+                                                    textAlign:
+                                                        TextAlign.center)),
+                                            DataColumn(
+                                                label: Text('Category',
+                                                    textAlign:
+                                                        TextAlign.center)),
+                                            DataColumn(
+                                                label: Text('Available',
+                                                    textAlign:
+                                                        TextAlign.center)),
+                                            DataColumn(
+                                                label: Text('Buying Price',
+                                                    textAlign:
+                                                        TextAlign.center)),
+                                            DataColumn(
+                                                label: Text('Selling Price',
+                                                    textAlign:
+                                                        TextAlign.center)),
+                                            DataColumn(
+                                                label: Text('Actions',
+                                                    textAlign:
+                                                        TextAlign.center)),
+                                          ],
+                                          rows: List.generate(
+                                              productController.products.length,
+                                              (index) {
+                                            Product productBody =
+                                                productController.products
+                                                    .elementAt(index);
+
+                                            final y = productBody.name;
+                                            final x =
+                                                productBody.category?.name;
+                                            final w = productBody.quantity;
+                                            final z = productBody.buyingPrice;
+                                            final a = productBody.selling;
+
+                                            return DataRow(cells: [
+                                              DataCell(Text(y!)),
+                                              DataCell(Text(x.toString())),
+                                              DataCell(Text(w.toString())),
+                                              DataCell(Text(z.toString())),
+                                              DataCell(Text(a.toString())),
+                                              DataCell(Align(
+                                                alignment: Alignment.topRight,
+                                                child: PopupMenuButton(
+                                                  onSelected: (value) {
+                                                    switch (value) {
+                                                      case "history":
+                                                        {
+                                                          Get.find<HomeController>()
+                                                                  .selectedWidget
+                                                                  .value =
+                                                              ProductHistory(
+                                                                  product:
+                                                                      productBody);
+                                                        }
+                                                        break;
+                                                      case "edit":
+                                                        {
+                                                          Get.find<HomeController>()
+                                                                  .selectedWidget
+                                                                  .value =
+                                                              CreateProduct(
+                                                                  page: "edit",
+                                                                  productModel:
+                                                                      productBody);
+                                                        }
+                                                        break;
+                                                      case "delete":
+                                                        {
+                                                          deleteDialog(
+                                                              context: context,
+                                                              onPressed: () {
+                                                                productController
+                                                                    .deleteProduct(
+                                                                        product:
+                                                                            productBody);
+                                                              });
+                                                        }
+                                                        break;
+                                                      default:
+                                                        break;
+                                                    }
+                                                    // your logic
+                                                  },
+                                                  itemBuilder:
+                                                      (BuildContext bc) {
+                                                    return productOperions(
+                                                        context,
+                                                        productBody,
+                                                        createShopController
+                                                            .currentShop
+                                                            .value!
+                                                            .id);
+                                                  },
+                                                ),
+                                              )),
+                                            ]);
+                                          }),
+                                        ),
+                                      ),
                                     ),
-                                  ),
-                                );
-                    }),
-                  ],
-                ),
-              ),
+                            );
+                }),
+                const SizedBox(height: 20),
+              ],
             ),
           ),
-          smallScreen: Scaffold(
-            appBar: AppBar(
-              backgroundColor: Colors.white,
-              elevation: 0.3,
-              titleSpacing: 0.0,
-              centerTitle: false,
-              leading: IconButton(
-                onPressed: () {
-                  productController.getProductsBySort(type: "all");
-                  Get.back();
-                },
-                icon: Icon(
-                  Icons.arrow_back_ios,
-                  color: Colors.black,
-                ),
-              ),
-              title: Padding(
-                padding: const EdgeInsets.only(right: 10.0),
-                child: Row(
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        majorTitle(
-                            title: "Shop Products",
-                            color: Colors.black,
-                            size: 16.0),
-                        minorTitle(
-                            title:
-                                "${createShopController.currentShop.value?.name}",
-                            color: Colors.grey)
-                      ],
-                    ),
-                    Spacer(),
-                    if (usercontroller.user.value?.usertype == "attendant")
-                      InkWell(
-                          onTap: () {
-                            Get.to(() => CreateProduct(
-                                page: "create", productModel: null));
-                          },
-                          child: majorTitle(
-                              title: "Add Product",
-                              color: AppColors.mainColor,
-                              size: 16.0))
-                  ],
-                ),
-              ),
-            ),
-            body: SingleChildScrollView(
-              child: Column(
-                children: [
-                  Container(
-                    padding: EdgeInsets.all(10),
-                    child: Row(
-                      children: [
-                        searchWidget(),
-                        if (usercontroller.user.value?.usertype == "admin")
-                          IconButton(
-                              onPressed: () async {
-                                productController.scanQR(
-                                    shopId: createShopController
-                                                .currentShop.value ==
-                                            null
-                                        ? ""
-                                        : "${createShopController.currentShop.value?.id}",
-                                    type: "product",
-                                    context: context);
-                              },
-                              icon: Icon(Icons.qr_code))
-                      ],
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text("Sort List By"),
-                        sortWidget(context),
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: 20),
-                  Obx(() {
-                    return productController.getProductLoad.value
-                        ? const Center(child: CircularProgressIndicator())
-                        : productController.products.isEmpty
-                            ? Center(
-                                child: Text(
-                                "No Entries found",
-                                style: TextStyle(color: AppColors.mainColor),
-                              ))
-                            : Container(
-                                // height: MediaQuery.of(context).size.height*0.6,
-                                child: ListView.builder(
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  itemCount: productController.products.length,
-                                  shrinkWrap: true,
-                                  itemBuilder: ((context, index) {
-                                    Product productModel = productController
-                                        .products
-                                        .elementAt(index);
-                                    return productCard(product: productModel);
-                                  }),
-                                ),
-                              );
-                  }),
-                  SizedBox(height: 20),
-                ],
-              ),
-            ),
-          )),
-    );
+        ));
   }
 
   Widget sortWidget(context) {
@@ -373,24 +359,39 @@ class ProductPage extends StatelessWidget {
   }
 
   productOperions(context, product, shopId) {
-    return showDialog(
+    List<Map<String, dynamic>> data = [
+      {"title": "Product History", "icon": Icons.list, "value": "history"},
+      {"title": "Edit", "icon": Icons.edit, "value": "edit"},
+      {"title": "Code", "icon": Icons.code, "value": "code"},
+      {"title": "Delete", "icon": Icons.delete, "value": "delete"},
+      {"title": "Cancel", "icon": Icons.clear, "value": "clear"},
+    ];
+    return data
+        .map((e) => PopupMenuItem(
+              value: e["value"],
+              child:
+                  ListTile(leading: Icon(e["icon"]), title: Text(e["title"])),
+            ))
+        .toList();
+
+    showDialog(
       context: context,
       builder: (_) {
         return SimpleDialog(
           children: [
             if (usercontroller.user.value?.usertype == "admin")
               ListTile(
-                leading: Icon(Icons.list),
+                leading: const Icon(Icons.list),
                 onTap: () {
                   Get.back();
                   Get.find<HomeController>().selectedWidget.value =
                       ProductHistory(product: product);
                 },
-                title: Text("Product History"),
+                title: const Text("Product History"),
               ),
             if (checkPermission(category: "products", permission: "manage"))
               ListTile(
-                  leading: Icon(Icons.edit),
+                  leading: const Icon(Icons.edit),
                   title: const Text("Edit"),
                   onTap: () {
                     Get.back();
@@ -399,14 +400,14 @@ class ProductPage extends StatelessWidget {
                   }),
             if (usercontroller.user.value?.usertype == "admin")
               ListTile(
-                  leading: Icon(Icons.code),
+                  leading: const Icon(Icons.code),
                   onTap: () {
                     Get.back();
                   },
                   title: const Text('Generate Barcode')),
             if (checkPermission(category: "products", permission: "manage"))
               ListTile(
-                leading: Icon(Icons.delete),
+                leading: const Icon(Icons.delete),
                 onTap: () {
                   Get.back();
                   deleteDialog(
@@ -415,55 +416,18 @@ class ProductPage extends StatelessWidget {
                         productController.deleteProduct(product: product);
                       });
                 },
-                title: Text("Delete"),
+                title: const Text("Delete"),
               ),
             ListTile(
-              leading: Icon(Icons.clear),
+              leading: const Icon(Icons.clear),
               onTap: () {
                 Get.back();
               },
-              title: Text("Close"),
+              title: const Text("Close"),
             )
           ],
         );
       },
-    );
-  }
-
-  Widget searchWidget() {
-    return Expanded(
-      child: TextFormField(
-        controller: productController.searchProductController,
-        onChanged: (value) {
-          if (value == "") {
-            productController.getProductsBySort(
-              type: "all",
-            );
-          } else {
-            productController.getProductsBySort(
-                type: "search",
-                text: productController.searchProductController.text);
-          }
-        },
-        decoration: InputDecoration(
-          contentPadding: EdgeInsets.fromLTRB(10, 2, 10, 2),
-          suffixIcon: IconButton(
-            onPressed: () {
-              productController.getProductsBySort(
-                  type: "search",
-                  text: productController.searchProductController.text);
-            },
-            icon: Icon(Icons.search),
-          ),
-          hintText: "Quick Search Item",
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-        ),
-      ),
     );
   }
 }

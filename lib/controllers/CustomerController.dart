@@ -120,7 +120,12 @@ class CustomerController extends GetxController
           0, (previousValue, element) => previousValue + element.amount!);
     } else {
       walletbalancessTotal.value = response.fold(
-          0, (previousValue, element) => previousValue + element.amount!);
+          0,
+          (previousValue, element) =>
+              previousValue +
+              (element.customer!.walletBalance! < 0
+                  ? 0
+                  : element.customer!.walletBalance!));
     }
 
     refresh();

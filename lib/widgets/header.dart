@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 
 class Header extends StatefulWidget {
   final double _height;
@@ -109,9 +108,6 @@ class _HeaderState extends State<Header> {
                       bottomRight: Radius.circular(0),
                     ),
                     border: Border.all(width: 1, color: Colors.white),
-                  ),
-                  child: SvgPicture.asset(
-                    _imagePath,
                   ),
                 ),
               ),

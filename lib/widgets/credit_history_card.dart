@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:pointify/controllers/home_controller.dart';
-import 'package:pointify/widgets/pdf/payment_history_pdf.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
@@ -140,11 +139,11 @@ showBottomSheet(
                     Navigator.pop(context);
                     // await salesController.getPaymentHistory(
                     //     id: salesBody.id!, type: "");
-
-                    PaymentHistoryPdf(
-                        shop:
-                            Get.find<ShopController>().currentShop.value!.name,
-                        deposits: salesController.paymenHistory.value);
+                    //
+                    // PaymentHistoryPdf(
+                    //     shop:
+                    //         Get.find<ShopController>().currentShop.value!.name,
+                    //     deposits: salesController.paymenHistory.value);
                   },
                   title: Text('Generate Report'),
                 ),

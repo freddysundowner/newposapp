@@ -9,6 +9,8 @@ import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import '../../../Real/schema.dart';
 import '../../../controllers/product_controller.dart';
 import '../../../functions/functions.dart';
+import '../../../pdfFiles/pdf/productmonthlypdf/monthlypreview.dart';
+import '../../../pdfFiles/pdf/productmonthlypdf/product_monthly_report.dart';
 import '../../../utils/colors.dart';
 import '../../../utils/date_filter.dart';
 import '../../../widgets/bottom_widget_count_view.dart';
@@ -122,15 +124,35 @@ class ProductStockInHistory extends StatelessWidget {
                           )
                         ],
                       ),
-                      Container(
-                        padding: const EdgeInsets.all(5),
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            color: AppColors.mainColor),
-                        child: const Icon(
-                          Icons.download_rounded,
-                          color: Colors.white,
-                          size: 15,
+                      InkWell(
+                        onTap: () {
+                          Get.to(() => MonthlyPreviewPage(
+                              sales: monhts
+                                  .map((e) => [
+                                        e["month"],
+                                        htmlPrice(getSalesTotal(e["month"],
+                                            productController.productInvoices,
+                                            type: "stockin")),
+                                      ])
+                                  .toList(),
+                              type: "Product Stockin",
+                              product: product,
+                              title: "Monthly stocking for ${product!.name!}",
+                              total: productController.productInvoices.fold(
+                                  0,
+                                  (previousValue, element) =>
+                                      previousValue! + element.total!)));
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(5),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color: AppColors.mainColor),
+                          child: const Icon(
+                            Icons.download_rounded,
+                            color: Colors.white,
+                            size: 15,
+                          ),
                         ),
                       )
                     ],

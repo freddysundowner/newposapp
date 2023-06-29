@@ -21,9 +21,6 @@ import 'package:window_size/window_size.dart';
 import 'controllers/AuthController.dart';
 import 'controllers/realm_controller.dart';
 
-import 'dart:convert';
-import 'package:flutter/services.dart' show rootBundle;
-
 final AuthController appController = Get.put(AuthController());
 final RealmController realmServices = Get.put(RealmController());
 UserController userController = Get.put<UserController>(UserController());
@@ -33,11 +30,10 @@ void main() async {
   appController.initialize(appId);
 
   if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
-    // setWindowMaxSize(const Size(1024, 768));
-    setWindowMinSize(const Size(512,  700));
+    setWindowMinSize(const Size(512, 700));
   }
 
-  runApp(MyApp());
+  runApp(MyApp()); 
 }
 
 class MyApp extends StatelessWidget {
@@ -49,11 +45,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // return ScreenUtilInit(
-    // designSize: const Size(360, 690),
-    // minTextAdapt: true,
-    // splitScreenMode: true,
-    // builder: (BuildContext context, c) {
     return GetMaterialApp(
       title: 'Pointify:',
       debugShowCheckedModeBanner: false,
@@ -67,7 +58,6 @@ class MyApp extends StatelessWidget {
       initialBinding: AuthBinding(),
       home: Authenticate(),
     );
-    // });
   }
 }
 

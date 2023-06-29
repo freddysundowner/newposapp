@@ -154,14 +154,18 @@ class ProfilePage extends StatelessWidget {
                           Obx(() {
                             return profileItems(
                                 title: "Email",
-                                subtitle: userController.user.value!.email,
+                                subtitle: Get.find<RealmController>()
+                                    .currentUser!
+                                    .value!
+                                    .profile
+                                    .email,
                                 icon: Icons.email);
                           }),
                           SizedBox(height: 15),
                           Obx(() {
                             return profileItems(
                                 title: "Username",
-                                subtitle: userController.user.value!.fullnames,
+                                subtitle: userController.user.value!.username,
                                 icon: Icons.person);
                           }),
                         ],
@@ -293,7 +297,7 @@ class ProfilePage extends StatelessWidget {
             majorTitle(title: title, color: AppColors.mainColor, size: 18.0),
             SizedBox(height: 5),
             minorTitle(
-              title: subtitle ?? "Admin",
+              title: subtitle,
               color: Colors.black,
             )
           ],

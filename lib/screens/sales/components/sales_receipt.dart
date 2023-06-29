@@ -64,6 +64,19 @@ class SalesReceipt extends StatelessWidget {
               .toUpperCase(),
           style: const TextStyle(color: Colors.black, fontSize: 16),
         ),
+        actions: [
+          IconButton(
+              onPressed: () {
+                Get.to(() => PdfPreviewPage(
+                    invoice: salesModel!,
+                    type:
+                        "${_chechPayment(salesController.currentReceipt.value!, type!)} RECEIPT"));
+              },
+              icon: Icon(
+                Icons.picture_as_pdf,
+                color: AppColors.mainColor,
+              ))
+        ],
       ),
       body: Container(
         margin: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
@@ -105,9 +118,7 @@ class SalesReceipt extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       normalText(
-                          title: "Total Amount",
-                          color: Colors.black,
-                          size: 14.0),
+                          title: "Total", color: Colors.black, size: 14.0),
                       SizedBox(
                         height: 10,
                       ),
@@ -119,7 +130,30 @@ class SalesReceipt extends StatelessWidget {
                     ],
                   ),
                   SizedBox(
-                    width: 80,
+                    width: 40,
+                  ),
+                  if (salesController.currentReceipt.value!.creditTotal! > 0)
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        normalText(
+                            title: "Total Paid",
+                            color: Colors.black,
+                            size: 14.0),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        majorTitle(
+                            title: htmlPrice(salesController
+                                    .currentReceipt.value!.grandTotal! -
+                                salesController
+                                    .currentReceipt.value!.creditTotal!),
+                            color: Colors.black,
+                            size: 18.0)
+                      ],
+                    ),
+                  SizedBox(
+                    width: 40,
                   ),
                   if (onCredit(salesController.currentReceipt.value!) &&
                       type != "returns")
@@ -347,63 +381,6 @@ class SalesReceipt extends StatelessWidget {
           ),
         ),
       ),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-            border: Border(
-                top: BorderSide(
-          color: Colors.black,
-          width: 1.0,
-        ))),
-        child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 20),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Container(
-                  padding: const EdgeInsets.only(right: 20, bottom: 20),
-                  decoration: BoxDecoration(
-                      border: Border(
-                          right: BorderSide(
-                    color: Colors.black,
-                    width: 1.0,
-                  ))),
-                  child: Container(
-                    padding: EdgeInsets.only(top: 10),
-                    child: majorTitle(
-                        title: "Print", color: Colors.black, size: 16.0),
-                  )),
-              Container(
-                  padding: const EdgeInsets.only(right: 20, bottom: 20),
-                  decoration: const BoxDecoration(
-                      border: Border(
-                          right: BorderSide(
-                    color: Colors.black,
-                    width: 1.0,
-                  ))),
-                  child: Container(
-                    padding: EdgeInsets.only(top: 10),
-                    child: majorTitle(
-                        title: "Email", color: Colors.black, size: 16.0),
-                  )),
-              InkWell(
-                onTap: () {
-                  Get.to(() async => PdfPreviewPage(
-                      widget: await salesReceipt(salesModel!),
-                      type: "Invoice"));
-                  // SalesPdf(sales: salesModel!, type: "All");
-                },
-                child: Container(
-                    padding: const EdgeInsets.only(right: 20, bottom: 20),
-                    child: Container(
-                      padding: const EdgeInsets.only(top: 10),
-                      child: majorTitle(
-                          title: "PDF View", color: Colors.black, size: 16.0),
-                    )),
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }
@@ -417,7 +394,7 @@ String _chechPayment(SalesModel salesModel, String? type) {
   return "";
 }
 
-onCredit(SalesModel salesModel) => salesModel.creditTotal! < 0;
+onCredit(SalesModel salesModel) => salesModel.creditTotal! > 0;
 Color _chechPaymentColor(SalesModel salesModel, String? type) {
   if (salesModel.grandTotal! == 0 || type == "returns") return Colors.red;
   if (salesModel.creditTotal == 0) return Colors.green;
@@ -431,7 +408,7 @@ void _dialog(ReceiptItem sale) {
   }
 }
 
-returnReceiptItem({required ReceiptItem receiptItem}) {
+returnReceiptItem({required ReceiptItem receiptItem, Product? product}) {
   SalesController salesController = Get.find<SalesController>();
   TextEditingController textEditingController = TextEditingController();
   textEditingController.text = receiptItem.quantity.toString();
@@ -472,7 +449,8 @@ returnReceiptItem({required ReceiptItem receiptItem}) {
                   } else {
                     Get.back();
                     salesController.returnSale(
-                        receiptItem, int.parse(textEditingController.text));
+                        receiptItem, int.parse(textEditingController.text),
+                        product: product);
                   }
                 },
                 child: Text(

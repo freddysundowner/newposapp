@@ -6,6 +6,7 @@ import 'package:pointify/controllers/realm_controller.dart';
 import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/controllers/user_controller.dart';
+import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/stock/stock_page.dart';
 import 'package:pointify/services/category.dart';
 import 'package:pointify/utils/colors.dart';
@@ -17,6 +18,7 @@ import 'package:realm/realm.dart';
 import '../Real/schema.dart';
 import '../screens/sales/all_sales.dart';
 import '../services/product.dart';
+import '../widgets/alert.dart';
 import '../widgets/loading_dialog.dart';
 
 class ProductController extends GetxController {
@@ -84,24 +86,46 @@ class ProductController extends GetxController {
         buying.isEmpty ||
         selling.isEmpty ||
         categoryId.value == null) {
-      showSnackBar(
-          message: "Please fill all fields marked by *", color: Colors.red);
+      isSmallScreen(Get.context)
+          ? showSnackBar(
+              message: "Please fill all fields marked by *", color: Colors.red)
+          : generalAlert(
+              title: "Error", message: "Please fill all fields marked by *");
     } else if (int.parse(buying) > int.parse(selling)) {
-      showSnackBar(
-          message: "Selling price cannot be lower than buying price",
-          color: Colors.red);
+      isSmallScreen(Get.context)
+          ? showSnackBar(
+              message: "Selling price cannot be lower than buying price",
+              color: Colors.red)
+          : generalAlert(
+              title: "Error",
+              message: "Selling price cannot be lower than buying price");
     } else if (minSelling != "" && int.parse(minSelling) > int.parse(selling)) {
-      showSnackBar(
-          message: "minimum selling price cannot be greater than selling price",
-          color: Colors.red);
+      isSmallScreen(Get.context)
+          ? showSnackBar(
+              message:
+                  "minimum selling price cannot be greater than selling price",
+              color: Colors.red)
+          : generalAlert(
+              title: "Error",
+              message:
+                  "minimum selling price cannot be greater than selling price");
     } else if (minSelling != "" && int.parse(buying) > int.parse(minSelling)) {
-      showSnackBar(
-          message: "minimum selling price cannot be less than buying price",
-          color: Colors.red);
+      isSmallScreen(Get.context)
+          ? showSnackBar(
+              message: "minimum selling price cannot be less than buying price",
+              color: Colors.red)
+          : generalAlert(
+              title: "Error",
+              message:
+                  "minimum selling price cannot be less than buying price");
     } else if (discount != "" && int.parse(discount) > int.parse(selling)) {
-      showSnackBar(
-          message: "discount cannot be greater than selling price",
-          color: Colors.red);
+      isSmallScreen(Get.context)
+          ? showSnackBar(
+              message: "discount cannot be greater than selling price",
+              color: Colors.red)
+          : generalAlert(
+              title: "Error",
+              message: "discount cannot be greater than selling price");
     } else {
       try {
         creatingProductLoad.value = true;
@@ -132,10 +156,10 @@ class ProductController extends GetxController {
         } else {
           await Products().updateProduct(product: product);
         }
-        if (MediaQuery.of(Get.context!).size.width > 600) {
-          Get.find<HomeController>().selectedWidget.value = StockPage();
-        } else {
+        if (isSmallScreen(Get.context)) {
           Get.back();
+        } else {
+          Get.find<HomeController>().selectedWidget.value = StockPage();
         }
         await getProductsBySort(type: "all");
         creatingProductLoad.value = false;
@@ -144,15 +168,6 @@ class ProductController extends GetxController {
         creatingProductLoad.value = false;
       }
     }
-  }
-
-  createCategory({required Shop shop, required BuildContext context}) async {
-    LoadingDialog.showLoadingDialog(
-        context: context, title: "Creating category...", key: _keyLoader);
-    ProductCategory productCategoryModel =
-        ProductCategory(ObjectId(), name: category.text, shop: shop);
-    Categories().createProductCategory(productCategoryModel);
-    Get.back();
   }
 
   clearControllers() {
@@ -166,6 +181,9 @@ class ProductController extends GetxController {
     category.text = "";
     minsellingPriceController.text = "";
     selectedSupplier.clear();
+    supplierName.value = "None";
+    selectedMeasure.value = "Kg";
+    categoryId.value = null;
   }
 
   getProductsBySort({required String type, String text = ""}) {
@@ -313,7 +331,7 @@ class ProductController extends GetxController {
   }
 
   getBadStock(
-      { shopId,
+      {shopId,
       String? attendant,
       Product? product,
       DateTime? fromDate,

@@ -187,7 +187,7 @@ class ProductCountHistory extends StatelessWidget {
                                       height: 3,
                                     ),
                                     Text(
-                                        "By~ ${productModel.attendantId?.fullnames}")
+                                        "By~ ${productModel.attendantId?.username}")
                                   ],
                                 ),
                                 Spacer(),

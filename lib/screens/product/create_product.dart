@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:pointify/controllers/user_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/responsive/responsiveness.dart';
@@ -40,7 +41,7 @@ class CreateProduct extends StatelessWidget {
   UserController userController = Get.find<UserController>();
   var measures = [
     'Kg',
-    "Litter",
+    "Liter",
     "Pieces",
     'Ml',
     'Box',
@@ -62,7 +63,7 @@ class CreateProduct extends StatelessWidget {
           centerTitle: false,
           leading: IconButton(
             onPressed: () {
-              if (MediaQuery.of(context).size.width > 600) {
+              if (!isSmallScreen(context)) {
                 if (page == "edit") {
                   Get.find<HomeController>().selectedWidget.value =
                       ProductPage();
@@ -77,7 +78,7 @@ class CreateProduct extends StatelessWidget {
                 Get.back();
               }
             },
-            icon: Icon(
+            icon: const Icon(
               Icons.arrow_back_ios,
               color: Colors.black,
             ),
@@ -94,590 +95,589 @@ class CreateProduct extends StatelessWidget {
                   color: Colors.grey)
             ],
           ),
-        ),
-        body: ResponsiveWidget(
-          largeScreen: Align(
-            alignment: Alignment.center,
-            child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(8),
+          actions: [
+            if (!isSmallScreen(context))
+              InkWell(
+                splashColor: Colors.transparent,
+                onTap: () {
+                  productController.saveProducts(productData: productModel);
+                },
+                child: Container(
+                  height: kTextTabBarHeight,
+                  padding: const EdgeInsets.all(10),
+                  margin: const EdgeInsets.symmetric(vertical: 5)
+                      .copyWith(right: 15),
+                  decoration: BoxDecoration(
+                      border: Border.all(width: 3, color: AppColors.mainColor),
+                      borderRadius: BorderRadius.circular(10)),
+                  child: Center(
+                      child: majorTitle(
+                          title: page == "create" ? "Save product" : "Update",
+                          color: AppColors.mainColor,
+                          size: 14.0)),
                 ),
-                padding: EdgeInsets.only(left: 50, right: 150, top: 20),
-                child: ListView(
-                  children: [
-                    productDetailsCard(context),
-                    SizedBox(height: 20),
-                    Center(child: saveButton(context))
-                  ],
-                )),
-          ),
-          smallScreen: Container(
-            padding: const EdgeInsets.only(
-                left: 8.0, right: 8.0, top: 5.0, bottom: 10),
-            child: productDetailsCard(context),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget productDetailsCard(context) {
-    return ListView(
-      shrinkWrap: true,
-      children: [
-        SizedBox(height: 10),
-        const Text("Product Name *"),
-        SizedBox(height: 5),
-        TextFormField(
-          controller: productController.itemNameController,
-          keyboardType: TextInputType.text,
-          decoration: InputDecoration(
-            fillColor: Colors.white,
-            filled: true,
-            labelStyle: TextStyle(
-                fontFamily: 'Montserrat',
-                fontWeight: FontWeight.bold,
-                color: Colors.grey),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: Colors.grey),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: Colors.grey),
-            ),
-          ),
-        ),
-        SizedBox(height: 10),
-        Row(
-          children: [
-            SizedBox(width: 3),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text("Buying Price *"),
-                  SizedBox(height: 5),
-                  TextFormField(
-                    controller: productController.buyingPriceController,
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      hintText: "0",
-                      fillColor: Colors.white,
-                      filled: true,
-                      labelStyle: TextStyle(
-                          fontFamily: 'Montserrat',
-                          fontWeight: FontWeight.bold,
-                          color: Colors.grey),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: Colors.grey),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: Colors.grey),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(width: 15),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text("Selling price *"),
-                  SizedBox(height: 5),
-                  TextFormField(
-                    controller: productController.sellingPriceController,
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      hintText: "0",
-                      fillColor: Colors.white,
-                      filled: true,
-                      labelStyle: TextStyle(
-                          fontFamily: 'Montserrat',
-                          fontWeight: FontWeight.bold,
-                          color: Colors.grey),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: Colors.grey),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: Colors.grey),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+              )
           ],
         ),
-        SizedBox(height: 15),
-        Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+        body: Container(
+          padding: const EdgeInsets.only(
+              left: 8.0, right: 8.0, top: 5.0, bottom: 10),
+          child: ListView(
+            shrinkWrap: true,
+            children: [
+              const SizedBox(height: 10),
+              const Text("Product Name *"),
+              const SizedBox(height: 5),
+              TextFormField(
+                controller: productController.itemNameController,
+                keyboardType: TextInputType.text,
+                decoration: InputDecoration(
+                  fillColor: Colors.white,
+                  filled: true,
+                  labelStyle: const TextStyle(
+                      fontFamily: 'Montserrat',
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: const BorderSide(color: Colors.grey),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: const BorderSide(color: Colors.grey),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10),
+              Row(
                 children: [
-                  Text("Min Selling price "),
-                  SizedBox(height: 5),
-                  TextFormField(
-                    controller: productController.minsellingPriceController,
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      hintText: "0",
-                      fillColor: Colors.white,
-                      filled: true,
-                      labelStyle: TextStyle(
-                          fontFamily: 'Montserrat',
-                          fontWeight: FontWeight.bold,
-                          color: Colors.grey),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: Colors.grey),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: Colors.grey),
-                      ),
+                  const SizedBox(width: 3),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text("Buying Price *"),
+                        const SizedBox(height: 5),
+                        TextFormField(
+                          controller: productController.buyingPriceController,
+                          keyboardType: TextInputType.number,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly
+                          ],
+                          decoration: InputDecoration(
+                            hintText: "0",
+                            fillColor: Colors.white,
+                            filled: true,
+                            labelStyle: const TextStyle(
+                                fontFamily: 'Montserrat',
+                                fontWeight: FontWeight.bold,
+                                color: Colors.grey),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: const BorderSide(color: Colors.grey),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: const BorderSide(color: Colors.grey),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 15),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text("Selling price *"),
+                        const SizedBox(height: 5),
+                        TextFormField(
+                          controller: productController.sellingPriceController,
+                          keyboardType: TextInputType.number,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly
+                          ],
+                          decoration: InputDecoration(
+                            hintText: "0",
+                            fillColor: Colors.white,
+                            filled: true,
+                            labelStyle: const TextStyle(
+                                fontFamily: 'Montserrat',
+                                fontWeight: FontWeight.bold,
+                                color: Colors.grey),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: const BorderSide(color: Colors.grey),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: const BorderSide(color: Colors.grey),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
               ),
-            ),
-            SizedBox(width: 15),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              const SizedBox(height: 15),
+              Row(
                 children: [
-                  Text("Qty *"),
-                  SizedBox(height: 5),
-                  TextFormField(
-                    controller: productController.qtyController,
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      fillColor: Colors.white,
-                      filled: true,
-                      hintText: "0",
-                      labelStyle: TextStyle(
-                          fontFamily: 'Montserrat',
-                          fontWeight: FontWeight.bold,
-                          color: Colors.grey),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: Colors.grey),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: Colors.grey),
-                      ),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text("Min Selling price "),
+                        const SizedBox(height: 5),
+                        TextFormField(
+                          controller:
+                              productController.minsellingPriceController,
+                          keyboardType: TextInputType.number,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly
+                          ],
+                          decoration: InputDecoration(
+                            hintText: "0",
+                            fillColor: Colors.white,
+                            filled: true,
+                            labelStyle: const TextStyle(
+                                fontFamily: 'Montserrat',
+                                fontWeight: FontWeight.bold,
+                                color: Colors.grey),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: const BorderSide(color: Colors.grey),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: const BorderSide(color: Colors.grey),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ],
-              ),
-            ),
-          ],
-        ),
-        SizedBox(height: 10),
-        Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text("Max Discount "),
-                  SizedBox(height: 5),
-                  TextFormField(
-                    controller: productController.discountController,
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      fillColor: Colors.white,
-                      filled: true,
-                      hintText: "0",
-                      labelStyle: TextStyle(
-                          fontFamily: 'Montserrat',
-                          fontWeight: FontWeight.bold,
-                          color: Colors.grey),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: Colors.grey),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: Colors.grey),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(width: 15),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text("Re-Order Level "),
-                  SizedBox(height: 5),
-                  TextFormField(
-                    controller: productController.reOrderController,
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      fillColor: Colors.white,
-                      filled: true,
-                      hintText: "0",
-                      labelStyle: TextStyle(
-                          fontFamily: 'Montserrat',
-                          fontWeight: FontWeight.bold,
-                          color: Colors.grey),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: Colors.grey),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: Colors.grey),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-        SizedBox(height: 10),
-        Row(
-          children: [
-            Expanded(
-              flex: 3,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text("Category *", style: TextStyle(color: Colors.black)),
-                  SizedBox(height: 5),
-                  InkWell(
-                    onTap: () {
-                      showDialog(
-                          context: context,
-                          builder: (context) {
-                            return StreamBuilder<
-                                    RealmResultsChanges<ProductCategory>>(
-                                stream: Categories().getProductCategories(),
-                                builder: (context, snapshot) {
-                                  final data = snapshot.data;
+                  const SizedBox(width: 15),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text("Qty *"),
+                        const SizedBox(height: 5),
+                        TextFormField(
+                          controller: productController.qtyController,
+                          keyboardType: TextInputType.number,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly
+                          ],
 
-                                  if (data == null) {
-                                    return const Center(
-                                        child: CircularProgressIndicator());
-                                  }
+                          decoration: InputDecoration(
+                            fillColor: Colors.white,
+                            filled: true,
+                            hintText: "0",
+                            labelStyle: const TextStyle(
+                                fontFamily: 'Montserrat',
+                                fontWeight: FontWeight.bold,
+                                color: Colors.grey),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: const BorderSide(color: Colors.grey),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: const BorderSide(color: Colors.grey),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text("Max Discount "),
+                        const SizedBox(height: 5),
+                        TextFormField(
+                          controller: productController.discountController,
+                          keyboardType: TextInputType.number,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly
+                          ],
+                          decoration: InputDecoration(
+                            fillColor: Colors.white,
+                            filled: true,
+                            hintText: "0",
+                            labelStyle: const TextStyle(
+                                fontFamily: 'Montserrat',
+                                fontWeight: FontWeight.bold,
+                                color: Colors.grey),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: const BorderSide(color: Colors.grey),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: const BorderSide(color: Colors.grey),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 15),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text("Re-Order Level "),
+                        const SizedBox(height: 5),
+                        TextFormField(
+                          controller: productController.reOrderController,
+                          keyboardType: TextInputType.number,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly
+                          ],
+                          decoration: InputDecoration(
+                            fillColor: Colors.white,
+                            filled: true,
+                            hintText: "0",
+                            labelStyle: const TextStyle(
+                                fontFamily: 'Montserrat',
+                                fontWeight: FontWeight.bold,
+                                color: Colors.grey),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: const BorderSide(color: Colors.grey),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: const BorderSide(color: Colors.grey),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  Expanded(
+                    flex: 3,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text("Category *",
+                            style: TextStyle(color: Colors.black)),
+                        const SizedBox(height: 5),
+                        InkWell(
+                          onTap: () {
+                            showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return StreamBuilder<
+                                          RealmResultsChanges<ProductCategory>>(
+                                      stream:
+                                          Categories().getProductCategories(),
+                                      builder: (context, snapshot) {
+                                        final data = snapshot.data;
 
-                                  final results = data.results;
+                                        if (data == null) {
+                                          return const Center(
+                                              child:
+                                                  CircularProgressIndicator());
+                                        }
 
+                                        final results = data.results;
+
+                                        return SimpleDialog(
+                                          children: List.generate(
+                                              results.realm.isClosed
+                                                  ? 0
+                                                  : results.length,
+                                              (index) => SimpleDialogOption(
+                                                    onPressed: () {
+                                                      productController
+                                                              .categoryId
+                                                              .value =
+                                                          results
+                                                              .elementAt(index);
+                                                      Navigator.pop(context);
+                                                    },
+                                                    child: Text(
+                                                        "${results.elementAt(index).name}"),
+                                                  )),
+                                        );
+                                      });
+                                });
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: Colors.grey,
+                                ),
+                                borderRadius: BorderRadius.circular(10)),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Obx(() {
+                                  return Text(
+                                      productController.categoryId.value != null
+                                          ? productController
+                                              .categoryId.value!.name!
+                                          : "choose category");
+                                }),
+                                const Icon(Icons.arrow_drop_down,
+                                    color: Colors.grey)
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    flex: 2,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text("Unit Of Measure "),
+                        const SizedBox(height: 5),
+                        InkWell(
+                          onTap: () {
+                            showDialog(
+                                context: context,
+                                builder: (context) {
                                   return SimpleDialog(
                                     children: List.generate(
-                                        results.realm.isClosed
-                                            ? 0
-                                            : results.length,
+                                        measures.length,
                                         (index) => SimpleDialogOption(
                                               onPressed: () {
                                                 productController
-                                                        .categoryId.value =
-                                                    results.elementAt(index);
+                                                        .selectedMeasure.value =
+                                                    measures.elementAt(index);
+
                                                 Navigator.pop(context);
                                               },
                                               child: Text(
-                                                  "${results.elementAt(index).name}"),
+                                                  "${measures.elementAt(index)}"),
                                             )),
                                   );
                                 });
-                          });
-                    },
-                    child: Container(
-                      padding: EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                          border: Border.all(
-                            color: Colors.grey,
-                          ),
-                          borderRadius: BorderRadius.circular(10)),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Obx(() {
-                            return Text(
-                                productController.categoryId.value != null
-                                    ? productController.categoryId.value!.name!
-                                    : "choose category");
-                          }),
-                          Icon(Icons.arrow_drop_down, color: Colors.grey)
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(width: 10),
-            Expanded(
-              flex: 2,
-              child: Padding(
-                padding: const EdgeInsets.only(top: 10.0),
-                child: TextButton(
-                  onPressed: () {
-                    showDialog(
-                        context: context,
-                        builder: (context) {
-                          return AlertDialog(
-                            title: Text("Add Category Name"),
-                            content: Padding(
-                              padding: const EdgeInsets.all(5.0),
-                              child: TextFormField(
-                                controller: productController.category,
-                                decoration: InputDecoration(
-                                  hintText: "eg. fruits",
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                    borderSide: BorderSide(color: Colors.grey),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                    borderSide: BorderSide(color: Colors.grey),
-                                  ),
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: Colors.grey,
                                 ),
-                              ),
+                                borderRadius: BorderRadius.circular(10)),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Obx(() {
+                                  return Text(
+                                      productController.selectedMeasure.value);
+                                }),
+                                const Icon(Icons.arrow_drop_down,
+                                    color: Colors.grey)
+                              ],
                             ),
-                            actions: [
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                },
-                                child: Text(
-                                  "Cancel".toUpperCase(),
-                                  style: TextStyle(color: Colors.blue),
-                                ),
-                              ),
-                              TextButton(
-                                onPressed: () async {
-                                  Navigator.pop(context);
-                                  productController.createCategory(
-                                      shop: shopController.currentShop.value!,
-                                      context: context);
-                                },
-                                child: Text(
-                                  "Save now".toUpperCase(),
-                                  style: TextStyle(color: Colors.blue),
-                                ),
-                              ),
-                            ],
-                          );
-                        });
-                  },
-                  child: Container(
-                      padding: EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                          color: Colors.grey.withOpacity(0.2),
-                          borderRadius: BorderRadius.only(
-                              topRight: Radius.circular(10),
-                              bottomRight: Radius.circular(10))),
-                      child: Text(
-                        "+ Add",
-                        style: TextStyle(color: Colors.green),
-                      )),
-                ),
-              ),
-            ),
-            SizedBox(width: 10),
-            Expanded(
-              flex: 2,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text("Unit Of Measure "),
-                  SizedBox(height: 5),
-                  InkWell(
-                    onTap: () {
-                      showDialog(
-                          context: context,
-                          builder: (context) {
-                            return SimpleDialog(
-                              children: List.generate(
-                                  measures.length,
-                                  (index) => SimpleDialogOption(
-                                        onPressed: () {
-                                          productController
-                                                  .selectedMeasure.value =
-                                              measures.elementAt(index);
-
-                                          Navigator.pop(context);
-                                        },
-                                        child: Text(
-                                            "${measures.elementAt(index)}"),
-                                      )),
-                            );
-                          });
-                    },
-                    child: Container(
-                      padding: EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                          border: Border.all(
-                            color: Colors.grey,
                           ),
-                          borderRadius: BorderRadius.circular(10)),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Obx(() {
-                            return Text(
-                                productController.selectedMeasure.value);
-                          }),
-                          Icon(Icons.arrow_drop_down, color: Colors.grey)
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
               ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 10),
-        if (page == "create")
-          Row(
-            children: [
-              Expanded(
-                flex: 3,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+              const SizedBox(height: 10),
+              if (page == "create")
+                Row(
                   children: [
-                    const Text("Supplier",
-                        style: TextStyle(color: Colors.black)),
-                    SizedBox(height: 5),
-                    InkWell(
-                      onTap: () {
-                        showDialog(
-                            context: context,
-                            builder: (context) {
-                              return StreamBuilder<
-                                      RealmResultsChanges<Supplier>>(
-                                  stream: SupplierService()
-                                      .getSuppliersByShopId()
-                                      .changes,
-                                  builder: (context, AsyncSnapshot snapshot) {
-                                    final data = snapshot.data;
+                    Expanded(
+                      flex: 3,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text("Supplier",
+                              style: TextStyle(color: Colors.black)),
+                          const SizedBox(height: 5),
+                          InkWell(
+                            onTap: () {
+                              showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return StreamBuilder<
+                                            RealmResultsChanges<Supplier>>(
+                                        stream: SupplierService()
+                                            .getSuppliersByShopId()
+                                            .changes,
+                                        builder:
+                                            (context, AsyncSnapshot snapshot) {
+                                          final data = snapshot.data;
 
-                                    if (data == null) {
-                                      return CreateSuppliers(
-                                        page: "createProduct",
-                                      );
-                                    } else {
-                                      final results = data.results;
-                                      return SimpleDialog(
-                                        children: List.generate(
-                                            results.realm.isClosed
-                                                ? 0
-                                                : results.length,
-                                            (index) => SimpleDialogOption(
-                                                  onPressed: () {
-                                                    productController
-                                                            .supplierName
-                                                            .value =
-                                                        results
-                                                            .elementAt(index)
-                                                            .fullName!;
-                                                    productController
-                                                            .supplierId.value =
-                                                        results
-                                                            .elementAt(index)
-                                                            .id
-                                                            .toString();
+                                          if (data == null) {
+                                            return CreateSuppliers(
+                                              page: "createProduct",
+                                            );
+                                          } else {
+                                            final results = data.results;
+                                            return SimpleDialog(
+                                              children: List.generate(
+                                                  results.realm.isClosed
+                                                      ? 0
+                                                      : results.length,
+                                                  (index) => SimpleDialogOption(
+                                                        onPressed: () {
+                                                          productController
+                                                                  .supplierName
+                                                                  .value =
+                                                              results
+                                                                  .elementAt(
+                                                                      index)
+                                                                  .fullName!;
+                                                          productController
+                                                                  .supplierId
+                                                                  .value =
+                                                              results
+                                                                  .elementAt(
+                                                                      index)
+                                                                  .id
+                                                                  .toString();
 
-                                                    Navigator.pop(context);
-                                                  },
-                                                  child: Text(
-                                                      "${results.elementAt(index).fullName}"),
-                                                )),
-                                      );
-                                    }
+                                                          Navigator.pop(
+                                                              context);
+                                                        },
+                                                        child: Text(
+                                                            "${results.elementAt(index).fullName}"),
+                                                      )),
+                                            );
+                                          }
+                                        });
                                   });
-                            });
-                      },
-                      child: Container(
-                        padding: EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                            border: Border.all(
-                              color: Colors.grey,
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: Colors.grey,
+                                  ),
+                                  borderRadius: BorderRadius.circular(10)),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Obx(() {
+                                    return Text(
+                                        productController.supplierName.value);
+                                  }),
+                                  const Icon(Icons.arrow_drop_down,
+                                      color: Colors.grey)
+                                ],
+                              ),
                             ),
-                            borderRadius: BorderRadius.circular(10)),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Obx(() {
-                              return Text(productController.supplierName.value);
-                            }),
-                            Icon(Icons.arrow_drop_down, color: Colors.grey)
-                          ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      flex: 2,
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 10.0),
+                        child: TextButton(
+                          onPressed: () {
+                            _navigateToCreate(context);
+                          },
+                          child: Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                  color: Colors.grey.withOpacity(0.2),
+                                  borderRadius: const BorderRadius.only(
+                                      topRight: Radius.circular(10),
+                                      bottomRight: Radius.circular(10))),
+                              child: const Text(
+                                "+ Add",
+                                style: TextStyle(color: Colors.green),
+                              )),
                         ),
                       ),
                     ),
                   ],
                 ),
-              ),
-              SizedBox(width: 10),
-              Expanded(
-                flex: 2,
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 10.0),
-                  child: TextButton(
-                    onPressed: () {
-                      _navigateToCreate(context);
-                    },
-                    child: Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                            color: Colors.grey.withOpacity(0.2),
-                            borderRadius: const BorderRadius.only(
-                                topRight: Radius.circular(10),
-                                bottomRight: Radius.circular(10))),
-                        child: const Text(
-                          "+ Add",
-                          style: TextStyle(color: Colors.green),
-                        )),
+              const SizedBox(height: 10),
+              const Text("Description"),
+              const SizedBox(height: 5),
+              TextFormField(
+                controller: productController.descriptionController,
+                keyboardType: TextInputType.text,
+                minLines: 3,
+                maxLines: 6,
+                decoration: InputDecoration(
+                  fillColor: Colors.white,
+                  filled: true,
+                  hintText: "optional",
+                  labelStyle: const TextStyle(
+                      fontFamily: 'Montserrat',
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: const BorderSide(color: Colors.grey),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: const BorderSide(color: Colors.grey),
                   ),
                 ),
               ),
+              const SizedBox(height: 10),
+              Obx(() {
+                return productController.creatingProductLoad.value ||
+                        productController.updateProductLoad.value
+                    ? const Center(
+                        child: CircularProgressIndicator(),
+                      )
+                    : isSmallScreen(context)
+                        ? InkWell(
+                            splashColor: Colors.transparent,
+                            onTap: () {
+                              productController.saveProducts(
+                                  productData: productModel);
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                  border: Border.all(
+                                      width: 3, color: AppColors.mainColor),
+                                  borderRadius: BorderRadius.circular(40)),
+                              child: Center(
+                                  child: majorTitle(
+                                      title: page == "create"
+                                          ? "Add Product"
+                                          : "Update",
+                                      color: AppColors.mainColor,
+                                      size: 18.0)),
+                            ),
+                          )
+                        : Container(
+                            height: 0,
+                          );
+              })
             ],
           ),
-        SizedBox(height: 10),
-        const Text("Description"),
-        SizedBox(height: 5),
-        TextFormField(
-          controller: productController.descriptionController,
-          keyboardType: TextInputType.text,
-          minLines: 3,
-          maxLines: 6,
-          decoration: InputDecoration(
-            fillColor: Colors.white,
-            filled: true,
-            hintText: "optional",
-            labelStyle: const TextStyle(
-                fontFamily: 'Montserrat',
-                fontWeight: FontWeight.bold,
-                color: Colors.grey),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: Colors.grey),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: Colors.grey),
-            ),
-          ),
         ),
-        SizedBox(height: 10),
-        saveButton(context)
-      ],
+      ),
     );
   }
 
@@ -691,32 +691,5 @@ class CreateProduct extends StatelessWidget {
             page: "createProduct",
           ));
     }
-  }
-
-  Widget saveButton(context) {
-    return Obx(() {
-      return productController.creatingProductLoad.value ||
-              productController.updateProductLoad.value
-          ? const Center(
-              child: CircularProgressIndicator(),
-            )
-          : InkWell(
-              splashColor: Colors.transparent,
-              onTap: () {
-                productController.saveProducts(productData: productModel);
-              },
-              child: Container(
-                padding: EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                    border: Border.all(width: 3, color: AppColors.mainColor),
-                    borderRadius: BorderRadius.circular(40)),
-                child: Center(
-                    child: majorTitle(
-                        title: page == "create" ? "Add Product" : "Update",
-                        color: AppColors.mainColor,
-                        size: 18.0)),
-              ),
-            );
-    });
   }
 }

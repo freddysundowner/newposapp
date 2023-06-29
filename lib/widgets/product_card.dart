@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:pointify/controllers/AuthController.dart';
+import 'package:pointify/controllers/sales_controller.dart';
 import 'package:pointify/controllers/user_controller.dart';
 import 'package:pointify/controllers/product_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
-import 'package:pointify/widgets/pdf/bar_code_pdf.dart';
 import 'package:pointify/widgets/smalltext.dart';
 import 'package:get/get.dart';
 
@@ -45,15 +44,15 @@ Widget productCard({required Product product}) {
                           title: "${product.name}",
                           color: Colors.white,
                           size: 16.0),
-                      SizedBox(height: 5),
+                      const SizedBox(height: 5),
                       minorTitle(
                           title: "Category: ${product.category?.name}",
                           color: Colors.white),
-                      SizedBox(height: 5),
+                      const SizedBox(height: 5),
                       minorTitle(
                           title: "Available: ${product.quantity}",
                           color: Colors.white),
-                      SizedBox(height: 5),
+                      const SizedBox(height: 5),
                       minorTitle(
                           title: "By ~ ${product.attendant?.username}",
                           color: Colors.white),
@@ -61,7 +60,7 @@ Widget productCard({required Product product}) {
                   )
                 ],
               ),
-              Spacer(),
+              const Spacer(),
               Row(children: [
                 Column(
                   children: [
@@ -69,14 +68,14 @@ Widget productCard({required Product product}) {
                         title:
                             "BP/= ${shopController.currentShop.value?.currency}.${product.buyingPrice}",
                         color: Colors.white),
-                    SizedBox(height: 5),
+                    const SizedBox(height: 5),
                     minorTitle(
                         title:
                             "SP/=  ${shopController.currentShop.value?.currency}.${product.selling}",
                         color: Colors.white),
                   ],
                 ),
-                SizedBox(width: 10),
+                const SizedBox(width: 10),
               ])
             ],
           )),
@@ -89,6 +88,7 @@ Widget productCard({required Product product}) {
 showProductModal(context, Product product) {
   ProductController productController = Get.find<ProductController>();
   UserController userController = Get.find<UserController>();
+  SalesController salesController = Get.find<SalesController>();
 
   return showModalBottomSheet<void>(
       context: context,
@@ -106,15 +106,26 @@ showProductModal(context, Product product) {
               ),
               if (userController.user.value?.usertype == "admin")
                 ListTile(
-                    leading: Icon(Icons.list),
+                    leading: const Icon(Icons.list),
                     onTap: () {
                       Get.back();
+
+                      getYearlyRecords(product, function: (Product product,
+                          DateTime firstday, DateTime lastday) {
+                        salesController.filterStartDate.value = firstday;
+                        salesController.filterEndDate.value = lastday;
+                        salesController.getSalesByProductId(
+                            product: product,
+                            fromDate: firstday,
+                            toDate: lastday);
+                      }, year: salesController.currentYear.value);
+
                       Get.to(() => ProductHistory(product: product));
                     },
                     title: const Text('Product History')),
               if (checkPermission(category: "products", permission: "manage"))
                 ListTile(
-                    leading: Icon(Icons.edit),
+                    leading: const Icon(Icons.edit),
                     onTap: () {
                       Get.back();
                       Get.to(() => CreateProduct(
@@ -125,20 +136,20 @@ showProductModal(context, Product product) {
                     title: const Text('Edit')),
               if (userController.user.value?.usertype == "admin")
                 ListTile(
-                    leading: Icon(Icons.code),
+                    leading: const Icon(Icons.code),
                     onTap: () {
                       Get.back();
-                      BarcodePdf(
-                          productname: product.name,
-                          shop: Get.find<ShopController>()
-                              .currentShop
-                              .value!
-                              .name!);
+                      // BarcodePdf(
+                      //     productname: product.name,
+                      //     shop: Get.find<ShopController>()
+                      //         .currentShop
+                      //         .value!
+                      //         .name!);
                     },
                     title: const Text('Generate Barcode')),
               if (checkPermission(category: "products", permission: "manage"))
                 ListTile(
-                    leading: Icon(Icons.delete),
+                    leading: const Icon(Icons.delete),
                     onTap: () {
                       Get.back();
                       deleteDialog(
@@ -149,13 +160,13 @@ showProductModal(context, Product product) {
                             );
                           });
                     },
-                    title: Text('Delete')),
+                    title: const Text('Delete')),
               ListTile(
-                  leading: Icon(Icons.clear),
+                  leading: const Icon(Icons.clear),
                   onTap: () {
                     Get.back();
                   },
-                  title: Text('Close')),
+                  title: const Text('Close')),
             ],
           ),
         );

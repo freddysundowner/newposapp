@@ -1,6 +1,8 @@
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:pointify/Real/schema.dart';
+import 'package:pointify/functions/functions.dart';
+import 'package:pointify/main.dart';
 import 'package:realm/realm.dart';
 
 import '../controllers/realm_controller.dart';
@@ -12,13 +14,22 @@ class ShopService {
   }
 
   void createShopType(ShopTypes shopTypes) {
+    print("createShopType");
     realmService.realm
         .write<ShopTypes>(() => realmService.realm.add<ShopTypes>(shopTypes));
   }
 
   getShop({String name = ""}) {
-    RealmResults<Shop> shops = realmService.realm
-        .query<Shop>(r'owner == $0', [realmService.currentUser!.value!.id]);
+    RealmResults<Shop> shops;
+    if (userController.user.value!.usertype == "attendant" &&
+        checkPermission(category: "stocks", permission: "transfer")) {
+      shops = realmService.realm.query<Shop>(
+          r'owner == $0', [userController.user.value!.shop!.owner]);
+    } else {
+      shops = realmService.realm
+          .query<Shop>(r'owner == $0', [realmService.currentUser!.value!.id]);
+    }
+
     if (name.isNotEmpty) {
       RealmResults<Shop> shopsFiltered =
           shops.query('name BEGINSWITH \$0', [name]);

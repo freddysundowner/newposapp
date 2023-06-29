@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pointify/controllers/expense_controller.dart';
 import 'package:pointify/controllers/user_controller.dart';
 import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
@@ -26,7 +27,9 @@ import '../../widgets/bigtext.dart';
 import '../../widgets/normal_text.dart';
 import '../../widgets/smalltext.dart';
 import '../customers/customers_page.dart';
+import '../finance/expense_page.dart';
 import '../finance/finance_page.dart';
+import '../finance/profit_page.dart';
 import '../sales/all_sales.dart';
 import '../sales/sales_page.dart';
 import '../stock/stock_page.dart';
@@ -35,6 +38,7 @@ import 'dart:math' as math;
 class HomePage extends StatelessWidget {
   ShopController shopController = Get.find<ShopController>();
   SalesController salesController = Get.put(SalesController());
+  ExpenseController expenseController = Get.put(ExpenseController());
   UserController attendantController = Get.put(UserController());
   AuthController authController = Get.find<AuthController>();
   final DateTime now = DateTime.now();
@@ -77,7 +81,7 @@ class HomePage extends StatelessWidget {
           body: SingleChildScrollView(
         child: Container(
           width: double.infinity,
-          padding: EdgeInsets.all(10),
+          padding: const EdgeInsets.all(10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -87,7 +91,7 @@ class HomePage extends StatelessWidget {
                   majorTitle(
                       title: "Current Shop", color: Colors.black, size: 20.0),
                   if (userController.user.value?.usertype == "attendant")
-                    Spacer(),
+                    const Spacer(),
                   if (userController.user.value?.usertype == "attendant")
                     Row(
                       children: [
@@ -126,7 +130,7 @@ class HomePage extends StatelessWidget {
                         showShopModalBottomSheet(context);
                       },
                       child: Container(
-                        padding: EdgeInsets.all(5),
+                        padding: const EdgeInsets.all(5),
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(50),
@@ -139,7 +143,7 @@ class HomePage extends StatelessWidget {
                     ),
                 ],
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               SizedBox(
                 height: 100,
                 child: Column(
@@ -167,12 +171,12 @@ class HomePage extends StatelessWidget {
                 ),
               ),
 
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               majorTitle(
                   title: "Enterprise Operations",
                   color: Colors.black,
                   size: 20.0),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               isSmallScreen(context)
                   ? Container(
                       width: double.infinity,
@@ -182,80 +186,88 @@ class HomePage extends StatelessWidget {
                           borderRadius: BorderRadius.circular(20)),
                       child: Column(
                         children: [
-                          GridView.count(
-                            crossAxisCount: 3,
+                          GridView.builder(
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                                    // childAspectRatio:
+                                    //     MediaQuery.of(context).size.width *
+                                    //         6 /
+                                    //         MediaQuery.of(context).size.height,
+                                    crossAxisCount: 3,
+                                    crossAxisSpacing: 10,
+                                    mainAxisSpacing: 10),
                             padding: EdgeInsets.zero,
-                            crossAxisSpacing: 13,
-                            mainAxisSpacing: 8,
+                            itemCount: enterpriseOperations
+                                .where((e) =>
+                                    checkPermission(
+                                        category: e["category"], group: true) ==
+                                    true)
+                                .toList()
+                                .length,
                             shrinkWrap: true,
                             physics: const ScrollPhysics(),
-                            children: enterpriseOperations.map((e) {
-                              return checkPermission(
-                                      category: e["category"],
-                                      permission: "add")
-                                  ? gridItems(
-                                      title: e["title"],
-                                      iconData: e["icon"],
-                                      isSmallScreen: true,
-                                      function: () {
-                                        switch (e["title"]
-                                            .toString()
-                                            .toLowerCase()) {
-                                          case "sale":
-                                            Get.to(() => CreateSale());
-                                            break;
-                                          case "cashflow":
-                                            {
-                                              Get.find<CashflowController>()
-                                                  .getCashflowSummary(
-                                                shopId: shopController
-                                                    .currentShop.value!.id,
-                                                from: DateTime.parse(DateFormat(
+                            itemBuilder: (c, i) {
+                              var e = enterpriseOperations.elementAt(i);
+                              return gridItems(
+                                  title: e["title"],
+                                  iconData: e["icon"],
+                                  isSmallScreen: true,
+                                  function: () {
+                                    switch (
+                                        e["title"].toString().toLowerCase()) {
+                                      case "sale":
+                                        Get.to(() => CreateSale());
+                                        break;
+                                      case "cashflow":
+                                        {
+                                          Get.find<CashflowController>()
+                                              .getCashflowSummary(
+                                            shopId: shopController
+                                                .currentShop.value!.id,
+                                            from: DateTime.parse(DateFormat(
+                                                    "yyyy-MM-dd")
+                                                .format(Get.find<
+                                                        CashflowController>()
+                                                    .fromDate
+                                                    .value)),
+                                            to: DateTime.parse(DateFormat(
                                                         "yyyy-MM-dd")
                                                     .format(Get.find<
                                                             CashflowController>()
-                                                        .fromDate
-                                                        .value)),
-                                                to: DateTime.parse(DateFormat(
-                                                            "yyyy-MM-dd")
-                                                        .format(Get.find<
-                                                                CashflowController>()
-                                                            .toDate
-                                                            .value))
-                                                    .add(const Duration(
-                                                        days: 1)),
-                                              );
-                                              Get.to(() => CashFlowManager());
-                                            }
-                                            break;
-                                          case "stock":
-                                            {
-                                              Get.to(() => StockPage());
-                                            }
-                                            break;
-                                          case "suppliers":
-                                            {
-                                              Get.to(() => SuppliersPage());
-                                            }
-                                            break;
-                                          case "customers":
-                                            {
-                                              Get.to(() => CustomersPage());
-                                            }
-                                            break;
-                                          case "usage":
-                                            {
-                                              Get.to(() => StockPage());
-                                            }
-                                            break;
+                                                        .toDate
+                                                        .value))
+                                                .add(const Duration(days: 1)),
+                                          );
+                                          Get.to(() => CashFlowManager());
                                         }
-                                      })
-                                  : Container();
-                            }).toList(),
+                                        break;
+                                      case "stock":
+                                        {
+                                          Get.to(() => StockPage());
+                                        }
+                                        break;
+                                      case "suppliers":
+                                        {
+                                          Get.to(() => SuppliersPage());
+                                        }
+                                        break;
+                                      case "customers":
+                                        {
+                                          Get.to(() => CustomersPage());
+                                        }
+                                        break;
+                                      case "usage":
+                                        {
+                                          Get.to(() => StockPage());
+                                        }
+                                        break;
+                                    }
+                                  });
+                            },
                           ),
                           if (checkPermission(
                               category: "accounts", group: true))
-                            Divider(
+                            const Divider(
                               color: Colors.white,
                             ),
                           if (checkPermission(
@@ -289,7 +301,7 @@ class HomePage extends StatelessWidget {
                               ),
                             ),
                           if (checkPermission(category: "sales", group: true))
-                            Divider(
+                            const Divider(
                               color: Colors.white,
                             ),
                           if (checkPermission(category: "sales", group: true))
@@ -331,16 +343,22 @@ class HomePage extends StatelessWidget {
                       child: ListView.builder(
                         shrinkWrap: true,
                         scrollDirection: Axis.horizontal,
-                        itemCount: enterpriseOperations.length,
+                        itemCount: enterpriseOperations
+                            .where((e) =>
+                                checkPermission(
+                                    category: e["category"], group: true) ==
+                                true)
+                            .toList()
+                            .length,
                         itemBuilder: (context, index) {
                           var e = enterpriseOperations[index];
                           return Container(
-                            margin: EdgeInsets.only(right: 20),
+                            margin: const EdgeInsets.only(right: 20),
                             width: MediaQuery.of(context).size.height * 0.2,
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(10),
                                 color: Colors.grey.withOpacity(0.1)),
-                            padding: EdgeInsets.all(10),
+                            padding: const EdgeInsets.all(10),
                             child: gridItems(
                                 title: e["title"],
                                 iconData: e["icon"],
@@ -409,7 +427,7 @@ class HomePage extends StatelessWidget {
                           );
                         },
                       )),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -479,7 +497,7 @@ class HomePage extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           Center(
             child: Text(
               title,
@@ -506,8 +524,8 @@ class HomePage extends StatelessWidget {
         print(homeCard.color);
       },
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-        margin: EdgeInsets.only(right: 20),
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+        margin: const EdgeInsets.only(right: 20),
         decoration: BoxDecoration(
             color: homeCard.color, borderRadius: BorderRadius.circular(10)),
         child: Row(
@@ -518,7 +536,7 @@ class HomePage extends StatelessWidget {
               size: 40,
               color: c,
             ),
-            SizedBox(
+            const SizedBox(
               width: 40,
             ),
             Column(
@@ -527,7 +545,7 @@ class HomePage extends StatelessWidget {
               children: [
                 majorTitle(
                     title: homeCard.name, color: Colors.white, size: 13.0),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 Obx(() {
                   return salesController.getSalesByLoad.value
                       ? minorTitle(title: "Calculating...", color: Colors.white)
@@ -566,6 +584,7 @@ class HomePage extends StatelessWidget {
                 scrollDirection: Axis.vertical,
                 itemBuilder: (context, index) {
                   SalesModel salesModel = results.elementAt(index);
+                  // return Container();
                   return SalesCard(salesModel: salesModel);
                 });
           }

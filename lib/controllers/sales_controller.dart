@@ -55,6 +55,8 @@ class SalesController extends GetxController
   RxList<SalesModel> allSales = RxList([]);
   RxList<ReceiptItem> allSalesReturns = RxList([]);
   RxnInt allSalesTotal = RxnInt(0);
+  RxnInt change = RxnInt(0);
+  RxString changeText = RxString("Change: ");
   RxnInt netProfit = RxnInt(0);
   RxnInt totalbadStock = RxnInt(0);
   RxnInt totalSalesReturned = RxnInt(0);
@@ -234,8 +236,10 @@ class SalesController extends GetxController
       }
       int ei = profitdata.indexWhere((element) => element.year == month);
       if (ei != -1) {
-        profitdata[ei] =
-            SalesData(month, profitdata[ei].sales - expensesdata[i].sales);
+        netProfit.value =
+            SalesData(month, profitdata[ei].sales - expensesdata[i].sales)
+                .sales
+                .toInt();
       }
     }
   }
@@ -324,7 +328,7 @@ class SalesController extends GetxController
       }
       index =
           receipt.value!.items.indexWhere((element) => element.id == value.id);
-      receipt.value!.items[index].receipt = receipt.value;
+      receipt.value!.items[index].receiptId = receipt.value?.id;
     } else {
       ReceiptItem receiptItem = receipt.value!.items[index];
       var newqty =
@@ -358,10 +362,26 @@ class SalesController extends GetxController
     calculateAmount(index);
   }
 
+  getTotalCredit() {
+    var amountPaidTotal =
+        int.parse(amountPaid.value.text.isEmpty ? "0" : amountPaid.value.text);
+    if (amountPaidTotal > 0) {
+      receipt.value!.creditTotal = receipt.value!.grandTotal! - amountPaidTotal;
+    } else {
+      receipt.value!.creditTotal = receipt.value!.grandTotal;
+    }
+
+    if (receipt.value!.creditTotal! < amountPaidTotal) {
+      change.value = amountPaidTotal - receipt.value!.grandTotal!;
+      changeText.value = "Change: ";
+    } else {
+      changeText.value = "Credit Total: ";
+    }
+  }
+
   calculateAmount(index) {
     receipt.value!.grandTotal = 0;
     receipt.value!.creditTotal = 0;
-    amountPaid.text = "0";
 
     receipt.value!.grandTotal = receipt.value!.items.fold(
         0,
@@ -370,10 +390,11 @@ class SalesController extends GetxController
             ((element.product!.selling! - element.discount!) *
                 element.quantity!));
 
-    amountPaid.text = receipt.value!.grandTotal.toString();
+    // amountPaid.text = receipt.value!.grandTotal.toString();
 
-    receipt.value!.creditTotal =
-        receipt.value!.grandTotal! - int.parse(amountPaid.text);
+    // receipt.value!.creditTotal =
+    //     receipt.value!.grandTotal! - int.parse(amountPaid.text);
+    getTotalCredit();
     if (index == -1) {
       return;
     }
@@ -561,12 +582,13 @@ class SalesController extends GetxController
     }
 
     receipt.value = null;
+    amountPaid.text = "";
     refresh();
     getSalesByDate(type: "today");
   }
 
   _paymentType(SalesModel salesModel) {
-    if (salesModel.creditTotal! < 0) {
+    if (salesModel.creditTotal! > 0) {
       return salesModel.paymentMethod != "Wallet"
           ? "Credit"
           : salesModel.paymentMethod;
@@ -668,8 +690,6 @@ class SalesController extends GetxController
       toDate = DateTime.parse(DateFormat("yyy-MM-dd")
           .format(DateTime.now().add(const Duration(days: 1))));
     }
-    print(fromDate);
-    print(toDate);
     RealmResults<ReceiptItem>? receipt = Sales()
         .getSaleReceipts(product: product, fromDate: fromDate, toDate: toDate);
     productSales.addAll(receipt.map((e) => e).toList());
@@ -693,7 +713,29 @@ class SalesController extends GetxController
         onCredit: onCredit,
         customer: customer);
     allSales.clear();
-    allSales.addAll(sales.map((e) => e).toList());
+    if (receipt.isNotEmpty) {
+      allSales.addAll(sales
+          .where((e) =>
+              e.items.fold(
+                      0,
+                      (previousValue, element) =>
+                          previousValue + element.quantity!) >
+                  0 &&
+              e.receiptNumber
+                  .toString()
+                  .toLowerCase()
+                  .contains(receipt.toString().toLowerCase()))
+          .toList());
+    } else {
+      allSales.addAll(sales
+          .where((e) =>
+              e.items.fold(
+                  0,
+                  (previousValue, element) =>
+                      previousValue + element.quantity!) >
+              0)
+          .toList());
+    }
   }
 
   getProfitTransaction({
@@ -733,7 +775,8 @@ class SalesController extends GetxController
     super.onInit();
   }
 
-  void returnSale(ReceiptItem receiptItem, int quatity) async {
+  void returnSale(ReceiptItem receiptItem, int quatity,
+      {Product? product}) async {
     var amount = quatity * receiptItem.price!; // amount to be returned
     ReceiptItem returnedReceipt = ReceiptItem(ObjectId(),
         quantity: quatity,
@@ -745,7 +788,7 @@ class SalesController extends GetxController
         soldOn: receiptItem.soldOn,
         receipt: currentReceipt.value,
         shop: receiptItem.shop,
-        customerId: currentReceipt.value!.customerId);
+        customerId: currentReceipt.value?.customerId);
     Sales().createSaleReceiptItem(returnedReceipt);
     //refund to the wallet if its was a wallet sale
     //if it was credit sale return the paid amount to the wallet
@@ -789,7 +832,66 @@ class SalesController extends GetxController
             : currentReceipt.value!.creditTotal,
         returnedItems: returnedReceipt);
     getSalesBySaleId(id: currentReceipt.value!.id);
+    if (product != null) {
+      getSalesByProductId(
+          fromDate: filterStartDate.value,
+          toDate: filterEndDate.value,
+          product: product);
+      Get.back();
+      productSales.refresh();
+    }
+    getSalesByDate(type: "today");
     currentReceipt.refresh();
+  }
+
+  deleteReceiptItem(ReceiptItem receiptItem, {Product? product}) {
+    var amount =
+        receiptItem.quantity! * receiptItem.price!; // amount to be returned
+    if (_onCredit(currentReceipt.value!)) {
+      //what was already paid
+      var totalPaid = (amount - currentReceipt.value!.creditTotal!.abs());
+      var totalRemoveFromWallet =
+          totalPaid + currentReceipt.value!.creditTotal!.abs();
+
+      Get.find<WalletController>().WalletTransaction(
+          customerModel: currentReceipt.value!.customerId!,
+          newbalance:
+              _onCredit(currentReceipt.value!) ? totalRemoveFromWallet : amount,
+          amount: amount,
+          type: "deposit",
+          salesModel: currentReceipt.value!);
+    }
+
+    //increate product quantity
+    Products().updateProductPart(
+        product: receiptItem.product!,
+        quantity: receiptItem.product!.quantity! + receiptItem.quantity!);
+
+    print(receiptItem.id);
+    // update receipt qty returned and re-calculate the total
+    print(currentReceipt.value!.items.length);
+    if (currentReceipt.value!.items.length == 1) {
+      Sales().deleteReceipt(currentReceipt.value!);
+    } else {
+      print(receiptItem.id);
+      Sales().updateReceipt(
+          receipt: currentReceipt.value!,
+          total: currentReceipt.value!.grandTotal! - amount,
+          creditBalance: currentReceipt.value!.paymentMethod == "Credit"
+              ? (currentReceipt.value!.creditTotal!.abs() - amount) * -1
+              : currentReceipt.value!.creditTotal);
+    }
+    print(receiptItem.id);
+    Sales().deleteReceiptItem(receiptItem);
+    print("after all");
+    if (product != null) {
+      print("gettting again");
+      getSalesByProductId(
+          fromDate: filterStartDate.value,
+          toDate: filterEndDate.value,
+          product: product);
+      productSales.refresh();
+    }
   }
 
   totalSales() {
@@ -802,7 +904,7 @@ class SalesController extends GetxController
 
   payCredit({required SalesModel salesBody, required int amount}) async {
     var newbalance = salesBody.creditTotal!.abs() - amount;
-    Sales().updateReceipt(receipt: salesBody, creditBalance: -newbalance);
+    Sales().updateReceipt(receipt: salesBody, creditBalance: newbalance);
     PayHistory payHistory = PayHistory(ObjectId(),
         attendant: Get.find<UserController>().user.value,
         amountPaid: amount,
@@ -899,6 +1001,7 @@ class SalesController extends GetxController
   void getReturns(
       {CustomerModel? customerModel,
       SalesModel? salesModel,
+      Product? product,
       DateTime? fromDate,
       String? type,
       DateTime? toDate}) {
@@ -907,11 +1010,11 @@ class SalesController extends GetxController
     RealmResults<ReceiptItem> response = Sales().getSaleReceipts(
         salesModel: salesModel,
         customerModel: customerModel,
+        product: product,
         type: type,
         fromDate: fromDate,
         toDate: toDate);
     List<ReceiptItem> salesReturn = response.map((e) => e).toList();
-    // print(allSalesReturns.length);
     allSalesReturns.value = salesReturn;
 
     for (var e in salesReturn) {

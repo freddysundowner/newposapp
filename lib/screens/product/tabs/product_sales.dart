@@ -9,6 +9,7 @@ import 'package:pointify/widgets/months_filter.dart';
 import '../../../Real/schema.dart';
 import '../../../controllers/sales_controller.dart';
 import '../../../functions/functions.dart';
+import '../../../pdfFiles/pdf/productmonthlypdf/monthlypreview.dart';
 import '../../../pdfFiles/pdf/productmonthlypdf/product_monthly_report.dart';
 import '../../../pdfFiles/pdfpreview.dart';
 import '../../../utils/colors.dart';
@@ -119,12 +120,21 @@ class SalesPages extends StatelessWidget {
                       ),
                       InkWell(
                         onTap: () {
-                          print("n");
-                          Get.to(() => PdfPreviewPage(
-                              widget: ProductMonthlyReport(
-                                  salesController.productSales,
-                                  product: product),
-                              type: "Invoice"));
+                          Get.to(() => MonthlyPreviewPage(
+                              sales: monhts
+                                  .map((e) => [
+                                        e["month"],
+                                        htmlPrice(getSalesTotal(e["month"],
+                                            salesController.productSales)),
+                                      ])
+                                  .toList(),
+                              type: "Product Sales",
+                              product: product,
+                              title: "Monthly sales for ${product.name!}",
+                              total: salesController.productSales.fold(
+                                  0,
+                                  (previousValue, element) =>
+                                      previousValue! + element.total!)));
                         },
                         child: Container(
                           padding: const EdgeInsets.all(5),
@@ -154,6 +164,11 @@ class SalesPages extends StatelessWidget {
                           product: product,
                           fromDate: firstday,
                           toDate: lastday);
+                      salesController.getReturns(
+                          product: product,
+                          fromDate: firstday,
+                          toDate: lastday,
+                          type: "return");
                     }, year: salesController.currentYear.value);
                     Get.to(() => ProductReceiptsSales(
                           product: product,
