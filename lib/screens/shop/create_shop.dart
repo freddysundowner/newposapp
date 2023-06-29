@@ -95,12 +95,25 @@ class CreateShop extends StatelessWidget {
         SizedBox(height: 10),
         InkWell(
           onTap: () {
-            Get.to(() => ShopCategories(
-                  selectedItemsCallback: (ShopTypes s) {
-                    Get.back();
-                    shopController.selectedCategory.value = s;
-                  },
-                ));
+            if (isSmallScreen(context)) {
+              Get.to(() => ShopCategories(
+                    selectedItemsCallback: (ShopTypes s) {
+                      Get.back();
+                      shopController.selectedCategory.value = s;
+                    },
+                    page: page,
+                  ));
+            } else {
+              Get.find<HomeController>().selectedWidget.value = ShopCategories(
+                page: page,
+                selectedItemsCallback: (ShopTypes s) {
+                  Get.find<HomeController>().selectedWidget.value =
+                      CreateShop(page: page);
+
+                  shopController.selectedCategory.value = s;
+                },
+              );
+            }
           },
           child: Container(
             padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
