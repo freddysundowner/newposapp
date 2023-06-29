@@ -32,12 +32,6 @@ class CustomersPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ResponsiveWidget(
-        largeScreen: defaultTab("large", context),
-        smallScreen: defaultTab("small", context));
-  }
-
-  Widget defaultTab(types, context) {
     return DefaultTabController(
       length: 2,
       child: Scaffold(
@@ -48,18 +42,18 @@ class CustomersPage extends StatelessWidget {
           centerTitle: false,
           leading:
               Get.find<UserController>().user.value?.usertype == "attendant" &&
-                      MediaQuery.of(context).size.width > 600
+                      !isSmallScreen(context)
                   ? Container()
                   : IconButton(
                       onPressed: () {
-                        if (types == "large") {
+                        if (isSmallScreen(context)) {
+                          Get.back();
+                        } else {
                           Get.find<HomeController>().selectedWidget.value =
                               HomePage();
-                        } else {
-                          Get.back();
                         }
                       },
-                      icon: Icon(
+                      icon: const Icon(
                         Icons.arrow_back_ios,
                         color: Colors.black,
                       ),
@@ -77,7 +71,7 @@ class CustomersPage extends StatelessWidget {
             if (checkPermission(category: "customers", permission: "manage"))
               InkWell(
                 onTap: () {
-                  if (types == "large") {
+                  if (!isSmallScreen(context)) {
                     Get.find<HomeController>().selectedWidget.value =
                         CreateCustomer(
                       page: "customersPage",
@@ -91,7 +85,7 @@ class CustomersPage extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.all(10),
                   child: Container(
-                    padding: EdgeInsets.fromLTRB(5, 2, 5, 2),
+                    padding: const EdgeInsets.fromLTRB(5, 2, 5, 2),
                     decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: (BorderRadius.circular(10)),
@@ -116,8 +110,8 @@ class CustomersPage extends StatelessWidget {
                   .getCustomersInShop(value == 0 ? "all" : "debtors");
             },
             tabs: [
-              Tab(text: "All"),
-              Tab(text: "Debtors"),
+              const Tab(text: "All"),
+              const Tab(text: "Debtors"),
             ],
           ),
         ),
@@ -137,6 +131,7 @@ class CustomersPage extends StatelessWidget {
 
 class Customers extends StatelessWidget {
   String type;
+
   Customers({Key? key, required this.type}) : super(key: key);
   CustomerController customersController = Get.find<CustomerController>();
 
@@ -145,52 +140,46 @@ class Customers extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       body: Padding(
-        padding: EdgeInsets.only(top: 5),
+        padding: const EdgeInsets.only(top: 5),
         child: Obx(() {
           return customersController.gettingCustomersLoad.value
               ? const Center(
                   child: CircularProgressIndicator(),
                 )
-              : MediaQuery.of(context).size.width > 600
-                  ? customersController.customers.isEmpty
-                      ? noItemsFound(context, true)
-                      : customerTable(
-                          customers: customersController.customers,
-                          context: context)
-                  : StreamBuilder(
-                      stream: Customer().getCustomersByShopId("all").changes,
-                      builder: (context, snapshot) {
-                        final data = snapshot.data;
-                        if (data == null || data.results.isEmpty) {
-                          return Center(
-                            child: InkWell(
-                              onTap: () {
-                                Get.to(() => CreateCustomer(
-                                      page: "",
-                                    ));
-                              },
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    "Add",
-                                    style: TextStyle(
-                                        color: AppColors.mainColor,
-                                        fontSize: 21),
-                                  ),
-                                  Icon(
-                                    Icons.add_circle_outline_outlined,
-                                    size: 60,
-                                    color: AppColors.mainColor,
-                                  ),
-                                ],
+              : StreamBuilder(
+                  stream: Customer().getCustomersByShopId("all").changes,
+                  builder: (context, snapshot) {
+                    final data = snapshot.data;
+                    if (data == null || data.results.isEmpty) {
+                      return Center(
+                        child: InkWell(
+                          onTap: () {
+                            Get.to(() => CreateCustomer(
+                                  page: "",
+                                ));
+                          },
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                "Add",
+                                style: TextStyle(
+                                    color: AppColors.mainColor, fontSize: 21),
                               ),
-                            ),
-                          );
-                        } else {
-                          final results = data.results;
-                          return ListView.builder(
+                              Icon(
+                                Icons.add_circle_outline_outlined,
+                                size: 60,
+                                color: AppColors.mainColor,
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    } else {
+                      final results = data.results;
+                      return isSmallScreen(context)
+                          ? ListView.builder(
                               itemCount:
                                   results.realm.isClosed ? 0 : results.length,
                               itemBuilder: (context, index) {
@@ -200,9 +189,12 @@ class Customers extends StatelessWidget {
                                     customerModel: customerModel,
                                     context: context,
                                     type: type);
-                              });
-                        }
-                      });
+                              })
+                          : customerTable(
+                              customers:results,
+                              context: context);
+                    }
+                  });
         }),
       ),
     );
@@ -218,30 +210,25 @@ class Debtors extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       body: Padding(
-        padding: EdgeInsets.only(top: 5),
+        padding: const EdgeInsets.only(top: 5),
         child: Obx(() {
           return customersController.gettingCustomersLoad.value
               ? const Center(
                   child: CircularProgressIndicator(),
                 )
-              : MediaQuery.of(context).size.width > 600
-                  ? customersController.customers.isEmpty
-                      ? noItemsFound(context, true)
-                      : customerTable(
-                          customers: customersController.customers,
-                          context: context)
-                  : StreamBuilder(
-                      stream:
-                          Customer().getCustomersByShopId("debtors").changes,
-                      builder: (context, snapshot) {
-                        final data = snapshot.data;
-                        if (data == null) {
-                          return minorTitle(
-                              title: "This shop doesn't have products yet",
-                              color: Colors.black);
-                        } else {
-                          final results = data.results;
-                          return ListView.builder(
+              : StreamBuilder(
+                  stream: Customer().getCustomersByShopId("debtors").changes,
+                  builder: (context, snapshot) {
+                    final data = snapshot.data;
+                    if (data == null) {
+                      print("object");
+                      return minorTitle(
+                          title: "This shop doesn't have products yet",
+                          color: Colors.black);
+                    } else {
+                      final results = data.results;
+                      return isSmallScreen(context)
+                          ? ListView.builder(
                               itemCount:
                                   results.realm.isClosed ? 0 : results.length,
                               itemBuilder: (context, index) {
@@ -250,9 +237,12 @@ class Debtors extends StatelessWidget {
                                 return customerWidget(
                                     customerModel: customerModel,
                                     context: context);
-                              });
-                        }
-                      });
+                              })
+                          : customerTable(
+                              customers:results,
+                              context: context);
+                    }
+                  });
         }),
       ),
     );

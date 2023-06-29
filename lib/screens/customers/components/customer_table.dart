@@ -9,7 +9,7 @@ import '../../../utils/colors.dart';
 Widget customerTable({required customers, required context}) {
   return SingleChildScrollView(
     child: Container(
-      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
       width: double.infinity,
       child: Theme(
         data: Theme.of(context).copyWith(dividerColor: Colors.grey),
@@ -31,8 +31,8 @@ Widget customerTable({required customers, required context}) {
             final x = customerModel.phoneNumber;
 
             return DataRow(cells: [
-              DataCell(Container(child: Text(y!))),
-              DataCell(Container(child: Text(x.toString()))),
+              DataCell(Text(y!)),
+              DataCell(Text(x.toString())),
               DataCell(
                 InkWell(
                   onTap: () {
@@ -42,22 +42,22 @@ Widget customerTable({required customers, required context}) {
                     );
                   },
                   child: Align(
+                    alignment: Alignment.topRight,
                     child: Center(
                       child: Container(
-                        padding: EdgeInsets.all(5),
-                        margin: EdgeInsets.all(5),
+                        padding: const EdgeInsets.all(5),
+                        margin: const EdgeInsets.all(5),
                         decoration: BoxDecoration(
                             color: AppColors.mainColor,
                             borderRadius: BorderRadius.circular(3)),
                         width: 75,
-                        child: Text(
+                        child: const Text(
                           "View",
                           style: TextStyle(color: Colors.white),
                           textAlign: TextAlign.center,
                         ),
                       ),
                     ),
-                    alignment: Alignment.topRight,
                   ),
                 ),
               ),
