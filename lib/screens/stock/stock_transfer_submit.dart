@@ -35,14 +35,14 @@ class StockSubmit extends StatelessWidget {
         }
       },
       decoration: InputDecoration(
-        contentPadding: EdgeInsets.fromLTRB(10, 2, 10, 2),
+        contentPadding: const EdgeInsets.fromLTRB(10, 2, 10, 2),
         suffixIcon: IconButton(
           onPressed: () {
             productController.getProductsBySort(
                 type: "search",
                 text: productController.searchProductController.text);
           },
-          icon: Icon(Icons.search),
+          icon: const Icon(Icons.search),
         ),
         hintText: "Quick Search",
         border: OutlineInputBorder(
@@ -63,7 +63,7 @@ class StockSubmit extends StatelessWidget {
         backgroundColor: Colors.white,
         centerTitle: false,
         elevation: 0.2,
-        title: Text(
+        title: const Text(
           "Transfer",
           style: TextStyle(color: Colors.black),
         ),
@@ -76,16 +76,41 @@ class StockSubmit extends StatelessWidget {
                 Get.back();
               }
             },
-            icon: Icon(
+            icon: const Icon(
               Icons.arrow_back_ios,
               color: Colors.black,
             )),
+        actions: [
+          if(!isSmallScreen(context))
+          InkWell(
+            onTap: () {
+
+              stockTransferController.submitTranster(
+                  toShop: toShop, context: context);
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              margin: const EdgeInsets.symmetric(vertical: 10,horizontal: 5),
+              height: kToolbarHeight ,
+
+              decoration: BoxDecoration(
+                  border:
+                  Border.all(width: 3, color: AppColors.mainColor),
+                  borderRadius: BorderRadius.circular(40)),
+              child: Center(
+                  child: majorTitle(
+                      title: "Complete",
+                      color: AppColors.mainColor,
+                      size: 14.0)),
+            ),
+          )
+        ],
       ),
       bottomNavigationBar: BottomAppBar(
         color: Colors.white,
         child: Obx(() {
           return stockTransferController.selectedProducts.isEmpty ||
-                  MediaQuery.of(context).size.width > 600
+                  !isSmallScreen(context)
               ? Container(
                   height: 0,
                 )
@@ -103,7 +128,7 @@ class StockSubmit extends StatelessWidget {
                           toShop: toShop, context: context);
                     },
                     child: Container(
-                      padding: EdgeInsets.all(10),
+                      padding: const EdgeInsets.all(10),
                       width: double.infinity,
                       decoration: BoxDecoration(
                           border:
@@ -119,246 +144,263 @@ class StockSubmit extends StatelessWidget {
                 );
         }),
       ),
-      body: ResponsiveWidget(
-          largeScreen: Obx(() => SingleChildScrollView(
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                  width: double.infinity,
-                  child: Theme(
-                    data: Theme.of(context).copyWith(dividerColor: Colors.grey),
-                    child: DataTable(
-                      decoration: BoxDecoration(
-                          border: Border.all(
-                        width: 1,
-                        color: Colors.black,
-                      )),
-                      columnSpacing: 30.0,
-                      columns: [
-                        DataColumn(
-                            label: Text('Name', textAlign: TextAlign.center)),
-                        DataColumn(
-                            label: Text('System Count',
-                                textAlign: TextAlign.center)),
-                        DataColumn(
-                            label:
-                                Text('Quantity', textAlign: TextAlign.center)),
-                        DataColumn(
-                            label: Text('', textAlign: TextAlign.center)),
-                      ],
-                      rows: List.generate(
-                          stockTransferController.selectedProducts.length,
-                          (index) {
-                        Product productModel = stockTransferController
-                            .selectedProducts
-                            .elementAt(index)
-                            .product!;
-                        final y = productModel.name;
-                        final x = productModel.quantity;
-                        final z = productModel.cartquantity;
+      body: Obx(
+        () {
+          return isSmallScreen(context)
+              ? ListView.builder(
+                  shrinkWrap: true,
+                  itemBuilder: (context, index) {
+                    ProductTransfer productTransfer = stockTransferController
+                        .selectedProducts
+                        .elementAt(index);
+                    return Container(
+                      width: double.infinity,
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.all(Radius.circular(8)),
+                        boxShadow: [
+                          BoxShadow(
+                              color: Colors.grey, //New
+                              blurRadius: 2.0,
+                              offset: Offset(1, 1))
+                        ],
+                      ),
+                      padding: const EdgeInsets.all(10),
+                      margin: const EdgeInsets.only(
+                          left: 10, right: 10, bottom: 7, top: 3),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "${productTransfer.product!.name}".capitalize!,
+                            style: const TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16),
+                          ),
+                          const SizedBox(height: 5),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                flex: 4,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "System Count".capitalize!,
+                                      style: const TextStyle(
+                                          color: Colors.grey, fontSize: 15),
+                                    ),
+                                    const SizedBox(
+                                      height: 5,
+                                    ),
+                                    Text(
+                                      "${productTransfer.product!.quantity}",
+                                      style: const TextStyle(
+                                          color: Colors.grey, fontSize: 15),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(
+                                width: 20,
+                              ),
+                              Expanded(
+                                flex: 4,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "Transfer Count".capitalize!,
+                                      style: const TextStyle(
+                                          color: Colors.grey, fontSize: 15),
+                                    ),
+                                    const SizedBox(
+                                      height: 5,
+                                    ),
+                                    Row(
+                                      children: [
+                                        InkWell(
+                                            onTap: () {
+                                              if (productTransfer.quantity! >
+                                                  1) {
+                                                productTransfer.quantity =
+                                                    productTransfer.quantity! -
+                                                        1;
+                                                stockTransferController
+                                                    .selectedProducts
+                                                    .refresh();
+                                              }
+                                            },
+                                            child: const Icon(
+                                                Icons.remove_circle_outline)),
+                                        const Spacer(),
+                                        Text(
+                                          "${productTransfer.quantity ?? 1}",
+                                          style: const TextStyle(
+                                              color: Colors.grey, fontSize: 15),
+                                        ),
+                                        const Spacer(),
+                                        InkWell(
+                                            onTap: () {
+                                              if (productTransfer.quantity! <
+                                                  productTransfer
+                                                      .product!.quantity!) {
+                                                productTransfer.quantity =
+                                                    productTransfer.quantity! +
+                                                        1;
+                                                stockTransferController
+                                                    .selectedProducts
+                                                    .refresh();
+                                              }
+                                            },
+                                            child: const Icon(
+                                                Icons.add_circle_outline)),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(
+                                width: 20,
+                              ),
+                              Expanded(
+                                  flex: 2,
+                                  child: InkWell(
+                                    onTap: () {
+                                      stockTransferController.selectedProducts
+                                          .removeWhere((element) =>
+                                              element.product!.id ==
+                                              productTransfer.product!.id);
+                                      stockTransferController.selectedProducts
+                                          .refresh();
+                                      productController.products.refresh();
+                                    },
+                                    child: Icon(
+                                      Icons.clear,
+                                      color: AppColors.mainColor,
+                                    ),
+                                  ))
+                            ],
+                          )
+                        ],
+                      ),
+                    );
+                  },
+                  itemCount: stockTransferController.selectedProducts.length,
+                )
+              : Theme(
+                  data: Theme.of(context).copyWith(dividerColor: Colors.grey),
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(horizontal: 15)
+                        .copyWith(top: 10),
+                    child: FittedBox(
+                      child: DataTable(
+                        decoration: BoxDecoration(
+                            border: Border.all(
+                          width: 1,
+                          color: Colors.black,
+                        )),
+                        columnSpacing: 30.0,
+                        columns: const [
+                          DataColumn(
+                              label: Text('Name', textAlign: TextAlign.center)),
+                          DataColumn(
+                              label: Text('System Count',
+                                  textAlign: TextAlign.center)),
+                          DataColumn(
+                              label: Text('Quantity',
+                                  textAlign: TextAlign.center)),
+                          DataColumn(
+                              label: Text('', textAlign: TextAlign.center)),
+                        ],
+                        rows: List.generate(
+                            stockTransferController.selectedProducts.length,
+                            (index) {
+                          ProductTransfer productTransfer =
+                              stockTransferController.selectedProducts
+                                  .elementAt(index);
+                          final y = productTransfer.product?.name;
+                          final x = productTransfer.product?.quantity;
+                          // final z = productTransfer.cartquantity;
 
-                        return DataRow(cells: [
-                          DataCell(Container(width: 75, child: Text(y!))),
-                          DataCell(
-                              Container(width: 75, child: Text(x.toString()))),
-                          DataCell(Container(
+                          return DataRow(cells: [
+                            DataCell(SizedBox(width: 75, child: Text(y!))),
+                            DataCell(
+                                SizedBox(width: 75, child: Text(x.toString()))),
+                            DataCell(SizedBox(
                               width: 75,
                               child: Row(
                                 children: [
                                   InkWell(
                                       onTap: () {
-                                        if (productModel.cartquantity! > 1) {
-                                          productModel.cartquantity =
-                                              productModel.cartquantity! - 1;
+                                        if (productTransfer.quantity! > 1) {
+                                          productTransfer.quantity =
+                                              productTransfer.quantity! - 1;
                                           stockTransferController
                                               .selectedProducts
                                               .refresh();
                                         }
                                       },
-                                      child: Icon(Icons.remove_circle_outline)),
-                                  Spacer(),
+                                      child: const Icon(
+                                          Icons.remove_circle_outline,
+                                          size: 15)),
+                                  const Spacer(),
                                   Text(
-                                    "${productModel.cartquantity}",
-                                    style: TextStyle(
+                                    "${productTransfer.quantity ?? 1}",
+                                    style: const TextStyle(
                                         color: Colors.grey, fontSize: 15),
                                   ),
-                                  Spacer(),
+                                  const Spacer(),
                                   InkWell(
                                       onTap: () {
-                                        if (productModel.cartquantity! <
-                                            productModel.quantity!) {
-                                          productModel.cartquantity =
-                                              productModel.cartquantity! + 1;
+                                        if (productTransfer.quantity! <
+                                            productTransfer
+                                                .product!.quantity!) {
+                                          productTransfer.quantity =
+                                              productTransfer.quantity! + 1;
                                           stockTransferController
                                               .selectedProducts
                                               .refresh();
                                         }
                                       },
-                                      child: Icon(Icons.add_circle_outline)),
+                                      child: const Icon(
+                                          Icons.add_circle_outline,
+                                          size: 15)),
                                 ],
-                              ))),
-                          DataCell(Container(
-                              width: 75,
-                              child: Align(
-                                alignment: Alignment.topRight,
-                                child: InkWell(
-                                    onTap: () {
-                                      stockTransferController.selectedProducts
-                                          .removeWhere((element) =>
-                                              element.product!.id ==
-                                              productModel.id);
-                                      stockTransferController.selectedProducts
-                                          .refresh();
-                                      productController.products.refresh();
-                                    },
-                                    child: Icon(Icons.clear)),
-                              ))),
-                        ]);
-                      }),
+                              ),
+                            )),
+                            DataCell(Align(
+                              alignment: Alignment.topRight,
+                              child: InkWell(
+                                  onTap: () {
+                                    stockTransferController.selectedProducts
+                                        .removeWhere((element) =>
+                                            element.product!.id ==
+                                            productTransfer.product?.id);
+                                    stockTransferController.selectedProducts
+                                        .refresh();
+                                    productController.products.refresh();
+                                  },
+                                  child: const SizedBox(
+                                    width: 75,
+                                    child: Center(
+                                        child: Icon(
+                                      Icons.clear,
+                                      size: 15,
+                                    )),
+                                  )),
+                            )),
+                          ]);
+                        }),
+                      ),
                     ),
                   ),
-                ),
-              )),
-          smallScreen: Obx(
-            () => ListView.builder(
-              shrinkWrap: true,
-              itemBuilder: (context, index) {
-                ProductTransfer productTransfer =
-                    stockTransferController.selectedProducts.elementAt(index);
-                return Container(
-                  width: double.infinity,
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.all(Radius.circular(8)),
-                    boxShadow: [
-                      BoxShadow(
-                          color: Colors.grey, //New
-                          blurRadius: 2.0,
-                          offset: Offset(1, 1))
-                    ],
-                  ),
-                  padding: EdgeInsets.all(10),
-                  margin:
-                      EdgeInsets.only(left: 10, right: 10, bottom: 7, top: 3),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "${productTransfer.product!.name}".capitalize!,
-                        style: const TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16),
-                      ),
-                      SizedBox(height: 5),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            flex: 4,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "System Count".capitalize!,
-                                  style: TextStyle(
-                                      color: Colors.grey, fontSize: 15),
-                                ),
-                                const SizedBox(
-                                  height: 5,
-                                ),
-                                Text(
-                                  "${productTransfer.product!.quantity}",
-                                  style: const TextStyle(
-                                      color: Colors.grey, fontSize: 15),
-                                ),
-                              ],
-                            ),
-                          ),
-                          SizedBox(
-                            width: 20,
-                          ),
-                          Expanded(
-                            flex: 4,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "Transfer Count".capitalize!,
-                                  style: TextStyle(
-                                      color: Colors.grey, fontSize: 15),
-                                ),
-                                SizedBox(
-                                  height: 5,
-                                ),
-                                Row(
-                                  children: [
-                                    InkWell(
-                                        onTap: () {
-                                          print("vv");
-                                          if (productTransfer.quantity! > 1) {
-                                            productTransfer.quantity =
-                                                productTransfer.quantity! - 1;
-                                            stockTransferController
-                                                .selectedProducts
-                                                .refresh();
-                                          }
-                                        },
-                                        child: const Icon(
-                                            Icons.remove_circle_outline)),
-                                    Spacer(),
-                                    Text(
-                                      "${productTransfer.quantity ?? 1}",
-                                      style: const TextStyle(
-                                          color: Colors.grey, fontSize: 15),
-                                    ),
-                                    Spacer(),
-                                    InkWell(
-                                        onTap: () {
-                                          if (productTransfer.quantity! <
-                                              productTransfer
-                                                  .product!.quantity!) {
-                                            productTransfer.quantity =
-                                                productTransfer.quantity! + 1;
-                                            stockTransferController
-                                                .selectedProducts
-                                                .refresh();
-                                          }
-                                        },
-                                        child: Icon(Icons.add_circle_outline)),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                          SizedBox(
-                            width: 20,
-                          ),
-                          Expanded(
-                              flex: 2,
-                              child: InkWell(
-                                onTap: () {
-                                  stockTransferController.selectedProducts
-                                      .removeWhere((element) =>
-                                          element.product!.id ==
-                                          productTransfer.product!.id);
-                                  stockTransferController.selectedProducts
-                                      .refresh();
-                                  productController.products.refresh();
-                                },
-                                child: Icon(
-                                  Icons.clear,
-                                  color: AppColors.mainColor,
-                                ),
-                              ))
-                        ],
-                      )
-                    ],
-                  ),
                 );
-              },
-              itemCount: stockTransferController.selectedProducts.length,
-            ),
-          )),
+        },
+      )
     );
   }
 }
