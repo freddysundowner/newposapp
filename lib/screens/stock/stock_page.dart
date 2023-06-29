@@ -272,7 +272,6 @@ class StockPage extends StatelessWidget {
                       const ImportProducts();
                 }
               },
-
               child: Center(
                 child: Center(
                     child: majorTitle(
