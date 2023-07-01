@@ -36,12 +36,13 @@ class SuppliersPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ResponsiveWidget(
-        largeScreen: defaultTab("large", context),
-        smallScreen: defaultTab("small", context));
+    return defaultTab(context);
+    // ResponsiveWidget(
+    //     largeScreen: defaultTab("large", context),
+    //     smallScreen:);
   }
 
-  Widget defaultTab(types, context) {
+  Widget defaultTab(context) {
     return DefaultTabController(
       length: 2,
       initialIndex: 0,
@@ -52,23 +53,23 @@ class SuppliersPage extends StatelessWidget {
           elevation: 0.3,
           centerTitle: false,
           leading:
-              Get.find<UserController>().user.value?.usertype == "attendant" &&
-                      MediaQuery.of(context).size.width > 600
-                  ? Container()
-                  : IconButton(
-                      onPressed: () {
-                        if (types == "large") {
-                          Get.find<HomeController>().selectedWidget.value =
-                              HomePage();
-                        } else {
-                          Get.back();
-                        }
-                      },
-                      icon: Icon(
-                        Icons.arrow_back_ios,
-                        color: Colors.black,
-                      ),
-                    ),
+          Get.find<UserController>().user.value?.usertype == "attendant" &&
+              !isSmallScreen(context)
+              ? Container()
+              : IconButton(
+            onPressed: () {
+              if (isSmallScreen(context)) {
+                Get.back();
+              } else {
+                Get.find<HomeController>().selectedWidget.value =
+                    HomePage();
+              }
+            },
+            icon: const Icon(
+              Icons.arrow_back_ios,
+              color: Colors.black,
+            ),
+          ),
           title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -82,26 +83,26 @@ class SuppliersPage extends StatelessWidget {
             if (checkPermission(category: "suppliers", permission: "manage"))
               InkWell(
                 onTap: () {
-                  if (types == "large") {
+                  if (!isSmallScreen(context)) {
                     Get.find<HomeController>().selectedWidget.value =
                         CreateSuppliers(
-                      page: "suppliersPage",
-                    );
+                          page: "suppliersPage",
+                        );
                   } else {
                     Get.to(() => CreateSuppliers(
-                          page: "suppliersPage",
-                        ));
+                      page: "suppliersPage",
+                    ));
                   }
                 },
                 child: Padding(
                   padding: const EdgeInsets.all(10),
                   child: Container(
-                    padding: EdgeInsets.fromLTRB(5, 2, 5, 2),
+                    padding: const EdgeInsets.fromLTRB(5, 2, 5, 2),
                     decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: (BorderRadius.circular(10)),
                         border:
-                            Border.all(color: AppColors.mainColor, width: 1)),
+                        Border.all(color: AppColors.mainColor, width: 1)),
                     child: Center(
                       child: majorTitle(
                           title: "Add Supplier",
@@ -165,36 +166,35 @@ class Suppliers extends StatelessWidget {
                 return noItemsFound(context, true);
               } else {
                 final results = data.results;
-                return MediaQuery.of(context).size.width > 600
-                    ? supplierTable(customers: results, context: context)
-                    : ListView.builder(
-                        itemCount: results.realm.isClosed ? 0 : results.length,
-                        itemBuilder: (context, index) {
-                          Supplier supplierModel = results.elementAt(index);
-                          return supplierCard(
-                              supplierModel: supplierModel,
-                              type: type ?? "",
-                              function: (Supplier supplier) {
-                                if (type == "purchases") {
-                                  purchaseController.invoice.value?.supplier =
-                                      supplier;
-                                  Get.back();
-                                } else {
-                                  if (MediaQuery.of(Get.context!).size.width >
-                                      600) {
-                                    Get.find<HomeController>()
-                                        .selectedWidget
-                                        .value = SupplierInfoPage(
-                                      supplierModel: supplierModel,
-                                    );
-                                  } else {
-                                    Get.to(() => SupplierInfoPage(
-                                          supplierModel: supplierModel,
-                                        ));
-                                  }
-                                }
-                              });
-                        });
+                return isSmallScreen(context)
+                    ? ListView.builder(
+                    itemCount: results.realm.isClosed ? 0 : results.length,
+                    itemBuilder: (context, index) {
+                      Supplier supplierModel = results.elementAt(index);
+                      return supplierCard(
+                          supplierModel: supplierModel,
+                          type: type ?? "",
+                          function: (Supplier supplier) {
+                            if (type == "purchases") {
+                              purchaseController.invoice.value?.supplier =
+                                  supplier;
+                              Get.back();
+                            } else {
+                              if (!isSmallScreen(context)) {
+                                Get.find<HomeController>()
+                                    .selectedWidget
+                                    .value = SupplierInfoPage(
+                                  supplierModel: supplierModel,
+                                );
+                              } else {
+                                Get.to(() => SupplierInfoPage(
+                                  supplierModel: supplierModel,
+                                ));
+                              }
+                            }
+                          });
+                    })
+                    : supplierTable(customers: results, context: context);
               }
             }),
       ),
