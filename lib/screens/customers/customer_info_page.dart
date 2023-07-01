@@ -235,8 +235,8 @@ class CustomerInfoPage extends StatelessWidget {
                         onTap: () {
                           Get.back();
                           customerController.assignTextFields(customerModel);
-                          Get.to(
-                              () => EditCustomer(customerModel: customerModel));
+                          Get.find<HomeController>().selectedWidget.value =
+                              EditCustomer(customerModel: customerModel);
                         },
                         title: const Text("Edit"),
                       ),
@@ -624,8 +624,18 @@ class CreditInfo extends StatelessWidget {
                     ),
                   ],
                 ))
-              : MediaQuery.of(context).size.width > 600
-                  ? SingleChildScrollView(
+              : isSmallScreen(context)
+                  ? ListView.builder(
+                      itemCount: salesController.allSales.length,
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemBuilder: (context, index) {
+                        SalesModel salesBody =
+                            salesController.allSales.elementAt(index);
+
+                        return SalesCard(salesModel: salesBody);
+                      })
+                  : SingleChildScrollView(
                       child: Container(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 15, vertical: 10),
@@ -640,112 +650,108 @@ class CreditInfo extends StatelessWidget {
                               color: Colors.black,
                             )),
                             columnSpacing: 30.0,
-                            columns: [
-                              const DataColumn(
+                            columns: const [
+                              DataColumn(
                                   label: Text('Receipt Number',
                                       textAlign: TextAlign.center)),
-                              const DataColumn(
+                              DataColumn(
                                   label: Text('Balance',
                                       textAlign: TextAlign.center)),
-                              const DataColumn(
+                              DataColumn(
                                   label: Text('Total',
                                       textAlign: TextAlign.center)),
-                              const DataColumn(
+                              DataColumn(
                                   label: Text('Date',
                                       textAlign: TextAlign.center)),
-                              const DataColumn(
+                              DataColumn(
                                   label: Text('', textAlign: TextAlign.center)),
                             ],
-                            rows: List.generate(
-                                salesController.creditSales.length, (index) {
+                            rows: List.generate(salesController.allSales.length,
+                                (index) {
                               SalesModel salesBody =
-                                  salesController.creditSales.elementAt(index);
+                                  salesController.allSales.elementAt(index);
+
                               final y = salesBody.receiptNumber;
                               final x = salesBody.creditTotal;
                               final z = salesBody.grandTotal;
                               final a = salesBody.createdAt!;
 
                               return DataRow(cells: [
-                                DataCell(Container(child: Text(y!))),
-                                DataCell(Container(child: Text(x.toString()))),
-                                DataCell(Container(child: Text(z.toString()))),
-                                DataCell(Container(
-                                    child: Text(
-                                        DateFormat("dd-MM-yyyy").format(a)))),
+                                DataCell(Text(y!)),
+                                DataCell(Text(x.toString())),
+                                DataCell(Text(z.toString())),
+                                DataCell(
+                                    Text(DateFormat("dd-MM-yyyy").format(a))),
                                 DataCell(Align(
                                   alignment: Alignment.topRight,
-                                  child: Container(
-                                    child: PopupMenuButton(
-                                      itemBuilder: (ctx) => [
-                                        PopupMenuItem(
-                                          child: ListTile(
-                                            leading: const Icon(Icons.list),
-                                            onTap: () {
-                                              Navigator.pop(context);
-                                              if (MediaQuery.of(context)
-                                                      .size
-                                                      .width >
-                                                  600) {
-                                                Get.find<HomeController>()
-                                                        .selectedWidget
-                                                        .value =
-                                                    PurchaseOrderItems(
-                                                        id: salesBody.id);
-                                              } else {
-                                                Get.to(() => PurchaseOrderItems(
-                                                    id: salesBody.id));
-                                              }
-                                            },
-                                            title: const Text('View Purchases'),
-                                          ),
+                                  child: PopupMenuButton(
+                                    itemBuilder: (ctx) => [
+                                      PopupMenuItem(
+                                        child: ListTile(
+                                          leading: const Icon(Icons.list),
+                                          onTap: () {
+                                            Navigator.pop(context);
+                                            if (MediaQuery.of(context)
+                                                    .size
+                                                    .width >
+                                                600) {
+                                              Get.find<HomeController>()
+                                                      .selectedWidget
+                                                      .value =
+                                                  PurchaseOrderItems(
+                                                      id: salesBody.id);
+                                            } else {
+                                              Get.to(() => PurchaseOrderItems(
+                                                  id: salesBody.id));
+                                            }
+                                          },
+                                          title: const Text('View Purchases'),
                                         ),
-                                        PopupMenuItem(
-                                          child: ListTile(
-                                            leading: const Icon(Icons.payment),
-                                            onTap: () {
-                                              Navigator.pop(context);
-                                            },
-                                            title: const Text('Pay'),
-                                          ),
+                                      ),
+                                      PopupMenuItem(
+                                        child: ListTile(
+                                          leading: const Icon(Icons.payment),
+                                          onTap: () {
+                                            Navigator.pop(context);
+                                          },
+                                          title: const Text('Pay'),
                                         ),
-                                        PopupMenuItem(
-                                          child: ListTile(
-                                            leading: const Icon(Icons.wallet),
-                                            onTap: () {
-                                              Navigator.pop(context);
-                                              // if (MediaQuery.of(context)
-                                              //         .size
-                                              //         .width >
-                                              //     600) {
-                                              //   Get.find<HomeController>()
-                                              //       .selectedWidget
-                                              //       .value = PaymentHistory(
-                                              //     id: salesBody.id!,
-                                              //   );
-                                              // } else {
-                                              //   Get.to(() => PaymentHistory(
-                                              //         id: salesBody.id!,
-                                              //       ));
-                                              // }
-                                            },
-                                            title:
-                                                const Text('Payment History'),
-                                          ),
+                                      ),
+                                      PopupMenuItem(
+                                        child: ListTile(
+                                          leading: const Icon(Icons.wallet),
+                                          onTap: () {
+                                            Navigator.pop(context);
+                                            // if (MediaQuery.of(context)
+                                            //         .size
+                                            //         .width >
+                                            //     600) {
+                                            //   Get.find<HomeController>()
+                                            //       .selectedWidget
+                                            //       .value = PaymentHistory(
+                                            //     id: salesBody.id!,
+                                            //   );
+                                            // } else {
+                                            //   Get.to(() => PaymentHistory(
+                                            //         id: salesBody.id!,
+                                            //       ));
+                                            // }
+                                          },
+                                          title: const Text('Payment History'),
                                         ),
-                                        PopupMenuItem(
-                                          child: ListTile(
-                                            leading: const Icon(
-                                                Icons.file_copy_outlined),
-                                            onTap: () async {
-                                              Navigator.pop(context);
-                                            },
-                                            title:
-                                                const Text('Generate Report'),
-                                          ),
+                                      ),
+                                      PopupMenuItem(
+                                        child: ListTile(
+                                          leading: const Icon(
+                                              Icons.file_copy_outlined),
+                                          onTap: () async {
+                                            Navigator.pop(context);
+                                          },
+                                          title: const Text('Generate Report'),
                                         ),
-                                      ],
-                                      icon: const Icon(Icons.more_vert),
-                                    ),
+                                      ),
+                                    ],
+                                    icon: const Icon(Icons.more_vert),
                                   ),
                                 )),
                               ]);
@@ -753,17 +759,7 @@ class CreditInfo extends StatelessWidget {
                           ),
                         ),
                       ),
-                    )
-                  : ListView.builder(
-                      itemCount: salesController.allSales.length,
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemBuilder: (context, index) {
-                        SalesModel salesBody =
-                            salesController.allSales.elementAt(index);
-
-                        return SalesCard(salesModel: salesBody);
-                      });
+                    );
     });
   }
 }
