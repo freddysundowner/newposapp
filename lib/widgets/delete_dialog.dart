@@ -6,14 +6,14 @@ deleteDialog({required context, required onPressed}) {
       context: context,
       builder: (_) {
         return AlertDialog(
-          title: Text(
+          title: const Text(
             "Confirm Delete",
             style: TextStyle(
               color: Colors.black,
               fontWeight: FontWeight.bold,
             ),
           ),
-          content: Text("Do you want to delete this item?"),
+          content: const Text("Do you want to delete this item?"),
           actions: [
             TextButton(
               onPressed: () {
@@ -21,7 +21,7 @@ deleteDialog({required context, required onPressed}) {
               },
               child: Text(
                 "Cancel".toUpperCase(),
-                style: TextStyle(
+                style: const TextStyle(
                   color: Colors.purple,
                   fontWeight: FontWeight.bold,
                 ),
