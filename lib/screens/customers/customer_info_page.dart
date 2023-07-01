@@ -62,219 +62,211 @@ class CustomerInfoPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ResponsiveWidget(
-      largeScreen: Scaffold(
-        backgroundColor: Colors.white,
-        appBar: AppBar(
-          elevation: 0.0,
-          backgroundColor: Colors.white,
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+    return isSmallScreen(context)
+        ? Helper(
+            widget: SingleChildScrollView(
+              child: Column(
                 children: [
-                  minorTitle(
-                      title: customerModel.fullName,
-                      color: Colors.black,
-                      size: 18)
-                ],
-              ),
-              InkWell(
-                onTap: () {
-                  Get.find<HomeController>().selectedWidget.value = WalletPage(
-                    customerModel: customerModel,
-                  );
-                },
-                child: Container(
-                  padding:
-                      EdgeInsets.only(top: 5, bottom: 5, left: 10, right: 15),
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(50),
-                      color: Colors.white.withOpacity(0.2)),
-                  child: Row(
-                    children: [
-                      Icon(Icons.credit_card, color: Colors.black),
-                      SizedBox(width: 10),
-                      Text(
-                        "Wallet",
-                        style: TextStyle(color: Colors.black),
-                      )
-                    ],
-                  ),
-                ),
-              )
-            ],
-          ),
-          leading: IconButton(
-              onPressed: () {
-                Get.find<HomeController>().selectedWidget.value =
-                    CustomersPage();
-              },
-              icon: Icon(
-                Icons.arrow_back_ios,
-                color: Colors.black,
-              )),
-          actions: [
-            IconButton(
-                onPressed: () {
-                  customerController.assignTextFields(customerModel);
-                  Get.to(() => EditCustomer(customerModel: customerModel));
-                },
-                icon: Icon(
-                  Icons.edit,
-                  color: Colors.black,
-                )),
-            IconButton(
-                onPressed: () {
-                  generalAlert(
-                      title:
-                          "Are you sure you want to delete ${customerModel.fullName}",
-                      function: () {
-                        customerController.deleteCustomer(customerModel);
-                      });
-                },
-                icon: Icon(
-                  Icons.delete,
-                  color: Colors.red,
-                )),
-          ],
-        ),
-        body: customerInfoBody(context),
-      ),
-      smallScreen: Helper(
-          widget: SingleChildScrollView(
-            child: Column(
-              children: [
-                Container(
-                  height: MediaQuery.of(context).size.height * 0.2,
-                  color: AppColors.mainColor,
-                  child: Column(
-                    children: [
-                      Center(
-                        child: Container(
-                          decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Colors.white,
-                              border:
-                                  Border.all(color: Colors.white, width: 2)),
-                          child: Icon(
-                            Icons.person,
-                            color: Colors.grey,
-                            size: 50,
+                  Container(
+                    height: MediaQuery.of(context).size.height * 0.2,
+                    color: AppColors.mainColor,
+                    child: Column(
+                      children: [
+                        Center(
+                          child: Container(
+                            decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.white,
+                                border:
+                                    Border.all(color: Colors.white, width: 2)),
+                            child: const Icon(
+                              Icons.person,
+                              color: Colors.grey,
+                              size: 50,
+                            ),
                           ),
                         ),
-                      ),
-                      SizedBox(height: 10),
-                      Center(
-                          child: Text(
-                        customerModel.fullName!,
-                        style: const TextStyle(
-                            color: Colors.white, fontWeight: FontWeight.bold),
-                      )),
-                      SizedBox(height: 15),
-                      Container(
-                        width: double.infinity,
-                        padding:
-                            EdgeInsets.only(left: 20, right: 20, bottom: 10),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            IconButton(
-                                onPressed: () {
-                                  launchMessage(
-                                      number: customerModel.phoneNumber,
-                                      message:
-                                          "A quick reminde that you owe our shop please pay your debt ");
-                                },
-                                icon: Icon(Icons.message),
-                                color: Colors.white),
-                            IconButton(
-                                onPressed: () {
-                                  launchWhatsApp(
-                                      number: customerModel.phoneNumber,
-                                      message:
-                                          "A quick reminde that you owe our shop please pay your debt ");
-                                },
-                                icon: Icon(Icons.whatshot),
-                                color: Colors.white),
-                            IconButton(
-                                onPressed: () async {
-                                  final Uri launchUri = Uri(
-                                    scheme: 'tel',
-                                    path: customerController
-                                        .customer.value?.phoneNumber,
+                        const SizedBox(height: 10),
+                        Center(
+                            child: Text(
+                          customerModel.fullName!,
+                          style: const TextStyle(
+                              color: Colors.white, fontWeight: FontWeight.bold),
+                        )),
+                        const SizedBox(height: 15),
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.only(
+                              left: 20, right: 20, bottom: 10),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              IconButton(
+                                  onPressed: () {
+                                    launchMessage(
+                                        number: customerModel.phoneNumber,
+                                        message:
+                                            "A quick reminder that you owe our shop please pay your debt ");
+                                  },
+                                  icon: const Icon(Icons.message),
+                                  color: Colors.white),
+                              IconButton(
+                                  onPressed: () {
+                                    launchWhatsApp(
+                                        number: customerModel.phoneNumber,
+                                        message:
+                                            "A quick reminder that you owe our shop please pay your debt ");
+                                  },
+                                  icon: const Icon(Icons.whatshot),
+                                  color: Colors.white),
+                              IconButton(
+                                  onPressed: () async {
+                                    final Uri launchUri = Uri(
+                                      scheme: 'tel',
+                                      path: customerController
+                                          .customer.value?.phoneNumber,
+                                    );
+                                    await launchUrl(launchUri);
+                                  },
+                                  icon: const Icon(Icons.phone),
+                                  color: Colors.white),
+                              InkWell(
+                                onTap: () {
+                                  Get.to(
+                                    () => WalletPage(
+                                      customerModel: customerModel,
+                                    ),
                                   );
-                                  await launchUrl(launchUri);
                                 },
-                                icon: Icon(Icons.phone),
-                                color: Colors.white),
-                            InkWell(
-                              onTap: () {
-                                Get.to(
-                                  () => WalletPage(
-                                    customerModel: customerModel,
+                                child: Container(
+                                  padding: const EdgeInsets.only(
+                                      top: 5, bottom: 5, left: 10, right: 15),
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(50),
+                                      color: Colors.white.withOpacity(0.2)),
+                                  child: const Row(
+                                    children: [
+                                      Icon(Icons.credit_card,
+                                          color: Colors.white),
+                                      SizedBox(width: 10),
+                                      Text(
+                                        "Wallet",
+                                        style: TextStyle(color: Colors.white),
+                                      )
+                                    ],
                                   ),
-                                );
-                              },
-                              child: Container(
-                                padding: const EdgeInsets.only(
-                                    top: 5, bottom: 5, left: 10, right: 15),
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(50),
-                                    color: Colors.white.withOpacity(0.2)),
-                                child: const Row(
-                                  children: [
-                                    Icon(Icons.credit_card,
-                                        color: Colors.white),
-                                    SizedBox(width: 10),
-                                    Text(
-                                      "Wallet",
-                                      style: TextStyle(color: Colors.white),
-                                    )
-                                  ],
                                 ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-                customerInfoBody(context)
-              ],
+                  customerInfoBody(context)
+                ],
+              ),
             ),
-          ),
-          appBar: AppBar(
-            elevation: 0.0,
-            backgroundColor: AppColors.mainColor,
-            leading: IconButton(
-                onPressed: () {
-                  Get.back();
-                },
-                icon: Icon(Icons.arrow_back_ios)),
-            actions: [
-              IconButton(
+            appBar: AppBar(
+              elevation: 0.0,
+              backgroundColor: AppColors.mainColor,
+              leading: IconButton(
                   onPressed: () {
-                    customerController.assignTextFields(customerModel);
-                    Get.to(() => EditCustomer(customerModel: customerModel));
+                    Get.back();
                   },
-                  icon: Icon(Icons.edit)),
-              if (checkPermission(category: "customers", permission: "manage"))
+                  icon: const Icon(Icons.arrow_back_ios)),
+              actions: [
                 IconButton(
                     onPressed: () {
-                      generalAlert(
-                          title:
-                              "Are you sure you want to delete ${customerModel.fullName}",
-                          function: () {
-                            customerController.deleteCustomer(customerModel);
-                          });
+                      customerController.assignTextFields(customerModel);
+                      Get.to(() => EditCustomer(customerModel: customerModel));
                     },
-                    icon: Icon(Icons.delete)),
-            ],
-          )),
-    );
+                    icon: const Icon(Icons.edit)),
+                if (checkPermission(
+                    category: "customers", permission: "manage"))
+                  IconButton(
+                      onPressed: () {
+                        generalAlert(
+                            title:
+                                "Are you sure you want to delete ${customerModel.fullName}",
+                            function: () {
+                              customerController.deleteCustomer(customerModel);
+                            });
+                      },
+                      icon: const Icon(Icons.delete)),
+              ],
+            ))
+        : Scaffold(
+            backgroundColor: Colors.white,
+            appBar: AppBar(
+              elevation: 0.0,
+              backgroundColor: Colors.white,
+              title: minorTitle(
+                  title: customerModel.fullName, color: Colors.black, size: 18),
+              leading: IconButton(
+                  onPressed: () {
+                    Get.find<HomeController>().selectedWidget.value =
+                        CustomersPage();
+                  },
+                  icon: const Icon(
+                    Icons.arrow_back_ios,
+                    color: Colors.black,
+                  )),
+              actions: [
+                PopupMenuButton(
+                  itemBuilder: (ctx) => [
+                    PopupMenuItem(
+                      child: ListTile(
+                        leading:
+                            const Icon(Icons.credit_card, color: Colors.black),
+                        onTap: () {
+                          Get.back();
+                          Get.find<HomeController>().selectedWidget.value =
+                              WalletPage(
+                            customerModel: customerModel,
+                          );
+                        },
+                        title: const Text("Wallet"),
+                      ),
+                    ),
+                    PopupMenuItem(
+                      child: ListTile(
+                        leading: const Icon(Icons.edit),
+                        onTap: () {
+                          Get.back();
+                          customerController.assignTextFields(customerModel);
+                          Get.to(
+                              () => EditCustomer(customerModel: customerModel));
+                        },
+                        title: const Text("Edit"),
+                      ),
+                    ),
+                    PopupMenuItem(
+                      child: ListTile(
+                        leading: const Icon(Icons.delete),
+                        onTap: () {
+                          Get.back();
+                          generalAlert(
+                              title:
+                                  "Are you sure you want to delete ${customerModel.fullName}",
+                              function: () {
+                                customerController
+                                    .deleteCustomer(customerModel);
+                              });
+                        },
+                        title: const Text("Delete"),
+                      ),
+                    ),
+                  ],
+                  icon: const Icon(
+                    Icons.more_vert,
+                    color: Colors.black,
+                  ),
+                )
+              ],
+            ),
+            body: customerInfoBody(context),
+          );
   }
 
   Widget customerInfoBody(context) {
@@ -364,10 +356,10 @@ class CustomerInfoPage extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                      padding: EdgeInsets.all(10),
+                      padding: const EdgeInsets.all(10),
                       width: double.infinity,
                       color: Colors.grey.withOpacity(0.7),
-                      child: Text('Select Download Option')),
+                      child: const Text('Select Download Option')),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: GestureDetector(
@@ -378,11 +370,11 @@ class CustomerInfoPage extends StatelessWidget {
                         width: double.infinity,
                         child: Row(
                           children: [
-                            Icon(Icons.arrow_downward),
-                            SizedBox(
+                            const Icon(Icons.arrow_downward),
+                            const SizedBox(
                               width: 10,
                             ),
-                            Container(child: Text('Credit History '))
+                            Container(child: const Text('Credit History '))
                           ],
                         ),
                       ),
@@ -398,11 +390,11 @@ class CustomerInfoPage extends StatelessWidget {
                         width: double.infinity,
                         child: Row(
                           children: [
-                            Icon(Icons.cloud_download_outlined),
-                            SizedBox(
+                            const Icon(Icons.cloud_download_outlined),
+                            const SizedBox(
                               width: 10,
                             ),
-                            Container(child: Text('Purchase History'))
+                            Container(child: const Text('Purchase History'))
                           ],
                         ),
                       ),
@@ -418,12 +410,12 @@ class CustomerInfoPage extends StatelessWidget {
                         width: double.infinity,
                         child: Row(
                           children: [
-                            Icon(Icons.clear),
-                            SizedBox(
+                            const Icon(Icons.clear),
+                            const SizedBox(
                               width: 10,
                             ),
                             Container(
-                                child: Text(
+                                child: const Text(
                               'Cancel',
                               style: TextStyle(color: Colors.red),
                             ))
@@ -458,8 +450,19 @@ class SalesTab extends StatelessWidget {
                     "No entries",
                     textAlign: TextAlign.center,
                   ))
-              : MediaQuery.of(context).size.width > 600
-                  ? SingleChildScrollView(
+              : isSmallScreen(context)
+                  ? ListView.builder(
+                      itemCount: salesController.allSales.length,
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemBuilder: (context, index) {
+                        SalesModel saleOrder =
+                            salesController.allSales.elementAt(index);
+                        return SalesCard(
+                          salesModel: saleOrder,
+                        );
+                      })
+                  : SingleChildScrollView(
                       child: Container(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 15, vertical: 10),
@@ -476,32 +479,30 @@ class SalesTab extends StatelessWidget {
                             columnSpacing: 30.0,
                             columns: const [
                               DataColumn(
-                                  label: Text('Name',
+                                  label: Text('Receipt',
                                       textAlign: TextAlign.center)),
                               DataColumn(
-                                  label:
-                                      Text('Qty', textAlign: TextAlign.center)),
-                              DataColumn(
                                   label: Text('Total',
+                                      textAlign: TextAlign.center)),
+                              DataColumn(
+                                  label: Text('Payment Method',
                                       textAlign: TextAlign.center)),
                               DataColumn(
                                   label: Text('Date',
                                       textAlign: TextAlign.center)),
                             ],
-                            rows: List.generate(
-                                customerController.customerSales.length,
+                            rows: List.generate(salesController.allSales.length,
                                 (index) {
-                              SalesModel saleOrder = customerController
-                                  .customerSales
-                                  .elementAt(index);
-                              // final y = saleOrder.product!.name;
-                              // final x = saleOrder.;
-                              final z = saleOrder.grandTotal;
+                              SalesModel saleOrder =
+                                  salesController.allSales.elementAt(index);
+                              final y = saleOrder.receiptNumber;
+                              final x = saleOrder.grandTotal;
+                              final z = saleOrder.paymentMethod;
                               final a = saleOrder.createdAt!;
 
                               return DataRow(cells: [
-                                // DataCell(Text(y!)),
-                                // DataCell(Text(x.toString())),
+                                DataCell(Text(y!)),
+                                DataCell(Text(x.toString())),
                                 DataCell(Text(z.toString())),
                                 DataCell(
                                     Text(DateFormat("dd-MM-yyyy").format(a))),
@@ -510,18 +511,7 @@ class SalesTab extends StatelessWidget {
                           ),
                         ),
                       ),
-                    )
-                  : ListView.builder(
-                      itemCount: salesController.allSales.length,
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemBuilder: (context, index) {
-                        SalesModel saleOrder =
-                            salesController.allSales.elementAt(index);
-                        return SalesCard(
-                          salesModel: saleOrder,
-                        );
-                      });
+                    );
     });
   }
 }
@@ -579,7 +569,7 @@ class RetunsTab extends StatelessWidget {
                           // final z = saleOrder.total;
                           // final a = saleOrder.createdAt!;
 
-                          return DataRow(cells: [
+                          return const DataRow(cells: [
                             // DataCell(Text(y!)),
                             // DataCell(Text(x.toString())),
                             // DataCell(Text(z.toString())),
@@ -616,10 +606,10 @@ class CreditInfo extends StatelessWidget {
       return salesController.loadingSales.value
           ? const Center(child: CircularProgressIndicator())
           : salesController.allSales.isEmpty
-              ? Center(
+              ? const Center(
                   child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
+                  children: [
                     Center(
                       child: Text(
                         "No entries found.",
@@ -637,8 +627,8 @@ class CreditInfo extends StatelessWidget {
               : MediaQuery.of(context).size.width > 600
                   ? SingleChildScrollView(
                       child: Container(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 15, vertical: 10),
                         width: double.infinity,
                         child: Theme(
                           data: Theme.of(context)
@@ -651,19 +641,19 @@ class CreditInfo extends StatelessWidget {
                             )),
                             columnSpacing: 30.0,
                             columns: [
-                              DataColumn(
+                              const DataColumn(
                                   label: Text('Receipt Number',
                                       textAlign: TextAlign.center)),
-                              DataColumn(
+                              const DataColumn(
                                   label: Text('Balance',
                                       textAlign: TextAlign.center)),
-                              DataColumn(
+                              const DataColumn(
                                   label: Text('Total',
                                       textAlign: TextAlign.center)),
-                              DataColumn(
+                              const DataColumn(
                                   label: Text('Date',
                                       textAlign: TextAlign.center)),
-                              DataColumn(
+                              const DataColumn(
                                   label: Text('', textAlign: TextAlign.center)),
                             ],
                             rows: List.generate(
@@ -689,7 +679,7 @@ class CreditInfo extends StatelessWidget {
                                       itemBuilder: (ctx) => [
                                         PopupMenuItem(
                                           child: ListTile(
-                                            leading: Icon(Icons.list),
+                                            leading: const Icon(Icons.list),
                                             onTap: () {
                                               Navigator.pop(context);
                                               if (MediaQuery.of(context)
@@ -706,21 +696,21 @@ class CreditInfo extends StatelessWidget {
                                                     id: salesBody.id));
                                               }
                                             },
-                                            title: Text('View Purchases'),
+                                            title: const Text('View Purchases'),
                                           ),
                                         ),
                                         PopupMenuItem(
                                           child: ListTile(
-                                            leading: Icon(Icons.payment),
+                                            leading: const Icon(Icons.payment),
                                             onTap: () {
                                               Navigator.pop(context);
                                             },
-                                            title: Text('Pay'),
+                                            title: const Text('Pay'),
                                           ),
                                         ),
                                         PopupMenuItem(
                                           child: ListTile(
-                                            leading: Icon(Icons.wallet),
+                                            leading: const Icon(Icons.wallet),
                                             onTap: () {
                                               Navigator.pop(context);
                                               // if (MediaQuery.of(context)
@@ -738,21 +728,23 @@ class CreditInfo extends StatelessWidget {
                                               //       ));
                                               // }
                                             },
-                                            title: Text('Payment History'),
+                                            title:
+                                                const Text('Payment History'),
                                           ),
                                         ),
                                         PopupMenuItem(
                                           child: ListTile(
-                                            leading:
-                                                Icon(Icons.file_copy_outlined),
+                                            leading: const Icon(
+                                                Icons.file_copy_outlined),
                                             onTap: () async {
                                               Navigator.pop(context);
                                             },
-                                            title: Text('Generate Report'),
+                                            title:
+                                                const Text('Generate Report'),
                                           ),
                                         ),
                                       ],
-                                      icon: Icon(Icons.more_vert),
+                                      icon: const Icon(Icons.more_vert),
                                     ),
                                   ),
                                 )),
@@ -765,7 +757,7 @@ class CreditInfo extends StatelessWidget {
                   : ListView.builder(
                       itemCount: salesController.allSales.length,
                       shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
+                      physics: const NeverScrollableScrollPhysics(),
                       itemBuilder: (context, index) {
                         SalesModel salesBody =
                             salesController.allSales.elementAt(index);
@@ -787,10 +779,10 @@ showBottomSheet(BuildContext context) {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                    padding: EdgeInsets.all(10),
+                    padding: const EdgeInsets.all(10),
                     width: double.infinity,
                     color: Colors.grey.withOpacity(0.7),
-                    child: Text('Manage Bank')),
+                    child: const Text('Manage Bank')),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: GestureDetector(
@@ -803,11 +795,11 @@ showBottomSheet(BuildContext context) {
                     },
                     child: Row(
                       children: [
-                        Icon(Icons.edit),
-                        SizedBox(
+                        const Icon(Icons.edit),
+                        const SizedBox(
                           width: 10,
                         ),
-                        Container(child: Text('Edit'))
+                        Container(child: const Text('Edit'))
                       ],
                     ),
                   ),
@@ -821,11 +813,11 @@ showBottomSheet(BuildContext context) {
                     },
                     child: Row(
                       children: [
-                        Icon(Icons.delete_outline_rounded),
-                        SizedBox(
+                        const Icon(Icons.delete_outline_rounded),
+                        const SizedBox(
                           width: 10,
                         ),
-                        Container(child: Text('Delete'))
+                        Container(child: const Text('Delete'))
                       ],
                     ),
                   ),
