@@ -60,7 +60,7 @@ class ImportProducts extends StatelessWidget {
             child: Center(
               child: Container(
                 padding: const EdgeInsets.all(10),
-                width: double.infinity,
+                width: isSmallScreen(context) ? double.infinity : 200,
                 margin: const EdgeInsets.symmetric(horizontal: 20),
                 decoration: BoxDecoration(
                     border: Border.all(width: 3, color: AppColors.mainColor),
@@ -101,7 +101,7 @@ class ImportProducts extends StatelessWidget {
             child: Center(
               child: Container(
                 padding: const EdgeInsets.all(10),
-                width: double.infinity,
+                width: isSmallScreen(context) ? double.infinity : 200,
                 margin: const EdgeInsets.symmetric(horizontal: 20),
                 decoration: BoxDecoration(
                     border: Border.all(width: 3, color: AppColors.mainColor),
