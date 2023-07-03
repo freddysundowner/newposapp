@@ -15,6 +15,15 @@ class Categories {
         [Get.find<ShopController>().currentShop.value!.type]).changes;
   }
 
+  getProductsCategories() {
+    print(Get.find<ShopController>().currentShop.value!.type!.id);
+    RealmResults<ProductCategory> r = realmService.realm.query<ProductCategory>(
+        r'shopTypes == $0',
+        [Get.find<ShopController>().currentShop.value!.type]);
+    print("rr ${r.length}");
+    return r;
+  }
+
   createProductCategory(ProductCategory body) async {
     realmService.realm.write<ProductCategory>(
         () => realmService.realm.add<ProductCategory>(body));

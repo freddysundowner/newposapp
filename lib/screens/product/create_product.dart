@@ -50,6 +50,7 @@ class CreateProduct extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Categories().getProductsCategories();
     return WillPopScope(
       onWillPop: () async {
         productController.selectedSupplier.clear();

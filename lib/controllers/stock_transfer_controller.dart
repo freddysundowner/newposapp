@@ -51,8 +51,8 @@ class StockTransferController extends GetxController {
 
   void submitTranster({required Shop toShop, required context}) async {
     // try {
-    LoadingDialog.showLoadingDialog(
-        context: context, title: "Transferring Product...", key: _keyLoader);
+    // LoadingDialog.showLoadingDialog(
+    //     context: context, title: "Transfering Products...", key: _keyLoader);
     ObjectId transferId = ObjectId();
     StockTransferHistory stockTransferHistory = StockTransferHistory(transferId,
         from: Get.find<ShopController>().currentShop.value,
@@ -66,7 +66,6 @@ class StockTransferController extends GetxController {
         createdAt: DateTime.now(),
         type: "out");
     Products().createProductStockTransferHistory(stockTransferHistory);
-
     for (var element in selectedProducts) {
       var quantityToAdd = (element.quantity ?? 1);
       //create product transfer history

@@ -19,7 +19,7 @@ class Interests {
     // print(shopcategories[2].id);
     // print(shopcategories[2].title);
     // Categories().createProductCategory(ProductCategory(ObjectId(),
-    //     name: "test", shopTypes: shopcategories[2]));
+    //     name: "test", shopTypes: shopcategories[1]));
     if (shopcategories.isEmpty) {
       for (var element in roles) {
         print(element);

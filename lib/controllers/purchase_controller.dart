@@ -27,6 +27,8 @@ import 'realm_controller.dart';
 class PurchaseController extends GetxController {
   Rxn<Invoice> invoice = Rxn(null);
   RxList<Invoice> purchasedItems = RxList([]);
+  RxInt balance = RxInt(0);
+  RxString balanceText = RxString("Credit Balance");
   RxInt purchasedTotal = RxInt(0);
   RxList<Invoice> creditPurchases = RxList([]);
   Rxn<Invoice> currentInvoice = Rxn(null);
@@ -39,12 +41,6 @@ class PurchaseController extends GetxController {
   TextEditingController textEditingControllerAmount = TextEditingController();
   ProductController productController = Get.find<ProductController>();
   ShopController shopController = Get.find<ShopController>();
-
-  get balance =>
-      invoice.value!.balance! -
-      int.parse(textEditingControllerAmount.text.isEmpty
-          ? "0"
-          : textEditingControllerAmount.text);
 
   createPurchase({required context, required screen}) async {
     if (invoice.value!.balance! > 0 && invoice.value!.supplier == null) {
@@ -180,35 +176,46 @@ class PurchaseController extends GetxController {
   }
 
   calculateAmount({int? index}) {
-    var total = invoice.value!.total = invoice.value!.items.fold(
+    var total = invoice.value!.items.fold(
         0,
         (previousValue, element) =>
-            previousValue! + (element.itemCount! * element.price!));
+            previousValue + (element.itemCount! * element.price!));
     invoice.value!.total = total;
     var paid = int.parse(textEditingControllerAmount.text.isEmpty
         ? "0"
         : textEditingControllerAmount.text);
-    var balance = total;
-    if (paid > total!) {
+    balance.value = total;
+    print("balance.value ${balance.value}");
+    var balancee = total;
+    if (paid > total) {
       total = total;
-      balance = 0;
+      balancee = 0;
+      balance.value = paid - total;
+      balanceText.value = "Change";
     } else if (paid > 0) {
+      balance.value = paid - total;
       total = paid;
-      balance = balance! - paid;
+      balancee = balancee - paid;
+      balanceText.value = "Credit Balance";
     } else if (paid == 0) {
-      balance = total;
+      balancee = total;
+      balance.value = total;
+      balanceText.value = "Credit Balance";
       total = 0;
     }
-    invoice.value!.balance = balance;
+    balance.refresh();
+    invoice.value!.balance = balancee;
     if (index == -1) {
       return;
     }
 
-    invoice.value?.items[index!].total =
-        invoice.value!.items[index].product!.buyingPrice! *
-            invoice.value!.items[index].itemCount!;
+    // invoice.value?.items[index!].total =
+    //     invoice.value!.items[index].product!.buyingPrice! *
+    //         invoice.value!.items[index].itemCount!;
 
+    print("calculateAmount 3");
     invoice.refresh();
+    print("balancee $balancee");
   }
 
   removeFromList(index) {

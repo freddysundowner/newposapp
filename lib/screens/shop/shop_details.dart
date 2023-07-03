@@ -10,6 +10,7 @@ import 'package:pointify/utils/constants.dart';
 import 'package:pointify/widgets/shop_delete_dialog.dart';
 import 'package:get/get.dart';
 
+import '../../data/interests.dart';
 import '../../utils/colors.dart';
 import '../../widgets/bigtext.dart';
 import '../../widgets/shop_widget.dart';
@@ -26,6 +27,7 @@ class ShopDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Interests();
     return Scaffold(
       appBar: AppBar(
         titleSpacing: 0,
@@ -188,7 +190,6 @@ class ShopDetails extends StatelessWidget {
                   ),
                 ),
               ),
-
               const SizedBox(height: 20),
               Card(
                 elevation: 1,
@@ -242,7 +243,7 @@ class ShopDetails extends StatelessWidget {
         color: Colors.white,
         child: Container(
           width: double.infinity,
-          padding:   const EdgeInsets.all(10),
+          padding: const EdgeInsets.all(10),
           height: isSmallScreen(context) ? kToolbarHeight * 1.5 : 0.0,
           decoration: BoxDecoration(
             border: Border.all(width: 1, color: Colors.grey),

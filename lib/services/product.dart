@@ -122,9 +122,8 @@ class Products {
   }
 
   Product? getProductByName(String text, Shop shop) {
-    RealmResults<Product> products = realmService.realm
-        .query<Product>('shop == \$0 AND deleted == false', [shop]);
-    products.query(r'name == $0', [text]);
+    RealmResults<Product> products = realmService.realm.query<Product>(
+        "shop == \$0 AND deleted == false AND name == '$text'", [shop]);
     return products.isNotEmpty ? products.first : null;
   }
 

@@ -442,225 +442,205 @@ class CreatePurchase extends StatelessWidget {
       ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Please select products to sell")));
     } else {
-      showDialog(
-          context: context,
-          builder: (_) {
-            return SizedBox(
-              width: double.infinity,
-              child: AlertDialog(
-                  title: const Center(child: Text("Confirmation")),
-                  content: Obx(
-                    () => purchaseController.invoice.value == null
-                        ? Container(
-                            height: 0,
-                          )
-                        : Column(
+      showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        builder: (context) {
+          return Padding(
+            padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom),
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+              child: Obx(
+                () => Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          flex: 3,
+                          child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
                             children: [
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Expanded(
-                                    flex: 3,
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        minorTitle(
-                                            title: "Amount paid",
-                                            color: Colors.black),
-                                        const SizedBox(
-                                          height: 10,
-                                        ),
-                                        TextFormField(
-                                          keyboardType: TextInputType.number,
-                                          autofocus: true,
-                                          controller: purchaseController
-                                              .textEditingControllerAmount,
-                                          onChanged: (value) {
-                                            purchaseController
-                                                .calculateAmount();
-                                          },
-                                          decoration: InputDecoration(
-                                              isDense: true,
-                                              contentPadding:
-                                                  const EdgeInsets.fromLTRB(
-                                                      10, 10, 10, 0),
-                                              border: OutlineInputBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          20)),
-                                              prefix: Text(
-                                                  "${shopController.currentShop.value!.currency!} ")),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  const Spacer(),
-                                  Expanded(
-                                    flex: 2,
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        majorTitle(
-                                            title: "Total",
-                                            color: Colors.black,
-                                            size: 13.0),
-                                        const SizedBox(
-                                          height: 3,
-                                        ),
-                                        Obx(() {
-                                          return minorTitle(
-                                              title: htmlPrice(
-                                                  purchaseController
-                                                      .invoice.value!.total),
-                                              color: Colors.grey,
-                                              size: 14);
-                                        }),
-                                        const SizedBox(
-                                          height: 8,
-                                        ),
-                                        majorTitle(
-                                            title: "Credit Balance",
-                                            color: Colors.black,
-                                            size: 13.0),
-                                        const SizedBox(
-                                          height: 3,
-                                        ),
-                                        Obx(() {
-                                          return minorTitle(
-                                              title: htmlPrice(
-                                                  purchaseController.balance),
-                                              color: Colors.grey,
-                                              size: 11);
-                                        })
-                                      ],
-                                    ),
-                                  )
-                                ],
+                              minorTitle(
+                                  title: "Amount paid", color: Colors.black),
+                              const SizedBox(
+                                height: 10,
                               ),
-                              if (purchaseController.invoice.value!.supplier ==
-                                  null)
-                                const SizedBox(
-                                  height: 20,
-                                ),
-                              if (purchaseController.invoice.value!.supplier ==
-                                  null)
-                                InkWell(
-                                  onTap: () {
-                                    _gotoSupplierPage(context);
-                                  },
-                                  child: majorTitle(
-                                      title: "Choose Supplier",
+                              TextFormField(
+                                keyboardType: TextInputType.number,
+                                autofocus: true,
+                                controller: purchaseController
+                                    .textEditingControllerAmount,
+                                onChanged: (value) {
+                                  purchaseController.calculateAmount();
+                                  purchaseController.invoice.refresh();
+                                  print(value);
+                                },
+                                decoration: InputDecoration(
+                                    isDense: true,
+                                    contentPadding: const EdgeInsets.fromLTRB(
+                                        10, 10, 10, 0),
+                                    border: OutlineInputBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(10)),
+                                    prefix: Text(
+                                        "${shopController.currentShop.value!.currency!} ")),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const Spacer(),
+                        Expanded(
+                          flex: 2,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              majorTitle(
+                                  title: "Total",
+                                  color: Colors.black,
+                                  size: 13.0),
+                              const SizedBox(
+                                height: 3,
+                              ),
+                              Obx(() {
+                                return minorTitle(
+                                    title: htmlPrice(purchaseController
+                                        .invoice.value!.total),
+                                    color: Colors.grey,
+                                    size: 14);
+                              }),
+                              const SizedBox(
+                                height: 8,
+                              ),
+                              majorTitle(
+                                  title: purchaseController.balanceText,
+                                  color: Colors.black,
+                                  size: 13.0),
+                              const SizedBox(
+                                height: 3,
+                              ),
+                              Obx(() {
+                                return minorTitle(
+                                    title: htmlPrice(
+                                        purchaseController.balance.abs()),
+                                    color: Colors.grey,
+                                    size: 11);
+                              })
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
+                    if (purchaseController.invoice.value!.supplier == null)
+                      const SizedBox(
+                        height: 10,
+                      ),
+                    if (purchaseController.invoice.value!.supplier == null)
+                      InkWell(
+                        onTap: () {
+                          _gotoSupplierPage(context);
+                        },
+                        child: majorTitle(
+                            title: "Choose Supplier",
+                            color: AppColors.mainColor,
+                            size: 18.0),
+                      ),
+                    if (purchaseController.invoice.value!.supplier != null)
+                      const SizedBox(
+                        height: 10,
+                      ),
+                    Row(
+                      children: [
+                        if (purchaseController.invoice.value!.supplier != null)
+                          InkWell(
+                            onTap: () {
+                              _gotoSupplierPage(context);
+                            },
+                            child: Row(
+                              children: [
+                                Obx(
+                                  () => majorTitle(
+                                      title: purchaseController
+                                          .invoice.value!.supplier?.fullName,
                                       color: AppColors.mainColor,
                                       size: 18.0),
                                 ),
-                              if (purchaseController.invoice.value!.supplier !=
-                                  null)
                                 const SizedBox(
-                                  height: 10,
+                                  width: 20,
                                 ),
-                              Row(
-                                children: [
-                                  if (purchaseController
-                                          .invoice.value!.supplier !=
-                                      null)
-                                    InkWell(
-                                      onTap: () {
-                                        _gotoSupplierPage(context);
-                                      },
-                                      child: Row(
-                                        children: [
-                                          Obx(
-                                            () => majorTitle(
-                                                title: purchaseController
-                                                    .invoice
-                                                    .value!
-                                                    .supplier
-                                                    ?.fullName,
-                                                color: AppColors.mainColor,
-                                                size: 18.0),
-                                          ),
-                                          const SizedBox(
-                                            width: 20,
-                                          ),
-                                          Container(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 5),
-                                            decoration: BoxDecoration(
-                                                color: Colors.white,
-                                                borderRadius:
-                                                    (BorderRadius.circular(10)),
-                                                border: Border.all(
-                                                    color: AppColors.mainColor,
-                                                    width: 1)),
-                                            child: Row(
-                                              children: [
-                                                majorTitle(
-                                                    title: "Change",
-                                                    color: Colors.red,
-                                                    size: 12.0),
-                                                const Icon(
-                                                  Icons.edit,
-                                                  size: 15,
-                                                )
-                                              ],
-                                            ),
-                                          )
-                                        ],
-                                      ),
-                                    ),
-                                  if (purchaseController
-                                          .invoice.value!.supplier !=
-                                      null)
-                                    IconButton(
-                                        onPressed: () {
-                                          purchaseController
-                                              .invoice.value!.supplier = null;
-                                          purchaseController.invoice.refresh();
-                                        },
-                                        icon: const Icon(
-                                          Icons.delete,
+                                Container(
+                                  padding:
+                                      const EdgeInsets.symmetric(horizontal: 5),
+                                  decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: (BorderRadius.circular(10)),
+                                      border: Border.all(
+                                          color: AppColors.mainColor,
+                                          width: 1)),
+                                  child: Row(
+                                    children: [
+                                      majorTitle(
+                                          title: "Change",
                                           color: Colors.red,
-                                        )),
-                                ],
-                              ),
-                              const SizedBox(
-                                height: 20,
-                              ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  TextButton(
-                                      onPressed: () {
-                                        Navigator.pop(context);
-                                      },
-                                      child: majorTitle(
-                                          title: "Cancel",
-                                          color: Colors.black,
-                                          size: 16.0)),
-                                  TextButton(
-                                      onPressed: () {
-                                        purchaseController.createPurchase(
-                                            screen: "admin", context: context);
-                                      },
-                                      child: majorTitle(
-                                          title: "Cash in",
-                                          color: Colors.black,
-                                          size: 16.0))
-                                ],
-                              ),
-                              const SizedBox(
-                                height: 30,
-                              )
-                            ],
+                                          size: 12.0),
+                                      const Icon(
+                                        Icons.edit,
+                                        size: 15,
+                                      )
+                                    ],
+                                  ),
+                                )
+                              ],
+                            ),
                           ),
-                  )),
-            );
-          });
+                        if (purchaseController.invoice.value!.supplier != null)
+                          IconButton(
+                              onPressed: () {
+                                purchaseController.invoice.value!.supplier =
+                                    null;
+                                purchaseController.invoice.refresh();
+                              },
+                              icon: const Icon(
+                                Icons.delete,
+                                color: Colors.red,
+                              )),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        TextButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            child: majorTitle(
+                                title: "Cancel",
+                                color: Colors.black,
+                                size: 16.0)),
+                        TextButton(
+                            onPressed: () {
+                              purchaseController.createPurchase(
+                                  screen: "admin", context: context);
+                            },
+                            child: majorTitle(
+                                title: "Cash in",
+                                color: Colors.black,
+                                size: 16.0))
+                      ],
+                    )
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      );
     }
   }
 
