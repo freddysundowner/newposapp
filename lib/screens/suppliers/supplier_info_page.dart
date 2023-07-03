@@ -462,8 +462,24 @@ class ReturnedPurchases extends StatelessWidget {
                 "No entries",
                 textAlign: TextAlign.center,
               ))
-          : MediaQuery.of(context).size.width > 600
-              ? SingleChildScrollView(
+          : isSmallScreen(context)
+              ? ListView.builder(
+                  itemCount: purchaseController.currentInvoiceReturns.length,
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemBuilder: (context, index) {
+                    InvoiceItem purchaseReturn = purchaseController
+                        .currentInvoiceReturns
+                        .elementAt(index);
+                    return InkWell(
+                      onTap: () {
+                        // showBottomSheet(context, purchaseOrder, supplier);
+                      },
+                      child: returnedIvoiceItemsCard(
+                          context: context, invoiceItem: purchaseReturn),
+                    );
+                  })
+              : SingleChildScrollView(
                   child: Container(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 15, vertical: 10),
@@ -480,53 +496,41 @@ class ReturnedPurchases extends StatelessWidget {
                         columnSpacing: 30.0,
                         columns: const [
                           DataColumn(
-                              label: Text('Name', textAlign: TextAlign.center)),
+                              label: Text('Product', textAlign: TextAlign.center)),
                           DataColumn(
                               label: Text('Qty', textAlign: TextAlign.center)),
                           DataColumn(
                               label:
                                   Text('Total', textAlign: TextAlign.center)),
                           DataColumn(
+                              label:
+                                  Text('Attendant', textAlign: TextAlign.center)),
+                          DataColumn(
                               label: Text('Date', textAlign: TextAlign.center)),
                         ],
                         rows: List.generate(
-                            purchaseController.purchasedItems.length, (index) {
-                          Invoice saleOrder = purchaseController.purchasedItems
+                            purchaseController
+                                .currentInvoiceReturns.length, (index) {
+                          InvoiceItem purchaseReturn = purchaseController
+                              .currentInvoiceReturns
                               .elementAt(index);
-                          // final y = saleOrder.product!.name;
-                          // final x = saleOrder.itemCount;
-                          final z = saleOrder.total;
-                          final a = saleOrder.createdAt!;
+                          final y = purchaseReturn.product!.name;
+                          final x = purchaseReturn.itemCount;
+                          final z = purchaseReturn.total;
+                          final a = purchaseReturn.createdAt!;
 
                           return DataRow(cells: [
-                            // DataCell(Container(child: Text(y!))),
-                            // DataCell(Container(child: Text(x.toString()))),
-                            DataCell(Container(child: Text(z.toString()))),
-                            DataCell(Container(
-                                child:
-                                    Text(DateFormat("dd-MM-yyyy").format(a)))),
+                            DataCell(Text(y!)),
+                            DataCell(Text(x.toString())),
+                            DataCell(Text(z.toString())),
+                            DataCell(Text(purchaseReturn.attendantid!.username!)),
+                            DataCell(Text(DateFormat("dd-MM-yyyy").format(a))),
                           ]);
                         }),
                       ),
                     ),
                   ),
-                )
-              : ListView.builder(
-                  itemCount: purchaseController.currentInvoiceReturns.length,
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemBuilder: (context, index) {
-                    InvoiceItem purchaseReturn = purchaseController
-                        .currentInvoiceReturns
-                        .elementAt(index);
-                    return InkWell(
-                      onTap: () {
-                        // showBottomSheet(context, purchaseOrder, supplier);
-                      },
-                      child: returnedIvoiceItemsCard(
-                          context: context, invoiceItem: purchaseReturn),
-                    );
-                  });
+                );
     });
   }
 }
@@ -564,19 +568,19 @@ class CreditInfo extends StatelessWidget {
               ],
             ))
           : isSmallScreen(context)
-              ?ListView.builder(
-          itemCount: purchaseController.purchasedItems.length,
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemBuilder: (context, index) {
-            Invoice purchaseOrder =
-            purchaseController.purchasedItems.elementAt(index);
+              ? ListView.builder(
+                  itemCount: purchaseController.purchasedItems.length,
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemBuilder: (context, index) {
+                    Invoice purchaseOrder =
+                        purchaseController.purchasedItems.elementAt(index);
 
-            return InvoiceCard(invoice: purchaseOrder, tab: "credit");
-          }): SingleChildScrollView(
-                  child:invoiceTable(context: context),
-                )
-               ;
+                    return InvoiceCard(invoice: purchaseOrder, tab: "credit");
+                  })
+              : SingleChildScrollView(
+                  child: invoiceTable(context: context),
+                );
     });
   }
 }
