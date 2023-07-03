@@ -335,7 +335,7 @@ class AttendantDetails extends StatelessWidget {
                 width: isSmallScreen(context) ? double.infinity : 200,
                 child: InkWell(
                   onTap: () {
-                    attendantController.updateAttedant(userModel: userModel!);
+                    attendantController.updateUser(userModel: userModel!);
                   },
                   child: Container(
                     padding: EdgeInsets.all(10),
@@ -491,7 +491,7 @@ class Permissions extends StatelessWidget {
                 if (userModel == null) {
                   _createAttendant(all);
                 } else {
-                  attendantController.updateAttedant(
+                  attendantController.updateUser(
                       userModel: userModel!, permissions: jsonEncode(all));
                 }
               },
@@ -581,7 +581,7 @@ class Permissions extends StatelessWidget {
             if (userModel == null) {
               _createAttendant(all);
             } else {
-              attendantController.updateAttedant(
+              attendantController.updateUser(
                   userModel: userModel!, permissions: jsonEncode(all));
             }
           },

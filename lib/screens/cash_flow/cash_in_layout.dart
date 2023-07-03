@@ -17,7 +17,8 @@ class CashInLayout extends StatelessWidget {
   CashInLayout({Key? key}) : super(key: key) {
     cashflowController.selectedcashOutGroups.value = null;
     cashflowController.cashFlowCategories.clear();
-    cashflowController.getCategory("cash-in");
+    cashflowController.getCategory(
+        "cash-in", Get.find<ShopController>().currentShop.value);
   }
 
   ShopController createShopController = Get.find<ShopController>();

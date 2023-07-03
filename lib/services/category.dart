@@ -11,9 +11,17 @@ import '../controllers/realm_controller.dart';
 class Categories {
   final RealmController realmService = Get.find<RealmController>();
   Stream<RealmResultsChanges<ProductCategory>> getProductCategories() {
-    print("sdfs ${Get.find<ShopController>().currentShop.value!.type!.id}");
     return realmService.realm.query<ProductCategory>(r'shopTypes == $0',
         [Get.find<ShopController>().currentShop.value!.type]).changes;
+  }
+
+  getProductsCategories() {
+    print(Get.find<ShopController>().currentShop.value!.type!.id);
+    RealmResults<ProductCategory> r = realmService.realm.query<ProductCategory>(
+        r'shopTypes == $0',
+        [Get.find<ShopController>().currentShop.value!.type]);
+    print("rr ${r.length}");
+    return r;
   }
 
   createProductCategory(ProductCategory body) async {

@@ -1898,6 +1898,7 @@ class PayHistory extends _PayHistory
   PayHistory(
     ObjectId? id, {
     UserModel? attendant,
+    Shop? shop,
     int? amountPaid,
     int? balance,
     Invoice? invoice,
@@ -1906,6 +1907,7 @@ class PayHistory extends _PayHistory
   }) {
     RealmObjectBase.set(this, '_id', id);
     RealmObjectBase.set(this, 'attendant', attendant);
+    RealmObjectBase.set(this, 'shop', shop);
     RealmObjectBase.set(this, 'amountPaid', amountPaid);
     RealmObjectBase.set(this, 'balance', balance);
     RealmObjectBase.set(this, 'invoice', invoice);
@@ -1926,6 +1928,11 @@ class PayHistory extends _PayHistory
   @override
   set attendant(covariant UserModel? value) =>
       RealmObjectBase.set(this, 'attendant', value);
+
+  @override
+  Shop? get shop => RealmObjectBase.get<Shop>(this, 'shop') as Shop?;
+  @override
+  set shop(covariant Shop? value) => RealmObjectBase.set(this, 'shop', value);
 
   @override
   int? get amountPaid => RealmObjectBase.get<int>(this, 'amountPaid') as int?;
@@ -1975,6 +1982,8 @@ class PayHistory extends _PayHistory
           mapTo: '_id', optional: true, primaryKey: true),
       SchemaProperty('attendant', RealmPropertyType.object,
           optional: true, linkTarget: 'UserModel'),
+      SchemaProperty('shop', RealmPropertyType.object,
+          optional: true, linkTarget: 'Shop'),
       SchemaProperty('amountPaid', RealmPropertyType.int, optional: true),
       SchemaProperty('balance', RealmPropertyType.int, optional: true),
       SchemaProperty('invoice', RealmPropertyType.object,

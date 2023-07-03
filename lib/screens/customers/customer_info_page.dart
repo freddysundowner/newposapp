@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pointify/controllers/home_controller.dart';
-import 'package:pointify/controllers/purchase_controller.dart';
 import 'package:pointify/controllers/sales_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/responsive/responsiveness.dart';
@@ -349,7 +348,7 @@ class CustomerInfoPage extends StatelessWidget {
     return showModalBottomSheet<void>(
         context: context,
         builder: (BuildContext context) {
-          return Container(
+          return SizedBox(
               height: 200,
               child: Center(
                   child: Column(
@@ -366,7 +365,7 @@ class CustomerInfoPage extends StatelessWidget {
                       onTap: () {
                         Navigator.pop(context);
                       },
-                      child: Container(
+                      child: const SizedBox(
                         width: double.infinity,
                         child: Row(
                           children: [
@@ -386,7 +385,7 @@ class CustomerInfoPage extends StatelessWidget {
                       onTap: () {
                         Navigator.pop(context);
                       },
-                      child: Container(
+                      child: const SizedBox(
                         width: double.infinity,
                         child: Row(
                           children: [
@@ -394,7 +393,7 @@ class CustomerInfoPage extends StatelessWidget {
                             const SizedBox(
                               width: 10,
                             ),
-                            Container(child: const Text('Purchase History'))
+                            Text('Purchase History')
                           ],
                         ),
                       ),
@@ -406,7 +405,7 @@ class CustomerInfoPage extends StatelessWidget {
                       onTap: () {
                         Navigator.pop(context);
                       },
-                      child: Container(
+                      child: const SizedBox(
                         width: double.infinity,
                         child: Row(
                           children: [
@@ -414,11 +413,10 @@ class CustomerInfoPage extends StatelessWidget {
                             const SizedBox(
                               width: 10,
                             ),
-                            Container(
-                                child: const Text(
+                            Text(
                               'Cancel',
                               style: TextStyle(color: Colors.red),
-                            ))
+                            )
                           ],
                         ),
                       ),
@@ -531,8 +529,17 @@ class RetunsTab extends StatelessWidget {
                 "No entries",
                 textAlign: TextAlign.center,
               ))
-          : MediaQuery.of(context).size.width > 600
-              ? SingleChildScrollView(
+          : isSmallScreen(context)
+              ? ListView.builder(
+                  itemCount: salesController.currentReceiptReturns.length,
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemBuilder: (context, index) {
+                    ReceiptItem receiptItem =
+                        salesController.currentReceiptReturns.elementAt(index);
+                    return SaleReturnCard(receiptItem);
+                  })
+              : SingleChildScrollView(
                   child: Container(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 15, vertical: 10),
@@ -549,47 +556,44 @@ class RetunsTab extends StatelessWidget {
                         columnSpacing: 30.0,
                         columns: const [
                           DataColumn(
-                              label: Text('Name', textAlign: TextAlign.center)),
+                              label:
+                                  Text('Receipt', textAlign: TextAlign.center)),
+                          DataColumn(
+                              label:
+                                  Text('Product', textAlign: TextAlign.center)),
                           DataColumn(
                               label: Text('Qty', textAlign: TextAlign.center)),
                           DataColumn(
                               label:
                                   Text('Total', textAlign: TextAlign.center)),
-                          DataColumn(
-                              label: Text('Date', textAlign: TextAlign.center)),
+                          // DataColumn(
+                          //     label: Text('Date', textAlign: TextAlign.center)),
                         ],
                         rows: List.generate(
                             salesController.currentReceiptReturns.length,
                             (index) {
-                          ReceiptItem saleOrder = salesController
+                          ReceiptItem receiptItem = salesController
                               .currentReceiptReturns
                               .elementAt(index);
-                          final y = saleOrder.product!.name;
-                          // final x = saleOrder.shop;
-                          // final z = saleOrder.total;
-                          // final a = saleOrder.createdAt!;
 
-                          return const DataRow(cells: [
-                            // DataCell(Text(y!)),
-                            // DataCell(Text(x.toString())),
-                            // DataCell(Text(z.toString())),
-                            // DataCell(
-                            //     Text(DateFormat("dd-MM-yyyy").format(a))),
+                          final r =receiptItem.receipt?.receiptNumber;
+                          final y = receiptItem.product!.name;
+                          final x = receiptItem.quantity;
+                          final z = receiptItem.total;
+                          // final a = receiptItem.createdAt;
+
+                          return DataRow(cells: [
+                            DataCell(Text(r!)),
+                            DataCell(Text(y!)),
+                            DataCell(Text(x.toString())),
+                            DataCell(Text(z.toString())),
+                            // DataCell(Text(DateFormat("dd-MM-yyyy").format(a!))),
                           ]);
                         }),
                       ),
                     ),
                   ),
-                )
-              : ListView.builder(
-                  itemCount: salesController.currentReceiptReturns.length,
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemBuilder: (context, index) {
-                    ReceiptItem receiptItem =
-                        salesController.currentReceiptReturns.elementAt(index);
-                    return SaleReturnCard(receiptItem);
-                  });
+                );
     });
   }
 }
@@ -676,90 +680,102 @@ class CreditInfo extends StatelessWidget {
                               final z = salesBody.grandTotal;
                               final a = salesBody.createdAt!;
 
-                              return DataRow(cells: [
-                                DataCell(Text(y!)),
-                                DataCell(Text(x.toString())),
-                                DataCell(Text(z.toString())),
-                                DataCell(
-                                    Text(DateFormat("dd-MM-yyyy").format(a))),
-                                DataCell(Align(
-                                  alignment: Alignment.topRight,
-                                  child: PopupMenuButton(
-                                    itemBuilder: (ctx) => [
-                                      PopupMenuItem(
-                                        child: ListTile(
-                                          leading: const Icon(Icons.list),
-                                          onTap: () {
-                                            Navigator.pop(context);
-                                            if (MediaQuery.of(context)
-                                                    .size
-                                                    .width >
-                                                600) {
-                                              Get.find<HomeController>()
-                                                      .selectedWidget
-                                                      .value =
-                                                  PurchaseOrderItems(
-                                                      id: salesBody.id);
-                                            } else {
-                                              Get.to(() => PurchaseOrderItems(
-                                                  id: salesBody.id));
-                                            }
-                                          },
-                                          title: const Text('View Purchases'),
-                                        ),
+                          return DataRow(cells: [
+                            DataCell(Container(child: Text(y!))),
+                            DataCell(Container(child: Text(x.toString()))),
+                            DataCell(Container(child: Text(z.toString()))),
+                            DataCell(Container(
+                                child:
+                                    Text(DateFormat("dd-MM-yyyy").format(a)))),
+                            DataCell(Align(
+                              alignment: Alignment.topRight,
+                              child: Container(
+                                child: PopupMenuButton(
+                                  itemBuilder: (ctx) => [
+                                    PopupMenuItem(
+                                      child: ListTile(
+                                        leading: Icon(Icons.list),
+                                        onTap: () {
+                                          Navigator.pop(context);
+                                          if (MediaQuery.of(context)
+                                                  .size
+                                                  .width >
+                                              600) {
+                                            Get.find<HomeController>()
+                                                    .selectedWidget
+                                                    .value =
+                                                PurchaseOrderItems(
+                                                    id: salesBody.id);
+                                          } else {
+                                            Get.to(() => PurchaseOrderItems(
+                                                id: salesBody.id));
+                                          }
+                                        },
+                                        title: Text('View Purchases'),
                                       ),
-                                      PopupMenuItem(
-                                        child: ListTile(
-                                          leading: const Icon(Icons.payment),
-                                          onTap: () {
-                                            Navigator.pop(context);
-                                          },
-                                          title: const Text('Pay'),
-                                        ),
+                                    ),
+                                    PopupMenuItem(
+                                      child: ListTile(
+                                        leading: Icon(Icons.payment),
+                                        onTap: () {
+                                          Navigator.pop(context);
+                                        },
+                                        title: Text('Pay'),
                                       ),
-                                      PopupMenuItem(
-                                        child: ListTile(
-                                          leading: const Icon(Icons.wallet),
-                                          onTap: () {
-                                            Navigator.pop(context);
-                                            // if (MediaQuery.of(context)
-                                            //         .size
-                                            //         .width >
-                                            //     600) {
-                                            //   Get.find<HomeController>()
-                                            //       .selectedWidget
-                                            //       .value = PaymentHistory(
-                                            //     id: salesBody.id!,
-                                            //   );
-                                            // } else {
-                                            //   Get.to(() => PaymentHistory(
-                                            //         id: salesBody.id!,
-                                            //       ));
-                                            // }
-                                          },
-                                          title: const Text('Payment History'),
-                                        ),
+                                    ),
+                                    PopupMenuItem(
+                                      child: ListTile(
+                                        leading: Icon(Icons.wallet),
+                                        onTap: () {
+                                          Navigator.pop(context);
+                                          // if (MediaQuery.of(context)
+                                          //         .size
+                                          //         .width >
+                                          //     600) {
+                                          //   Get.find<HomeController>()
+                                          //       .selectedWidget
+                                          //       .value = PaymentHistory(
+                                          //     id: salesBody.id!,
+                                          //   );
+                                          // } else {
+                                          //   Get.to(() => PaymentHistory(
+                                          //         id: salesBody.id!,
+                                          //       ));
+                                          // }
+                                        },
+                                        title: Text('Payment History'),
                                       ),
-                                      PopupMenuItem(
-                                        child: ListTile(
-                                          leading: const Icon(
-                                              Icons.file_copy_outlined),
-                                          onTap: () async {
-                                            Navigator.pop(context);
-                                          },
-                                          title: const Text('Generate Report'),
-                                        ),
+                                    ),
+                                    PopupMenuItem(
+                                      child: ListTile(
+                                        leading: Icon(Icons.file_copy_outlined),
+                                        onTap: () async {
+                                          Navigator.pop(context);
+                                        },
+                                        title: Text('Generate Report'),
                                       ),
-                                    ],
-                                    icon: const Icon(Icons.more_vert),
-                                  ),
-                                )),
-                              ]);
-                            }),
-                          ),
-                        ),
+                                    ),
+                                  ],
+                                  icon: Icon(Icons.more_vert),
+                                ),
+                              ),
+                            )),
+                          ]);
+                        }),
                       ),
-                    );
+                    ),
+                  ),
+                )
+              : ListView.builder(
+                  itemCount: salesController.allSales.length,
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemBuilder: (context, index) {
+                    SalesModel salesBody =
+                        salesController.allSales.elementAt(index);
+
+                    return SalesCard(salesModel: salesBody);
+                  });
     });
   }
 }

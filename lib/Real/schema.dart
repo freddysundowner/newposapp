@@ -293,6 +293,7 @@ class _PayHistory {
   @MapTo("_id")
   ObjectId? id;
   _UserModel? attendant;
+  _Shop? shop;
   @Ignored()
   late _CustomerModel customerr;
   @Ignored()

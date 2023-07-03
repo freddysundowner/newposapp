@@ -19,7 +19,8 @@ class CashFlowCategories extends StatelessWidget {
     cashflowController.cashFlowCategories.clear();
     cashflowController.cashFlowCategories.refresh();
     cashflowController.initialPage.refresh();
-    cashflowController.getCategory("cash-in");
+    cashflowController.getCategory(
+        "cash-in", Get.find<ShopController>().currentShop.value);
   }
 
   ShopController createShopController = Get.find<ShopController>();
@@ -44,9 +45,11 @@ class CashFlowCategories extends StatelessWidget {
                 onTap: (index) {
                   cashflowController.initialPage.value = index;
                   if (index == 0) {
-                    cashflowController.getCategory("cash-in");
+                    cashflowController.getCategory("cash-in",
+                        Get.find<ShopController>().currentShop.value);
                   } else {
-                    cashflowController.getCategory("cash-out");
+                    cashflowController.getCategory("cash-out",
+                        Get.find<ShopController>().currentShop.value);
                   }
                 },
                 tabs: const [

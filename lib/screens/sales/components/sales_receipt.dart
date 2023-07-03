@@ -48,13 +48,10 @@ class SalesReceipt extends StatelessWidget {
         leading: IconButton(
           color: Colors.black,
           onPressed: () {
-            if(isSmallScreen(context)){
+            if (isSmallScreen(context)) {
               Get.back();
-            }
-          else{
-              Get.find<HomeController>()
-                  .selectedWidget
-                  .value = HomePage();
+            } else {
+              Get.find<HomeController>().selectedWidget.value = HomePage();
             }
           },
           icon: Icon(Icons.clear),
@@ -112,72 +109,79 @@ class SalesReceipt extends StatelessWidget {
               SizedBox(
                 height: 20,
               ),
-              Row(
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      normalText(
-                          title: "Total", color: Colors.black, size: 14.0),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      majorTitle(
-                          title: htmlPrice(
-                              salesController.currentReceipt.value!.grandTotal),
-                          color: Colors.black,
-                          size: 18.0)
-                    ],
-                  ),
-                  SizedBox(
-                    width: 40,
-                  ),
-                  if (salesController.currentReceipt.value!.creditTotal! > 0)
+              if (salesController.currentReceipt.value!.items.fold(
+                      0,
+                      (previousValue, element) =>
+                          previousValue + element.quantity!) >
+                  0)
+                Row(
+                  children: [
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         normalText(
-                            title: "Total Paid",
-                            color: Colors.black,
-                            size: 14.0),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        majorTitle(
-                            title: htmlPrice(salesController
-                                    .currentReceipt.value!.grandTotal! -
-                                salesController
-                                    .currentReceipt.value!.creditTotal!),
-                            color: Colors.black,
-                            size: 18.0)
-                      ],
-                    ),
-                  SizedBox(
-                    width: 40,
-                  ),
-                  if (onCredit(salesController.currentReceipt.value!) &&
-                      type != "returns")
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        normalText(
-                            title: "Balance", color: Colors.black, size: 14.0),
+                            title: "Total", color: Colors.black, size: 14.0),
                         SizedBox(
                           height: 10,
                         ),
                         majorTitle(
                             title: htmlPrice(salesController
-                                .currentReceipt.value!.creditTotal!
-                                .abs()),
+                                .currentReceipt.value!.grandTotal),
                             color: Colors.black,
                             size: 18.0)
                       ],
                     ),
-                  SizedBox(
-                    width: 30,
-                  ),
-                ],
-              ),
+                    SizedBox(
+                      width: 40,
+                    ),
+                    if (salesController.currentReceipt.value!.creditTotal! > 0)
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          normalText(
+                              title: "Total Paid",
+                              color: Colors.black,
+                              size: 14.0),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          majorTitle(
+                              title: htmlPrice(salesController
+                                      .currentReceipt.value!.grandTotal! -
+                                  salesController
+                                      .currentReceipt.value!.creditTotal!),
+                              color: Colors.black,
+                              size: 18.0)
+                        ],
+                      ),
+                    SizedBox(
+                      width: 40,
+                    ),
+                    if (onCredit(salesController.currentReceipt.value!) &&
+                        type != "returns")
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          normalText(
+                              title: "Balance",
+                              color: Colors.black,
+                              size: 14.0),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          majorTitle(
+                              title: htmlPrice(salesController
+                                  .currentReceipt.value!.creditTotal!
+                                  .abs()),
+                              color: Colors.black,
+                              size: 18.0)
+                        ],
+                      ),
+                    SizedBox(
+                      width: 30,
+                    ),
+                  ],
+                ),
               SizedBox(
                 height: 20,
               ),
@@ -463,14 +467,13 @@ returnReceiptItem({required ReceiptItem receiptItem, Product? product}) {
 }
 
 showAmountDialog(SalesModel salesBody) {
-  CustomerController customerController = Get.find<CustomerController>();
   SalesController salesController = Get.find<SalesController>();
   showDialog(
       context: Get.context!,
       builder: (_) {
         return AlertDialog(
           title: const Text(
-            "Enter Amount",
+            "Pay invoice",
             style: TextStyle(
               color: Colors.black,
               fontWeight: FontWeight.bold,
@@ -478,16 +481,82 @@ showAmountDialog(SalesModel salesBody) {
           ),
           content: SizedBox(
             child: Form(
-                child: TextFormField(
-              controller: customerController.amountController,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                  hintText: "eg ${salesBody.grandTotal}",
-                  hintStyle: TextStyle(color: Colors.black),
-                  fillColor: Colors.white,
-                  filled: true,
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8))),
+                child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  "Payment via",
+                  style: TextStyle(color: Colors.black, fontSize: 12),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  margin: EdgeInsets.only(bottom: 10),
+                  decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey),
+                      borderRadius: BorderRadius.circular(5)),
+                  child: InkWell(
+                    onTap: () {
+                      showDialog(
+                          context: Get.context!,
+                          builder: (context) {
+                            return SimpleDialog(
+                              children: List.generate(
+                                  salesController.receiptpaymentMethods.length,
+                                  (index) => SimpleDialogOption(
+                                        onPressed: () {
+                                          salesController.paynowMethod.value =
+                                              salesController
+                                                  .receiptpaymentMethods[index];
+                                          Navigator.pop(context);
+                                        },
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 5),
+                                          child: Text(
+                                            "${salesController.receiptpaymentMethods[index]}",
+                                            style:
+                                                const TextStyle(fontSize: 18),
+                                          ),
+                                        ),
+                                      )),
+                            );
+                          });
+                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Obx(
+                          () => Text(salesController.paynowMethod.value),
+                        ),
+                        const Icon(Icons.arrow_drop_down)
+                      ],
+                    ),
+                  ),
+                ),
+                Text(
+                  "Enter Amount",
+                  style: TextStyle(color: Colors.black, fontSize: 12),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                TextFormField(
+                  controller: salesController.amountController,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                      hintText: "eg ${salesBody.grandTotal}",
+                      hintStyle: TextStyle(fontSize: 10),
+                      fillColor: Colors.white,
+                      filled: true,
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8))),
+                ),
+              ],
             )),
           ),
           actions: [
@@ -506,17 +575,45 @@ showAmountDialog(SalesModel salesBody) {
             TextButton(
               onPressed: () {
                 Get.back();
-                if (salesBody.creditTotal!.abs() <
-                    int.parse(customerController.amountController.text)) {
+                var amountPaid = int.parse(
+                    salesController.amountController.text.isEmpty
+                        ? "0"
+                        : salesController.amountController.text);
+                if (salesBody.creditTotal!.abs() < amountPaid) {
                   generalAlert(
                       title: "Error",
                       message:
                           "You cannot pay more than ${htmlPrice(salesBody.creditTotal!.abs())}");
                 } else {
-                  salesController.payCredit(
-                      salesBody: salesBody,
-                      amount:
-                          int.parse(customerController.amountController.text));
+                  print("v");
+                  if (salesController.paynowMethod.value == "Wallet") {
+                    var walletBalance =
+                        (salesBody.customerId!.walletBalance ?? 0);
+                    if (walletBalance == 0) {
+                      generalAlert(
+                          title: "Error",
+                          message: "Wallet balance is ${htmlPrice(0)}");
+                    } else {
+                      if (walletBalance < amountPaid) {
+                        var tobepaid = walletBalance - amountPaid;
+                        generalAlert(
+                            title: "Warning",
+                            message:
+                                "Wallet balance can only pay ${htmlPrice(walletBalance)} continue?",
+                            function: () {
+                              print("paying $tobepaid");
+                              // salesController.payCredit(
+                              //     salesBody: salesBody, amount: amountPaid);
+                            });
+                      } else {
+                        salesController.payCredit(
+                            salesBody: salesBody, amount: amountPaid);
+                      }
+                    }
+                  } else {
+                    salesController.payCredit(
+                        salesBody: salesBody, amount: amountPaid);
+                  }
                 }
               },
               child: Text(

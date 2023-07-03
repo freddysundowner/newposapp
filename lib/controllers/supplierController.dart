@@ -120,8 +120,9 @@ class SupplierController extends GetxController
 
   getSuppliersInShop(type) async {
     suppliers.clear();
-    RealmResults<Supplier> suppliersList =
-        SupplierService().getSuppliersByShopId(type: type);
+    RealmResults<Supplier> suppliersList = SupplierService()
+        .getSuppliersByShopId(
+            type: type, shop: Get.find<ShopController>().currentShop.value!);
 
     suppliers.addAll(suppliersList.map((e) => e).toList());
   }
