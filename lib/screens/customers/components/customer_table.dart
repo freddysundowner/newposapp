@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/screens/customers/customer_info_page.dart';
 import 'package:get/get.dart';
+import 'package:pointify/screens/sales/create_sale.dart';
 
 import '../../../Real/schema.dart';
+import '../../../controllers/sales_controller.dart';
 import '../../../utils/colors.dart';
 
-Widget customerTable({required customers, required context}) {
+Widget customerTable({required customers, required context, required type}) {
   return SingleChildScrollView(
     child: Container(
       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
@@ -34,32 +36,62 @@ Widget customerTable({required customers, required context}) {
               DataCell(Text(y!)),
               DataCell(Text(x.toString())),
               DataCell(
-                InkWell(
-                  onTap: () {
-                    Get.find<HomeController>().selectedWidget.value =
-                        CustomerInfoPage(
-                      customerModel: customerModel,
-                    );
-                  },
-                  child: Align(
-                    alignment: Alignment.topRight,
-                    child: Center(
-                      child: Container(
-                        padding: const EdgeInsets.all(5),
-                        margin: const EdgeInsets.all(5),
-                        decoration: BoxDecoration(
-                            color: AppColors.mainColor,
-                            borderRadius: BorderRadius.circular(3)),
-                        width: 75,
-                        child: const Text(
-                          "View",
-                          style: TextStyle(color: Colors.white),
-                          textAlign: TextAlign.center,
+                type == "sale"
+                    ? InkWell(
+                        onTap: () {
+                          Get.find<HomeController>().selectedWidget.value =
+                              CreateSale();
+                          Get.find<SalesController>()
+                              .receipt
+                              .value!
+                              .customerId = customerModel;
+                          Get.find<SalesController>().receipt.refresh();
+                        },
+                        child: Align(
+                          alignment: Alignment.topRight,
+                          child: Center(
+                            child: Container(
+                              padding: const EdgeInsets.all(5),
+                              margin: const EdgeInsets.all(5),
+                              decoration: BoxDecoration(
+                                  color: AppColors.mainColor,
+                                  borderRadius: BorderRadius.circular(3)),
+                              width: 75,
+                              child: const Text(
+                                "Select",
+                                style: TextStyle(color: Colors.white),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          ),
+                        ),
+                      )
+                    : InkWell(
+                        onTap: () {
+                          Get.find<HomeController>().selectedWidget.value =
+                              CustomerInfoPage(
+                            customerModel: customerModel,
+                          );
+                        },
+                        child: Align(
+                          alignment: Alignment.topRight,
+                          child: Center(
+                            child: Container(
+                              padding: const EdgeInsets.all(5),
+                              margin: const EdgeInsets.all(5),
+                              decoration: BoxDecoration(
+                                  color: AppColors.mainColor,
+                                  borderRadius: BorderRadius.circular(3)),
+                              width: 75,
+                              child: const Text(
+                                "View",
+                                style: TextStyle(color: Colors.white),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                  ),
-                ),
               ),
             ]);
           }),
