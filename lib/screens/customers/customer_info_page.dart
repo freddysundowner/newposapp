@@ -365,7 +365,7 @@ class CustomerInfoPage extends StatelessWidget {
                       onTap: () {
                         Navigator.pop(context);
                       },
-                      child: const SizedBox(
+                      child: SizedBox(
                         width: double.infinity,
                         child: Row(
                           children: [
@@ -576,7 +576,7 @@ class RetunsTab extends StatelessWidget {
                               .currentReceiptReturns
                               .elementAt(index);
 
-                          final r =receiptItem.receipt?.receiptNumber;
+                          final r = receiptItem.receipt?.receiptNumber;
                           final y = receiptItem.product!.name;
                           final x = receiptItem.quantity;
                           final z = receiptItem.total;
@@ -680,102 +680,93 @@ class CreditInfo extends StatelessWidget {
                               final z = salesBody.grandTotal;
                               final a = salesBody.createdAt!;
 
-                          return DataRow(cells: [
-                            DataCell(Container(child: Text(y!))),
-                            DataCell(Container(child: Text(x.toString()))),
-                            DataCell(Container(child: Text(z.toString()))),
-                            DataCell(Container(
-                                child:
-                                    Text(DateFormat("dd-MM-yyyy").format(a)))),
-                            DataCell(Align(
-                              alignment: Alignment.topRight,
-                              child: Container(
-                                child: PopupMenuButton(
-                                  itemBuilder: (ctx) => [
-                                    PopupMenuItem(
-                                      child: ListTile(
-                                        leading: Icon(Icons.list),
-                                        onTap: () {
-                                          Navigator.pop(context);
-                                          if (MediaQuery.of(context)
-                                                  .size
-                                                  .width >
-                                              600) {
-                                            Get.find<HomeController>()
-                                                    .selectedWidget
-                                                    .value =
-                                                PurchaseOrderItems(
-                                                    id: salesBody.id);
-                                          } else {
-                                            Get.to(() => PurchaseOrderItems(
-                                                id: salesBody.id));
-                                          }
-                                        },
-                                        title: Text('View Purchases'),
-                                      ),
+                              return DataRow(cells: [
+                                DataCell(Container(child: Text(y!))),
+                                DataCell(Container(child: Text(x.toString()))),
+                                DataCell(Container(child: Text(z.toString()))),
+                                DataCell(Container(
+                                    child: Text(
+                                        DateFormat("dd-MM-yyyy").format(a)))),
+                                DataCell(Align(
+                                  alignment: Alignment.topRight,
+                                  child: Container(
+                                    child: PopupMenuButton(
+                                      itemBuilder: (ctx) => [
+                                        PopupMenuItem(
+                                          child: ListTile(
+                                            leading: Icon(Icons.list),
+                                            onTap: () {
+                                              Navigator.pop(context);
+                                              if (MediaQuery.of(context)
+                                                      .size
+                                                      .width >
+                                                  600) {
+                                                Get.find<HomeController>()
+                                                        .selectedWidget
+                                                        .value =
+                                                    PurchaseOrderItems(
+                                                        id: salesBody.id);
+                                              } else {
+                                                Get.to(() => PurchaseOrderItems(
+                                                    id: salesBody.id));
+                                              }
+                                            },
+                                            title: Text('View Purchases'),
+                                          ),
+                                        ),
+                                        PopupMenuItem(
+                                          child: ListTile(
+                                            leading: Icon(Icons.payment),
+                                            onTap: () {
+                                              Navigator.pop(context);
+                                            },
+                                            title: Text('Pay'),
+                                          ),
+                                        ),
+                                        PopupMenuItem(
+                                          child: ListTile(
+                                            leading: Icon(Icons.wallet),
+                                            onTap: () {
+                                              Navigator.pop(context);
+                                              // if (MediaQuery.of(context)
+                                              //         .size
+                                              //         .width >
+                                              //     600) {
+                                              //   Get.find<HomeController>()
+                                              //       .selectedWidget
+                                              //       .value = PaymentHistory(
+                                              //     id: salesBody.id!,
+                                              //   );
+                                              // } else {
+                                              //   Get.to(() => PaymentHistory(
+                                              //         id: salesBody.id!,
+                                              //       ));
+                                              // }
+                                            },
+                                            title: Text('Payment History'),
+                                          ),
+                                        ),
+                                        PopupMenuItem(
+                                          child: ListTile(
+                                            leading:
+                                                Icon(Icons.file_copy_outlined),
+                                            onTap: () async {
+                                              Navigator.pop(context);
+                                            },
+                                            title: Text('Generate Report'),
+                                          ),
+                                        ),
+                                      ],
+                                      icon: Icon(Icons.more_vert),
                                     ),
-                                    PopupMenuItem(
-                                      child: ListTile(
-                                        leading: Icon(Icons.payment),
-                                        onTap: () {
-                                          Navigator.pop(context);
-                                        },
-                                        title: Text('Pay'),
-                                      ),
-                                    ),
-                                    PopupMenuItem(
-                                      child: ListTile(
-                                        leading: Icon(Icons.wallet),
-                                        onTap: () {
-                                          Navigator.pop(context);
-                                          // if (MediaQuery.of(context)
-                                          //         .size
-                                          //         .width >
-                                          //     600) {
-                                          //   Get.find<HomeController>()
-                                          //       .selectedWidget
-                                          //       .value = PaymentHistory(
-                                          //     id: salesBody.id!,
-                                          //   );
-                                          // } else {
-                                          //   Get.to(() => PaymentHistory(
-                                          //         id: salesBody.id!,
-                                          //       ));
-                                          // }
-                                        },
-                                        title: Text('Payment History'),
-                                      ),
-                                    ),
-                                    PopupMenuItem(
-                                      child: ListTile(
-                                        leading: Icon(Icons.file_copy_outlined),
-                                        onTap: () async {
-                                          Navigator.pop(context);
-                                        },
-                                        title: Text('Generate Report'),
-                                      ),
-                                    ),
-                                  ],
-                                  icon: Icon(Icons.more_vert),
-                                ),
-                              ),
-                            )),
-                          ]);
-                        }),
+                                  ),
+                                )),
+                              ]);
+                            }),
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                )
-              : ListView.builder(
-                  itemCount: salesController.allSales.length,
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemBuilder: (context, index) {
-                    SalesModel salesBody =
-                        salesController.allSales.elementAt(index);
-
-                    return SalesCard(salesModel: salesBody);
-                  });
+                    );
     });
   }
 }
