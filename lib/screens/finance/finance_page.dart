@@ -396,7 +396,26 @@ class MonthFilter extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Pick a month"),
+        title: Text(
+          'Pick a month',
+          style: TextStyle(
+              color: isSmallScreen(context) ? Colors.white : Colors.black),
+        ),
+        elevation: 0.1,
+        backgroundColor:
+            isSmallScreen(context) ? AppColors.mainColor : Colors.white,
+        leading: IconButton(
+            onPressed: () {
+              if (isSmallScreen(context)) {
+                Get.back();
+              } else {
+                Get.find<HomeController>().selectedWidget.value = FinancePage();
+              }
+            },
+            icon: Icon(
+              Icons.arrow_back_ios,
+              color: isSmallScreen(context) ? Colors.white : Colors.black,
+            )),
         actions: [
           InkWell(
             onTap: () {
@@ -473,9 +492,15 @@ class MonthFilter extends StatelessWidget {
                     fromDate: firstday,
                     toDate: lastday,
                   );
-                  Get.to(() => ProfitPage(
-                      headline:
-                          "from\n${'${DateFormat("yyy-MM-dd").format(firstday)}-${DateFormat("yyy-MM-dd").format(lastday)}'}"));
+
+                  isSmallScreen(context)
+                      ? Get.to(() => ProfitPage(
+                          headline:
+                              "from\n${'${DateFormat("yyy-MM-dd").format(firstday)}-${DateFormat("yyy-MM-dd").format(lastday)}'}"))
+                      : Get.find<HomeController>().selectedWidget.value =
+                          ProfitPage(
+                              headline:
+                                  "from\n${'${DateFormat("yyy-MM-dd").format(firstday)}-${DateFormat("yyy-MM-dd").format(lastday)}'}");
                 },
                 child: Column(
                   children: [

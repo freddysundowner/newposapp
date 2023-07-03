@@ -78,8 +78,7 @@ class ProductAnalysis extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         elevation: 0.1,
-        backgroundColor:
-            isSmallScreen(context) ? AppColors.mainColor : Colors.white,
+        backgroundColor: isSmallScreen(context) ? AppColors.mainColor : Colors.white,
         leading: IconButton(
             onPressed: () {
               if (isSmallScreen(context)) {

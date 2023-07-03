@@ -8,8 +8,11 @@ import 'package:pointify/functions/functions.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:syncfusion_flutter_charts/sparkcharts.dart';
 
+import '../../controllers/home_controller.dart';
 import '../../controllers/shop_controller.dart';
+import '../../responsive/responsiveness.dart';
 import '../../utils/colors.dart';
+
 
 class GraphAnalysis extends StatefulWidget {
   // ignore: prefer_const_constructors_in_immutables
@@ -40,7 +43,21 @@ class _GraphAnalysisState extends State<GraphAnalysis> {
     salesController.getGraphSales();
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Profit Analysis'),
+        title:  Text('Profit Analysis',style: TextStyle(color: isSmallScreen(context)?Colors.white:Colors.black),),
+        elevation: 0.1,
+        backgroundColor: isSmallScreen(context) ? AppColors.mainColor : Colors.white,
+        leading: IconButton(
+            onPressed: () {
+              if (isSmallScreen(context)) {
+                Get.back();
+              } else {
+                // Get.find<HomeController>().selectedWidget.value = FinancePage();
+              }
+            },
+            icon: Icon(
+              Icons.arrow_back_ios,
+              color: isSmallScreen(context) ? Colors.white : Colors.black,
+            )),
       ),
       body: Obx(
         () => Column(

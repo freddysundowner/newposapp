@@ -19,6 +19,7 @@ import '../../controllers/product_controller.dart';
 import '../../utils/themer.dart';
 import '../../widgets/bigtext.dart';
 import '../../widgets/no_items_found.dart';
+import '../finance/profit_page.dart';
 
 class BadStockPage extends StatelessWidget {
   final page;
@@ -53,6 +54,9 @@ class BadStockPage extends StatelessWidget {
                     if (page == "services") {
                       Get.find<HomeController>().selectedWidget.value =
                           AllSalesPage(page: "badstock");
+                    } else if (page == "profitspage") {
+                      Get.find<HomeController>().selectedWidget.value =
+                          ProfitPage();
                     } else {
                       Get.find<HomeController>().selectedWidget.value =
                           StockPage();

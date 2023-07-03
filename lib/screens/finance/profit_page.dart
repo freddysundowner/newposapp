@@ -21,6 +21,7 @@ import '../sales/all_sales.dart';
 
 class ProfitPage extends StatelessWidget {
   String? headline;
+
   ProfitPage({Key? key, this.headline}) : super(key: key) {}
 
   SalesController salesController = Get.find<SalesController>();
@@ -260,9 +261,15 @@ class ProfitPage extends StatelessWidget {
                               DateFormat("yyy-MM-dd").format(DateTime.now())),
                           toDate: DateTime.parse(DateFormat("yyy-MM-dd")
                               .format(DateTime.now().add(Duration(days: 1)))));
-                      Get.to(() => BadStockPage(
-                            page: "profitspage",
-                          ));
+
+                      isSmallScreen(context)
+                          ? Get.to(() => BadStockPage(
+                                page: "profitspage",
+                              ))
+                          : Get.find<HomeController>().selectedWidget.value =
+                              BadStockPage(
+                              page: "profitspage",
+                            );
                     },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -302,7 +309,10 @@ class ProfitPage extends StatelessWidget {
                         fromDate: expensesController.filterStartDate.value,
                         toDate: expensesController.filterEnndStartDate.value,
                       );
-                      Get.to(() => ExpensePage());
+                      isSmallScreen(context)
+                          ? Get.to(() => ExpensePage())
+                          : Get.find<HomeController>().selectedWidget.value =
+                              ExpensePage();
                     },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
