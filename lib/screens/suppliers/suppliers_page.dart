@@ -37,9 +37,7 @@ class SuppliersPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return defaultTab(context);
-    // ResponsiveWidget(
-    //     largeScreen: defaultTab("large", context),
-    //     smallScreen:);
+
   }
 
   Widget defaultTab(context) {
