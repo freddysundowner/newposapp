@@ -19,7 +19,6 @@ import '../services/users.dart';
 class UserController extends GetxController {
   TextEditingController passwordController = TextEditingController();
   TextEditingController nameController = TextEditingController();
-  // TextEditingController emailController = TextEditingController();
   TextEditingController attendantId = TextEditingController();
   RxBool creatingAttendantsLoad = RxBool(false);
   RxBool getAttendantsLoad = RxBool(false);
@@ -159,7 +158,6 @@ class UserController extends GetxController {
       Transactions().createCategory(cashFlowCategory);
     } else {
       List found = cashoutGroups.map((e) => e.key == "bank").toList();
-      print("found ${found.length}");
       if (found.isEmpty) {
         CashFlowCategory cashFlowCategory = CashFlowCategory(ObjectId(),
             name: "Bank",
@@ -169,7 +167,8 @@ class UserController extends GetxController {
             type: "cash-out");
         Transactions().createCategory(cashFlowCategory);
       }
-      Get.find<CashflowController>().getCategory("cash-out");
+      Get.find<CashflowController>().getCategory(
+          "cash-out", Get.find<ShopController>().currentShop.value);
     }
   }
 
@@ -195,7 +194,7 @@ class UserController extends GetxController {
   }
 
   //
-  updateAttedant({required UserModel userModel, String? permissions}) {
+  updateUser({required UserModel userModel, String? permissions}) {
     Users().updateAdmin(userModel,
         username: nameController.text, permissions: permissions);
     generalAlert(

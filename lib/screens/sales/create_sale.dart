@@ -442,7 +442,7 @@ class CreateSale extends StatelessWidget {
                   Obx(
                     () => majorTitle(
                         title:
-                            "${salesController.changeText.value} ${htmlPrice(salesController.receipt.value!.creditTotal! < 0 ? salesController.change.value : salesController.receipt.value?.creditTotal)}",
+                            "${salesController.changeText.value} ${htmlPrice(salesController.change.value)}",
                         color: Colors.black,
                         size: 14.0),
                   ),
@@ -502,7 +502,7 @@ class CreateSale extends StatelessWidget {
                             width: 20,
                           ),
                           Container(
-                            padding: EdgeInsets.symmetric(horizontal: 5),
+                            padding: const EdgeInsets.symmetric(horizontal: 5),
                             decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: (BorderRadius.circular(10)),
@@ -765,7 +765,8 @@ class CreateSale extends StatelessWidget {
   }
 
   _needCustomer() {
-    return salesController.receipt.value!.paymentMethod == "Credit";
+    return salesController.receipt.value!.paymentMethod == "Credit" ||
+        salesController.receipt.value!.paymentMethod == "Wallet";
   }
 
   Widget showPopUpdialog(

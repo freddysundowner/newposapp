@@ -30,11 +30,6 @@ class ShopService {
           .query<Shop>(r'owner == $0', [realmService.currentUser!.value!.id]);
     }
 
-    if (name.isNotEmpty) {
-      RealmResults<Shop> shopsFiltered =
-          shops.query('name BEGINSWITH \$0', [name]);
-      return shopsFiltered;
-    }
     return shops;
   }
 

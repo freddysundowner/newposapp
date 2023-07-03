@@ -49,7 +49,8 @@ class CreateExpense extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    cashflowController.getCategory("cash-out");
+    cashflowController.getCategory(
+        "cash-out", Get.find<ShopController>().currentShop.value);
     return Scaffold(
       appBar: AppBar(
         titleSpacing: 0,

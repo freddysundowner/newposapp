@@ -20,10 +20,18 @@ class Purchases {
         .write<Invoice>(() => realmService.realm.add<Invoice>(invoice));
   }
 
+  RealmResults<InvoiceItem> getInvoiceItems({Shop? shop}) {
+    RealmResults<InvoiceItem> invoices = realmService.realm.query<InvoiceItem>(
+        r'shop == $0 AND TRUEPREDICATE SORT(createdAt DESC)',
+        [shop!.id.toString()]);
+    return invoices;
+  }
+
   RealmResults<Invoice> getPurchase(
       {Supplier? supplier,
       bool? onCredit,
       DateTime? fromDate,
+      Shop? shop,
       DateTime? toDate}) {
     if (supplier != null) {
       RealmResults<Invoice> invoices = realmService.realm.query<Invoice>(
@@ -35,9 +43,15 @@ class Purchases {
       }
       return _attendantFilter(invoices);
     }
-    RealmResults<Invoice> invoices = realmService.realm.query<Invoice>(
-        r'shop == $0 AND TRUEPREDICATE SORT(createdAt DESC)',
-        [shopController.currentShop.value]);
+    RealmResults<Invoice> invoices;
+    if (shop == null) {
+      invoices = realmService.realm.query<Invoice>(
+          r'shop == $0 AND TRUEPREDICATE SORT(createdAt DESC)',
+          [shopController.currentShop.value]);
+    } else {
+      invoices = realmService.realm.query<Invoice>(
+          r'shop == $0 AND TRUEPREDICATE SORT(createdAt DESC)', [shop]);
+    }
 
     if (fromDate != null) {
       RealmResults<Invoice> invoicesResponse = invoices.query(
@@ -45,6 +59,18 @@ class Purchases {
       return _attendantFilter(invoicesResponse);
     }
     return _attendantFilter(invoices);
+  }
+
+  deleteInvoices(List<Invoice> sales) {
+    realmService.realm.write(() {
+      realmService.realm.deleteMany(sales);
+    });
+  }
+
+  deleteInvoiceItems(List<InvoiceItem> sales) {
+    realmService.realm.write(() {
+      realmService.realm.deleteMany(sales);
+    });
   }
 
   _attendantFilter(RealmResults<Invoice> data) {

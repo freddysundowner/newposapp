@@ -5,7 +5,6 @@ import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/customers/components/customer_table.dart';
 import 'package:pointify/screens/customers/create_customers.dart';
 import 'package:pointify/screens/home/home_page.dart';
-import 'package:pointify/widgets/no_items_found.dart';
 import 'package:get/get.dart';
 
 import '../../Real/schema.dart';
@@ -142,59 +141,56 @@ class Customers extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.only(top: 5),
         child: Obx(() {
-          return customersController.gettingCustomersLoad.value
-              ? const Center(
-                  child: CircularProgressIndicator(),
-                )
-              : StreamBuilder(
-                  stream: Customer().getCustomersByShopId("all").changes,
-                  builder: (context, snapshot) {
-                    final data = snapshot.data;
-                    if (data == null || data.results.isEmpty) {
-                      return Center(
-                        child: InkWell(
-                          onTap: () {
-                            Get.to(() => CreateCustomer(
-                                  page: "",
-                                ));
-                          },
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                "Add",
-                                style: TextStyle(
-                                    color: AppColors.mainColor, fontSize: 21),
-                              ),
-                              Icon(
-                                Icons.add_circle_outline_outlined,
-                                size: 60,
-                                color: AppColors.mainColor,
-                              ),
-                            ],
+          return StreamBuilder(
+              stream: Customer()
+                  .getCustomersByShopId(
+                      "all", Get.find<ShopController>().currentShop.value!)
+                  .changes,
+              builder: (context, snapshot) {
+                final data = snapshot.data;
+                if (data == null || data.results.isEmpty) {
+                  return Center(
+                    child: InkWell(
+                      onTap: () {
+                        Get.to(() => CreateCustomer(
+                              page: "",
+                            ));
+                      },
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "Add",
+                            style: TextStyle(
+                                color: AppColors.mainColor, fontSize: 21),
                           ),
-                        ),
-                      );
-                    } else {
-                      final results = data.results;
-                      return isSmallScreen(context)
-                          ? ListView.builder(
-                              itemCount:
-                                  results.realm.isClosed ? 0 : results.length,
-                              itemBuilder: (context, index) {
-                                CustomerModel customerModel =
-                                    results.elementAt(index);
-                                return customerWidget(
-                                    customerModel: customerModel,
-                                    context: context,
-                                    type: type);
-                              })
-                          : customerTable(
-                              customers:results,
-                              context: context);
-                    }
-                  });
+                          Icon(
+                            Icons.add_circle_outline_outlined,
+                            size: 60,
+                            color: AppColors.mainColor,
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                } else {
+                  final results = data.results;
+                  return isSmallScreen(context)
+                      ? ListView.builder(
+                          itemCount:
+                              results.realm.isClosed ? 0 : results.length,
+                          itemBuilder: (context, index) {
+                            CustomerModel customerModel =
+                                results.elementAt(index);
+                            return customerWidget(
+                                customerModel: customerModel,
+                                context: context,
+                                type: type);
+                          })
+                      : customerTable(customers: results, context: context);
+                }
+              });
         }),
       ),
     );
@@ -217,11 +213,13 @@ class Debtors extends StatelessWidget {
                   child: CircularProgressIndicator(),
                 )
               : StreamBuilder(
-                  stream: Customer().getCustomersByShopId("debtors").changes,
+                  stream: Customer()
+                      .getCustomersByShopId("debtors",
+                          Get.find<ShopController>().currentShop.value!)
+                      .changes,
                   builder: (context, snapshot) {
                     final data = snapshot.data;
                     if (data == null) {
-                      print("object");
                       return minorTitle(
                           title: "This shop doesn't have products yet",
                           color: Colors.black);
@@ -238,9 +236,7 @@ class Debtors extends StatelessWidget {
                                     customerModel: customerModel,
                                     context: context);
                               })
-                          : customerTable(
-                              customers:results,
-                              context: context);
+                          : customerTable(customers: results, context: context);
                     }
                   });
         }),

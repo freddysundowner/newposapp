@@ -53,23 +53,23 @@ class SuppliersPage extends StatelessWidget {
           elevation: 0.3,
           centerTitle: false,
           leading:
-          Get.find<UserController>().user.value?.usertype == "attendant" &&
-              !isSmallScreen(context)
-              ? Container()
-              : IconButton(
-            onPressed: () {
-              if (isSmallScreen(context)) {
-                Get.back();
-              } else {
-                Get.find<HomeController>().selectedWidget.value =
-                    HomePage();
-              }
-            },
-            icon: const Icon(
-              Icons.arrow_back_ios,
-              color: Colors.black,
-            ),
-          ),
+              Get.find<UserController>().user.value?.usertype == "attendant" &&
+                      !isSmallScreen(context)
+                  ? Container()
+                  : IconButton(
+                      onPressed: () {
+                        if (isSmallScreen(context)) {
+                          Get.back();
+                        } else {
+                          Get.find<HomeController>().selectedWidget.value =
+                              HomePage();
+                        }
+                      },
+                      icon: const Icon(
+                        Icons.arrow_back_ios,
+                        color: Colors.black,
+                      ),
+                    ),
           title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -86,12 +86,12 @@ class SuppliersPage extends StatelessWidget {
                   if (!isSmallScreen(context)) {
                     Get.find<HomeController>().selectedWidget.value =
                         CreateSuppliers(
-                          page: "suppliersPage",
-                        );
+                      page: "suppliersPage",
+                    );
                   } else {
                     Get.to(() => CreateSuppliers(
-                      page: "suppliersPage",
-                    ));
+                          page: "suppliersPage",
+                        ));
                   }
                 },
                 child: Padding(
@@ -102,7 +102,7 @@ class SuppliersPage extends StatelessWidget {
                         color: Colors.white,
                         borderRadius: (BorderRadius.circular(10)),
                         border:
-                        Border.all(color: AppColors.mainColor, width: 1)),
+                            Border.all(color: AppColors.mainColor, width: 1)),
                     child: Center(
                       child: majorTitle(
                           title: "Add Supplier",
@@ -159,7 +159,10 @@ class Suppliers extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.only(top: 5),
         child: StreamBuilder<RealmResultsChanges<Supplier>>(
-            stream: SupplierService().getSuppliersByShopId(type: from!).changes,
+            stream: SupplierService()
+                .getSuppliersByShopId(
+                    type: from!, shop: shopController.currentShop.value!)
+                .changes,
             builder: (context, AsyncSnapshot snapshot) {
               final data = snapshot.data;
               if (data == null) {
@@ -168,32 +171,32 @@ class Suppliers extends StatelessWidget {
                 final results = data.results;
                 return isSmallScreen(context)
                     ? ListView.builder(
-                    itemCount: results.realm.isClosed ? 0 : results.length,
-                    itemBuilder: (context, index) {
-                      Supplier supplierModel = results.elementAt(index);
-                      return supplierCard(
-                          supplierModel: supplierModel,
-                          type: type ?? "",
-                          function: (Supplier supplier) {
-                            if (type == "purchases") {
-                              purchaseController.invoice.value?.supplier =
-                                  supplier;
-                              Get.back();
-                            } else {
-                              if (!isSmallScreen(context)) {
-                                Get.find<HomeController>()
-                                    .selectedWidget
-                                    .value = SupplierInfoPage(
-                                  supplierModel: supplierModel,
-                                );
-                              } else {
-                                Get.to(() => SupplierInfoPage(
-                                  supplierModel: supplierModel,
-                                ));
-                              }
-                            }
-                          });
-                    })
+                        itemCount: results.realm.isClosed ? 0 : results.length,
+                        itemBuilder: (context, index) {
+                          Supplier supplierModel = results.elementAt(index);
+                          return supplierCard(
+                              supplierModel: supplierModel,
+                              type: type ?? "",
+                              function: (Supplier supplier) {
+                                if (type == "purchases") {
+                                  purchaseController.invoice.value?.supplier =
+                                      supplier;
+                                  Get.back();
+                                } else {
+                                  if (!isSmallScreen(context)) {
+                                    Get.find<HomeController>()
+                                        .selectedWidget
+                                        .value = SupplierInfoPage(
+                                      supplierModel: supplierModel,
+                                    );
+                                  } else {
+                                    Get.to(() => SupplierInfoPage(
+                                          supplierModel: supplierModel,
+                                        ));
+                                  }
+                                }
+                              });
+                        })
                     : supplierTable(customers: results, context: context);
               }
             }),

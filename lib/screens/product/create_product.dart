@@ -16,6 +16,7 @@ import '../../Real/schema.dart';
 import '../../controllers/AuthController.dart';
 import '../../controllers/home_controller.dart';
 import '../../controllers/supplierController.dart';
+import '../../data/interests.dart';
 import '../../services/category.dart';
 import '../../services/supplier.dart';
 import '../stock/stock_page.dart';
@@ -271,7 +272,6 @@ class CreateProduct extends StatelessWidget {
                           inputFormatters: [
                             FilteringTextInputFormatter.digitsOnly
                           ],
-
                           decoration: InputDecoration(
                             fillColor: Colors.white,
                             filled: true,
@@ -520,7 +520,9 @@ class CreateProduct extends StatelessWidget {
                                     return StreamBuilder<
                                             RealmResultsChanges<Supplier>>(
                                         stream: SupplierService()
-                                            .getSuppliersByShopId()
+                                            .getSuppliersByShopId(
+                                                shop: shopController
+                                                    .currentShop.value!)
                                             .changes,
                                         builder:
                                             (context, AsyncSnapshot snapshot) {

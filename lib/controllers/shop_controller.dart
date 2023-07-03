@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pointify/Real/schema.dart';
 import 'package:pointify/responsive/responsiveness.dart';
+import 'package:pointify/screens/shop/create_shop.dart';
+import 'package:pointify/services/sales.dart';
 import 'package:pointify/services/shop_services.dart';
 import 'package:pointify/controllers/AuthController.dart';
 import 'package:pointify/controllers/home_controller.dart';
@@ -74,10 +76,16 @@ class ShopController extends GetxController {
   getShops({String name = ""}) async {
     try {
       gettingShopsLoad.value = true;
-
+      allShops.clear();
       RealmResults<Shop> response = await ShopService().getShop(name: name);
       if (response.isNotEmpty) {
-        allShops.assignAll(response.map((e) => e).toList());
+        print(name);
+        if (name.isNotEmpty) {
+          allShops.assignAll(
+              response.where((e) => e.name!.contains(name)).toList());
+        } else {
+          allShops.assignAll(response.map((e) => e).toList());
+        }
       } else {
         allShops.value = [];
       }
@@ -129,16 +137,19 @@ class ShopController extends GetxController {
   }
 
   deleteShop({required Shop shop, required context}) async {
-    try {
-      deleteShopLoad.value = true;
-      var response = await ShopService().deleteItem(shop);
-      getShops();
-      Get.back();
-      showSnackBar(message: "shop deleted", color: AppColors.mainColor);
-      deleteShopLoad.value = false;
-    } catch (e) {
-      deleteShopLoad.value = false;
+    Get.find<RealmController>().deleteShopData(shop);
+
+    //update current shop
+    RealmResults<Shop> response = ShopService().getShop();
+    if (response.isNotEmpty) {
+      Users().updateAdmin(userController.user.value!, shop: response.first);
+      Get.offAll(() => Home());
+    } else {
+      Users().updateAdmin(userController.user.value!, shop: null);
+      Get.off(() => CreateShop(page: "home"));
     }
+
+    userController.getUser();
   }
 
   getCategories() async {

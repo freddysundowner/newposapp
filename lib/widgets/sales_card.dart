@@ -19,8 +19,8 @@ Widget SalesCard({required SalesModel salesModel}) {
           ));
     },
     child: Container(
-      margin: EdgeInsets.all(5),
-      padding: EdgeInsets.all(10),
+      margin: const EdgeInsets.all(5),
+      padding: const EdgeInsets.all(10),
       width:
           MediaQuery.of(Get.context!).size.width < 600 ? double.infinity : 400,
       decoration: BoxDecoration(
@@ -121,7 +121,7 @@ Widget SalesCard({required SalesModel salesModel}) {
 }
 
 bool showUnpaidBadge(SalesModel salesModel) {
-  return salesModel.creditTotal! < 0 &&
+  return salesModel.creditTotal! > 0 &&
       salesModel.items.fold(0,
               (previousValue, element) => previousValue + element.quantity!) >
           0;

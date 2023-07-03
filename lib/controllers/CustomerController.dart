@@ -85,8 +85,9 @@ class CustomerController extends GetxController
   getCustomersInShop(type) {
     try {
       customers.clear();
-      RealmResults<CustomerModel> customerresponse =
-          Customer().getCustomersByShopId(type);
+      RealmResults<CustomerModel> customerresponse = Customer()
+          .getCustomersByShopId(
+              type, Get.find<ShopController>().currentShop.value!);
       customers.assignAll(customerresponse.map((e) => e).toList());
     } catch (e) {}
   }

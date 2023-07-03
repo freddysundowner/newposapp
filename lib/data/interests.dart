@@ -16,7 +16,8 @@ class Interests {
 
   static createInterests() {
     RealmResults<ShopTypes> shopcategories = ShopService().getShopTypes();
-    print("shopcategories $shopcategories");
+    // print(shopcategories[2].id);
+    // print(shopcategories[2].title);
     // Categories().createProductCategory(ProductCategory(ObjectId(),
     //     name: "test", shopTypes: shopcategories[2]));
     if (shopcategories.isEmpty) {

@@ -273,7 +273,7 @@ class Products {
 
   RealmResults<ProductCountModel> getProductCountByShopId(Shop shop) {
     RealmResults<ProductCountModel> returns =
-        realmService.realm.query<ProductCountModel>('shop == \$0', [shop]);
+        realmService.realm.query<ProductCountModel>('shopId == \$0', [shop]);
     return returns;
   }
 

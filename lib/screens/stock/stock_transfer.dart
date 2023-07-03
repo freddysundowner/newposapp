@@ -101,9 +101,7 @@ class StockTransfer extends StatelessWidget {
                         child: TextFormField(
                           controller: shopController.searchController,
                           onChanged: (value) {
-                            if (value != "") {
-                              shopController.getShops();
-                            }
+                            shopController.getShops(name: value);
                           },
                           decoration: InputDecoration(
                               contentPadding:
@@ -112,7 +110,7 @@ class StockTransfer extends StatelessWidget {
                                 onPressed: () {},
                                 icon: const Icon(Icons.search),
                               ),
-                              hintText: "Search Shop to transfer to",
+                              hintText: "Search shop to transfer to",
                               border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10))),
                         ),
@@ -197,8 +195,7 @@ class StockTransfer extends StatelessWidget {
                                                 shopController
                                                     .currentShop.value!.id)
                                             .toList();
-                                        Shop shopModel =
-                                            shops.elementAt(index);
+                                        Shop shopModel = shops.elementAt(index);
                                         final y = shopModel.name;
                                         final x = shopModel.location;
                                         final z = shopModel.type?.title;
@@ -221,14 +218,12 @@ class StockTransfer extends StatelessWidget {
                                                 child: Center(
                                                   child: Container(
                                                     padding:
-                                                        const EdgeInsets.all(
-                                                            5),
+                                                        const EdgeInsets.all(5),
                                                     margin:
-                                                        const EdgeInsets.all(
-                                                            5),
+                                                        const EdgeInsets.all(5),
                                                     decoration: BoxDecoration(
-                                                        color: AppColors
-                                                            .mainColor,
+                                                        color:
+                                                            AppColors.mainColor,
                                                         borderRadius:
                                                             BorderRadius
                                                                 .circular(3)),
@@ -236,8 +231,7 @@ class StockTransfer extends StatelessWidget {
                                                     child: const Text(
                                                       "Select",
                                                       style: TextStyle(
-                                                          color:
-                                                              Colors.white),
+                                                          color: Colors.white),
                                                       textAlign:
                                                           TextAlign.center,
                                                     ),

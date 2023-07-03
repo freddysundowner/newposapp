@@ -14,10 +14,10 @@ class SupplierService {
         .write<Supplier>(() => realmService.realm.add<Supplier>(body));
   }
 
-  RealmResults<Supplier> getSuppliersByShopId({String type = ""}) {
+  RealmResults<Supplier> getSuppliersByShopId({String type = "", Shop? shop}) {
     RealmResults<Supplier> suppliers = realmService.realm.query<Supplier>(
         r'shopId == $0 AND TRUEPREDICATE SORT(createdAt DESC)',
-        [Get.find<ShopController>().currentShop.value!.id.toString()]);
+        [shop!.id.toString()]);
     if (type == "debtors") {
       RealmResults<Supplier> suppliersd =
           suppliers.query("balance < 0 AND TRUEPREDICATE SORT(createdAt DESC)");
@@ -55,6 +55,12 @@ class SupplierService {
   deleteSupplier(Supplier supplier) async {
     realmService.realm.write(() {
       realmService.realm.delete(supplier);
+    });
+  }
+
+  deleteSuppliers(List<Supplier> supplier) async {
+    realmService.realm.write(() {
+      realmService.realm.deleteMany(supplier);
     });
   }
 
