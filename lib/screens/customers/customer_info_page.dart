@@ -541,8 +541,17 @@ class RetunsTab extends StatelessWidget {
                 "No entries",
                 textAlign: TextAlign.center,
               ))
-          : MediaQuery.of(context).size.width > 600
-              ? SingleChildScrollView(
+          : isSmallScreen(context)
+              ? ListView.builder(
+                  itemCount: salesController.currentReceiptReturns.length,
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemBuilder: (context, index) {
+                    ReceiptItem receiptItem =
+                        salesController.currentReceiptReturns.elementAt(index);
+                    return SaleReturnCard(receiptItem);
+                  })
+              : SingleChildScrollView(
                   child: Container(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 15, vertical: 10),
@@ -559,47 +568,44 @@ class RetunsTab extends StatelessWidget {
                         columnSpacing: 30.0,
                         columns: const [
                           DataColumn(
-                              label: Text('Name', textAlign: TextAlign.center)),
+                              label:
+                                  Text('Receipt', textAlign: TextAlign.center)),
+                          DataColumn(
+                              label:
+                                  Text('Product', textAlign: TextAlign.center)),
                           DataColumn(
                               label: Text('Qty', textAlign: TextAlign.center)),
                           DataColumn(
                               label:
                                   Text('Total', textAlign: TextAlign.center)),
-                          DataColumn(
-                              label: Text('Date', textAlign: TextAlign.center)),
+                          // DataColumn(
+                          //     label: Text('Date', textAlign: TextAlign.center)),
                         ],
                         rows: List.generate(
                             salesController.currentReceiptReturns.length,
                             (index) {
-                          ReceiptItem saleOrder = salesController
+                          ReceiptItem receiptItem = salesController
                               .currentReceiptReturns
                               .elementAt(index);
-                          final y = saleOrder.product!.name;
-                          // final x = saleOrder.shop;
-                          // final z = saleOrder.total;
-                          // final a = saleOrder.createdAt!;
+
+                          final r =receiptItem.receipt?.receiptNumber;
+                          final y = receiptItem.product!.name;
+                          final x = receiptItem.quantity;
+                          final z = receiptItem.total;
+                          // final a = receiptItem.createdAt;
 
                           return DataRow(cells: [
-                            // DataCell(Text(y!)),
-                            // DataCell(Text(x.toString())),
-                            // DataCell(Text(z.toString())),
-                            // DataCell(
-                            //     Text(DateFormat("dd-MM-yyyy").format(a))),
+                            DataCell(Text(r!)),
+                            DataCell(Text(y!)),
+                            DataCell(Text(x.toString())),
+                            DataCell(Text(z.toString())),
+                            // DataCell(Text(DateFormat("dd-MM-yyyy").format(a!))),
                           ]);
                         }),
                       ),
                     ),
                   ),
-                )
-              : ListView.builder(
-                  itemCount: salesController.currentReceiptReturns.length,
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemBuilder: (context, index) {
-                    ReceiptItem receiptItem =
-                        salesController.currentReceiptReturns.elementAt(index);
-                    return SaleReturnCard(receiptItem);
-                  });
+                );
     });
   }
 }
