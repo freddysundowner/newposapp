@@ -188,7 +188,8 @@ class Customers extends StatelessWidget {
                                 context: context,
                                 type: type);
                           })
-                      : customerTable(customers: results, context: context);
+                      : customerTable(
+                          customers: results, context: context, type: "sale");
                 }
               });
         }),
@@ -236,7 +237,10 @@ class Debtors extends StatelessWidget {
                                     customerModel: customerModel,
                                     context: context);
                               })
-                          : customerTable(customers: results, context: context);
+                          : customerTable(
+                              customers: results,
+                              context: context,
+                              type: "sale");
                     }
                   });
         }),

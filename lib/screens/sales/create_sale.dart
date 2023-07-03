@@ -153,7 +153,7 @@ class CreateSale extends StatelessWidget {
                       width: double.infinity,
                       color: Colors.white,
                       // height: kToolbarHeight*2,
-                      padding: EdgeInsets.fromLTRB(5, 0, 5, 5),
+                      padding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -183,7 +183,8 @@ class CreateSale extends StatelessWidget {
                                     }
                                   },
                                   child: Container(
-                                    padding: EdgeInsets.fromLTRB(15, 5, 15, 5),
+                                    padding:
+                                        const EdgeInsets.fromLTRB(15, 5, 15, 5),
                                     decoration: BoxDecoration(
                                         border: Border.all(color: Colors.grey),
                                         borderRadius:
@@ -204,7 +205,7 @@ class CreateSale extends StatelessWidget {
                           ),
                           // SizedBox(height: 10),
                           // majorTitle(title: "Selling", color: Colors.black, size: 18.0),
-                          SizedBox(height: 10),
+                          const SizedBox(height: 10),
                         ],
                       ),
                     ),
@@ -239,7 +240,7 @@ class CreateSale extends StatelessWidget {
                                 }
                               },
                               child: Container(
-                                padding: EdgeInsets.all(10),
+                                padding: const EdgeInsets.all(10),
                                 width: double.infinity,
                                 child: Row(
                                   mainAxisAlignment:
@@ -293,7 +294,7 @@ class CreateSale extends StatelessWidget {
                                             ),
                                           ],
                                         ),
-                                        SizedBox(
+                                        const SizedBox(
                                           height: 5,
                                         ),
                                         Row(
@@ -304,7 +305,7 @@ class CreateSale extends StatelessWidget {
                                                 title: "Pay via",
                                                 color: Colors.black,
                                                 size: 16.0),
-                                            SizedBox(
+                                            const SizedBox(
                                               width: 10,
                                             ),
                                             Container(
@@ -404,7 +405,7 @@ class CreateSale extends StatelessWidget {
           padding:
               EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
           child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
             child: Obx(
               () => Column(
                 mainAxisSize: MainAxisSize.min,
@@ -415,10 +416,10 @@ class CreateSale extends StatelessWidget {
                           "Total Amount ${htmlPrice(salesController.receipt.value!.grandTotal)}",
                       color: Colors.black,
                       size: 14.0),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   majorTitle(
                       title: "Amount paid", color: Colors.black, size: 14.0),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   TextFormField(
                       controller: salesController.amountPaid,
                       onChanged: (value) {
@@ -438,7 +439,7 @@ class CreateSale extends StatelessWidget {
                             child: Text(
                                 shopController.currentShop.value!.currency!),
                           ))),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   Obx(
                     () => majorTitle(
                         title:
@@ -446,26 +447,63 @@ class CreateSale extends StatelessWidget {
                         color: Colors.black,
                         size: 14.0),
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   if (_needCustomer() &&
                       salesController.receipt.value!.customerId == null)
                     InkWell(
                       onTap: () {
-                        Get.to(() => Scaffold(
-                              appBar: AppBar(
-                                actions: [
-                                  IconButton(
-                                      onPressed: () {
-                                        Get.to(() => CreateCustomer(
-                                              page: "customersPage",
-                                            ));
-                                      },
-                                      icon: Icon(Icons.add))
-                                ],
-                                title: const Text("Select customer"),
+                        if (isSmallScreen(context)) {
+                          Get.to(() => Scaffold(
+                                appBar: AppBar(
+                                  actions: [
+                                    IconButton(
+                                        onPressed: () {
+                                          Get.to(() => CreateCustomer(
+                                                page: "customersPage",
+                                              ));
+                                        },
+                                        icon: const Icon(Icons.add))
+                                  ],
+                                  title: const Text("Select customer"),
+                                ),
+                                body: Customers(type: "sale"),
+                              ));
+                        } else {
+                          Get.find<HomeController>().selectedWidget.value =
+                              Scaffold(
+                            appBar: AppBar(
+                              elevation: 0.2,
+                              backgroundColor: Colors.white,
+                              leading: IconButton(
+                                  onPressed: () {
+                                    Get.find<HomeController>()
+                                        .selectedWidget
+                                        .value = CreateSale();
+                                  },
+                                  icon: const Icon(
+                                    Icons.arrow_back_ios,
+                                    color: Colors.black,
+                                  )),
+                              actions: [
+                                IconButton(
+                                    onPressed: () {
+                                      Get.to(() => CreateCustomer(
+                                            page: "customersPage",
+                                          ));
+                                    },
+                                    icon: const Icon(
+                                      Icons.add,
+                                      color: Colors.black,
+                                    ))
+                              ],
+                              title: const Text(
+                                "Select customer",
+                                style: TextStyle(color: Colors.black),
                               ),
-                              body: Customers(type: "sale"),
-                            ));
+                            ),
+                            body: Customers(type: "sale"),
+                          );
+                        }
                       },
                       child: majorTitle(
                           title: "Choose Customer",
@@ -485,7 +523,7 @@ class CreateSale extends StatelessWidget {
                                               page: "customersPage",
                                             ));
                                       },
-                                      icon: Icon(Icons.add))
+                                      icon: const Icon(Icons.add))
                                 ],
                               ),
                               body: Customers(type: "sale"),
@@ -498,7 +536,7 @@ class CreateSale extends StatelessWidget {
                                   .receipt.value!.customerId?.fullName,
                               color: AppColors.mainColor,
                               size: 18.0),
-                          SizedBox(
+                          const SizedBox(
                             width: 20,
                           ),
                           Container(
@@ -567,19 +605,19 @@ class CreateSale extends StatelessWidget {
         if (checkPermission(category: "sales", permission: "edit_price"))
           PopupMenuItem(
             child: ListTile(
-              leading: Icon(Icons.edit),
+              leading: const Icon(Icons.edit),
               onTap: () {
                 Get.back();
                 showEditDialogPrice(
                     productModel: receiptItem.product!, index: index);
               },
-              title: Text("Edit Selling price"),
+              title: const Text("Edit Selling price"),
             ),
           ),
         if (checkPermission(category: "sales", permission: "discount"))
           PopupMenuItem(
             child: ListTile(
-              leading: Icon(Icons.discount),
+              leading: const Icon(Icons.discount),
               onTap: () {
                 Get.back();
                 discountDialog(
@@ -587,21 +625,21 @@ class CreateSale extends StatelessWidget {
                     receiptItem: receiptItem,
                     index: index);
               },
-              title: Text("Give Discount"),
+              title: const Text("Give Discount"),
             ),
           ),
         PopupMenuItem(
           child: ListTile(
-            leading: Icon(Icons.clear),
+            leading: const Icon(Icons.clear),
             onTap: () {
               Get.back();
               salesController.removeFromList(index);
             },
-            title: Text("Delete"),
+            title: const Text("Delete"),
           ),
         ),
       ],
-      icon: Icon(Icons.more_vert),
+      icon: const Icon(Icons.more_vert),
     );
   }
 
