@@ -200,28 +200,50 @@ class SupplierInfoPage extends StatelessWidget {
                     color: Colors.black,
                   )),
               actions: [
-                IconButton(
-                    onPressed: () {
-                      supplierController.assignTextFields(supplierModel);
-                      Get.to(() => EditSupplier(supplierModel: supplierModel));
-                    },
+                Padding(
+                  padding: const EdgeInsets.only(right: 8.0),
+                  child: PopupMenuButton(
+                    itemBuilder: (ctx) => [
+                      PopupMenuItem(
+                        child: ListTile(
+                          leading: const Icon(
+                            Icons.edit,
+                            color: Colors.black,
+                          ),
+                          onTap: () {
+                            Get.back();
+                            supplierController.assignTextFields(supplierModel);
+                            Get.find<HomeController>().selectedWidget.value =
+                                EditSupplier(supplierModel: supplierModel);
+                          },
+                          title: const Text("Edit"),
+                        ),
+                      ),
+                      PopupMenuItem(
+                        child: ListTile(
+                          leading: const Icon(
+                            Icons.delete,
+                            color: Colors.red,
+                          ),
+                          onTap: () {
+                            Get.back();
+                            generalAlert(
+                                title:
+                                    "Are you sure you want to delete ${supplierModel.fullName}",
+                                function: () {
+                                  supplierController.deleteSuppler(supplierModel);
+                                });
+                          },
+                          title: Text("Delete"),
+                        ),
+                      ),
+                    ],
                     icon: const Icon(
-                      Icons.edit,
+                      Icons.more_vert,
                       color: Colors.black,
-                    )),
-                IconButton(
-                    onPressed: () {
-                      generalAlert(
-                          title:
-                              "Are you sure you want to delete ${supplierModel.fullName}",
-                          function: () {
-                            supplierController.deleteSuppler(supplierModel);
-                          });
-                    },
-                    icon: const Icon(
-                      Icons.delete,
-                      color: Colors.red,
-                    )),
+                    ),
+                  ),
+                ),
               ],
             ),
             body: customerInfoBody(context),
@@ -496,21 +518,22 @@ class ReturnedPurchases extends StatelessWidget {
                         columnSpacing: 30.0,
                         columns: const [
                           DataColumn(
-                              label: Text('Product', textAlign: TextAlign.center)),
+                              label:
+                                  Text('Product', textAlign: TextAlign.center)),
                           DataColumn(
                               label: Text('Qty', textAlign: TextAlign.center)),
                           DataColumn(
                               label:
                                   Text('Total', textAlign: TextAlign.center)),
                           DataColumn(
-                              label:
-                                  Text('Attendant', textAlign: TextAlign.center)),
+                              label: Text('Attendant',
+                                  textAlign: TextAlign.center)),
                           DataColumn(
                               label: Text('Date', textAlign: TextAlign.center)),
                         ],
                         rows: List.generate(
-                            purchaseController
-                                .currentInvoiceReturns.length, (index) {
+                            purchaseController.currentInvoiceReturns.length,
+                            (index) {
                           InvoiceItem purchaseReturn = purchaseController
                               .currentInvoiceReturns
                               .elementAt(index);
@@ -523,7 +546,8 @@ class ReturnedPurchases extends StatelessWidget {
                             DataCell(Text(y!)),
                             DataCell(Text(x.toString())),
                             DataCell(Text(z.toString())),
-                            DataCell(Text(purchaseReturn.attendantid!.username!)),
+                            DataCell(
+                                Text(purchaseReturn.attendantid!.username!)),
                             DataCell(Text(DateFormat("dd-MM-yyyy").format(a))),
                           ]);
                         }),
