@@ -8,6 +8,7 @@ import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/cash_flow/cash_flow_manager.dart';
 import 'package:pointify/screens/finance/product_comparison.dart';
 import 'package:pointify/screens/finance/profit_page.dart';
+import 'package:pointify/screens/home/home.dart';
 import 'package:pointify/utils/helper.dart';
 import 'package:get/get.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
@@ -150,23 +151,16 @@ class FinancePage extends StatelessWidget {
                                             DateTime.now()
                                                 .add(const Duration(days: 1)))),
                                   );
-                                  Get.to(() => ProfitPage(headline: "Today"));
+                                  isSmallScreen(context)
+                                      ? Get.to(
+                                          () => ProfitPage(headline: "Today"))
+                                      : Get.find<HomeController>()
+                                              .selectedWidget
+                                              .value =
+                                          ProfitPage(headline: "Today");
                                 }
                                 break;
-                              case "Current Month":
-                                {
-                                  salesController.getProfitTransaction(
-                                    fromDate: DateTime.parse(
-                                        DateFormat("yyy-MM-dd")
-                                            .format(DateTime.now())),
-                                    toDate: DateTime.parse(
-                                        DateFormat("yyy-MM-dd").format(
-                                            DateTime.now()
-                                                .add(const Duration(days: 1)))),
-                                  );
-                                  Get.to(() => ProfitPage(headline: "Today"));
-                                }
-                                break;
+
                               case "Current Month":
                                 {
                                   DateTime now = DateTime.now();
@@ -181,21 +175,36 @@ class FinancePage extends StatelessWidget {
                                     fromDate: firstday,
                                     toDate: lastday,
                                   );
-                                  Get.to(() => ProfitPage(
-                                        headline:
-                                            '\n${DateFormat("yyy-MM-dd").format(firstday)}-${DateFormat("yyy-MM-dd").format(lastday)}',
-                                      ));
+                                  isSmallScreen(context)
+                                      ? Get.to(() => ProfitPage(
+                                            headline:
+                                                '\n${DateFormat("yyy-MM-dd").format(firstday)}-${DateFormat("yyy-MM-dd").format(lastday)}',
+                                          ))
+                                      : Get.find<HomeController>()
+                                          .selectedWidget
+                                          .value = ProfitPage(
+                                          headline:
+                                              '\n${DateFormat("yyy-MM-dd").format(firstday)}-${DateFormat("yyy-MM-dd").format(lastday)}',
+                                        );
                                 }
                                 break;
                               case "Monthly Profit & Expenses":
                                 {
-                                  Get.to(() => MonthFilter());
+                                  isSmallScreen(context)
+                                      ? Get.to(() => MonthFilter())
+                                      : Get.find<HomeController>()
+                                          .selectedWidget
+                                          .value = MonthFilter();
                                 }
                                 break;
 
                               case "Graphical Analysis":
                                 {
-                                  Get.to(() => GraphAnalysis());
+                                  isSmallScreen(context)
+                                      ? Get.to(() => GraphAnalysis())
+                                      : Get.find<HomeController>()
+                                          .selectedWidget
+                                          .value = GraphAnalysis();
                                 }
                                 break;
                               case "Products Movement":
@@ -204,7 +213,11 @@ class FinancePage extends StatelessWidget {
                                       DateTime.now().month;
                                   salesController.currentYear.value =
                                       DateTime.now().year;
-                                  Get.to(() => ProductAnalysis());
+                                  isSmallScreen(context)
+                                      ? Get.to(() => ProductAnalysis())
+                                      : Get.find<HomeController>()
+                                          .selectedWidget
+                                          .value = ProductAnalysis();
                                 }
                                 break;
                             }
