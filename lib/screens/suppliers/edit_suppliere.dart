@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pointify/controllers/home_controller.dart';
+import 'package:pointify/responsive/responsiveness.dart';
+import 'package:pointify/screens/suppliers/supplier_info_page.dart';
 
 import '../../Real/schema.dart';
 import '../../controllers/supplierController.dart';
@@ -7,9 +10,11 @@ import '../../controllers/supplierController.dart';
 class EditSupplier extends StatelessWidget {
   final userType;
   final Supplier supplierModel;
+
   EditSupplier({Key? key, this.userType, required this.supplierModel}) {
     supplierController.nameController.text = supplierModel.fullName!;
   }
+
   SupplierController supplierController = Get.find<SupplierController>();
 
   @override
@@ -24,16 +29,36 @@ class EditSupplier extends StatelessWidget {
         ),
         leading: IconButton(
             onPressed: () {
-              Get.back();
+              if (isSmallScreen(context)) {
+                Get.back();
+              } else {
+                Get.find<HomeController>().selectedWidget.value =
+                    SupplierInfoPage(supplierModel: supplierModel);
+              }
             },
             icon: const Icon(
               Icons.arrow_back_ios,
               color: Colors.black,
             )),
         backgroundColor: Colors.transparent,
+        actions: [
+          if (!isSmallScreen(context))
+            Padding(
+              padding: const EdgeInsets.only(right: 8.0,top: 3),
+              child: TextButton(
+                  onPressed: () {
+                    Get.find<HomeController>().selectedWidget.value =
+                        SupplierInfoPage(supplierModel: supplierModel);
+                    supplierController.updateSupplier(supplierModel);
+                  },
+                  child: Text("Save Changes".toUpperCase(),
+                      style: const TextStyle(
+                          color: Colors.purple, fontWeight: FontWeight.bold))),
+            )
+        ],
       ),
       body: Container(
-        padding: const EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 3),
+        padding:  EdgeInsets.symmetric(horizontal:isSmallScreen(context) ?10:25,vertical:isSmallScreen(context) ?10:20).copyWith(bottom: 3),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -82,29 +107,31 @@ class EditSupplier extends StatelessWidget {
             SizedBox(
               height: 10,
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: Text(
-                    "Cancel".toUpperCase(),
-                    style: const TextStyle(
-                        color: Colors.purple, fontWeight: FontWeight.bold),
-                  ),
-                ),
-                TextButton(
+            if (isSmallScreen(context))
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
                     onPressed: () {
                       Navigator.pop(context);
-                      supplierController.updateSupplier(supplierModel);
                     },
-                    child: Text("Save Changes".toUpperCase(),
-                        style: const TextStyle(
-                            color: Colors.purple, fontWeight: FontWeight.bold)))
-              ],
-            )
+                    child: Text(
+                      "Cancel".toUpperCase(),
+                      style: const TextStyle(
+                          color: Colors.purple, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        supplierController.updateSupplier(supplierModel);
+                      },
+                      child: Text("Save Changes".toUpperCase(),
+                          style: const TextStyle(
+                              color: Colors.purple,
+                              fontWeight: FontWeight.bold)))
+                ],
+              )
           ],
         ),
       ),

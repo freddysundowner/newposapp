@@ -179,7 +179,11 @@ class StockPage extends StatelessWidget {
           centerTitle: false,
           leading: IconButton(
             onPressed: () {
-              Get.back();
+              if (isSmallScreen(context)) {
+                Get.back();
+              } else {
+                Get.find<HomeController>().selectedWidget.value = HomePage();
+              }
             },
             icon: const Icon(
               Icons.arrow_back_ios,

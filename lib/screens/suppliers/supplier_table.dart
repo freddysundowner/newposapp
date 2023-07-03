@@ -37,10 +37,6 @@ Widget supplierTable({required customers, required context}) {
               DataCell(
                 InkWell(
                   onTap: () {
-                    // Get.find<HomeController>().selectedWidget.value =
-                    //     CustomerInfoPage(
-                    //   customerModel: customerModel,
-                    // );
                     Get.find<HomeController>().selectedWidget.value =
                         SupplierInfoPage(
                           supplierModel: supplierModel,
