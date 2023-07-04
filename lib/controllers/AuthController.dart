@@ -137,6 +137,12 @@ class AuthController extends GetxController {
   signUser(context) async {
     if (signupkey.currentState!.validate()) {
       try {
+        if (passwordController.text.toString().trim().length < 6) {
+          generalAlert(
+              title: "Error",
+              message: "Password must be more than 6 charactes");
+          return;
+        }
         signuserLoad.value = true;
         await registerUserEmailPassword(
             emailController.text, passwordController.text);
