@@ -24,7 +24,7 @@ class ShopService {
     if (userController.user.value!.usertype == "attendant" &&
         checkPermission(category: "stocks", permission: "transfer")) {
       shops = realmService.realm.query<Shop>(
-          r'owner == $0', [userController.user.value!.shop!.owner]);
+          r'owner == $0', [userController.user.value?.shop?.owner]);
     } else {
       shops = realmService.realm
           .query<Shop>(r'owner == $0', [realmService.currentUser!.value!.id]);

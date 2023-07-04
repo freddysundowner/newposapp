@@ -86,7 +86,6 @@ class AuthController extends GetxController {
     Get.put(RealmController()).auth();
     var response = await Users.getAttendantbyUid(uid.toString());
     var userdata = response["user"];
-    print(userdata);
     if (userdata["_id"] != null) {
       var email = userdata["email"];
       if (userdata["loggedin"] == null) {
@@ -202,7 +201,6 @@ class AuthController extends GetxController {
 
   Future<void> logOut() async {
     await Get.find<RealmController>().currentUser!.value?.logOut();
-    // shopController.currentShop.value = null;
     Get.find<RealmController>().currentUser?.value = null;
     Get.offAll(() => Landing());
     refresh();
