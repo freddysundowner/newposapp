@@ -333,6 +333,8 @@ class Shop extends _Shop with RealmEntity, RealmObjectBase, RealmObject {
   Shop(
     ObjectId? id, {
     String? name,
+    Packages? package,
+    int? subscriptiondate,
     String? location,
     ShopTypes? type,
     String? owner,
@@ -340,6 +342,8 @@ class Shop extends _Shop with RealmEntity, RealmObjectBase, RealmObject {
   }) {
     RealmObjectBase.set(this, '_id', id);
     RealmObjectBase.set(this, 'name', name);
+    RealmObjectBase.set(this, 'package', package);
+    RealmObjectBase.set(this, 'subscriptiondate', subscriptiondate);
     RealmObjectBase.set(this, 'location', location);
     RealmObjectBase.set(this, 'type', type);
     RealmObjectBase.set(this, 'owner', owner);
@@ -357,6 +361,20 @@ class Shop extends _Shop with RealmEntity, RealmObjectBase, RealmObject {
   String? get name => RealmObjectBase.get<String>(this, 'name') as String?;
   @override
   set name(String? value) => RealmObjectBase.set(this, 'name', value);
+
+  @override
+  Packages? get package =>
+      RealmObjectBase.get<Packages>(this, 'package') as Packages?;
+  @override
+  set package(covariant Packages? value) =>
+      RealmObjectBase.set(this, 'package', value);
+
+  @override
+  int? get subscriptiondate =>
+      RealmObjectBase.get<int>(this, 'subscriptiondate') as int?;
+  @override
+  set subscriptiondate(int? value) =>
+      RealmObjectBase.set(this, 'subscriptiondate', value);
 
   @override
   String? get location =>
@@ -397,6 +415,9 @@ class Shop extends _Shop with RealmEntity, RealmObjectBase, RealmObject {
       SchemaProperty('id', RealmPropertyType.objectid,
           mapTo: '_id', optional: true, primaryKey: true),
       SchemaProperty('name', RealmPropertyType.string, optional: true),
+      SchemaProperty('package', RealmPropertyType.object,
+          optional: true, linkTarget: 'Packages'),
+      SchemaProperty('subscriptiondate', RealmPropertyType.int, optional: true),
       SchemaProperty('location', RealmPropertyType.string, optional: true),
       SchemaProperty('type', RealmPropertyType.object,
           optional: true, linkTarget: 'ShopTypes'),
@@ -2000,12 +2021,14 @@ class Plan extends _Plan with RealmEntity, RealmObjectBase, RealmObject {
     String title,
     double price,
     String description,
+    int code,
     int shops,
     int time,
   ) {
     RealmObjectBase.set(this, 'title', title);
     RealmObjectBase.set(this, 'price', price);
     RealmObjectBase.set(this, 'description', description);
+    RealmObjectBase.set(this, 'code', code);
     RealmObjectBase.set(this, 'shops', shops);
     RealmObjectBase.set(this, 'time', time);
   }
@@ -2028,6 +2051,11 @@ class Plan extends _Plan with RealmEntity, RealmObjectBase, RealmObject {
   @override
   set description(String value) =>
       RealmObjectBase.set(this, 'description', value);
+
+  @override
+  int get code => RealmObjectBase.get<int>(this, 'code') as int;
+  @override
+  set code(int value) => RealmObjectBase.set(this, 'code', value);
 
   @override
   int get shops => RealmObjectBase.get<int>(this, 'shops') as int;
@@ -2054,8 +2082,92 @@ class Plan extends _Plan with RealmEntity, RealmObjectBase, RealmObject {
       SchemaProperty('title', RealmPropertyType.string),
       SchemaProperty('price', RealmPropertyType.double),
       SchemaProperty('description', RealmPropertyType.string),
+      SchemaProperty('code', RealmPropertyType.int),
       SchemaProperty('shops', RealmPropertyType.int),
       SchemaProperty('time', RealmPropertyType.int),
+    ]);
+  }
+}
+
+class Packages extends _Packages
+    with RealmEntity, RealmObjectBase, RealmObject {
+  Packages(
+    ObjectId? id, {
+    String? title,
+    double? price,
+    String? description,
+    int? code,
+    int? shops,
+    int? time,
+  }) {
+    RealmObjectBase.set(this, '_id', id);
+    RealmObjectBase.set(this, 'title', title);
+    RealmObjectBase.set(this, 'price', price);
+    RealmObjectBase.set(this, 'description', description);
+    RealmObjectBase.set(this, 'code', code);
+    RealmObjectBase.set(this, 'shops', shops);
+    RealmObjectBase.set(this, 'time', time);
+  }
+
+  Packages._();
+
+  @override
+  ObjectId? get id => RealmObjectBase.get<ObjectId>(this, '_id') as ObjectId?;
+  @override
+  set id(ObjectId? value) => RealmObjectBase.set(this, '_id', value);
+
+  @override
+  String? get title => RealmObjectBase.get<String>(this, 'title') as String?;
+  @override
+  set title(String? value) => RealmObjectBase.set(this, 'title', value);
+
+  @override
+  double? get price => RealmObjectBase.get<double>(this, 'price') as double?;
+  @override
+  set price(double? value) => RealmObjectBase.set(this, 'price', value);
+
+  @override
+  String? get description =>
+      RealmObjectBase.get<String>(this, 'description') as String?;
+  @override
+  set description(String? value) =>
+      RealmObjectBase.set(this, 'description', value);
+
+  @override
+  int? get code => RealmObjectBase.get<int>(this, 'code') as int?;
+  @override
+  set code(int? value) => RealmObjectBase.set(this, 'code', value);
+
+  @override
+  int? get shops => RealmObjectBase.get<int>(this, 'shops') as int?;
+  @override
+  set shops(int? value) => RealmObjectBase.set(this, 'shops', value);
+
+  @override
+  int? get time => RealmObjectBase.get<int>(this, 'time') as int?;
+  @override
+  set time(int? value) => RealmObjectBase.set(this, 'time', value);
+
+  @override
+  Stream<RealmObjectChanges<Packages>> get changes =>
+      RealmObjectBase.getChanges<Packages>(this);
+
+  @override
+  Packages freeze() => RealmObjectBase.freezeObject<Packages>(this);
+
+  static SchemaObject get schema => _schema ??= _initSchema();
+  static SchemaObject? _schema;
+  static SchemaObject _initSchema() {
+    RealmObjectBase.registerFactory(Packages._);
+    return const SchemaObject(ObjectType.realmObject, Packages, 'Packages', [
+      SchemaProperty('id', RealmPropertyType.objectid,
+          mapTo: '_id', optional: true, primaryKey: true),
+      SchemaProperty('title', RealmPropertyType.string, optional: true),
+      SchemaProperty('price', RealmPropertyType.double, optional: true),
+      SchemaProperty('description', RealmPropertyType.string, optional: true),
+      SchemaProperty('code', RealmPropertyType.int, optional: true),
+      SchemaProperty('shops', RealmPropertyType.int, optional: true),
+      SchemaProperty('time', RealmPropertyType.int, optional: true),
     ]);
   }
 }

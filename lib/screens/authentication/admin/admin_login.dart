@@ -21,9 +21,7 @@ class AdminLogin extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-          backgroundColor: MediaQuery.of(context).size.width <= 600
-              ? AppColors.mainColor
-              : Colors.white,
+          backgroundColor: Colors.white,
           elevation: 0.0,
           leading: IconButton(
               onPressed: () {
@@ -31,9 +29,7 @@ class AdminLogin extends StatelessWidget {
               },
               icon: Icon(
                 Icons.clear,
-                color: MediaQuery.of(context).size.width <= 600
-                    ? Colors.white
-                    : Colors.black,
+                color: Colors.black,
               ))),
       body: ResponsiveWidget(
           largeScreen: Align(
@@ -58,13 +54,17 @@ class AdminLogin extends StatelessWidget {
           smallScreen: SingleChildScrollView(
             child: Column(
               children: [
-                Container(
-                  height: 200,
-                  child: Header(200, true,
-                      "assets/images/admin.svg"), //let's create a common header widget
-                ),
-                const SizedBox(
-                  height: 40,
+                Column(
+                  children: [
+                    Image.asset(
+                      "assets/images/logo2.png",
+                      width: 250,
+                    ),
+                    Text("An enterprise at your fingertips."),
+                    SizedBox(
+                      height: 40,
+                    ),
+                  ],
                 ),
                 loginForm(context),
               ],
@@ -77,7 +77,7 @@ class AdminLogin extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(left: 20.0),
       child: Text(
-        'Login as admin',
+        'Login as an admin',
         style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
       ),
     );
@@ -86,7 +86,7 @@ class AdminLogin extends StatelessWidget {
   Widget loginForm(context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         _title(),
         const SizedBox(
@@ -128,7 +128,7 @@ class AdminLogin extends StatelessWidget {
                         }
                         return null;
                       },
-                      decoration:isSmallScreen(context)
+                      decoration: isSmallScreen(context)
                           ? ThemeHelper().textInputDecoration(
                               'Password', 'Enter your password')
                           : ThemeHelper().textInputDecorationDesktop(

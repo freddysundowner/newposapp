@@ -21,9 +21,7 @@ class ForgotPassword extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-          backgroundColor: MediaQuery.of(context).size.width <= 600
-              ? AppColors.mainColor
-              : Colors.white,
+          backgroundColor: Colors.white,
           elevation: 0.0,
           leading: IconButton(
               onPressed: () {
@@ -31,9 +29,7 @@ class ForgotPassword extends StatelessWidget {
               },
               icon: Icon(
                 Icons.clear,
-                color: MediaQuery.of(context).size.width <= 600
-                    ? Colors.white
-                    : Colors.black,
+                color: Colors.black,
               ))),
       body: ResponsiveWidget(
           largeScreen: Align(
@@ -70,10 +66,17 @@ class ForgotPassword extends StatelessWidget {
           smallScreen: SingleChildScrollView(
             child: Column(
               children: [
-                Container(
-                  height: 200,
-                  child: Header(200, true,
-                      "assets/images/admin.svg"), //let's create a common header widget
+                Column(
+                  children: [
+                    Image.asset(
+                      "assets/images/logo2.png",
+                      width: 250,
+                    ),
+                    Text("An enterprise at your fingertips."),
+                    SizedBox(
+                      height: 40,
+                    ),
+                  ],
                 ),
                 SizedBox(
                   height: 40,

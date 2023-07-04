@@ -45,13 +45,27 @@ class ShopService {
   Future<void> updateItem(Shop shop,
       {String? name,
       String? location,
+      Packages? package,
       String? currency,
       ShopTypes? type}) async {
     realmService.realm.write(() {
-      shop.name = name;
-      shop.location = location;
-      shop.currency = currency;
-      shop.type = type;
+      if (name != null) {
+        shop.name = name;
+      }
+
+      if (location != null) {
+        shop.location = location;
+      }
+      if (currency != null) {
+        shop.currency = currency;
+      }
+      if (type != null) {
+        shop.type = type;
+      }
+      if (package != null) {
+        shop.package = package;
+        shop.subscriptiondate = DateTime.now().millisecondsSinceEpoch;
+      }
     });
   }
 }

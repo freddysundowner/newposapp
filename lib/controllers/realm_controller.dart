@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:get/get.dart';
 import 'package:pointify/Real/schema.dart';
+import 'package:pointify/controllers/plan_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/controllers/user_controller.dart';
 import 'package:pointify/main.dart';
@@ -57,6 +58,7 @@ class RealmController extends GetxController {
       SalesModel.schema,
       ReceiptItem.schema,
       SalesReturn.schema,
+      Packages.schema,
       DepositModel.schema,
       ProductCountModel.schema,
       CashFlowCategory.schema,
@@ -82,6 +84,7 @@ class RealmController extends GetxController {
         mutableSubscriptions.add(realm.all<ProductHistoryModel>());
         mutableSubscriptions.add(realm.all<PayHistory>());
         mutableSubscriptions.add(realm.all<BadStock>());
+        mutableSubscriptions.add(realm.all<Packages>());
         mutableSubscriptions.add(realm.all<StockTransferHistory>());
         mutableSubscriptions.add(realm.all<CustomerModel>());
         mutableSubscriptions.add(realm.all<SalesModel>());
@@ -122,6 +125,11 @@ class RealmController extends GetxController {
         deleted: false,
       ));
     } else {
+      // ShopService().updateItem(shop,
+      //     package: Get.find<PlanController>()
+      //         .plans
+      //         .where((p0) => p0.price == 0)
+      //         .first);
       Users().updateAdmin(admin.first, shop: shop);
     }
 
