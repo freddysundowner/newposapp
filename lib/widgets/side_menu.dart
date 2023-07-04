@@ -8,8 +8,10 @@ import 'package:pointify/utils/colors.dart';
 import 'package:pointify/widgets/logout.dart';
 import 'package:get/get.dart';
 
+import '../screens/finance/finance_page.dart';
 import '../screens/home/home_page.dart';
 import '../screens/home/profile_page.dart';
+import '../screens/sales/sales_page.dart';
 import '../utils/constants.dart';
 import 'delete_dialog.dart';
 
@@ -39,6 +41,10 @@ class SideMenu extends StatelessWidget {
             homeController.activeItem.value = title;
             if (title == "Home") {
               homeController.selectedWidget.value = HomePage();
+            } else if (title == "Profit & Expenses") {
+              homeController.selectedWidget.value = FinancePage();
+            } else if (title == "Sales & orders") {
+              homeController.selectedWidget.value = SalesPage();
             } else if (title == "Shops") {
               shopController.getShops();
               homeController.selectedWidget.value = ShopsPage();
@@ -59,13 +65,12 @@ class SideMenu extends StatelessWidget {
           },
           child: Container(
             decoration: BoxDecoration(
-              color: homeController.activeItem.value == title
-                  ? const Color(0xffbe741f)
-                  : const Color(0xff3a3055),
-              borderRadius: BorderRadius.circular(10)
-            ),
-            
-            padding: const EdgeInsets.symmetric(vertical: 2,horizontal: 3).copyWith(left: 6),
+                color: homeController.activeItem.value == title
+                    ? const Color(0xffbe741f)
+                    : const Color(0xff3a3055),
+                borderRadius: BorderRadius.circular(10)),
+            padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 3)
+                .copyWith(left: 6),
             margin: const EdgeInsets.symmetric(horizontal: 3).copyWith(top: 3),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -85,8 +90,7 @@ class SideMenu extends StatelessWidget {
                     ),
                     Text(
                       "$title",
-                      style: const TextStyle(
-                          color: Colors.white),
+                      style: const TextStyle(color: Colors.white),
                     )
                   ],
                 ),

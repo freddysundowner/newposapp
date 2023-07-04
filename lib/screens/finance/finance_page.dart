@@ -8,6 +8,7 @@ import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/cash_flow/cash_flow_manager.dart';
 import 'package:pointify/screens/finance/product_comparison.dart';
 import 'package:pointify/screens/finance/profit_page.dart';
+import 'package:pointify/screens/home/home.dart';
 import 'package:pointify/utils/helper.dart';
 import 'package:get/get.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
@@ -29,14 +30,59 @@ class FinancePage extends StatelessWidget {
   ShopController shopController = Get.find<ShopController>();
   ExpenseController expenseController = Get.find<ExpenseController>();
 
+  List operations = [
+    {
+      "title": "Today",
+      "subtitle": "Gross & Net profits",
+      "icon": Icons.today,
+      "color": Colors.amber.shade100,
+      "showsummary": false,
+      "amount": "${Get.find<SalesController>().grossProfit}"
+    },
+    {
+      "title": "Current Month",
+      "subtitle": "Gross & Net profits",
+      "icon": Icons.calendar_month,
+      "color": Colors.amber.shade100,
+      "showsummary": false,
+      "amount": "${Get.find<SalesController>().grossProfit}"
+    },
+    {
+      "title": "Monthly Profit & Expenses",
+      "subtitle": "Monthly profits versus expenses",
+      "icon": Icons.calendar_month,
+      "color": Colors.blue.shade100,
+      "showsummary": false,
+      "amount": "${Get.find<SalesController>().grossProfit}"
+    },
+    {
+      "title": "Graphical Analysis",
+      "subtitle": "Analyze shop performance in a graph",
+      "icon": Icons.show_chart,
+      "color": Colors.purple.shade100,
+      "showsummary": false,
+      "amount": Get.find<ExpenseController>().totalExpenses.value
+    },
+    {
+      "title": "Products Movement",
+      "subtitle": "view fast and slow moving products",
+      "icon": Icons.sell_rounded,
+      "color": Colors.blue.shade100,
+      "showsummary": false,
+      "amount": "${Get.find<SalesController>().totalSalesByDate.value}"
+    },
+  ];
+
   FinancePage({Key? key}) : super(key: key) {
     salesController.getFinanceSummary(
       fromDate: DateTime.parse(DateFormat("yyy-MM-dd").format(DateTime.now())),
       toDate: DateTime.parse(DateFormat("yyy-MM-dd")
-          .format(DateTime.now().add(Duration(days: 1)))),
+          .format(DateTime.now().add(const Duration(days: 1)))),
     );
   }
+
   String _range = '';
+
   void _onSelectionChanged(DateRangePickerSelectionChangedArgs args) {
     if (args.value is PickerDateRange) {
       _range = '${DateFormat('dd/MM/yyyy').format(args.value.startDate)} -'
@@ -55,283 +101,158 @@ class FinancePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ResponsiveWidget(
-      largeScreen: Scaffold(
-        backgroundColor: Colors.white,
-        appBar: appBar(context),
-        body: SingleChildScrollView(
-          child: Container(
-            width: double.infinity,
-            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  height: MediaQuery.of(context).size.height * 0.5,
-                  width: MediaQuery.of(context).size.width * 0.98,
-                  child: financeChat(context),
-                ),
-                SizedBox(height: 20),
-                majorTitle(
-                    title: "Profit & expenses",
-                    color: Colors.black,
-                    size: 16.0),
-                SizedBox(height: 10),
-                Container(
-                  height: MediaQuery.of(context).size.height * 0.2,
-                  width: double.infinity,
-                  child: ListView(
-                    scrollDirection: Axis.horizontal,
+    return Helper(
+      widget: SingleChildScrollView(
+        child: Container(
+          padding: const EdgeInsets.all(10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 10),
+              SfDateRangePicker(
+                  onSelectionChanged: _onSelectionChanged,
+                  selectionMode: DateRangePickerSelectionMode.range,
+                  monthViewSettings: const DateRangePickerMonthViewSettings(),
+                  headerStyle: DateRangePickerHeaderStyle(
+                      textAlign: TextAlign.center,
+                      textStyle: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.mainColor,
+                          fontSize: 18)),
+                  onSubmit: (v) {
+                    print(v);
+                  }),
+              Container(
+                height: isSmallScreen(context)
+                    ? MediaQuery.of(context).size.height
+                    : 150,
+                width: MediaQuery.of(context).size.width,
+                child: ListView.builder(
                     shrinkWrap: true,
-                    children: [
-                      Obx(() => Padding(
-                            padding: const EdgeInsets.only(right: 18.0),
-                            child: financeCards(
-                                title: "Profits",
-                                subtitle: "Gross & Net profits",
-                                onPresssed: () {
-                                  Get.find<HomeController>()
-                                      .selectedWidget
-                                      .value = ProfitPage();
-                                },
-                                color: Colors.amber.shade100,
-                                icon: Icons.query_stats,
-                                amount: salesController.salesSummary.value ==
-                                        null
-                                    ? 0
-                                    : "${salesController.salesSummary.value?.grossProfit}"),
-                          )),
-                      Obx(() {
-                        return Padding(
-                          padding: const EdgeInsets.only(right: 18.0),
-                          child: financeCards(
-                            title: "Expenses",
-                            subtitle: "Expenditure",
-                            onPresssed: () {
-                              Get.find<HomeController>().selectedWidget.value =
-                                  ExpensePage();
-                            },
-                            color: Colors.purple.shade100,
-                            icon: Icons.show_chart,
-                            amount: salesController.salesSummary.value == null
-                                ? 0
-                                : "${salesController.salesSummary.value?.totalExpense}",
-                          ),
-                        );
-                      }),
-                      Obx(() {
-                        return Padding(
-                          padding: const EdgeInsets.only(right: 18.0),
-                          child: financeCards(
-                            title: "Sales",
-                            subtitle: "services",
-                            onPresssed: () {
-                              Get.find<HomeController>().selectedWidget.value =
-                                  AllSalesPage(
-                                page: "financePage",
-                              );
-                              salesController.getSales(onCredit: "");
-                            },
-                            color: Colors.blue.shade100,
-                            icon: Icons.sell_rounded,
-                            amount: salesController.salesSummary.value == null
-                                ? 0
-                                : "${salesController.salesSummary.value?.sales}",
-                          ),
-                        );
-                      }),
-                      InkWell(
-                        onTap: () {
-                          Get.find<HomeController>().selectedWidget.value =
-                              CashFlowManager();
-                        },
-                        child: Container(
-                          margin: EdgeInsets.only(top: 10, right: 18),
-                          padding: EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                              color: Colors.deepPurple.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(10)),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Container(
-                                    height: 40,
-                                    width: 40,
-                                    child: Center(
-                                        child: Icon(Icons.margin_outlined)),
-                                    decoration: BoxDecoration(
-                                        color: Colors.amberAccent,
-                                        borderRadius:
-                                            BorderRadius.circular(20)),
-                                  ),
-                                  SizedBox(
-                                    width: 10,
-                                  ),
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      majorTitle(
-                                          title: "Cashflow Manager",
-                                          color: Colors.black,
-                                          size: 16.0),
-                                      SizedBox(height: 5),
-                                      minorTitle(
-                                          title: "Track finance",
-                                          color: Colors.grey)
-                                    ],
-                                  )
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                )
-              ],
-            ),
-          ),
-        ),
-      ),
-      smallScreen: Helper(
-        widget: SingleChildScrollView(
-          child: Container(
-            padding: EdgeInsets.all(10),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(height: 10),
-                SfDateRangePicker(
-                    onSelectionChanged: _onSelectionChanged,
-                    selectionMode: DateRangePickerSelectionMode.range,
-                    monthViewSettings: DateRangePickerMonthViewSettings(),
-                    headerStyle: DateRangePickerHeaderStyle(
-                        textAlign: TextAlign.center,
-                        textStyle: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.mainColor,
-                            fontSize: 18)),
-                    onSubmit: (v) {
-                      print(v);
+                    scrollDirection: isSmallScreen(context)
+                        ? Axis.vertical
+                        : Axis.horizontal,
+                    itemCount: operations.length,
+                    itemBuilder: (context, index) {
+                      return financeCards(
+                          title: operations[index]["title"],
+                          subtitle: operations[index]["subtitle"],
+                          icon: operations[index]["icon"],
+                          onPresssed: () {
+                            switch (operations[index]["title"]) {
+                              case "Today":
+                                {
+                                  salesController.getProfitTransaction(
+                                    fromDate: DateTime.parse(
+                                        DateFormat("yyy-MM-dd")
+                                            .format(DateTime.now())),
+                                    toDate: DateTime.parse(
+                                        DateFormat("yyy-MM-dd").format(
+                                            DateTime.now()
+                                                .add(const Duration(days: 1)))),
+                                  );
+                                  isSmallScreen(context)
+                                      ? Get.to(
+                                          () => ProfitPage(headline: "Today"))
+                                      : Get.find<HomeController>()
+                                              .selectedWidget
+                                              .value =
+                                          ProfitPage(headline: "Today");
+                                }
+                                break;
+
+                              case "Current Month":
+                                {
+                                  DateTime now = DateTime.now();
+                                  var lastday =
+                                      DateTime(now.year, now.month + 1, 0);
+
+                                  final noww = DateTime.now();
+
+                                  var firstday =
+                                      DateTime(noww.year, noww.month, 1);
+                                  salesController.getProfitTransaction(
+                                    fromDate: firstday,
+                                    toDate: lastday,
+                                  );
+                                  isSmallScreen(context)
+                                      ? Get.to(() => ProfitPage(
+                                            headline:
+                                                '\n${DateFormat("yyy-MM-dd").format(firstday)}-${DateFormat("yyy-MM-dd").format(lastday)}',
+                                          ))
+                                      : Get.find<HomeController>()
+                                          .selectedWidget
+                                          .value = ProfitPage(
+                                          headline:
+                                              '\n${DateFormat("yyy-MM-dd").format(firstday)}-${DateFormat("yyy-MM-dd").format(lastday)}',
+                                        );
+                                }
+                                break;
+                              case "Monthly Profit & Expenses":
+                                {
+                                  isSmallScreen(context)
+                                      ? Get.to(() => MonthFilter())
+                                      : Get.find<HomeController>()
+                                          .selectedWidget
+                                          .value = MonthFilter();
+                                }
+                                break;
+
+                              case "Graphical Analysis":
+                                {
+                                  isSmallScreen(context)
+                                      ? Get.to(() => GraphAnalysis())
+                                      : Get.find<HomeController>()
+                                          .selectedWidget
+                                          .value = GraphAnalysis();
+                                }
+                                break;
+                              case "Products Movement":
+                                {
+                                  salesController.selectedMonth.value =
+                                      DateTime.now().month;
+                                  salesController.currentYear.value =
+                                      DateTime.now().year;
+                                  isSmallScreen(context)
+                                      ? Get.to(() => ProductAnalysis())
+                                      : Get.find<HomeController>()
+                                          .selectedWidget
+                                          .value = ProductAnalysis();
+                                }
+                                break;
+                            }
+                          },
+                          color: operations[index]["color"],
+                          amount: operations[index]["amount"]);
                     }),
-                Obx(() {
-                  return financeCards(
-                      title: "Today",
-                      subtitle: "Gross & Net profits",
-                      showsummary: false,
-                      onPresssed: () {
-                        salesController.getProfitTransaction(
-                          fromDate: DateTime.parse(
-                              DateFormat("yyy-MM-dd").format(DateTime.now())),
-                          toDate: DateTime.parse(DateFormat("yyy-MM-dd")
-                              .format(DateTime.now().add(Duration(days: 1)))),
-                        );
-                        Get.to(() => ProfitPage(headline: "Today"));
-                      },
-                      color: Colors.amber.shade100,
-                      icon: Icons.today,
-                      amount: "${salesController.grossProfit}");
-                }),
-                Obx(() {
-                  return financeCards(
-                      title: "Current Month",
-                      subtitle: "Gross & Net profits",
-                      showsummary: false,
-                      onPresssed: () {
-                        DateTime now = DateTime.now();
-                        var lastday = DateTime(now.year, now.month + 1, 0);
-
-                        final noww = DateTime.now();
-
-                        var firstday = DateTime(noww.year, noww.month, 1);
-                        salesController.getProfitTransaction(
-                          fromDate: firstday,
-                          toDate: lastday,
-                        );
-                        Get.to(() => ProfitPage(
-                              headline:
-                                  '\n${DateFormat("yyy-MM-dd").format(firstday)}-${DateFormat("yyy-MM-dd").format(lastday)}',
-                            ));
-                      },
-                      color: Colors.amber.shade100,
-                      icon: Icons.calendar_month,
-                      amount: "${salesController.grossProfit}");
-                }),
-                Obx(() {
-                  return financeCards(
-                      title: "Monthly Profit & Expenses",
-                      subtitle: "Monthly profits versus expenses",
-                      showsummary: false,
-                      onPresssed: () {
-                        return Get.to(() => MonthFilter());
-                      },
-                      color: Colors.blue.shade100,
-                      icon: Icons.menu,
-                      amount: "${salesController.grossProfit}");
-                }),
-                Obx(() {
-                  return financeCards(
-                    title: "Graphical Analysis",
-                    subtitle: "Analyze shop perfomance in a graph",
-                    showsummary: false,
-                    onPresssed: () {
-                      Get.to(() => GraphAnalysis());
-                    },
-                    color: Colors.purple.shade100,
-                    icon: Icons.show_chart,
-                    amount: expenseController.totalExpenses.value,
-                  );
-                }),
-                Obx(() {
-                  return financeCards(
-                    title: "Products Movement",
-                    showsummary: false,
-                    subtitle: "view fast and slow moving products",
-                    onPresssed: () {
-                      salesController.selectedMonth.value =
-                          DateTime.now().month;
-                      salesController.currentYear.value = DateTime.now().year;
-
-                      Get.to(() => ProductAnalysis());
-                    },
-                    color: Colors.blue.shade100,
-                    icon: Icons.sell_rounded,
-                    amount: "${salesController.totalSalesByDate.value}",
-                  );
-                }),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
-        bottomNavigationBar: Container(
-          color: Colors.transparent,
-          width: 200,
-          height: 60,
-          child: InkWell(
-            onTap: () {
-              Get.to(() => ExpensePage());
-            },
-            child: Container(
-                margin:
-                    EdgeInsets.only(left: 60, right: 60, bottom: 10, top: 10),
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: AppColors.mainColor),
-                child: const Center(
-                    child: Text(
-                  "Add Expense",
-                  style: TextStyle(color: Colors.white),
-                ))),
-          ),
-        ),
-        floatButton: Container(),
-        appBar: appBar(context),
       ),
+      bottomNavigationBar: Container(
+        color: Colors.transparent,
+        width: 200,
+        height: isSmallScreen(context) ? 60 : 0,
+        child: InkWell(
+          onTap: () {
+            Get.to(() => ExpensePage());
+          },
+          child: Container(
+              margin: const EdgeInsets.only(
+                  left: 60, right: 60, bottom: 10, top: 10),
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: AppColors.mainColor),
+              child: const Center(
+                  child: Text(
+                "Add Expense",
+                style: TextStyle(color: Colors.white),
+              ))),
+        ),
+      ),
+      floatButton: Container(),
+      appBar: appBar(context),
     );
   }
 
@@ -349,13 +270,33 @@ class FinancePage extends StatelessWidget {
             Get.back();
           }
         },
-        icon: Icon(
+        icon: const Icon(
           Icons.arrow_back_ios,
           color: Colors.black,
         ),
       ),
       title: majorTitle(
           title: "Profit & expenses", color: Colors.black, size: 16.0),
+      actions: [
+        if (!isSmallScreen(context))
+          InkWell(
+            onTap: () {
+              Get.find<HomeController>().selectedWidget.value = ExpensePage();
+            },
+            child: Container(
+                height: kToolbarHeight * 0.4,
+                margin: const EdgeInsets.only(right: 10, top: 10, bottom: 10),
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: AppColors.mainColor),
+                child: const Center(
+                    child: Text(
+                  "Add Expense",
+                  style: TextStyle(color: Colors.white),
+                ))),
+          )
+      ],
     );
   }
 
@@ -372,8 +313,9 @@ class FinancePage extends StatelessWidget {
         onPresssed();
       },
       child: Container(
-        margin: EdgeInsets.only(top: 10),
-        padding: EdgeInsets.all(10),
+        margin: EdgeInsets.only(
+            top: 10, right: isSmallScreen(Get.context) ? 0 : 10),
+        padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
             color: Colors.deepPurple.withOpacity(0.1),
             borderRadius: BorderRadius.circular(10)),
@@ -390,20 +332,20 @@ class FinancePage extends StatelessWidget {
                   decoration: BoxDecoration(
                       color: color, borderRadius: BorderRadius.circular(20)),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 10,
                 ),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     majorTitle(title: title, color: Colors.black, size: 16.0),
-                    SizedBox(height: 5),
+                    const SizedBox(height: 5),
                     minorTitle(title: subtitle, color: Colors.grey)
                   ],
                 )
               ],
             ),
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
             if (showsummary == true)
@@ -436,6 +378,7 @@ class MonthFilter extends StatelessWidget {
     {"month": "December"},
   ];
   SalesController salesController = Get.find<SalesController>();
+
   List<int> getYears(int year) {
     int currentYear = DateTime.now().year;
 
@@ -453,7 +396,26 @@ class MonthFilter extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Pick a month"),
+        title: Text(
+          'Pick a month',
+          style: TextStyle(
+              color: isSmallScreen(context) ? Colors.white : Colors.black),
+        ),
+        elevation: 0.1,
+        backgroundColor:
+            isSmallScreen(context) ? AppColors.mainColor : Colors.white,
+        leading: IconButton(
+            onPressed: () {
+              if (isSmallScreen(context)) {
+                Get.back();
+              } else {
+                Get.find<HomeController>().selectedWidget.value = FinancePage();
+              }
+            },
+            icon: Icon(
+              Icons.arrow_back_ios,
+              color: isSmallScreen(context) ? Colors.white : Colors.black,
+            )),
         actions: [
           InkWell(
             onTap: () {
@@ -486,7 +448,7 @@ class MonthFilter extends StatelessWidget {
                                           color: Colors.black, fontSize: 16),
                                     ),
                                   ),
-                                  Divider()
+                                  const Divider()
                                 ],
                               ),
                             );
@@ -497,11 +459,11 @@ class MonthFilter extends StatelessWidget {
               );
             },
             child: Container(
-              padding: EdgeInsets.only(right: 10),
+              padding: const EdgeInsets.only(right: 10),
               child: Row(
                 children: [
                   Obx(() => Text(salesController.currentYear.value.toString())),
-                  Icon(Icons.arrow_drop_down)
+                  const Icon(Icons.arrow_drop_down)
                 ],
               ),
             ),
@@ -530,9 +492,15 @@ class MonthFilter extends StatelessWidget {
                     fromDate: firstday,
                     toDate: lastday,
                   );
-                  Get.to(() => ProfitPage(
-                      headline:
-                          "from\n${'${DateFormat("yyy-MM-dd").format(firstday)}-${DateFormat("yyy-MM-dd").format(lastday)}'}"));
+
+                  isSmallScreen(context)
+                      ? Get.to(() => ProfitPage(
+                          headline:
+                              "from\n${'${DateFormat("yyy-MM-dd").format(firstday)}-${DateFormat("yyy-MM-dd").format(lastday)}'}"))
+                      : Get.find<HomeController>().selectedWidget.value =
+                          ProfitPage(
+                              headline:
+                                  "from\n${'${DateFormat("yyy-MM-dd").format(firstday)}-${DateFormat("yyy-MM-dd").format(lastday)}'}");
                 },
                 child: Column(
                   children: [
@@ -542,15 +510,15 @@ class MonthFilter extends StatelessWidget {
                       child: Row(
                         children: [
                           Text(month["month"].toString().capitalize!),
-                          Spacer(),
-                          Icon(
+                          const Spacer(),
+                          const Icon(
                             Icons.arrow_forward_ios_rounded,
                             color: Colors.grey,
                           )
                         ],
                       ),
                     ),
-                    Divider()
+                    const Divider()
                   ],
                 ),
               );

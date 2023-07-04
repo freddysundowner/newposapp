@@ -2,14 +2,19 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
+import 'package:pointify/controllers/home_controller.dart';
+import 'package:pointify/responsive/responsiveness.dart';
+import 'package:pointify/utils/colors.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 import '../../controllers/sales_controller.dart';
+import 'finance_page.dart';
 
 class ProductAnalysis extends StatelessWidget {
   ProductAnalysis({Key? key}) : super(key: key);
 
   SalesController salesController = Get.find<SalesController>();
+
   List<int> getYears(int year) {
     int currentYear = DateTime.now().year;
 
@@ -71,7 +76,22 @@ class ProductAnalysis extends StatelessWidget {
     salesController.getProductComparison();
 
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        elevation: 0.1,
+        backgroundColor: isSmallScreen(context) ? AppColors.mainColor : Colors.white,
+        leading: IconButton(
+            onPressed: () {
+              if (isSmallScreen(context)) {
+                Get.back();
+              } else {
+                Get.find<HomeController>().selectedWidget.value = FinancePage();
+              }
+            },
+            icon: Icon(
+              Icons.arrow_back_ios,
+              color: isSmallScreen(context) ? Colors.white : Colors.black,
+            )),
+      ),
       body: Obx(
         () => Container(
           margin: const EdgeInsets.symmetric(horizontal: 10),

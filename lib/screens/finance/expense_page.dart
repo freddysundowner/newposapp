@@ -36,10 +36,10 @@ class ExpensePage extends StatelessWidget {
             appBar: _appBar(context),
             body: SingleChildScrollView(
               child: Container(
-                padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                 child: Column(
                   children: [
-                    SizedBox(height: 5),
+                    const SizedBox(height: 5),
                     Center(
                       child: Container(
                         width: MediaQuery.of(context).size.width * 0.4,
@@ -55,7 +55,7 @@ class ExpensePage extends StatelessWidget {
                         child: totalsContainer(),
                       ),
                     ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -66,7 +66,7 @@ class ExpensePage extends StatelessWidget {
                               color: Colors.black,
                               size: 15.0);
                         }),
-                        addExpenseContainer("large")
+                        addExpenseContainer()
                       ],
                     ),
                     Obx(() {
@@ -91,10 +91,10 @@ class ExpensePage extends StatelessWidget {
                                       )),
                                       columnSpacing: 30.0,
                                       columns: [
-                                        DataColumn(
+                                        const DataColumn(
                                             label: Text('Name',
                                                 textAlign: TextAlign.center)),
-                                        DataColumn(
+                                        const DataColumn(
                                             label: Text('Category',
                                                 textAlign: TextAlign.center)),
                                         DataColumn(
@@ -140,17 +140,17 @@ class ExpensePage extends StatelessWidget {
                 Center(
                   child: totalsContainer(),
                 ),
-                SizedBox(height: 25),
+                const SizedBox(height: 25),
                 Container(
-                  padding: EdgeInsets.only(right: 10, left: 10),
+                  padding: const EdgeInsets.only(right: 10, left: 10),
                   child: Align(
                     alignment: Alignment.centerRight,
-                    child: addExpenseContainer("small"),
+                    child: addExpenseContainer(),
                   ),
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 10),
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
                   child: Obx(() {
                     return majorTitle(
                         title: "${expenseController.expenses.length} Entries",
@@ -158,7 +158,7 @@ class ExpensePage extends StatelessWidget {
                         size: 15.0);
                   }),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
                 Obx(() {
@@ -193,13 +193,13 @@ class ExpensePage extends StatelessWidget {
       color: AppColors.mainColor,
       child: Column(
         children: [
-          SizedBox(height: 30),
+          const SizedBox(height: 30),
           Center(
               child: Text(
             "From ${DateFormat("yyy-MM-dd").format(expenseController.filterStartDate.value)} to ${DateFormat("yyy-MM-dd").format(expenseController.filterEnndStartDate.value)}",
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
           )),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
@@ -213,12 +213,12 @@ class ExpensePage extends StatelessWidget {
                       color: Colors.white.withOpacity(0.2)),
                   child: Row(
                     children: [
-                      Icon(Icons.credit_card, color: Colors.white),
-                      SizedBox(width: 10),
+                      const Icon(Icons.credit_card, color: Colors.white),
+                      const SizedBox(width: 10),
                       Obx(
                         () => Text(
                           htmlPrice(expenseController.totalExpenses.value),
-                          style: TextStyle(color: Colors.white),
+                          style: const TextStyle(color: Colors.white),
                         ),
                       )
                     ],
@@ -232,17 +232,17 @@ class ExpensePage extends StatelessWidget {
     );
   }
 
-  Widget addExpenseContainer(type) {
+  Widget addExpenseContainer() {
     return InkWell(
       onTap: () {
-        if (type == "large") {
-          Get.find<HomeController>().selectedWidget.value = CreateExpense();
+        if (isSmallScreen(Get.context)) {  Get.to(() => CreateExpense());
+
         } else {
-          Get.to(() => CreateExpense());
+          Get.find<HomeController>().selectedWidget.value = CreateExpense();
         }
       },
       child: Container(
-        padding: EdgeInsets.all(10),
+        padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(50),
@@ -273,12 +273,12 @@ class ExpensePage extends StatelessWidget {
                     DateFormat("yyy-MM-dd").format(DateTime.now()));
                 salesController.filterEndDate.value = DateTime.parse(
                     DateFormat("yyy-MM-dd")
-                        .format(DateTime.now().add(Duration(days: 1))));
+                        .format(DateTime.now().add(const Duration(days: 1))));
                 salesController.getFinanceSummary(
                     fromDate: salesController.filterStartDate.value,
                     toDate: salesController.filterEndDate.value);
               },
-              icon: Icon(
+              icon: const Icon(
                 Icons.arrow_back_ios,
                 color: Colors.white,
               ),
@@ -298,7 +298,7 @@ class ExpensePage extends StatelessWidget {
                   fromDate: picked.start, toDate: picked.end);
             },
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Center(
                 child: Row(
                   children: [
@@ -329,12 +329,12 @@ class ExpensePage extends StatelessWidget {
                 //     expenses: expenseController.expenses);
               }
             },
-            child: Icon(
+            child: const Icon(
               Icons.download,
               color: Colors.white,
             ),
           ),
-        SizedBox(width: 10)
+        const SizedBox(width: 10)
       ],
     );
   }
