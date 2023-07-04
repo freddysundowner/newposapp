@@ -237,7 +237,10 @@ class AttendantDetails extends StatelessWidget {
               height: 50,
               child: InkWell(
                 onTap: () {
-                  Get.to(() => Permissions());
+                  isSmallScreen(context)
+                      ? Get.to(() => Permissions())
+                      : Get.find<HomeController>().selectedWidget.value =
+                          Permissions();
                 },
                 child: Container(
                   padding: EdgeInsets.all(10),
