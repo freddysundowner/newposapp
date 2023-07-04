@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:pointify/Real/schema.dart';
+import 'package:pointify/controllers/plan_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/controllers/user_controller.dart';
 import 'package:pointify/main.dart';
@@ -60,6 +61,7 @@ class AuthController extends GetxController {
             emailController.text, passwordController.text);
         await Get.find<UserController>().getUser(type: "login");
 
+        Get.find<PlanController>().getPlans();
         Get.offAll(() => Home());
       } catch (e) {
         print(e);
@@ -153,6 +155,7 @@ class AuthController extends GetxController {
         ));
         clearDataFromTextFields();
         await Get.find<UserController>().getUser();
+        Get.find<PlanController>().getPlans();
         if (MediaQuery.of(context).size.width > 600) {
           Get.find<HomeController>().selectedWidget.value =
               CreateShop(page: "home");

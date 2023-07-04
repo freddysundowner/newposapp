@@ -51,6 +51,7 @@ class PlanController extends GetxController {
     plans.clear();
     RealmResults<Packages> response = PlansService().getPlans();
     plans.addAll(response.map((e) => e).toList());
+    plans.refresh();
     // plans.forEach((element) {
     //   PlansService().createPackage(element);
     // });

@@ -4,6 +4,7 @@ import 'package:pointify/Real/schema.dart';
 import 'package:pointify/controllers/plan_controller.dart';
 import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/shop/create_shop.dart';
+import 'package:pointify/services/plans_service.dart';
 import 'package:pointify/services/sales.dart';
 import 'package:pointify/services/shop_services.dart';
 import 'package:pointify/controllers/AuthController.dart';
@@ -51,17 +52,14 @@ class ShopController extends GetxController {
     final newItem = Shop(ObjectId(),
         name: nameController.text,
         location: reqionController.text,
+        subscriptiondate: DateTime.now().millisecondsSinceEpoch,
         owner: appController.app.value!.currentUser!.id,
+        package:
+            Get.find<PlanController>().plans.where((p0) => p0.price == 0).first,
         currency:
             currency.isEmpty ? Constants.currenciesData[0] : currency.value);
     newItem.type = Get.find<ShopController>().selectedCategory.value;
     ShopService().createShop(newItem);
-
-    ShopService().updateItem(newItem,
-        package: Get.find<PlanController>()
-            .plans
-            .where((p0) => p0.price == 0)
-            .first);
 
     getShops();
     Get.find<UserController>().getUser();
