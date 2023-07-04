@@ -142,6 +142,7 @@ class ShopController extends GetxController {
   }
 
   checkDaysRemaining() {
+    if (allowSubscription == false) return 999999;
     int days = currentShop.value!.subscriptiondate == null
         ? 0
         : DateTime.fromMillisecondsSinceEpoch(
@@ -153,6 +154,7 @@ class ShopController extends GetxController {
   }
 
   checkIfTrial() {
+    if (allowSubscription == false) return allowSubscription;
     int days = currentShop.value!.package == null
         ? 14
         : currentShop.value!.package!.time!;
@@ -160,6 +162,7 @@ class ShopController extends GetxController {
   }
 
   checkSubscription() {
+    if (allowSubscription == false) return !allowSubscription;
     Packages? packages = currentShop.value?.package;
     if (packages != null) {
       DateTime subscriptionedndate = DateTime.fromMillisecondsSinceEpoch(
