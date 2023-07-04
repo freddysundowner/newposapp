@@ -9,6 +9,7 @@ import 'package:get/get.dart';
 import 'package:switcher_button/switcher_button.dart';
 
 import '../../Real/schema.dart';
+import '../../controllers/plan_controller.dart';
 import '../../services/shop_services.dart';
 import '../../data/interests.dart';
 import '../../utils/colors.dart';
@@ -28,6 +29,7 @@ class CreateShop extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Get.find<PlanController>().getPlans();
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
