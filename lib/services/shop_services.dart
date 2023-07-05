@@ -14,23 +14,21 @@ class ShopService {
   }
 
   void createShopType(ShopTypes shopTypes) {
-    print("createShopType");
     realmService.realm
         .write<ShopTypes>(() => realmService.realm.add<ShopTypes>(shopTypes));
   }
 
   getShop({String name = ""}) {
-    RealmResults<Shop> shops;
     if (userController.user.value!.usertype == "attendant" &&
         checkPermission(category: "stocks", permission: "transfer")) {
-      shops = realmService.realm.query<Shop>(
+      RealmResults<Shop> shops = realmService.realm.query<Shop>(
           r'owner == $0', [userController.user.value?.shop?.owner]);
+      return shops;
     } else {
-      shops = realmService.realm
-          .query<Shop>(r'owner == $0', [realmService.currentUser!.value!.id]);
+      RealmResults<Shop> shops = realmService.realm
+          .query<Shop>(r'owner == $0', [realmService.currentUser?.value?.id]);
+      return shops;
     }
-
-    return shops;
   }
 
   RealmResults<ShopTypes> getShopTypes() {
