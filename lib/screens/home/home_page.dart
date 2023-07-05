@@ -331,7 +331,7 @@ class HomePage extends StatelessWidget {
                                         MediaQuery.of(context).size.width < 1000
                                     ? 1.6
                                     : 2.0,
-                            crossAxisCount: 3,
+                            crossAxisCount: isSmallScreen(context) ? 3 : 4,
                             crossAxisSpacing: isSmallScreen(context) ? 2 : 6,
                             mainAxisSpacing: isSmallScreen(context) ? 10 : 3),
                         padding: EdgeInsets.zero,
@@ -597,7 +597,7 @@ class HomePage extends StatelessWidget {
                     ? Colors.grey
                     : isSmallScreen
                         ? Colors.white
-                        : Colors.transparent,
+                        : Colors.red,
                 borderRadius: const BorderRadius.all(
                   Radius.circular(10.0),
                 ),
