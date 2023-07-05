@@ -573,11 +573,16 @@ class HomePage extends StatelessWidget {
                     false
             ? null
             : () {
-                if (title.toString().toLowerCase() == "stock") {
-                  Get.to(() => ProductPage());
-                } else {
-                  function();
-                }
+                // if (title.toString().toLowerCase() == "stock") {
+                //   // Get.to(() => ProductPage());
+                //   isSmallScreen(Get.context!)
+                //       ? Get.to(() => ProductPage())
+                //       : Get.find<HomeController>().selectedWidget.value =
+                //           ProductPage();
+                // } else {
+                //   function();
+                // }
+                function();
               },
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,

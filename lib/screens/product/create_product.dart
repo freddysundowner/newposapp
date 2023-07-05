@@ -390,6 +390,7 @@ class CreateProduct extends StatelessWidget {
                                           Categories().getProductCategories(),
                                       builder: (context, snapshot) {
                                         final data = snapshot.data;
+                                        print(data);
 
                                         if (data == null) {
                                           return const Center(
