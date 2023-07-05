@@ -27,6 +27,57 @@ class StockPage extends StatelessWidget {
   ShopController shopController = Get.find<ShopController>();
   ProductController productController = Get.find<ProductController>();
 
+  List<Map<String, dynamic>> enterpriseOperations = [
+    {
+      "title": "Add New",
+      "icon": Icons.production_quantity_limits,
+      "category": "products",
+      "permission": "add",
+      "subtitle": "Introduce new product",
+      "color": Colors.amberAccent
+    },
+    {
+      "title": "Purchase",
+      "icon": Icons.add,
+      "category": "stocks",
+      "permission": "add",
+      "subtitle": "Add to an existing stock",
+      "color": Colors.blueAccent
+    },
+    {
+      "title": "Purchase",
+      "icon": Icons.remove_red_eye_rounded,
+      "category": "stocks",
+      "permission": "purchases",
+      "subtitle": "View purchased items",
+      "color": Colors.white
+    },
+    {
+      "title": "Count",
+      "icon": Icons.calculate_outlined,
+      "category": "stocks",
+      "permission": "count",
+      "subtitle": "Tally with physical count",
+      "color": Colors.amberAccent
+    },
+    {
+      "title": "Bad Stock",
+      "icon": Icons.remove_circle_outline,
+      "category": "stocks",
+      "permission": "badstock",
+      "subtitle": "View/Add faulty goods",
+      "color": Colors.redAccent
+    },
+    {
+      "title": "Transfer",
+      "icon": Icons.compare_arrows,
+      "category": "stocks",
+      "permission": "transfer",
+      "subtitle": "Transfer stock to  another shop",
+      "color": Colors.green
+    },
+  ];
+
   @override
   Widget build(BuildContext context) {
     productController.getProductsBySort(type: "all");
@@ -44,138 +95,160 @@ class StockPage extends StatelessWidget {
                 majorTitle(
                     title: "Stock Actions", color: Colors.black, size: 18.0),
                 Container(
-                  height: isSmallScreen(context)
-                      ? MediaQuery.of(context).size.height
-                      : 150,
-                  child: ListView(
-                    shrinkWrap: true,
-                    scrollDirection: isSmallScreen(context)
-                        ? Axis.vertical
-                        : Axis.horizontal,
-                    children: [
-                      if (checkPermission(
-                          category: "products", permission: "add"))
-                        stockContainers(
-                            title: "Add New",
-                            subtitle: "Introduce new product",
-                            icon: Icons.production_quantity_limits,
-                            context: context,
-                            onPresssed: () {
-                              if (isSmallScreen(context)) {
-                                Get.to(() => CreateProduct(
-                                      page: "create",
-                                      productModel: null,
-                                    ));
-                              } else {
-                                Get.find<HomeController>()
-                                    .selectedWidget
-                                    .value = CreateProduct(
-                                  page: "create",
-                                  productModel: null,
-                                );
-                              }
-                            },
-                            color: Colors.amberAccent),
-                      if (checkPermission(
-                          category: "stocks", permission: "add"))
-                        stockContainers(
-                            title: "Purchase",
-                            subtitle: "Add to an existing stock",
-                            context: context,
-                            icon: Icons.add,
-                            onPresssed:
-                                shopController.checkSubscription() == false
-                                    ? null
-                                    : () {
-                                        if (isSmallScreen(context)) {
+                  child: isSmallScreen(context)
+                      ? ListView.builder(
+                          itemCount: enterpriseOperations
+                              .where((e) =>
+                                  checkPermission(
+                                      category: e["category"],
+                                      permission: e["permission"]) ==
+                                  true)
+                              .toList()
+                              .length,
+                          shrinkWrap: true,
+                          physics: const ScrollPhysics(),
+                          itemBuilder: (c, i) {
+                            var e = enterpriseOperations.elementAt(i);
+                            return stockContainers(
+                                title: e["title"],
+                                subtitle: e["subtitle"],
+                                icon: e["icon"],
+                                onPresssed: () {
+                                  switch (e["subtitle"]) {
+                                    case "Introduce new product":
+                                      {
+                                        Get.to(() => CreateProduct(
+                                              page: "create",
+                                              productModel: null,
+                                            ));
+                                      }
+                                    case "Add to an existing stock":
+                                      {
+                                        if (shopController
+                                                .checkSubscription() ==
+                                            true) {
                                           Get.to(() => CreatePurchase());
-                                        } else {
+                                        }
+                                      }
+                                    case "View purchased items":
+                                      {
+                                        Get.to(() => AllPurchases());
+                                      }
+                                    case "Tally with physical count":
+                                      {
+                                        if (shopController
+                                                .checkSubscription() ==
+                                            true) {
+                                          Get.to(() => StockCount());
+                                        }
+                                      }
+                                    case "View/Add faulty goods":
+                                      {
+                                        Get.to(() => BadStockPage(
+                                              page: "stock",
+                                            ));
+                                      }
+                                    case "Transfer stock to  another shop":
+                                      {
+                                        if (shopController
+                                                .checkSubscription() ==
+                                            true) {
+                                          Get.to(() => StockTransfer());
+                                        }
+                                      }
+                                  }
+                                },
+                                context: context,
+                                color: e["color"]);
+                          },
+                        )
+                      : GridView.builder(
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                                  childAspectRatio: 1.7,
+                                  crossAxisCount: 3,
+                                  crossAxisSpacing:
+                                      isSmallScreen(context) ? 2 : 6,
+                                  mainAxisSpacing:
+                                      isSmallScreen(context) ? 10 : 3),
+                          padding: EdgeInsets.zero,
+                          itemCount: enterpriseOperations
+                              .where((e) =>
+                                  checkPermission(
+                                      category: e["category"],
+                                      permission: e["permission"]) ==
+                                  true)
+                              .toList()
+                              .length,
+                          shrinkWrap: true,
+                          physics: const ScrollPhysics(),
+                          itemBuilder: (c, i) {
+                            var e = enterpriseOperations.elementAt(i);
+                            return stockContainers(
+                                title: e["title"],
+                                subtitle: e["subtitle"],
+                                icon: e["icon"],
+                                onPresssed: () {
+                                  switch (e["subtitle"]) {
+                                    case "Introduce new product":
+                                      {
+                                        Get.find<HomeController>()
+                                            .selectedWidget
+                                            .value = CreateProduct(
+                                          page: "create",
+                                          productModel: null,
+                                        );
+                                      }
+                                    case "Add to an existing stock":
+                                      {
+                                        if (shopController
+                                                .checkSubscription() ==
+                                            true) {
                                           Get.find<HomeController>()
                                               .selectedWidget
                                               .value = CreatePurchase();
                                         }
-                                      },
-                            color: Colors.blueAccent),
-                      if (checkPermission(
-                          category: "stocks", permission: "purchases"))
-                        stockContainers(
-                            title: "Purchase",
-                            subtitle: "View purchased items",
-                            context: context,
-                            icon: Icons.remove_red_eye_rounded,
-                            onPresssed: () {
-                              if (isSmallScreen(context)) {
-                                Get.to(() => AllPurchases());
-                              } else {
-                                Get.find<HomeController>()
-                                    .selectedWidget
-                                    .value = AllPurchases();
-                              }
-                            },
-                            color: Colors.white),
-                      if (checkPermission(
-                          category: "stocks", permission: "count"))
-                        stockContainers(
-                            title: "Count ",
-                            subtitle: "Tally with physical count",
-                            icon: Icons.calculate_outlined,
-                            context: context,
-                            onPresssed:
-                                shopController.checkSubscription() == false
-                                    ? null
-                                    : () {
-                                        if (isSmallScreen(context)) {
-                                          Get.to(() => StockCount());
-                                        } else {
+                                      }
+                                    case "View purchased items":
+                                      {
+                                        Get.find<HomeController>()
+                                            .selectedWidget
+                                            .value = AllPurchases();
+                                      }
+                                    case "Tally with physical count":
+                                      {
+                                        if (shopController
+                                                .checkSubscription() ==
+                                            true) {
                                           Get.find<HomeController>()
                                               .selectedWidget
                                               .value = StockCount();
                                         }
-                                      },
-                            color: Colors.amberAccent),
-                      if (checkPermission(
-                          category: "stocks", permission: "badstock"))
-                        stockContainers(
-                            title: "Bad Stock",
-                            subtitle: "View/Add faulty goods",
-                            icon: Icons.remove_circle_outline,
-                            context: context,
-                            onPresssed: () {
-                              if (isSmallScreen(context)) {
-                                Get.to(() => BadStockPage(
-                                      page: "stock",
-                                    ));
-                              } else {
-                                Get.find<HomeController>()
-                                    .selectedWidget
-                                    .value = BadStockPage(
-                                  page: "stock",
-                                );
-                              }
-                            },
-                            color: Colors.redAccent),
-                      if (checkPermission(
-                          category: "stocks", permission: "transfer"))
-                        stockContainers(
-                            title: "Transfer",
-                            context: context,
-                            subtitle: "Transfer stock to  another shop",
-                            icon: Icons.compare_arrows,
-                            onPresssed:
-                                shopController.checkSubscription() == false
-                                    ? null
-                                    : () {
-                                        if (isSmallScreen(context)) {
-                                          Get.to(() => StockTransfer());
-                                        } else {
+                                      }
+                                    case "View/Add faulty goods":
+                                      {
+                                        Get.find<HomeController>()
+                                            .selectedWidget
+                                            .value = BadStockPage(
+                                          page: "stock",
+                                        );
+                                      }
+                                    case "Transfer stock to  another shop":
+                                      {
+                                        if (shopController
+                                                .checkSubscription() ==
+                                            true) {
                                           Get.find<HomeController>()
                                               .selectedWidget
                                               .value = StockTransfer();
                                         }
-                                      },
-                            color: Colors.green)
-                    ],
-                  ),
+                                      }
+                                  }
+                                },
+                                context: context,
+                                color: e["color"]);
+                          },
+                        ),
                 )
               ],
             ),
