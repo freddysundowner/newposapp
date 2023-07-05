@@ -19,7 +19,7 @@ class AttendantLogin extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
           backgroundColor: MediaQuery.of(context).size.width <= 600
-              ? AppColors.mainColor
+              ? Colors.transparent
               : Colors.white,
           elevation: 0.0,
           leading: IconButton(
@@ -28,9 +28,7 @@ class AttendantLogin extends StatelessWidget {
               },
               icon: Icon(
                 Icons.clear,
-                color: MediaQuery.of(context).size.width <= 600
-                    ? Colors.white
-                    : Colors.black,
+                color: Colors.black,
               ))),
       backgroundColor: Colors.white,
       body: ResponsiveWidget(
@@ -73,16 +71,23 @@ class AttendantLogin extends StatelessWidget {
           smallScreen: SingleChildScrollView(
             child: Column(
               children: [
-                Container(
-                  height: 200,
-                  child: Header(200, true,
-                      "assets/images/worker.svg"), //let's create a common header widget
+                Column(
+                  children: [
+                    Image.asset(
+                      "assets/images/logo2.png",
+                      width: 250,
+                    ),
+                    Text("An enterprise at your fingertips."),
+                    SizedBox(
+                      height: 20,
+                    ),
+                  ],
                 ),
                 SizedBox(
                   height: 40,
                 ),
                 Text(
-                  'Login As Cashier',
+                  'Login as a cashier',
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 SizedBox(height: 30.0),

@@ -83,15 +83,18 @@ class StockPage extends StatelessWidget {
                             subtitle: "Add to an existing stock",
                             context: context,
                             icon: Icons.add,
-                            onPresssed: () {
-                              if (isSmallScreen(context)) {
-                                Get.to(() => CreatePurchase());
-                              } else {
-                                Get.find<HomeController>()
-                                    .selectedWidget
-                                    .value = CreatePurchase();
-                              }
-                            },
+                            onPresssed:
+                                shopController.checkSubscription() == false
+                                    ? null
+                                    : () {
+                                        if (isSmallScreen(context)) {
+                                          Get.to(() => CreatePurchase());
+                                        } else {
+                                          Get.find<HomeController>()
+                                              .selectedWidget
+                                              .value = CreatePurchase();
+                                        }
+                                      },
                             color: Colors.blueAccent),
                       if (checkPermission(
                           category: "stocks", permission: "purchases"))
@@ -117,15 +120,18 @@ class StockPage extends StatelessWidget {
                             subtitle: "Tally with physical count",
                             icon: Icons.calculate_outlined,
                             context: context,
-                            onPresssed: () {
-                              if (isSmallScreen(context)) {
-                                Get.to(() => StockCount());
-                              } else {
-                                Get.find<HomeController>()
-                                    .selectedWidget
-                                    .value = StockCount();
-                              }
-                            },
+                            onPresssed:
+                                shopController.checkSubscription() == false
+                                    ? null
+                                    : () {
+                                        if (isSmallScreen(context)) {
+                                          Get.to(() => StockCount());
+                                        } else {
+                                          Get.find<HomeController>()
+                                              .selectedWidget
+                                              .value = StockCount();
+                                        }
+                                      },
                             color: Colors.amberAccent),
                       if (checkPermission(
                           category: "stocks", permission: "badstock"))
@@ -155,15 +161,18 @@ class StockPage extends StatelessWidget {
                             context: context,
                             subtitle: "Transfer stock to  another shop",
                             icon: Icons.compare_arrows,
-                            onPresssed: () {
-                              if (isSmallScreen(context)) {
-                                Get.to(() => StockTransfer());
-                              } else {
-                                Get.find<HomeController>()
-                                    .selectedWidget
-                                    .value = StockTransfer();
-                              }
-                            },
+                            onPresssed:
+                                shopController.checkSubscription() == false
+                                    ? null
+                                    : () {
+                                        if (isSmallScreen(context)) {
+                                          Get.to(() => StockTransfer());
+                                        } else {
+                                          Get.find<HomeController>()
+                                              .selectedWidget
+                                              .value = StockTransfer();
+                                        }
+                                      },
                             color: Colors.green)
                     ],
                   ),

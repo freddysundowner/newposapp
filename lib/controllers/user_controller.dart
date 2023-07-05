@@ -23,7 +23,6 @@ class UserController extends GetxController {
   RxBool creatingAttendantsLoad = RxBool(false);
   RxBool getAttendantsLoad = RxBool(false);
   RxBool getAttendantByIdLoad = RxBool(false);
-  RxList<UserModel> users = RxList([]);
   Rxn<UserModel> user = Rxn(null);
   Rxn<UserModel> currentAttendant = Rxn(null);
   Rxn<UserModel> switcheduser = Rxn(null);

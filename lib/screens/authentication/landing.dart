@@ -40,62 +40,47 @@ class Landing extends StatelessWidget {
             ),
           ),
           smallScreen: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  Container(
-                    color: AppColors.mainColor,
-                    height: MediaQuery.of(context).size.height / 3,
-                  ),
-                  Positioned(
-                    bottom: -100,
-                    right: 5,
-                    child: landingImage(),
-                  )
-                ],
+              Spacer(),
+              landingContent(),
+              SizedBox(
+                height: 100,
               ),
-              Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    landingContent(),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 30.0, right: 30),
-                      child: InkWell(
-                        onTap: () {
-                          Get.to(AttendantLogin());
-                        },
-                        child: customButton(
-                            onTap: () {
-                              Get.to(AttendantLogin());
-                            },
-                            color: AppColors.mainColor,
-                            title: "Cashier",
-                            textColor: Colors.white,
-                            icon: Icons.people_alt_outlined),
-                      ),
-                    ),
-                    SizedBox(height: 20),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 30.0, right: 30),
-                      child: InkWell(
-                        onTap: () {
-                          Get.to(AdminLogin());
-                        },
-                        child: customButton(
-                            onTap: () {
-                              Get.to(AdminLogin());
-                            },
-                            color: Colors.white,
-                            title: "Admin",
-                            textColor: AppColors.mainColor,
-                            icon: Icons.person),
-                      ),
-                    )
-                  ],
+              Padding(
+                padding: const EdgeInsets.only(left: 30.0, right: 30),
+                child: InkWell(
+                  onTap: () {
+                    Get.to(AttendantLogin());
+                  },
+                  child: customButton(
+                      onTap: () {
+                        Get.to(AttendantLogin());
+                      },
+                      color: AppColors.mainColor,
+                      title: "Cashier",
+                      textColor: Colors.white,
+                      icon: Icons.people_alt_outlined),
                 ),
               ),
+              SizedBox(height: 20),
+              Padding(
+                padding: const EdgeInsets.only(left: 30.0, right: 30),
+                child: InkWell(
+                  onTap: () {
+                    Get.to(AdminLogin());
+                  },
+                  child: customButton(
+                      onTap: () {
+                        Get.to(AdminLogin());
+                      },
+                      color: Colors.white,
+                      title: "Admin",
+                      textColor: AppColors.mainColor,
+                      icon: Icons.person),
+                ),
+              ),
+              Spacer(),
             ],
           )),
     );
@@ -108,11 +93,9 @@ class Landing extends StatelessWidget {
   Widget landingContent() {
     return Column(
       children: [
-        Text(
-          "Pointify",
-        ),
-        SizedBox(
-          height: 5,
+        Image.asset(
+          "assets/images/logo2.png",
+          width: 250,
         ),
         Text("An enterprise at your fingertips."),
         SizedBox(

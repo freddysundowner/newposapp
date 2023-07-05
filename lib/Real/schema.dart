@@ -56,6 +56,8 @@ class _Shop {
   @PrimaryKey()
   ObjectId? id;
   String? name;
+  _Packages? package;
+  int? subscriptiondate;
   String? location;
   _ShopTypes? type;
   String? owner;
@@ -310,8 +312,22 @@ class _Plan {
   late String title;
   late double price;
   late String description;
+  late int code;
   late int shops;
   late int time;
+}
+
+@RealmModel()
+class _Packages {
+  @PrimaryKey()
+  @MapTo("_id")
+  ObjectId? id;
+  String? title;
+  double? price;
+  String? description;
+  int? code;
+  int? shops;
+  int? time;
 }
 
 @RealmModel()

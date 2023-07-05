@@ -16,19 +16,15 @@ class SignUp extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          backgroundColor: MediaQuery.of(context).size.width <= 600
-              ? AppColors.mainColor
-              : Colors.white,
+          backgroundColor: Colors.white,
           elevation: 0.0,
           leading: IconButton(
               onPressed: () {
                 Get.back();
               },
               icon: Icon(
-                Icons.arrow_back_ios,
-                color: MediaQuery.of(context).size.width <= 600
-                    ? Colors.white
-                    : Colors.black,
+                Icons.clear,
+                color: Colors.black,
               ))),
       backgroundColor: Colors.white,
       body: ResponsiveWidget(
@@ -62,9 +58,17 @@ class SignUp extends StatelessWidget {
           ),
           smallScreen: ListView(
             children: [
-              Container(
-                height: 100,
-                child: Header(200, true, "assets/images/team.svg"),
+              Column(
+                children: [
+                  Image.asset(
+                    "assets/images/logo2.png",
+                    width: 250,
+                  ),
+                  Text("An enterprise at your fingertips."),
+                  SizedBox(
+                    height: 40,
+                  ),
+                ],
               ),
               SizedBox(height: 40),
               signUpForm(context)
