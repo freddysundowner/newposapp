@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pointify/controllers/AuthController.dart';
+import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/controllers/plan_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/controllers/user_controller.dart';
 import 'package:pointify/functions/functions.dart';
+import 'package:pointify/responsive/responsiveness.dart';
+import 'package:pointify/screens/home/home_page.dart';
 import 'package:pointify/utils/colors.dart';
 import 'package:pointify/widgets/shop_list_bottomsheet.dart';
 import 'package:pointify/widgets/smalltext.dart';
@@ -22,17 +25,36 @@ class ExtendUsage extends StatelessWidget {
   ShopController shopController = Get.find<ShopController>();
   AuthController authController = Get.find<AuthController>();
   PlanController planController = Get.find<PlanController>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Extend usage"),
+        elevation: 0.2,
+        leading: IconButton(
+            onPressed: () {
+              isSmallScreen(context)
+                  ? Get.back()
+                  : Get.find<HomeController>().selectedWidget.value =
+                      HomePage();
+            },
+            icon: Icon(
+              Icons.arrow_back_ios,
+              color: isSmallScreen(context) ? Colors.white : Colors.black,
+            )),
+        backgroundColor:
+            isSmallScreen(context) ? AppColors.mainColor : Colors.white,
+        title: Text(
+          "Extend usage",
+          style: TextStyle(
+              color: isSmallScreen(context) ? Colors.white : Colors.black),
+        ),
       ),
       body: Column(
         children: [
           Container(
             width: double.infinity,
-            padding: EdgeInsets.all(20),
+            padding: const EdgeInsets.all(20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -55,7 +77,7 @@ class ExtendUsage extends StatelessWidget {
                         showShopModalBottomSheet(context);
                       },
                       child: Container(
-                        padding: EdgeInsets.all(5),
+                        padding: const EdgeInsets.all(5),
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(50),
@@ -77,7 +99,7 @@ class ExtendUsage extends StatelessWidget {
                   itemCount: planController.plans.length,
                   itemBuilder: (BuildContext c, int i) {
                     Packages plan = planController.plans[i];
-                    return _usageCard(plan);
+                    return _usageCard(plan,context);
                   }),
             ),
           )
@@ -86,7 +108,7 @@ class ExtendUsage extends StatelessWidget {
     );
   }
 
-  _usageCard(Packages plan) {
+  _usageCard(Packages plan,context) {
     authController.phoneController.text =
         Get.find<UserController>().user.value!.phonenumber ?? "";
     return Obx(
@@ -101,11 +123,17 @@ class ExtendUsage extends StatelessWidget {
             : () {
                 showModalBottomSheet(
                     context: Get.context!,
+                    backgroundColor: isSmallScreen(Get.context)
+                        ? Colors.white
+                        : Colors.transparent,
                     builder: (context) => Container(
+                          color: Colors.white,
                           height:
                               MediaQuery.of(context).copyWith().size.height *
                                   0.50,
-                          padding: EdgeInsets.symmetric(
+                          margin: EdgeInsets.only(
+                              left: isSmallScreen(Get.context) ? 0 :MediaQuery.of(context).size.width*0.2),
+                          padding: const EdgeInsets.symmetric(
                               vertical: 10, horizontal: 10),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -113,10 +141,10 @@ class ExtendUsage extends StatelessWidget {
                               Center(
                                 child: Text(
                                   "Pay to extend ${shopController.currentShop.value!.name} usage",
-                                  style: TextStyle(fontSize: 21),
+                                  style: const TextStyle(fontSize: 21),
                                 ),
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 height: 20,
                               ),
                               Column(
@@ -134,14 +162,14 @@ class ExtendUsage extends StatelessWidget {
                                   ),
                                   Text(
                                     "Amount : ${htmlPrice(plan.price)}",
-                                    style: TextStyle(fontSize: 14),
+                                    style: const TextStyle(fontSize: 14),
                                   ),
                                   const SizedBox(
                                     height: 10,
                                   ),
                                   Text(
                                     "Package : ${plan.time} days",
-                                    style: TextStyle(fontSize: 14),
+                                    style: const TextStyle(fontSize: 14),
                                   ),
                                   RadioListTile(
                                     contentPadding: EdgeInsets.zero,
@@ -151,7 +179,7 @@ class ExtendUsage extends StatelessWidget {
                                           "assets/images/mpesalogo.png",
                                           width: 50,
                                         ),
-                                        Text(""),
+                                        const Text(""),
                                       ],
                                     ),
                                     value: "mpesa",
@@ -256,7 +284,7 @@ class ExtendUsage extends StatelessWidget {
                   ),
                 ],
               ),
-              Spacer(),
+              const Spacer(),
               if (shopController.currentShop.value!.package == null ||
                   plan.time! > shopController.currentShop.value!.package!.time!)
                 Container(

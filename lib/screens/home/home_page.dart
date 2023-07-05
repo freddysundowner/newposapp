@@ -121,7 +121,11 @@ class HomePage extends StatelessWidget {
                                 if (shopController.checkIfTrial())
                                   InkWell(
                                     onTap: () {
-                                      Get.to(() => ExtendUsage());
+                                      isSmallScreen(context)
+                                          ? Get.to(() => ExtendUsage())
+                                          : Get.find<HomeController>()
+                                              .selectedWidget
+                                              .value = ExtendUsage();
                                     },
                                     child: Container(
                                       padding: EdgeInsets.symmetric(
