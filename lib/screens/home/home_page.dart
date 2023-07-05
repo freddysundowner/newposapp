@@ -310,273 +310,212 @@ class HomePage extends StatelessWidget {
                   color: Colors.black,
                   size: 20.0),
               const SizedBox(height: 20),
-              isSmallScreen(context)
-                  ? Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(15),
-                      decoration: BoxDecoration(
-                          color: AppColors.mainColor,
-                          borderRadius: BorderRadius.circular(20)),
-                      child: Obx(
-                        () => Column(
-                          children: [
-                            GridView.builder(
-                              gridDelegate:
-                                  const SliverGridDelegateWithFixedCrossAxisCount(
-                                      crossAxisCount: 3,
-                                      crossAxisSpacing: 10,
-                                      mainAxisSpacing: 10),
-                              padding: EdgeInsets.zero,
-                              itemCount: enterpriseOperations
-                                  .where((e) =>
-                                      checkPermission(
-                                          category: e["category"],
-                                          group: true) ==
-                                      true)
-                                  .toList()
-                                  .length,
-                              shrinkWrap: true,
-                              physics: const ScrollPhysics(),
-                              itemBuilder: (c, i) {
-                                var e = enterpriseOperations.elementAt(i);
-                                return gridItems(
-                                    title: e["title"],
-                                    iconData: e["icon"],
-                                    isSmallScreen: true,
-                                    function: () {
-                                      switch (
-                                          e["title"].toString().toLowerCase()) {
-                                        case "sale":
-                                          Get.to(() => CreateSale());
-                                          break;
-                                        case "cashflow":
-                                          {
-                                            Get.find<CashflowController>()
-                                                .getCashflowSummary(
-                                              shopId: shopController
-                                                  .currentShop.value!.id,
-                                              from: DateTime.parse(DateFormat(
-                                                      "yyyy-MM-dd")
-                                                  .format(Get.find<
-                                                          CashflowController>()
-                                                      .fromDate
-                                                      .value)),
-                                              to: DateTime.parse(DateFormat(
-                                                          "yyyy-MM-dd")
-                                                      .format(Get.find<
-                                                              CashflowController>()
-                                                          .toDate
-                                                          .value))
-                                                  .add(const Duration(days: 1)),
-                                            );
-                                            Get.to(() => CashFlowManager());
-                                          }
-                                          break;
-                                        case "stock":
-                                          {
-                                            Get.to(() => StockPage());
-                                          }
-                                          break;
-                                        case "suppliers":
-                                          {
-                                            Get.to(() => SuppliersPage());
-                                          }
-                                          break;
-                                        case "customers":
-                                          {
-                                            Get.to(() => CustomersPage());
-                                          }
-                                          break;
-                                        case "usage":
-                                          {
-                                            Get.to(() => ExtendUsage());
-                                          }
-                                          break;
-                                      }
-                                    });
-                              },
-                            ),
-                            if (checkPermission(
-                                category: "accounts", group: true))
-                              const Divider(
-                                color: Colors.white,
-                              ),
-                            if (checkPermission(
-                                category: "accounts", group: true))
-                              InkWell(
-                                onTap:
-                                    shopController.checkSubscription() == false
-                                        ? null
-                                        : () {
-                                            Get.to(() => FinancePage());
-                                          },
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      Icons.auto_graph,
-                                      color: Colors.amber,
-                                    ),
-                                    SizedBox(
-                                      width: 10,
-                                    ),
-                                    Text(
-                                      "Profits & Expenses",
-                                      style: TextStyle(
-                                          color: shopController
-                                                      .checkSubscription() ==
-                                                  false
-                                              ? Colors.grey
-                                              : Colors.white,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                    Spacer(),
-                                    Icon(
-                                      Icons.arrow_forward_ios_rounded,
-                                      color: Colors.white,
-                                      size: 15,
-                                    )
-                                  ],
-                                ),
-                              ),
-                            if (checkPermission(category: "sales", group: true))
-                              const Divider(
-                                color: Colors.white,
-                              ),
-                            if (checkPermission(category: "sales", group: true))
-                              InkWell(
-                                onTap:
-                                    shopController.checkSubscription() == false
-                                        ? null
-                                        : () {
-                                            Get.to(() => SalesPage());
-                                          },
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      Icons.margin_outlined,
-                                      color: Colors.amber,
-                                    ),
-                                    SizedBox(
-                                      width: 10,
-                                    ),
-                                    Text(
-                                      "Sales & Orders",
-                                      style: TextStyle(
-                                          color: shopController
-                                                      .checkSubscription() ==
-                                                  false
-                                              ? Colors.grey
-                                              : Colors.white,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                    Spacer(),
-                                    Icon(
-                                      Icons.arrow_forward_ios_rounded,
-                                      color: Colors.white,
-                                      size: 15,
-                                    )
-                                  ],
-                                ),
-                              )
-                          ],
-                        ),
-                      ),
-                    )
-                  : Container(
-                      width: MediaQuery.of(context).size.width * 0.8,
-                      height: MediaQuery.of(context).size.height * 0.2,
-                      padding: const EdgeInsets.only(top: 10),
-                      child: Obx(
-                        () => ListView.builder(
-                          shrinkWrap: true,
-                          scrollDirection: Axis.horizontal,
-                          itemCount: enterpriseOperations
-                              .where((e) =>
-                                  checkPermission(
-                                      category: e["category"], group: true) ==
-                                  true)
-                              .toList()
-                              .length,
-                          itemBuilder: (context, index) {
-                            var e = enterpriseOperations[index];
-                            return Container(
-                              margin: const EdgeInsets.only(right: 20),
-                              width: MediaQuery.of(context).size.height * 0.2,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  color: Colors.grey.withOpacity(0.1)),
-                              padding: const EdgeInsets.all(10),
-                              child: gridItems(
-                                  title: e["title"],
-                                  iconData: e["icon"],
-                                  isSmallScreen: false,
-                                  function: () {
-                                    switch (
-                                        e["title"].toString().toLowerCase()) {
-                                      case "sale":
-                                        Get.find<HomeController>()
-                                            .selectedWidget
-                                            .value = CreateSale();
-                                        break;
-                                      case "cashflow":
-                                        {
-                                          Get.find<CashflowController>()
-                                              .getCashflowSummary(
-                                            shopId: shopController
-                                                .currentShop.value!.id,
-                                            from: DateTime.parse(DateFormat(
+              Container(
+                width: double.infinity,
+                margin: EdgeInsets.only(
+                    right: isSmallScreen(context) ? 0 : 5,
+                    left: isSmallScreen(context) ? 0 : 5),
+                padding: const EdgeInsets.all(15),
+                decoration: BoxDecoration(
+                    color: AppColors.mainColor,
+                    borderRadius: BorderRadius.circular(20)),
+                child: Obx(
+                  () => Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      GridView.builder(
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                            childAspectRatio: isSmallScreen(context)
+                                ? 1.5
+                                : !isSmallScreen(context) &&
+                                        MediaQuery.of(context).size.width < 1000
+                                    ? 1.6
+                                    : 2.0,
+                            crossAxisCount: 3,
+                            crossAxisSpacing: isSmallScreen(context) ? 10 : 6,
+                            mainAxisSpacing: isSmallScreen(context) ? 10 : 3),
+                        padding: EdgeInsets.zero,
+                        itemCount: enterpriseOperations
+                            .where((e) =>
+                                checkPermission(
+                                    category: e["category"], group: true) ==
+                                true)
+                            .toList()
+                            .length,
+                        shrinkWrap: true,
+                        physics: const ScrollPhysics(),
+                        itemBuilder: (c, i) {
+                          var e = enterpriseOperations.elementAt(i);
+                          return gridItems(
+                              title: e["title"],
+                              iconData: e["icon"],
+                              isSmallScreen: true,
+                              function: () {
+                                switch (e["title"].toString().toLowerCase()) {
+                                  case "sale":
+                                    {
+                                      isSmallScreen(context)
+                                          ? Get.to(() => CreateSale())
+                                          : Get.find<HomeController>()
+                                              .selectedWidget
+                                              .value = CreateSale();
+                                    }
+                                    break;
+                                  case "cashflow":
+                                    {
+                                      Get.find<CashflowController>()
+                                          .getCashflowSummary(
+                                        shopId: shopController
+                                            .currentShop.value!.id,
+                                        from: DateTime.parse(
+                                            DateFormat("yyyy-MM-dd").format(
+                                                Get.find<CashflowController>()
+                                                    .fromDate
+                                                    .value)),
+                                        to: DateTime.parse(DateFormat(
                                                     "yyyy-MM-dd")
                                                 .format(Get.find<
                                                         CashflowController>()
-                                                    .fromDate
-                                                    .value)),
-                                            to: DateTime.parse(DateFormat(
-                                                        "yyyy-MM-dd")
-                                                    .format(Get.find<
-                                                            CashflowController>()
-                                                        .toDate
-                                                        .value))
-                                                .add(const Duration(days: 1)),
-                                          );
-                                          Get.find<HomeController>()
+                                                    .toDate
+                                                    .value))
+                                            .add(const Duration(days: 1)),
+                                      );
+                                      isSmallScreen(context)
+                                          ? Get.to(() => CashFlowManager())
+                                          : Get.find<HomeController>()
                                               .selectedWidget
                                               .value = CashFlowManager();
-                                        }
-                                        break;
-                                      case "stock":
-                                        {
-                                          Get.find<HomeController>()
+                                    }
+                                    break;
+                                  case "stock":
+                                    {
+                                      isSmallScreen(context)
+                                          ? Get.to(() => StockPage())
+                                          : Get.find<HomeController>()
                                               .selectedWidget
                                               .value = StockPage();
-                                        }
-                                        break;
-                                      case "suppliers":
-                                        {
-                                          Get.find<HomeController>()
+                                    }
+                                    break;
+                                  case "suppliers":
+                                    {
+                                      isSmallScreen(context)
+                                          ? Get.to(() => SuppliersPage())
+                                          : Get.find<HomeController>()
                                               .selectedWidget
                                               .value = SuppliersPage();
-                                        }
-                                        break;
-                                      case "customers":
-                                        {
-                                          Get.find<HomeController>()
+                                    }
+                                    break;
+                                  case "customers":
+                                    {
+                                      isSmallScreen(context)
+                                          ? Get.to(() => CustomersPage())
+                                          : Get.find<HomeController>()
                                               .selectedWidget
                                               .value = CustomersPage();
-                                        }
-                                        break;
-                                      case "usage":
-                                        {
-                                          Get.find<HomeController>()
+                                    }
+                                    break;
+                                  case "usage":
+                                    {
+                                      isSmallScreen(context)
+                                          ? Get.to(() => ExtendUsage())
+                                          : Get.find<HomeController>()
                                               .selectedWidget
                                               .value = ExtendUsage();
-                                        }
-                                        break;
                                     }
-                                  }),
-                            );
-                          },
+                                    break;
+                                }
+                              });
+                        },
+                      ),
+                      if (checkPermission(category: "accounts", group: true))
+                        const Divider(
+                          color: Colors.white,
                         ),
-                      )),
+                      if (checkPermission(category: "accounts", group: true))
+                        InkWell(
+                          onTap: shopController.checkSubscription() == false
+                              ? null
+                              : () {
+                                  isSmallScreen(context)
+                                      ? Get.to(() => FinancePage())
+                                      : Get.find<HomeController>()
+                                          .selectedWidget
+                                          .value = FinancePage();
+                                },
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.auto_graph,
+                                color: Colors.amber,
+                              ),
+                              SizedBox(
+                                width: 10,
+                              ),
+                              Text(
+                                "Profits & Expenses",
+                                style: TextStyle(
+                                    color: shopController.checkSubscription() ==
+                                            false
+                                        ? Colors.grey
+                                        : Colors.white,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              Spacer(),
+                              Icon(
+                                Icons.arrow_forward_ios_rounded,
+                                color: Colors.white,
+                                size: 15,
+                              )
+                            ],
+                          ),
+                        ),
+                      if (checkPermission(category: "sales", group: true))
+                        const Divider(
+                          color: Colors.white,
+                        ),
+                      if (checkPermission(category: "sales", group: true))
+                        InkWell(
+                          onTap: shopController.checkSubscription() == false
+                              ? null
+                              : () {
+                                  isSmallScreen(context)
+                                      ? Get.to(() => SalesPage())
+                                      : Get.find<HomeController>()
+                                          .selectedWidget
+                                          .value = SalesPage();
+                                },
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.margin_outlined,
+                                color: Colors.amber,
+                              ),
+                              SizedBox(
+                                width: 10,
+                              ),
+                              Text(
+                                "Sales & Orders",
+                                style: TextStyle(
+                                    color: shopController.checkSubscription() ==
+                                            false
+                                        ? Colors.grey
+                                        : Colors.white,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              Spacer(),
+                              Icon(
+                                Icons.arrow_forward_ios_rounded,
+                                color: Colors.white,
+                                size: 15,
+                              )
+                            ],
+                          ),
+                        )
+                    ],
+                  ),
+                ),
+              ),
+
               const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,

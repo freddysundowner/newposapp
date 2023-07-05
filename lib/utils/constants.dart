@@ -11,10 +11,11 @@ const allowSubscription = true;
 
 List<Map<String, dynamic>> sidePages = [
   {"page": homePage, "icon": Icons.home},
-  {"page": profitsPage, "icon": Icons.auto_graph},
-  {"page": salesPage, "icon": Icons.margin_outlined},
+  // {"page": profitsPage, "icon":    Icons.auto_graph},
+  // {"page": salesPage, "icon":   Icons.margin_outlined},
   {"page": shopsPage, "icon": Icons.shop},
   {"page": attendantPage, "icon": Icons.people},
+
   {"page": profilePage, "icon": Icons.person},
   {"page": authPage, "icon": Icons.logout},
 ];
