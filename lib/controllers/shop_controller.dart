@@ -64,9 +64,9 @@ class ShopController extends GetxController {
     getShops();
     Get.find<UserController>().getUser();
     clearTextFields();
-    if (MediaQuery.of(context).size.width > 600) {
+    if (!isSmallScreen(context)) {
       if (page == "home") {
-        Get.find<HomeController>().selectedWidget.value = HomePage();
+        Get.off(() => Home());
       } else {
         Get.find<HomeController>().selectedWidget.value = ShopsPage();
       }

@@ -9,6 +9,7 @@ import 'package:pointify/controllers/plan_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/controllers/user_controller.dart';
 import 'package:pointify/main.dart';
+import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/authentication/landing.dart';
 import 'package:pointify/screens/authentication/reloadpage.dart';
 import 'package:pointify/screens/home/home_page.dart';
@@ -162,10 +163,11 @@ class AuthController extends GetxController {
         clearDataFromTextFields();
         await Get.find<UserController>().getUser();
         Get.find<PlanController>().getPlans();
-        if (MediaQuery.of(context).size.width > 600) {
-          Get.find<HomeController>().selectedWidget.value =
-              CreateShop(page: "home");
+        if (isSmallScreen(context)) {
+          print("small");
+          Get.off(() => CreateShop(page: "home"));
         } else {
+          print("lsmall");
           Get.off(() => CreateShop(page: "home"));
         }
 
