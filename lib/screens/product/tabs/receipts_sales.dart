@@ -3,9 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:intl/intl.dart';
+import 'package:pointify/responsive/responsiveness.dart';
+import 'package:pointify/screens/product/tabs/product_sales.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 import '../../../Real/schema.dart';
+import '../../../controllers/home_controller.dart';
 import '../../../controllers/sales_controller.dart';
 import '../../../functions/functions.dart';
 import '../../../utils/colors.dart';
@@ -17,10 +20,12 @@ import '../product_history.dart';
 class ProductReceiptsSales extends StatelessWidget {
   Product product;
   int i;
+
   ProductReceiptsSales({Key? key, required this.product, required this.i})
       : super(key: key);
 
   SalesController salesController = Get.find<SalesController>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,20 +39,24 @@ class ProductReceiptsSales extends StatelessWidget {
                   fromDate: firstDayofYear,
                   toDate: lastDayofYear);
             }, year: salesController.currentYear.value);
-            Get.back();
+            isSmallScreen(context)
+                ? Get.back()
+                : Get.find<HomeController>().selectedWidget.value = ProductHistory(
+                    product: product,
+                  );
           },
-          icon: Icon(Icons.arrow_back_ios),
+          icon: const Icon(Icons.arrow_back_ios),
         ),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               "Sales",
               style: TextStyle(fontSize: 16),
             ),
             Text(
               product.name!,
-              style: TextStyle(fontSize: 12),
+              style: const TextStyle(fontSize: 12),
             )
           ],
         ),
@@ -98,14 +107,14 @@ class ProductReceiptsSales extends StatelessWidget {
               height: 20,
             ),
             Container(
-              padding: EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Text(
                   "From ${'${DateFormat("yyy-MM-dd").format(salesController.filterStartDate.value)} - ${DateFormat("yyy-MM-dd").format(salesController.filterEndDate.value)}'}"),
             ),
             const SizedBox(
               height: 10,
             ),
-            Divider(),
+            const Divider(),
             Expanded(
               child: DefaultTabController(
                   initialIndex: 0,
@@ -260,7 +269,7 @@ class ProductReceiptsSales extends StatelessWidget {
                     size: 20,
                   ),
                 ),
-              SizedBox(
+              const SizedBox(
                 width: 10,
               ),
               Column(
@@ -285,9 +294,9 @@ class ProductReceiptsSales extends StatelessWidget {
                         '${DateFormat("MMM dd, yyyy, hh:m a").format(receiptItem.createdAt!)} '),
                 ],
               ),
-              Spacer(),
+              const Spacer(),
               if (checkPermission(category: "sales", permission: "manage"))
-                Icon(
+                const Icon(
                   Icons.more_vert_rounded,
                 )
             ],
