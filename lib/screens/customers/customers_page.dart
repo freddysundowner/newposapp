@@ -130,8 +130,8 @@ class CustomersPage extends StatelessWidget {
 
 class Customers extends StatelessWidget {
   String type;
-
-  Customers({Key? key, required this.type}) : super(key: key);
+  Function ?function;
+  Customers({Key? key, required this.type,this.function}) : super(key: key);
   CustomerController customersController = Get.find<CustomerController>();
 
   @override
@@ -189,7 +189,7 @@ class Customers extends StatelessWidget {
                                 type: type);
                           })
                       : customerTable(
-                          customers: results, context: context, type: "sale");
+                          customers: results, context: context, type: "sale",function: function);
                 }
               });
         }),

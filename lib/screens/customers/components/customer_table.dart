@@ -8,7 +8,7 @@ import '../../../Real/schema.dart';
 import '../../../controllers/sales_controller.dart';
 import '../../../utils/colors.dart';
 
-Widget customerTable({required customers, required context, required type}) {
+Widget customerTable({required customers, required context, required type,Function? function}) {
   return SingleChildScrollView(
     child: Container(
       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
@@ -46,6 +46,7 @@ Widget customerTable({required customers, required context, required type}) {
                               .value!
                               .customerId = customerModel;
                           Get.find<SalesController>().receipt.refresh();
+                          function!();
                         },
                         child: Align(
                           alignment: Alignment.topRight,
