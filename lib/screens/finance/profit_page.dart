@@ -18,11 +18,13 @@ import '../../controllers/expense_controller.dart';
 import '../../controllers/sales_controller.dart';
 import '../../utils/date_filter.dart';
 import '../sales/all_sales.dart';
+import '../sales/sales_page.dart';
 
 class ProfitPage extends StatelessWidget {
   String? headline;
+  String? page;
 
-  ProfitPage({Key? key, this.headline}) : super(key: key) {}
+  ProfitPage({Key? key, this.headline, this.page}) : super(key: key) {}
 
   SalesController salesController = Get.find<SalesController>();
   ShopController shopController = Get.find<ShopController>();
@@ -30,21 +32,11 @@ class ProfitPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ResponsiveWidget(
-      largeScreen: Scaffold(
-        backgroundColor: Colors.white,
-        appBar: _appBar(context),
-        body: Container(
-          padding: EdgeInsets.symmetric(horizontal: 80, vertical: 10),
-          child: body(context),
-        ),
+    return Helper(
+      widget: Container(
+        child: body(context),
       ),
-      smallScreen: Helper(
-        widget: Container(
-          child: body(context),
-        ),
-        appBar: _appBar(context),
-      ),
+      appBar: _appBar(context),
     );
   }
 
@@ -56,13 +48,17 @@ class ProfitPage extends StatelessWidget {
       centerTitle: false,
       leading: IconButton(
         onPressed: () {
-          if (MediaQuery.of(context).size.width > 600) {
-            Get.find<HomeController>().selectedWidget.value = FinancePage();
-          } else {
+          if (isSmallScreen(context)) {
             Get.back();
+          } else {
+            if (page == "salesPage") {
+              Get.find<HomeController>().selectedWidget.value = SalesPage();
+            } else {
+              Get.find<HomeController>().selectedWidget.value = FinancePage();
+            }
           }
         },
-        icon: Icon(
+        icon: const Icon(
           Icons.arrow_back_ios,
           color: Colors.white,
         ),
@@ -90,7 +86,7 @@ class ProfitPage extends StatelessWidget {
                   ));
             },
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               child: const Center(
                 child: Row(
                   children: [
@@ -122,7 +118,7 @@ class ProfitPage extends StatelessWidget {
             color: AppColors.mainColor,
             child: Column(
               children: [
-                SizedBox(height: 30),
+                const SizedBox(height: 30),
                 Center(
                     child: Text(
                   "Net Profit $headline",
@@ -132,10 +128,11 @@ class ProfitPage extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 )),
-                SizedBox(height: 15),
+                const SizedBox(height: 15),
                 Container(
                   width: double.infinity,
-                  padding: EdgeInsets.only(left: 20, right: 20, bottom: 10),
+                  padding:
+                      const EdgeInsets.only(left: 20, right: 20, bottom: 10),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
@@ -147,7 +144,7 @@ class ProfitPage extends StatelessWidget {
                             color: Colors.white.withOpacity(0.2)),
                         child: Row(
                           children: [
-                            Icon(Icons.credit_card, color: Colors.white),
+                            const Icon(Icons.credit_card, color: Colors.white),
                             const SizedBox(width: 10),
                             Text(
                               htmlPrice(salesController.grossProfit.value -
@@ -214,12 +211,12 @@ class ProfitPage extends StatelessWidget {
                         ),
                         Text(
                           htmlPrice(salesController.allSalesTotal.value),
-                          style: TextStyle(color: Colors.black),
+                          style: const TextStyle(color: Colors.black),
                         )
                       ],
                     ),
                   ),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -250,7 +247,7 @@ class ProfitPage extends StatelessWidget {
                       )
                     ],
                   ),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
                   InkWell(
                     onTap: () {
                       Get.find<ProductController>().getBadStock(
@@ -259,8 +256,8 @@ class ProfitPage extends StatelessWidget {
                           product: null,
                           fromDate: DateTime.parse(
                               DateFormat("yyy-MM-dd").format(DateTime.now())),
-                          toDate: DateTime.parse(DateFormat("yyy-MM-dd")
-                              .format(DateTime.now().add(Duration(days: 1)))));
+                          toDate: DateTime.parse(DateFormat("yyy-MM-dd").format(
+                              DateTime.now().add(const Duration(days: 1)))));
 
                       isSmallScreen(context)
                           ? Get.to(() => BadStockPage(
@@ -350,8 +347,8 @@ class ProfitPage extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(height: 25),
-          Spacer(),
+          const SizedBox(height: 25),
+          const Spacer(),
         ],
       );
     });
