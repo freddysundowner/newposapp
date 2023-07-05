@@ -326,13 +326,13 @@ class HomePage extends StatelessWidget {
                       GridView.builder(
                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                             childAspectRatio: isSmallScreen(context)
-                                ? 1.5
+                                ? 1.05
                                 : !isSmallScreen(context) &&
                                         MediaQuery.of(context).size.width < 1000
                                     ? 1.6
                                     : 2.0,
                             crossAxisCount: 3,
-                            crossAxisSpacing: isSmallScreen(context) ? 10 : 6,
+                            crossAxisSpacing: isSmallScreen(context) ? 2 : 6,
                             mainAxisSpacing: isSmallScreen(context) ? 10 : 3),
                         padding: EdgeInsets.zero,
                         itemCount: enterpriseOperations
