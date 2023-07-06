@@ -18,9 +18,9 @@ Widget customerTable({required customers, required context, required type,Functi
         child: DataTable(
           decoration: BoxDecoration(
               border: Border.all(
-            width: 1,
-            color: Colors.black,
-          )),
+                width: 1,
+                color: Colors.black,
+              )),
           columnSpacing: 30.0,
           columns: const [
             DataColumn(label: Text('Name', textAlign: TextAlign.center)),
@@ -38,61 +38,62 @@ Widget customerTable({required customers, required context, required type,Functi
               DataCell(
                 type == "sale"
                     ? InkWell(
-                        onTap: () {
-                          Get.find<HomeController>().selectedWidget.value =
-                              CreateSale();
-                          Get.find<SalesController>()
-                              .receipt
-                              .value!
-                              .customerId = customerModel;
-                          Get.find<SalesController>().receipt.refresh();
-                          function!();
-                        },
-                        child: Align(
-                          alignment: Alignment.topRight,
-                          child: Center(
-                            child: Container(
-                              padding: const EdgeInsets.all(5),
-                              margin: const EdgeInsets.all(5),
-                              decoration: BoxDecoration(
-                                  color: AppColors.mainColor,
-                                  borderRadius: BorderRadius.circular(3)),
-                              width: 75,
-                              child: const Text(
-                                "Select",
-                                style: TextStyle(color: Colors.white),
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                          ),
-                        ),
-                      )
-                    : InkWell(
-                        onTap: () {
-                          Get.find<HomeController>().selectedWidget.value =
-                              CustomerInfoPage(
-                            customerModel: customerModel,
-                          );
-                        },
-                        child: Align(
-                          alignment: Alignment.topRight,
-                          child: Center(
-                            child: Container(
-                              padding: const EdgeInsets.all(5),
-                              margin: const EdgeInsets.all(5),
-                              decoration: BoxDecoration(
-                                  color: AppColors.mainColor,
-                                  borderRadius: BorderRadius.circular(3)),
-                              width: 75,
-                              child: const Text(
-                                "View",
-                                style: TextStyle(color: Colors.white),
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                          ),
+                  onTap: () {
+                    Get.find<HomeController>().selectedWidget.value =
+                        CreateSale();
+                    Get.find<SalesController>()
+                        .receipt
+                        .value!
+                        .customerId = customerModel;
+                    Get.find<SalesController>().receipt.refresh();
+                    function!();
+
+                  },
+                  child: Align(
+                    alignment: Alignment.topRight,
+                    child: Center(
+                      child: Container(
+                        padding: const EdgeInsets.all(5),
+                        margin: const EdgeInsets.all(5),
+                        decoration: BoxDecoration(
+                            color: AppColors.mainColor,
+                            borderRadius: BorderRadius.circular(3)),
+                        width: 75,
+                        child: const Text(
+                          "Select",
+                          style: TextStyle(color: Colors.white),
+                          textAlign: TextAlign.center,
                         ),
                       ),
+                    ),
+                  ),
+                )
+                    : InkWell(
+                  onTap: () {
+                    Get.find<HomeController>().selectedWidget.value =
+                        CustomerInfoPage(
+                          customerModel: customerModel,
+                        );
+                  },
+                  child: Align(
+                    alignment: Alignment.topRight,
+                    child: Center(
+                      child: Container(
+                        padding: const EdgeInsets.all(5),
+                        margin: const EdgeInsets.all(5),
+                        decoration: BoxDecoration(
+                            color: AppColors.mainColor,
+                            borderRadius: BorderRadius.circular(3)),
+                        width: 75,
+                        child: const Text(
+                          "View",
+                          style: TextStyle(color: Colors.white),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
               ),
             ]);
           }),

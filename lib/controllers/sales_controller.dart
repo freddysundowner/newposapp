@@ -33,6 +33,7 @@ class SalesData {
 
 class ChartData {
   ChartData(this.x, this.y);
+
   final String x;
   final double y;
 }
@@ -43,6 +44,7 @@ class HomeCard {
   final String? key;
   final Color? color;
   final IconData? iconData;
+
   HomeCard({this.total, this.name, this.key, this.color, this.iconData});
 }
 
@@ -452,7 +454,9 @@ class SalesController extends GetxController
                   TextButton(
                       onPressed: () {
                         Get.back();
-                        if (MediaQuery.of(Get.context!).size.width > 600) {
+
+                        if (!isSmallScreen(Get.context)) {
+                          Get.back();
                           Get.find<HomeController>().selectedWidget.value =
                               WalletPage(
                             customerModel: receipt.value!.customerId!,
@@ -508,6 +512,7 @@ class SalesController extends GetxController
   }
 
   _onCredit(SalesModel salesModel) => _paymentType(salesModel) == "Credit";
+
   _onWallet(SalesModel salesModel) => _paymentType(salesModel) == "Wallet";
 
   void saveReceipt() {
@@ -619,7 +624,14 @@ class SalesController extends GetxController
       required screen}) {
     showModalBottomSheet(
         context: context,
+        backgroundColor:
+            isSmallScreen(context) ? Colors.white : Colors.transparent,
         builder: (context) => Container(
+              color: Colors.white,
+              margin: EdgeInsets.only(
+                  left: isSmallScreen(context)
+                      ? 0
+                      : MediaQuery.of(context).size.width * 0.2),
               height: MediaQuery.of(context).copyWith().size.height * 0.50,
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
