@@ -308,7 +308,10 @@ class CashAtBank extends StatelessWidget {
           return Container(
             color: Colors.white,
             height: MediaQuery.of(context).size.height * 0.3,
-            margin: EdgeInsets.only(),
+            margin: EdgeInsets.only(
+                left: isSmallScreen(context)
+                    ? 0
+                    : MediaQuery.of(context).size.width * 0.2),
             child: Column(
               children: [
                 Container(
@@ -325,8 +328,8 @@ class CashAtBank extends StatelessWidget {
                     showDialog(
                         context: context,
                         builder: (_) {
-                          return Dialog(
-                            child: Container(
+                          return AlertDialog(
+                            content: Container(
                               padding: EdgeInsets.only(
                                   left: 15, right: 15, top: 10, bottom: 3),
                               height: MediaQuery.of(context).size.height * 0.2,
