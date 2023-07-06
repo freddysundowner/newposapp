@@ -94,7 +94,7 @@ class HomePage extends StatelessWidget {
                         shopController.checkDaysRemaining() < 10
                     ? Container(
                         padding:
-                            EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                            const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                         decoration: BoxDecoration(
                           color: Colors.red,
                           borderRadius: BorderRadius.circular(8),
@@ -116,7 +116,7 @@ class HomePage extends StatelessWidget {
                                     shopController.checkDaysRemaining() < 10)
                                   Text(
                                     "${shopController.checkDaysRemaining()} days remaining",
-                                    style: TextStyle(color: Colors.white),
+                                    style: const TextStyle(color: Colors.white),
                                   ),
                                 if (shopController.checkIfTrial())
                                   InkWell(
@@ -128,7 +128,7 @@ class HomePage extends StatelessWidget {
                                               .value = ExtendUsage();
                                     },
                                     child: Container(
-                                      padding: EdgeInsets.symmetric(
+                                      padding: const EdgeInsets.symmetric(
                                           horizontal: 10, vertical: 4),
                                       decoration: BoxDecoration(
                                         color: Colors.white,
@@ -151,7 +151,7 @@ class HomePage extends StatelessWidget {
                 children: [
                   majorTitle(
                       title: "Current Shop", color: Colors.black, size: 20.0),
-                  SizedBox(
+                  const SizedBox(
                     width: 5,
                   ),
                   majorTitle(
@@ -200,73 +200,6 @@ class HomePage extends StatelessWidget {
                       onTap: () async {
                         await shopController.getShops();
                         showShopModalBottomSheet(Get.context);
-                        // if (isSmallScreen(context)) {
-                        //
-                        // }
-                        // else {
-                        //   showDialog(
-                        //       context: context,
-                        //       builder: (_) {
-                        //         return AlertDialog(
-                        //           title: Center(child: Text("Shops")),
-                        //           content: Container(
-                        //             height: 180,
-                        //             width: 200,
-                        //             child: ListView.builder(
-                        //                 itemCount:
-                        //                     shopController.allShops.length,
-                        //                 shrinkWrap: true,
-                        //                 itemBuilder: (context, index) {
-                        //                   Shop shopBody = shopController
-                        //                       .allShops
-                        //                       .elementAt(index);
-                        //                   return InkWell(
-                        //                     onTap: () {
-                        //                       Get.back();
-                        //                       Get.find<RealmController>()
-                        //                           .setDefaulShop(shopBody);
-                        //                     },
-                        //                     child: Container(
-                        //                       padding: const EdgeInsets.all(10),
-                        //                       child: Column(
-                        //                         children: [
-                        //                           Row(
-                        //                             mainAxisAlignment:
-                        //                                 MainAxisAlignment
-                        //                                     .spaceBetween,
-                        //                             children: [
-                        //                               Row(
-                        //                                 children: [
-                        //                                   Icon(Icons.shop),
-                        //                                   majorTitle(
-                        //                                       title:
-                        //                                           "${shopBody.name}",
-                        //                                       color:
-                        //                                           Colors.black,
-                        //                                       size: 16.0),
-                        //                                 ],
-                        //                               ),
-                        //                               const Icon(Icons
-                        //                                   .arrow_forward_ios)
-                        //                             ],
-                        //                           ),
-                        //                           Divider()
-                        //                         ],
-                        //                       ),
-                        //                     ),
-                        //                   );
-                        //                 }),
-                        //           ),
-                        //           actions: [
-                        //             TextButton(
-                        //                 onPressed: () {
-                        //                   Get.back();
-                        //                 },
-                        //                 child: Text("Cancel".toUpperCase()))
-                        //           ],
-                        //         );
-                        //       });
-                        // }
                       },
                       child: Container(
                         padding: const EdgeInsets.all(5),
@@ -285,19 +218,27 @@ class HomePage extends StatelessWidget {
               const SizedBox(height: 20),
               SizedBox(
                 height: 100,
+                width: double.infinity,
                 child: Column(
                   children: [
                     Obx(
                       () {
                         return Expanded(
-                          child: PageView.builder(
+                          child:  isSmallScreen(context) ?
+                          PageView.builder(
                               scrollDirection: Axis.horizontal,
                               controller: PageController(
-                                  viewportFraction:
-                                      isSmallScreen(context) ? 0.8 : 0.45,
+                                  viewportFraction: 0.8 ,
                                   initialPage: 1,
                                   keepPage: false),
                               onPageChanged: (value) {},
+                              itemCount: salesController.homecards.length,
+                              itemBuilder: (context, index) {
+                                return showTodaySales(context, index,
+                                    salesController.homecards.elementAt(index));
+                              }):
+                          ListView.builder(
+                              scrollDirection: Axis.horizontal,
                               itemCount: salesController.homecards.length,
                               itemBuilder: (context, index) {
                                 return showTodaySales(context, index,
@@ -450,11 +391,11 @@ class HomePage extends StatelessWidget {
                                 },
                           child: Row(
                             children: [
-                              Icon(
+                              const Icon(
                                 Icons.auto_graph,
                                 color: Colors.amber,
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 width: 10,
                               ),
                               Text(
@@ -466,8 +407,8 @@ class HomePage extends StatelessWidget {
                                         : Colors.white,
                                     fontWeight: FontWeight.bold),
                               ),
-                              Spacer(),
-                              Icon(
+                              const Spacer(),
+                              const Icon(
                                 Icons.arrow_forward_ios_rounded,
                                 color: Colors.white,
                                 size: 15,
@@ -508,8 +449,8 @@ class HomePage extends StatelessWidget {
                                         : Colors.white,
                                     fontWeight: FontWeight.bold),
                               ),
-                              Spacer(),
-                              Icon(
+                              const Spacer(),
+                              const Icon(
                                 Icons.arrow_forward_ios_rounded,
                                 color: Colors.white,
                                 size: 15,
@@ -646,8 +587,8 @@ class HomePage extends StatelessWidget {
         print(homeCard.color);
       },
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-        margin: const EdgeInsets.only(right: 20),
+        padding:  EdgeInsets.symmetric(vertical: 10, horizontal:isSmallScreen(context)?20:50),
+        margin: const EdgeInsets.only(left: 10,right: 10),
         decoration: BoxDecoration(
             color: homeCard.color, borderRadius: BorderRadius.circular(10)),
         child: Row(
