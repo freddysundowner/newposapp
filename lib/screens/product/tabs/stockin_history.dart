@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:intl/intl.dart';
+import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/controllers/sales_controller.dart';
+import 'package:pointify/responsive/responsiveness.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 import '../../../Real/schema.dart';
@@ -21,112 +23,62 @@ import '../product_history.dart';
 class ProductStockInHistory extends StatelessWidget {
   ProductController productController = Get.find<ProductController>();
   Product? product;
+
   ProductStockInHistory({Key? key, this.product});
 
   SalesController salesController = Get.find<SalesController>();
+
   @override
   Widget build(BuildContext context) {
-    return Obx(() {
-      return MediaQuery.of(context).size.width > 600
-          ? SingleChildScrollView(
-              child: Column(
+    return Column(
+      children: [
+        const SizedBox(
+          height: 20,
+        ),
+        Container(
+          padding: EdgeInsets.symmetric(horizontal: 20),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(height: 10),
-                  // Theme(
-                  //   data: Theme.of(context)
-                  //       .copyWith(dividerColor: Colors.grey),
-                  //   child: Container(
-                  //     width: double.infinity,
-                  //     margin: const EdgeInsets.only(
-                  //         right: 15, left: 15, bottom: 20),
-                  //     child: DataTable(
-                  //       decoration: BoxDecoration(
-                  //           border: Border.all(
-                  //         width: 1,
-                  //         color: Colors.black,
-                  //       )),
-                  //       columnSpacing: 30.0,
-                  //       columns: [
-                  //         DataColumn(
-                  //             label: Text('Product',
-                  //                 textAlign: TextAlign.center)),
-                  //         DataColumn(
-                  //             label: Text('Quantity',
-                  //                 textAlign: TextAlign.center)),
-                  //         DataColumn(
-                  //             label: Text('Buying Price',
-                  //                 textAlign: TextAlign.center)),
-                  //         DataColumn(
-                  //             label: Text('Selling Price',
-                  //                 textAlign: TextAlign.center)),
-                  //         DataColumn(
-                  //             label: Text('Date',
-                  //                 textAlign: TextAlign.center)),
-                  //       ],
-                  //       rows: List.generate(
-                  //           purchaseController.purchasedItems.length,
-                  //           (index) {
-                  //         ProductHistoryModel productBody =
-                  //             ProductHistoryModel(ObjectId());
-                  //         final y = productBody.product!.name;
-                  //         final x = productBody.quantity;
-                  //         final w = productBody.product!.buyingPrice;
-                  //         final z = productBody.product!.sellingPrice[0];
-                  //         final a = productBody.createdAt;
-                  //
-                  //         return DataRow(cells: [
-                  //           DataCell(Container(width: 75, child: Text(y!))),
-                  //           DataCell(Container(
-                  //               width: 75, child: Text(x.toString()))),
-                  //           DataCell(Container(
-                  //               width: 75, child: Text(w.toString()))),
-                  //           DataCell(Container(
-                  //               width: 75, child: Text(z.toString()))),
-                  //           DataCell(Container(
-                  //               width: 75,
-                  //               child: Text(
-                  //                   DateFormat("dd-MM-yyyy").format(a!)))),
-                  //         ]);
-                  //       }),
-                  //     ),
-                  //   ),
-                  // ),
-                  SizedBox(height: 30)
+                  Text(
+                      "STOCKINS HISTORY ${productController.currentYear.value}"),
+                  const SizedBox(
+                    height: 3,
+                  ),
+                  Text(
+                    htmlPrice(productController.productInvoices.fold(
+                        0,
+                        (previousValue, element) =>
+                            previousValue + element.total!)),
+                    style: const TextStyle(
+                        fontSize: 18, fontWeight: FontWeight.bold),
+                  )
                 ],
               ),
-            )
-          : Column(
-              children: [
-                const SizedBox(
-                  height: 20,
-                ),
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 20),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                              "STOCKINS HISTORY ${productController.currentYear.value}"),
-                          const SizedBox(
-                            height: 3,
-                          ),
-                          Text(
-                            htmlPrice(productController.productInvoices.fold(
-                                0,
-                                (previousValue, element) =>
-                                    previousValue + element.total!)),
-                            style: const TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold),
-                          )
-                        ],
-                      ),
-                      InkWell(
-                        onTap: () {
-                          Get.to(() => MonthlyPreviewPage(
+              InkWell(
+                onTap: () {
+                  isSmallScreen(context)
+                      ? Get.to(() => MonthlyPreviewPage(
+                          sales: monhts
+                              .map((e) => [
+                                    e["month"],
+                                    htmlPrice(getSalesTotal(e["month"],
+                                        productController.productInvoices,
+                                        type: "stockin")),
+                                  ])
+                              .toList(),
+                          type: "Product Stockin",
+                          product: product,
+                          title: "Monthly stocking for ${product!.name!}",
+                          total: productController.productInvoices.fold(
+                              0,
+                              (previousValue, element) =>
+                                  previousValue! + element.total!)))
+                      : Get.find<HomeController>().selectedWidget.value =
+                          MonthlyPreviewPage(
                               sales: monhts
                                   .map((e) => [
                                         e["month"],
@@ -141,48 +93,51 @@ class ProductStockInHistory extends StatelessWidget {
                               total: productController.productInvoices.fold(
                                   0,
                                   (previousValue, element) =>
-                                      previousValue! + element.total!)));
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.all(5),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              color: AppColors.mainColor),
-                          child: const Icon(
-                            Icons.download_rounded,
-                            color: Colors.white,
-                            size: 15,
-                          ),
-                        ),
-                      )
-                    ],
+                                      previousValue! + element.total!));
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(5),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: AppColors.mainColor),
+                  child: const Icon(
+                    Icons.download_rounded,
+                    color: Colors.white,
+                    size: 15,
                   ),
                 ),
-                const SizedBox(
-                  height: 20,
-                ),
-                Expanded(
-                  child: monthsFilter((i) {
-                    getMonthlyProductSales(product!, i, function:
-                        (Product product, DateTime firstday, DateTime lastday) {
-                      productController.filterStartDate.value = firstday;
-                      productController.filterEndDate.value = lastday;
-                      productController.getProductPurchaseHistory(product,
-                          fromDate: firstday, toDate: lastday);
-                    }, year: productController.currentYear.value);
-                    Get.to(() => ProductStockHistory(
-                          product: product!,
-                          i: i,
-                        ));
-                  }, counts: (month) {
-                    return "${_getSalesCount(month)} sales";
-                  },
-                      totals: (month) =>
-                          "${htmlPrice(_getSalesTotal(month))}/="),
-                ),
-              ],
-            );
-    });
+              )
+            ],
+          ),
+        ),
+        const SizedBox(
+          height: 20,
+        ),
+        Expanded(
+          child: monthsFilter((i) {
+            getMonthlyProductSales(product!, i, function:
+                (Product product, DateTime firstday, DateTime lastday) {
+              productController.filterStartDate.value = firstday;
+              productController.filterEndDate.value = lastday;
+              productController.getProductPurchaseHistory(product,
+                  fromDate: firstday, toDate: lastday);
+            }, year: productController.currentYear.value);
+            isSmallScreen(context)
+                ? Get.to(() => ProductStockHistory(
+                      product: product!,
+                      i: i,
+                    ))
+                : Get.find<HomeController>().selectedWidget.value =
+                    ProductStockHistory(
+                    product: product!,
+                    i: i,
+                  );
+          }, counts: (month) {
+            return "${_getSalesCount(month)} sales";
+          }, totals: (month) => "${htmlPrice(_getSalesTotal(month))}/="),
+        ),
+      ],
+    );
   }
 
   _getSalesCount(String month) {
@@ -211,6 +166,7 @@ class ProductStockInHistory extends StatelessWidget {
 class ProductStockHistory extends StatelessWidget {
   Product product;
   int i;
+
   ProductStockHistory({Key? key, required this.product, required this.i})
       : super(key: key);
   ProductController productController = Get.find<ProductController>();

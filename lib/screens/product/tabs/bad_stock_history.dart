@@ -4,10 +4,12 @@ import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import 'package:intl/intl.dart';
+import 'package:pointify/responsive/responsiveness.dart';
 import 'package:realm/realm.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 import '../../../Real/schema.dart';
+import '../../../controllers/home_controller.dart';
 import '../../../controllers/product_controller.dart';
 import '../../../functions/functions.dart';
 import '../../../pdfFiles/pdf/productmonthlypdf/monthlypreview.dart';
@@ -16,6 +18,7 @@ import '../../../utils/colors.dart';
 import '../../../utils/date_filter.dart';
 import '../../../widgets/months_filter.dart';
 import '../components/product_history_card.dart';
+import '../product_history.dart';
 
 class ProductBadStcokHistory extends StatelessWidget {
   Product? product;
@@ -25,105 +28,59 @@ class ProductBadStcokHistory extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Obx(() {
-      return MediaQuery.of(context).size.width > 600
-          ? SingleChildScrollView(
-              child: Column(
+    return Column(
+      children: [
+        const SizedBox(
+          height: 20,
+        ),
+        Container(
+          padding: EdgeInsets.symmetric(horizontal: 20),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(height: 10),
-                  Theme(
-                    data: Theme.of(context).copyWith(dividerColor: Colors.grey),
-                    child: Container(
-                      width: double.infinity,
-                      margin: EdgeInsets.only(right: 15, left: 15, bottom: 20),
-                      child: DataTable(
-                        decoration: BoxDecoration(
-                            border: Border.all(
-                          width: 1,
-                          color: Colors.black,
-                        )),
-                        columnSpacing: 30.0,
-                        columns: [
-                          DataColumn(
-                              label:
-                                  Text('Product', textAlign: TextAlign.center)),
-                          DataColumn(
-                              label: Text('Quantity',
-                                  textAlign: TextAlign.center)),
-                          DataColumn(
-                              label: Text('Buying Price',
-                                  textAlign: TextAlign.center)),
-                          DataColumn(
-                              label: Text('Selling Price',
-                                  textAlign: TextAlign.center)),
-                          DataColumn(
-                              label: Text('Date', textAlign: TextAlign.center)),
-                        ],
-                        rows: List.generate(productController.badstocks.length,
-                            (index) {
-                          ProductHistoryModel productBody =
-                              ProductHistoryModel(ObjectId());
-                          final y = productBody.product!.name;
-                          final x = productBody.quantity;
-                          final w = productBody.product!.buyingPrice;
-                          final z = productBody.product!.sellingPrice![0];
-                          final a = productBody.createdAt;
-
-                          return DataRow(cells: [
-                            DataCell(Container(width: 75, child: Text(y!))),
-                            DataCell(Container(
-                                width: 75, child: Text(x.toString()))),
-                            DataCell(Container(
-                                width: 75, child: Text(w.toString()))),
-                            DataCell(Container(
-                                width: 75, child: Text(z.toString()))),
-                            DataCell(Container(
-                                width: 75,
-                                child:
-                                    Text(DateFormat("dd-MM-yyyy").format(a!)))),
-                          ]);
-                        }),
-                      ),
-                    ),
+                  Text(
+                      "BAD STOCK HISTORY ${productController.currentYear.value}"),
+                  const SizedBox(
+                    height: 3,
                   ),
-                  SizedBox(height: 30)
+                  Text(
+                    htmlPrice(productController.badstocks.fold(
+                        0,
+                        (previousValue, element) =>
+                            previousValue +
+                            (element.quantity! *
+                                element.product!.buyingPrice!))),
+                    style: const TextStyle(
+                        fontSize: 18, fontWeight: FontWeight.bold),
+                  )
                 ],
               ),
-            )
-          : Column(
-              children: [
-                const SizedBox(
-                  height: 20,
-                ),
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 20),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                              "BAD STOCK HISTORY ${productController.currentYear.value}"),
-                          const SizedBox(
-                            height: 3,
-                          ),
-                          Text(
-                            htmlPrice(productController.badstocks.fold(
-                                0,
-                                (previousValue, element) =>
-                                    previousValue +
-                                    (element.quantity! *
-                                        element.product!.buyingPrice!))),
-                            style: const TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold),
-                          )
-                        ],
-                      ),
-                      InkWell(
-                        onTap: () {
-                          Get.to(() => MonthlyPreviewPage(
+              InkWell(
+                onTap: () {
+                  isSmallScreen(context)
+                      ? Get.to(() => MonthlyPreviewPage(
+                          sales: monhts
+                              .map((e) => [
+                                    e["month"],
+                                    htmlPrice(getSalesTotal(
+                                        e["month"], productController.badstocks,
+                                        type: "badstock")),
+                                  ])
+                              .toList(),
+                          type: "Product Bad Stock",
+                          product: product,
+                          title: "Monthly bad stock for ${product!.name!}",
+                          total: productController.badstocks.fold(
+                              0,
+                              (previousValue, element) =>
+                                  previousValue! +
+                                  (element.quantity! *
+                                      element.product!.buyingPrice!))))
+                      : Get.find<HomeController>().selectedWidget.value =
+                          MonthlyPreviewPage(
                               sales: monhts
                                   .map((e) => [
                                         e["month"],
@@ -140,50 +97,51 @@ class ProductBadStcokHistory extends StatelessWidget {
                                   (previousValue, element) =>
                                       previousValue! +
                                       (element.quantity! *
-                                          element.product!.buyingPrice!))));
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.all(5),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              color: AppColors.mainColor),
-                          child: const Icon(
-                            Icons.download_rounded,
-                            color: Colors.white,
-                            size: 15,
-                          ),
-                        ),
-                      )
-                    ],
+                                          element.product!.buyingPrice!)));
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(5),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: AppColors.mainColor),
+                  child: const Icon(
+                    Icons.download_rounded,
+                    color: Colors.white,
+                    size: 15,
                   ),
                 ),
-                const SizedBox(
-                  height: 20,
-                ),
-                Expanded(
-                  child: monthsFilter((i) {
-                    getMonthlyProductSales(product!, i, function:
-                        (Product product, DateTime firstday, DateTime lastday) {
-                      productController.filterStartDate.value = firstday;
-                      productController.filterEndDate.value = lastday;
-                      productController.getBadStock(
-                          product: product,
-                          fromDate: firstday,
-                          toDate: lastday);
-                    }, year: productController.currentYear.value);
-                    Get.to(() => BadStockHistory(
-                          product: product!,
-                          i: i,
-                        ));
-                  }, counts: (month) {
-                    return "${_getSalesCount(month)} Entries";
-                  },
-                      totals: (month) =>
-                          "${htmlPrice(_getSalesTotal(month))}/="),
-                ),
-              ],
-            );
-    });
+              )
+            ],
+          ),
+        ),
+        const SizedBox(
+          height: 20,
+        ),
+        Expanded(
+          child: monthsFilter((i) {
+            getMonthlyProductSales(product!, i, function:
+                (Product product, DateTime firstday, DateTime lastday) {
+              productController.filterStartDate.value = firstday;
+              productController.filterEndDate.value = lastday;
+              productController.getBadStock(
+                  product: product, fromDate: firstday, toDate: lastday);
+            }, year: productController.currentYear.value);
+            isSmallScreen(context)
+                ? Get.to(() => BadStockHistory(
+                      product: product!,
+                      i: i,
+                    ))
+                : Get.find<HomeController>().selectedWidget.value =
+                    BadStockHistory(
+                    product: product!,
+                    i: i,
+                  );
+          }, counts: (month) {
+            return "${_getSalesCount(month)} Entries";
+          }, totals: (month) => "${htmlPrice(_getSalesTotal(month))}/="),
+        ),
+      ],
+    );
   }
 
   _getSalesCount(String month) {
@@ -210,6 +168,7 @@ class ProductBadStcokHistory extends StatelessWidget {
 class BadStockHistory extends StatelessWidget {
   Product product;
   int i;
+
   BadStockHistory({Key? key, required this.product, required this.i})
       : super(key: key);
   ProductController productController = Get.find<ProductController>();
@@ -227,7 +186,10 @@ class BadStockHistory extends StatelessWidget {
                   fromDate: firstDayofYear,
                   toDate: lastDayofYear);
             }, year: productController.currentYear.value);
-            Get.back();
+            isSmallScreen(context)
+                ? Get.back()
+                : Get.find<HomeController>().selectedWidget.value =
+                    ProductHistory(product: product);
           },
           icon: Icon(Icons.arrow_back_ios),
         ),

@@ -234,8 +234,7 @@ class ProductPage extends StatelessWidget {
                                                     .elementAt(index);
 
                                             final y = productBody.name;
-                                            final x =
-                                                productBody.category?.name;
+                                            final x = productBody.category?.name;
                                             final w = productBody.quantity;
                                             final z = productBody.buyingPrice;
                                             final a = productBody.selling;
@@ -374,60 +373,6 @@ class ProductPage extends StatelessWidget {
             ))
         .toList();
 
-    showDialog(
-      context: context,
-      builder: (_) {
-        return SimpleDialog(
-          children: [
-            if (usercontroller.user.value?.usertype == "admin")
-              ListTile(
-                leading: const Icon(Icons.list),
-                onTap: () {
-                  Get.back();
-                  Get.find<HomeController>().selectedWidget.value =
-                      ProductHistory(product: product);
-                },
-                title: const Text("Product History"),
-              ),
-            if (checkPermission(category: "products", permission: "manage"))
-              ListTile(
-                  leading: const Icon(Icons.edit),
-                  title: const Text("Edit"),
-                  onTap: () {
-                    Get.back();
-                    Get.find<HomeController>().selectedWidget.value =
-                        CreateProduct(page: "edit", productModel: product);
-                  }),
-            if (usercontroller.user.value?.usertype == "admin")
-              ListTile(
-                  leading: const Icon(Icons.code),
-                  onTap: () {
-                    Get.back();
-                  },
-                  title: const Text('Generate Barcode')),
-            if (checkPermission(category: "products", permission: "manage"))
-              ListTile(
-                leading: const Icon(Icons.delete),
-                onTap: () {
-                  Get.back();
-                  deleteDialog(
-                      context: context,
-                      onPressed: () {
-                        productController.deleteProduct(product: product);
-                      });
-                },
-                title: const Text("Delete"),
-              ),
-            ListTile(
-              leading: const Icon(Icons.clear),
-              onTap: () {
-                Get.back();
-              },
-              title: const Text("Close"),
-            )
-          ],
-        );
-      },
-    );
+
   }
 }
