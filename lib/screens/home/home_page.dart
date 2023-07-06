@@ -486,11 +486,11 @@ class HomePage extends StatelessWidget {
                                 },
                           child: Row(
                             children: [
-                              Icon(
+                              const Icon(
                                 Icons.margin_outlined,
                                 color: Colors.amber,
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 width: 10,
                               ),
                               Text(

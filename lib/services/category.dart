@@ -20,7 +20,6 @@ class Categories {
     RealmResults<ProductCategory> r = realmService.realm.query<ProductCategory>(
         r'shopTypes == $0',
         [Get.find<ShopController>().currentShop.value!.type]);
-    print("rr ${r.length}");
     return r;
   }
 
