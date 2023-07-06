@@ -121,7 +121,11 @@ class HomePage extends StatelessWidget {
                                 if (shopController.checkIfTrial())
                                   InkWell(
                                     onTap: () {
-                                      Get.to(() => ExtendUsage());
+                                      isSmallScreen(context)
+                                          ? Get.to(() => ExtendUsage())
+                                          : Get.find<HomeController>()
+                                              .selectedWidget
+                                              .value = ExtendUsage();
                                     },
                                     child: Container(
                                       padding: EdgeInsets.symmetric(
@@ -195,72 +199,74 @@ class HomePage extends StatelessWidget {
                     InkWell(
                       onTap: () async {
                         await shopController.getShops();
-                        if (isSmallScreen(context)) {
-                          showShopModalBottomSheet(Get.context);
-                        } else {
-                          showDialog(
-                              context: context,
-                              builder: (_) {
-                                return AlertDialog(
-                                  title: Center(child: Text("Shops")),
-                                  content: Container(
-                                    height: 180,
-                                    width: 200,
-                                    child: ListView.builder(
-                                        itemCount:
-                                            shopController.allShops.length,
-                                        shrinkWrap: true,
-                                        itemBuilder: (context, index) {
-                                          Shop shopBody = shopController
-                                              .allShops
-                                              .elementAt(index);
-                                          return InkWell(
-                                            onTap: () {
-                                              Get.back();
-                                              Get.find<RealmController>()
-                                                  .setDefaulShop(shopBody);
-                                            },
-                                            child: Container(
-                                              padding: const EdgeInsets.all(10),
-                                              child: Column(
-                                                children: [
-                                                  Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceBetween,
-                                                    children: [
-                                                      Row(
-                                                        children: [
-                                                          Icon(Icons.shop),
-                                                          majorTitle(
-                                                              title:
-                                                                  "${shopBody.name}",
-                                                              color:
-                                                                  Colors.black,
-                                                              size: 16.0),
-                                                        ],
-                                                      ),
-                                                      const Icon(Icons
-                                                          .arrow_forward_ios)
-                                                    ],
-                                                  ),
-                                                  Divider()
-                                                ],
-                                              ),
-                                            ),
-                                          );
-                                        }),
-                                  ),
-                                  actions: [
-                                    TextButton(
-                                        onPressed: () {
-                                          Get.back();
-                                        },
-                                        child: Text("Cancel".toUpperCase()))
-                                  ],
-                                );
-                              });
-                        }
+                        showShopModalBottomSheet(Get.context);
+                        // if (isSmallScreen(context)) {
+                        //
+                        // }
+                        // else {
+                        //   showDialog(
+                        //       context: context,
+                        //       builder: (_) {
+                        //         return AlertDialog(
+                        //           title: Center(child: Text("Shops")),
+                        //           content: Container(
+                        //             height: 180,
+                        //             width: 200,
+                        //             child: ListView.builder(
+                        //                 itemCount:
+                        //                     shopController.allShops.length,
+                        //                 shrinkWrap: true,
+                        //                 itemBuilder: (context, index) {
+                        //                   Shop shopBody = shopController
+                        //                       .allShops
+                        //                       .elementAt(index);
+                        //                   return InkWell(
+                        //                     onTap: () {
+                        //                       Get.back();
+                        //                       Get.find<RealmController>()
+                        //                           .setDefaulShop(shopBody);
+                        //                     },
+                        //                     child: Container(
+                        //                       padding: const EdgeInsets.all(10),
+                        //                       child: Column(
+                        //                         children: [
+                        //                           Row(
+                        //                             mainAxisAlignment:
+                        //                                 MainAxisAlignment
+                        //                                     .spaceBetween,
+                        //                             children: [
+                        //                               Row(
+                        //                                 children: [
+                        //                                   Icon(Icons.shop),
+                        //                                   majorTitle(
+                        //                                       title:
+                        //                                           "${shopBody.name}",
+                        //                                       color:
+                        //                                           Colors.black,
+                        //                                       size: 16.0),
+                        //                                 ],
+                        //                               ),
+                        //                               const Icon(Icons
+                        //                                   .arrow_forward_ios)
+                        //                             ],
+                        //                           ),
+                        //                           Divider()
+                        //                         ],
+                        //                       ),
+                        //                     ),
+                        //                   );
+                        //                 }),
+                        //           ),
+                        //           actions: [
+                        //             TextButton(
+                        //                 onPressed: () {
+                        //                   Get.back();
+                        //                 },
+                        //                 child: Text("Cancel".toUpperCase()))
+                        //           ],
+                        //         );
+                        //       });
+                        // }
                       },
                       child: Container(
                         padding: const EdgeInsets.all(5),
@@ -331,7 +337,7 @@ class HomePage extends StatelessWidget {
                                         MediaQuery.of(context).size.width < 1000
                                     ? 1.6
                                     : 2.0,
-                            crossAxisCount: 3,
+                            crossAxisCount: isSmallScreen(context) ? 3 : 4,
                             crossAxisSpacing: isSmallScreen(context) ? 2 : 6,
                             mainAxisSpacing: isSmallScreen(context) ? 10 : 3),
                         padding: EdgeInsets.zero,
@@ -597,7 +603,7 @@ class HomePage extends StatelessWidget {
                     ? Colors.grey
                     : isSmallScreen
                         ? Colors.white
-                        : Colors.transparent,
+                        : Colors.red,
                 borderRadius: const BorderRadius.all(
                   Radius.circular(10.0),
                 ),
