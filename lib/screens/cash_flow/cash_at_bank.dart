@@ -15,6 +15,7 @@ import '../../widgets/delete_dialog.dart';
 
 class CashAtBank extends StatelessWidget {
   CashFlowCategory? cashFlowCategory;
+
   CashAtBank({Key? key, this.cashFlowCategory}) : super(key: key) {
     cashflowController.fetchCashAtBank();
   }
@@ -24,25 +25,25 @@ class CashAtBank extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return  Helper(
+    return Helper(
       widget: Obx(() {
         return cashflowController.loadingCashAtBank.value
             ? ListView.builder(
-          shrinkWrap: true,
-          itemBuilder: (context, index) {
-            return loadingShimmer();
-          },
-          itemCount: 5,
-        )
+                shrinkWrap: true,
+                itemBuilder: (context, index) {
+                  return loadingShimmer();
+                },
+                itemCount: 5,
+              )
             : ListView.builder(
-            itemCount: cashflowController.cashAtBanks.length,
-            shrinkWrap: true,
-            scrollDirection: Axis.vertical,
-            itemBuilder: (context, index) {
-              BankModel bankModel =
-              cashflowController.cashAtBanks.elementAt(index);
-              return bankCard(context, bankModel: bankModel);
-            });
+                itemCount: cashflowController.cashAtBanks.length,
+                shrinkWrap: true,
+                scrollDirection: Axis.vertical,
+                itemBuilder: (context, index) {
+                  BankModel bankModel =
+                      cashflowController.cashAtBanks.elementAt(index);
+                  return bankCard(context, bankModel: bankModel);
+                });
       }),
       appBar: _appBar(context),
       bottomNavigationBar: BottomAppBar(
@@ -258,7 +259,7 @@ class CashAtBank extends StatelessWidget {
               ],
             ),
             SizedBox(height: 4),
-            Text          (
+            Text(
               "**** **** **** ****",
               style: TextStyle(color: Colors.black),
             ),
@@ -293,9 +294,6 @@ class CashAtBank extends StatelessWidget {
               ],
             )
           ],
-
-
-
         ),
       ),
     );
@@ -304,9 +302,13 @@ class CashAtBank extends StatelessWidget {
   showBottomSheet(BuildContext context) {
     return showModalBottomSheet(
         context: context,
+        backgroundColor:
+            isSmallScreen(context) ? Colors.white : Colors.transparent,
         builder: (_) {
           return Container(
+            color: Colors.white,
             height: MediaQuery.of(context).size.height * 0.3,
+            margin: EdgeInsets.only(),
             child: Column(
               children: [
                 Container(

@@ -218,10 +218,32 @@ class CashFlowManager extends StatelessWidget {
                   InkWell(
                     onTap: () async {
                       final picked = await showDateRangePicker(
-                        context: context,
-                        lastDate: DateTime(2079),
-                        firstDate: DateTime(2019),
-                      );
+                          context: context,
+                          lastDate: DateTime(2079),
+                          firstDate: DateTime(2019),
+                          builder: (context, child) {
+                            return Column(
+                              children: [
+                                ConstrainedBox(
+                                  constraints: BoxConstraints(
+                                    maxWidth: MediaQuery.of(context).size.width,
+                                  ),
+                                  child: Container(
+                                      margin: EdgeInsets.only(
+                                          left: isSmallScreen(context)
+                                              ? 0
+                                              : MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.2,
+                                         ),
+                                      child: child),
+                                )
+                              ],
+                            );
+                          });
+
+                      print(picked);
                       cashFlowController.fromDate.value = picked!.start;
                       cashFlowController.toDate.value = picked.end;
                       cashFlowController.getCashflowSummary(
@@ -373,9 +395,9 @@ class CashFlowManager extends StatelessWidget {
       onTap: () {
         if (isSmallScreen(context)) {
           Get.to(CashFlowCategories());
-        } else { Get.find<HomeController>().selectedWidget.value =
-            CashFlowCategories();
-
+        } else {
+          Get.find<HomeController>().selectedWidget.value =
+              CashFlowCategories();
         }
       },
       child: Container(
