@@ -53,7 +53,7 @@ class _HomeState extends State<Home> {
               body: Row(
                 children: [
                   Expanded(
-                    flex: 2,
+                    flex: 1,
                     child: SideMenu(),
                   ),
                   Expanded(flex: 4, child: homeControler.selectedWidget.value!)
