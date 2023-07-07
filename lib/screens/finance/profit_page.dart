@@ -67,6 +67,9 @@ class ProfitPage extends StatelessWidget {
         InkWell(
             onTap: () async {
               Get.to(() => DateFilter(
+                from: "ProfitPage",
+                    page: page,
+                    headline: headline,
                     function: (value) {
                       if (value is PickerDateRange) {
                         final DateTime rangeStartDate = value.startDate!;

@@ -34,7 +34,7 @@ class ProductBadStcokHistory extends StatelessWidget {
           height: 20,
         ),
         Container(
-          padding: EdgeInsets.symmetric(horizontal: 20),
+          padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -177,6 +177,9 @@ class BadStockHistory extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor:
+            isSmallScreen(context) ? AppColors.mainColor : Colors.white,
+        elevation: 0.1,
         leading: IconButton(
           onPressed: () {
             getYearlyRecords(product, function: (Product product,
@@ -191,74 +194,96 @@ class BadStockHistory extends StatelessWidget {
                 : Get.find<HomeController>().selectedWidget.value =
                     ProductHistory(product: product);
           },
-          icon: Icon(Icons.arrow_back_ios),
+          icon: Icon(Icons.arrow_back_ios,
+              color: isSmallScreen(context) ? Colors.white : Colors.black),
         ),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               "Bad stock",
-              style: TextStyle(fontSize: 16),
+              style: TextStyle(
+                  fontSize: 16,
+                  color: isSmallScreen(context) ? Colors.white : Colors.black),
             ),
             Text(
               product.name!,
-              style: TextStyle(fontSize: 12),
+              style: TextStyle(
+                  fontSize: 12,
+                  color: isSmallScreen(context) ? Colors.white : Colors.black),
             )
           ],
         ),
         actions: [
-          const Icon(
+          Icon(
             Icons.picture_as_pdf,
-            color: Colors.white,
+            color: isSmallScreen(context) ? Colors.white : Colors.black,
             size: 25,
           ),
           IconButton(
               onPressed: () async {
-                Get.to(() => DateFilter(
-                      function: (value) {
-                        if (value is PickerDateRange) {
-                          final DateTime rangeStartDate = value.startDate!;
-                          final DateTime rangeEndDate = value.endDate!;
-                          productController.filterStartDate.value =
-                              rangeStartDate;
-                          productController.filterEndDate.value = rangeEndDate;
-                        } else if (value is DateTime) {
-                          final DateTime selectedDate = value;
-                          productController.filterStartDate.value =
-                              selectedDate;
-                          productController.filterEndDate.value = selectedDate;
-                        }
-
-                        productController.getBadStock(
+                isSmallScreen(context)
+                    ? Get.to(() => DateFilter(from: "BadStockHistory",
                           product: product,
-                          fromDate: productController.filterStartDate.value,
-                          toDate: productController.filterEndDate.value,
-                        );
-                      },
-                    ));
+                          i: i,
+                          function: (value) {
+                            if (value is PickerDateRange) {
+                              final DateTime rangeStartDate = value.startDate!;
+                              final DateTime rangeEndDate = value.endDate!;
+                              productController.filterStartDate.value =
+                                  rangeStartDate;
+                              productController.filterEndDate.value =
+                                  rangeEndDate;
+                            } else if (value is DateTime) {
+                              final DateTime selectedDate = value;
+                              productController.filterStartDate.value =
+                                  selectedDate;
+                              productController.filterEndDate.value =
+                                  selectedDate;
+                            }
+
+                            productController.getBadStock(
+                              product: product,
+                              fromDate: productController.filterStartDate.value,
+                              toDate: productController.filterEndDate.value,
+                            );
+                          },
+                        ))
+                    : Get.find<HomeController>().selectedWidget.value =
+                        DateFilter(
+                          from: "BadStockHistory",
+                          product: product,
+                          i: i,
+                        function: (value) {
+                          if (value is PickerDateRange) {
+                            final DateTime rangeStartDate = value.startDate!;
+                            final DateTime rangeEndDate = value.endDate!;
+                            productController.filterStartDate.value =
+                                rangeStartDate;
+                            productController.filterEndDate.value =
+                                rangeEndDate;
+                          } else if (value is DateTime) {
+                            final DateTime selectedDate = value;
+                            productController.filterStartDate.value =
+                                selectedDate;
+                            productController.filterEndDate.value =
+                                selectedDate;
+                          }
+
+                          productController.getBadStock(
+                            product: product,
+                            fromDate: productController.filterStartDate.value,
+                            toDate: productController.filterEndDate.value,
+                          );
+                        },
+                      );
               },
-              icon: const Icon(
+              icon: Icon(
                 Icons.filter_alt,
-                color: Colors.white,
+                color: isSmallScreen(context) ? Colors.white : Colors.black,
               ))
         ],
       ),
-      // bottomNavigationBar: bottomWidgetCountView(
-      //     count: productController.productInvoices.length.toString(),
-      //     qty: productController.productInvoices
-      //         .fold(
-      //             0,
-      //             (previousValue, element) =>
-      //                 previousValue + element.itemCount!)
-      //         .toString(),
-      //     onCrdit: htmlPrice(productController.productInvoices.fold(
-      //         0,
-      //         (previousValue, element) =>
-      //             previousValue + element.invoice!.balance!)),
-      //     cash: htmlPrice(productController.productInvoices.fold(
-      //         0,
-      //         (previousValue, element) =>
-      //             previousValue + element.invoice!.total!))),
       body: Obx(
         () => Column(
           children: [
@@ -266,7 +291,7 @@ class BadStockHistory extends StatelessWidget {
               height: 20,
             ),
             Container(
-              padding: EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Text(
                   "From ${'${DateFormat("yyy-MM-dd").format(productController.filterStartDate.value)} - ${DateFormat("yyy-MM-dd").format(productController.filterEndDate.value)}'}"),
             ),
@@ -274,25 +299,80 @@ class BadStockHistory extends StatelessWidget {
               height: 10,
             ),
             Container(
-              padding: EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Text(
                 "TOTAL ${htmlPrice(productController.badstocks.fold(0, (previousValue, element) => previousValue + (element.quantity! * element.product!.buyingPrice!)))} /=",
                 style:
                     const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ),
-            Divider(),
-            Expanded(
-              child: ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: productController.badstocks.length,
-                  itemBuilder: (context, index) {
-                    BadStock badStock =
-                        productController.badstocks.elementAt(index);
+            const Divider(),
+            isSmallScreen(context)
+                ? Expanded(
+                    child: ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: productController.badstocks.length,
+                        itemBuilder: (context, index) {
+                          BadStock badStock =
+                              productController.badstocks.elementAt(index);
 
-                    return productBadStockHistory(badStock);
-                  }),
-            ),
+                          return productBadStockHistory(badStock);
+                        }),
+                  )
+                : Container(
+                    width: double.infinity,
+                    margin: const EdgeInsets.symmetric(horizontal: 5)
+                        .copyWith(bottom: 10),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+                    child: Theme(
+                      data:
+                          Theme.of(context).copyWith(dividerColor: Colors.grey),
+                      child: DataTable(
+                        decoration: BoxDecoration(
+                            border: Border.all(
+                          width: 1,
+                          color: Colors.black,
+                        )),
+                        columnSpacing: 30.0,
+                        columns: const [
+                          DataColumn(
+                              label:
+                                  Text('Product', textAlign: TextAlign.center)),
+                          DataColumn(
+                              label: Text('Quantity',
+                                  textAlign: TextAlign.center)),
+                          DataColumn(
+                              label: Text('Buying Price',
+                                  textAlign: TextAlign.center)),
+                          DataColumn(
+                              label: Text('Selling Price',
+                                  textAlign: TextAlign.center)),
+                          DataColumn(
+                              label: Text('Date', textAlign: TextAlign.center)),
+                        ],
+                        rows: List.generate(
+                            productController.countHistory.length, (index) {
+                          BadStock badStock =
+                              productController.badstocks.elementAt(index);
+
+                          final p = badStock.product?.name;
+                          final y = badStock.quantity;
+                          final h = badStock.product?.buyingPrice;
+                          final z = badStock.product?.selling;
+                          final w = badStock.createdAt;
+
+                          return DataRow(cells: [
+                            DataCell(Text(p.toString())),
+                            DataCell(Text(y.toString())),
+                            DataCell(Text(h.toString())),
+                            DataCell(Text(z.toString())),
+                            DataCell(
+                                Text(DateFormat("yyyy-dd-MMM ").format(w!))),
+                          ]);
+                        }),
+                      ),
+                    )),
           ],
         ),
       ),

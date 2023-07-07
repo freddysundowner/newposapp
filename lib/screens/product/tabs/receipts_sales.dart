@@ -81,6 +81,7 @@ class ProductReceiptsSales extends StatelessWidget {
           IconButton(
               onPressed: () async {
                 Get.to(() => DateFilter(
+                  from: "ProductReceiptsSales",
                       function: (value) {
                         if (value is PickerDateRange) {
                           final DateTime rangeStartDate = value.startDate!;

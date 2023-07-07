@@ -208,6 +208,7 @@ class ProductStockHistory extends StatelessWidget {
           IconButton(
               onPressed: () async {
                 Get.to(() => DateFilter(
+                  from: "ProductStockInHistory",
                       function: (value) {
                         if (value is PickerDateRange) {
                           final DateTime rangeStartDate = value.startDate!;

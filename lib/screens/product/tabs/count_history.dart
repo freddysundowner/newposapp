@@ -199,16 +199,3 @@ class ProductCountHistory extends StatelessWidget {
     });
   }
 }
-
-//MediaQuery.of(context).size.width > 600
-//               ? SingleChildScrollView(
-//                   child: Column(
-//                     crossAxisAlignment: CrossAxisAlignment.start,
-//                     children: [
-//                       SizedBox(height: 10),
-
-// ,
-//                       SizedBox(height: 30)
-//                     ],
-//                   ),
-//                 )
