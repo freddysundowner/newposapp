@@ -15,6 +15,7 @@ import '../../../utils/colors.dart';
 import '../../../utils/date_filter.dart';
 import '../../../widgets/showReceiptManageModal.dart';
 import '../../../widgets/tab_view.dart';
+import '../components/product_history_table.dart';
 import '../product_history.dart';
 
 class ProductReceiptsSales extends StatelessWidget {
@@ -30,6 +31,9 @@ class ProductReceiptsSales extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor:
+            isSmallScreen(context) ? AppColors.mainColor : Colors.white,
+        elevation: 0.1,
         leading: IconButton(
           onPressed: () {
             getYearlyRecords(product, function:
@@ -41,29 +45,37 @@ class ProductReceiptsSales extends StatelessWidget {
             }, year: salesController.currentYear.value);
             isSmallScreen(context)
                 ? Get.back()
-                : Get.find<HomeController>().selectedWidget.value = ProductHistory(
+                : Get.find<HomeController>().selectedWidget.value =
+                    ProductHistory(
                     product: product,
                   );
           },
-          icon: const Icon(Icons.arrow_back_ios),
+          icon: Icon(
+            Icons.arrow_back_ios,
+            color: isSmallScreen(context) ? Colors.white : Colors.black,
+          ),
         ),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               "Sales",
-              style: TextStyle(fontSize: 16),
+              style: TextStyle(
+                  fontSize: 16,
+                  color: isSmallScreen(context) ? Colors.white : Colors.black),
             ),
             Text(
               product.name!,
-              style: const TextStyle(fontSize: 12),
+              style: TextStyle(
+                  fontSize: 12,
+                  color: isSmallScreen(context) ? Colors.white : Colors.black),
             )
           ],
         ),
         actions: [
-          const Icon(
+          Icon(
             Icons.picture_as_pdf,
-            color: Colors.white,
+            color: isSmallScreen(context) ? Colors.white : Colors.black,
             size: 25,
           ),
           IconButton(
@@ -94,9 +106,9 @@ class ProductReceiptsSales extends StatelessWidget {
                       },
                     ));
               },
-              icon: const Icon(
+              icon: Icon(
                 Icons.filter_alt,
-                color: Colors.white,
+                color: isSmallScreen(context) ? Colors.white : Colors.black,
               ))
         ],
       ),
@@ -175,23 +187,34 @@ class ProductReceiptsSales extends StatelessWidget {
                                             child: Text(
                                                 "There are no iems to display"),
                                           )
-                                        : Expanded(
-                                            child: Obx(
-                                              () => ListView.builder(
-                                                  shrinkWrap: true,
-                                                  itemCount: salesController
-                                                      .productSales.length,
-                                                  itemBuilder:
-                                                      (context, index) {
-                                                    ReceiptItem receiptItem =
+                                        : Obx(
+                                          () {
+                                            return !isSmallScreen(context)
+                                                ? productHistoryTable(
+                                                    context: context,
+                                                    items: salesController
+                                                        .productSales,
+                                                    showAction: true,
+                                                    product: product)
+                                                : ListView.builder(
+                                                    shrinkWrap: true,
+                                                    itemCount:
                                                         salesController
                                                             .productSales
-                                                            .elementAt(index);
-                                                    return productHistoryContainer(
-                                                        receiptItem);
-                                                  }),
-                                            ),
-                                          ),
+                                                            .length,
+                                                    itemBuilder:
+                                                        (context, index) {
+                                                      ReceiptItem
+                                                          receiptItem =
+                                                          salesController
+                                                              .productSales
+                                                              .elementAt(
+                                                                  index);
+                                                      return productHistoryContainer(
+                                                          receiptItem);
+                                                    });
+                                          },
+                                        ),
                                     salesController.allSalesReturns.isEmpty
                                         ? const Center(
                                             child: Text(
