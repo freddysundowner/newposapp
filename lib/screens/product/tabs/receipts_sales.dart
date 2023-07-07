@@ -188,55 +188,58 @@ class ProductReceiptsSales extends StatelessWidget {
                                                 "There are no iems to display"),
                                           )
                                         : Obx(
-                                          () {
-                                            return !isSmallScreen(context)
-                                                ? productHistoryTable(
-                                                    context: context,
-                                                    items: salesController
-                                                        .productSales,
-                                                    showAction: true,
-                                                    product: product)
-                                                : ListView.builder(
-                                                    shrinkWrap: true,
-                                                    itemCount:
-                                                        salesController
-                                                            .productSales
-                                                            .length,
-                                                    itemBuilder:
-                                                        (context, index) {
-                                                      ReceiptItem
-                                                          receiptItem =
-                                                          salesController
-                                                              .productSales
-                                                              .elementAt(
-                                                                  index);
-                                                      return productHistoryContainer(
-                                                          receiptItem);
-                                                    });
-                                          },
-                                        ),
+                                            () {
+                                              return !isSmallScreen(context)
+                                                  ? productHistoryTable(
+                                                      context: context,
+                                                      items: salesController
+                                                          .productSales,
+                                                      showAction: true,
+                                                      product: product)
+                                                  : ListView.builder(
+                                                      shrinkWrap: true,
+                                                      itemCount: salesController
+                                                          .productSales.length,
+                                                      itemBuilder:
+                                                          (context, index) {
+                                                        ReceiptItem
+                                                            receiptItem =
+                                                            salesController
+                                                                .productSales
+                                                                .elementAt(
+                                                                    index);
+                                                        return productHistoryContainer(
+                                                            receiptItem);
+                                                      });
+                                            },
+                                          ),
                                     salesController.allSalesReturns.isEmpty
                                         ? const Center(
                                             child: Text(
                                                 "There are no iems to display"),
                                           )
-                                        : Expanded(
-                                            child: Obx(
-                                              () => ListView.builder(
-                                                  shrinkWrap: true,
-                                                  itemCount: salesController
-                                                      .allSalesReturns.length,
-                                                  itemBuilder:
-                                                      (context, index) {
-                                                    ReceiptItem receiptItem =
-                                                        salesController
-                                                            .allSalesReturns
-                                                            .elementAt(index);
-                                                    return productHistoryContainer(
-                                                        receiptItem);
-                                                  }),
-                                            ),
-                                          ),
+                                        : Obx(() {
+                                            return !isSmallScreen(context)
+                                                ? productHistoryTable(
+                                                    context: context,
+                                                    items: salesController
+                                                        .allSalesReturns,
+                                                    showAction: false,
+                                                    product: product)
+                                                : ListView.builder(
+                                                    shrinkWrap: true,
+                                                    itemCount: salesController
+                                                        .allSalesReturns.length,
+                                                    itemBuilder:
+                                                        (context, index) {
+                                                      ReceiptItem receiptItem =
+                                                          salesController
+                                                              .allSalesReturns
+                                                              .elementAt(index);
+                                                      return productHistoryContainer(
+                                                          receiptItem);
+                                                    });
+                                          }),
                                   ]),
                             ),
                           )
