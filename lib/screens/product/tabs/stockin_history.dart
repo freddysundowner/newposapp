@@ -133,7 +133,7 @@ class ProductStockInHistory extends StatelessWidget {
                     i: i,
                   );
           }, counts: (month) {
-            return "${_getSalesCount(month)} sales";
+            return "${_getSalesCount(month)} items";
           }, totals: (month) => "${htmlPrice(_getSalesTotal(month))}/="),
         ),
       ],

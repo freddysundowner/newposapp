@@ -998,16 +998,17 @@ class SalesController extends GetxController
         _generateHomeCard(
             type: "profit",
             total: response.fold(
-                0,
-                (previousValue, element) =>
-                    previousValue +
-                    ((element.items.fold(
-                        0,
-                        (previousValue, element) =>
-                            previousValue +
-                            (element.price! * element.quantity! -
-                                element.product!.buyingPrice! *
-                                    element.quantity!))))),
+                    0,
+                    (previousValue, element) =>
+                        previousValue +
+                        ((element.items.fold(
+                            0,
+                            (previousValue, element) =>
+                                previousValue +
+                                (element.price! * element.quantity! -
+                                    element.product!.buyingPrice! *
+                                        element.quantity!))))) -
+                Get.find<ExpenseController>().totalExpenses.value.toDouble(),
             name: "Today Profit",
             color: const Color(0xff08a52c).withOpacity(0.7),
             icon: Icons.stacked_line_chart); //0x

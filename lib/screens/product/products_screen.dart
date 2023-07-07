@@ -108,7 +108,6 @@ class ProductsScreen extends StatelessWidget {
                                 return function!(product);
                               }
                             : (Product product) {
-                                print("hello");
                                 InvoiceItem invoiceItem = InvoiceItem(
                                     ObjectId(),
                                     product: product,

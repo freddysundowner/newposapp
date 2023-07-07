@@ -139,6 +139,13 @@ class CashflowController extends GetxController
       Get.find<HomeController>().selectedWidget.value = CashFlowManager();
     }
     textEditingControllerAmount.clear();
+
+    getCashflowSummary(
+      shopId: Get.find<ShopController>().currentShop.value!.id,
+      from: DateTime.parse(DateFormat("yyyy-MM-dd").format(fromDate.value)),
+      to: DateTime.parse(DateFormat("yyyy-MM-dd").format(toDate.value))
+          .add(const Duration(days: 1)),
+    );
   }
 
   clearInputs() {
@@ -154,7 +161,8 @@ class CashflowController extends GetxController
         amount: 0,
         key: textEditingControllerCategory.text.toLowerCase().trim());
     await Transactions().createCategory(cashFlowCategory);
-    getCategory(type, Get.find<ShopController>().currentShop.value!.id);
+    textEditingControllerCategory.clear();
+    getCategory(type, Get.find<ShopController>().currentShop.value);
   }
 
   void getCategory(type, shop) {

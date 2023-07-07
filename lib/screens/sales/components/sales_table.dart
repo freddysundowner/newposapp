@@ -20,61 +20,78 @@ Widget salesTable(context, page) {
     child: Theme(
       data: Theme.of(context).copyWith(dividerColor: Colors.grey),
       child: FittedBox(
-        child: DataTable(
-          decoration: BoxDecoration(
-              border: Border.all(
-                width: 1,
-                color: Colors.black,
-              )),
-          columnSpacing: 30.0,
-          columns: [
-            const DataColumn(
-                label: Text('Receipt Number', textAlign: TextAlign.center)),
+        fit: BoxFit.scaleDown,
+        child: Container(
+          width: MediaQuery.of(context).size.width,
+          child: DataTable(
+            headingTextStyle: const TextStyle(fontSize:16,color: Colors.black,fontWeight: FontWeight.bold),
+            dataTextStyle: const TextStyle(fontSize: 16,color: Colors.black),
+            decoration: BoxDecoration(
+                border: Border.all(
+              width: 1,
+              color: Colors.black,
+            )),
+            columnSpacing: 30.0,
+            columns: [
+              const DataColumn(
+                  label: Text('Receipt Number', textAlign: TextAlign.center)),
+              DataColumn(
+                  label: Text(
+                      'Amount(${shopController.currentShop.value?.currency})',
+                      textAlign: TextAlign.center)),
+              const DataColumn(
+                  label: Text('Payment Method', textAlign: TextAlign.center)),
+              const DataColumn(
+                  label: Text('Date', textAlign: TextAlign.center)),
+              const DataColumn(
+                  label: Text('Actions', textAlign: TextAlign.center)),
+            ],
+            rows: List.generate(
+                page != "home"
+                    ? salesController.allSales.length
+                    : salesController.allSales.isEmpty
+                        ? 0
+                        : salesController.allSales.length > 4
+                            ? 4
+                            : salesController.allSales.length, (index) {
+              SalesModel salesModel = salesController.allSales.elementAt(index);
+              final y = salesModel.receiptNumber;
+              final h = salesModel.attendantId?.username?.capitalize;
+              final x = htmlPrice(salesModel.items.fold(
+                          0,
+                          (previousValue, element) =>
+                              previousValue + element.quantity!) >
+                      0
+                  ? salesModel.grandTotal
+                  : salesModel.returneditems.fold(
+                      0,
+                      (previousValue, element) =>
+                          previousValue +
+                          (element.price! * element.quantity!)));
+              final z = salesModel.paymentMethod;
+              final w = salesModel.createdAt;
 
-            DataColumn(
-                label: Text(
-                    'Amount(${shopController.currentShop.value?.currency})',
-                    textAlign: TextAlign.center)),
-            const DataColumn(
-                label: Text('Payment Method', textAlign: TextAlign.center)),
-            const DataColumn(label: Text('Date', textAlign: TextAlign.center)),
-            const DataColumn(label: Text('Actions', textAlign: TextAlign.center)),
-          ],
-          rows: List.generate(
-              page != "home"
-                  ? salesController.allSales.length
-                  : salesController.allSales.isEmpty
-                  ? 0
-                  : salesController.allSales.length > 4
-                  ? 4
-                  : salesController.allSales.length, (index) {
-            SalesModel salesModel = salesController.allSales.elementAt(index);
-            final y = salesModel.receiptNumber;
-            final h = salesModel.attendantId?.username?.capitalize;
-            final x =htmlPrice(salesModel.items.fold(0, (previousValue, element) => previousValue + element.quantity!) > 0 ? salesModel.grandTotal : salesModel.returneditems.fold(0, (previousValue, element) => previousValue + (element.price! * element.quantity!)));
-            final z = salesModel.paymentMethod;
-            final w = salesModel.createdAt;
-
-            return DataRow(cells: [
-              DataCell(Text(y!)),
-
-              DataCell(Text(x)),
-              DataCell(Text(z!)),
-              DataCell(Text(DateFormat("yyyy-dd-MMM ").format(w!))),
-              DataCell(InkWell(
-                onTap: () {
-                  Get.find<HomeController>().selectedWidget.value = SalesReceipt(
-                    salesModel: salesModel,
-                    type: "",
-                  );
-                },
-                child: Text(
-                  "View",
-                  style: TextStyle(color: AppColors.mainColor),
-                ),
-              )),
-            ]);
-          }),
+              return DataRow(cells: [
+                DataCell(Text(y!)),
+                DataCell(Text(x)),
+                DataCell(Text(z!)),
+                DataCell(Text(DateFormat("yyyy-dd-MMM ").format(w!))),
+                DataCell(InkWell(
+                  onTap: () {
+                    Get.find<HomeController>().selectedWidget.value =
+                        SalesReceipt(
+                      salesModel: salesModel,
+                      type: "",
+                    );
+                  },
+                  child: Text(
+                    "View",
+                    style: TextStyle(color: AppColors.mainColor),
+                  ),
+                )),
+              ]);
+            }),
+          ),
         ),
       ),
     ),
