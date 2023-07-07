@@ -32,9 +32,7 @@ import 'components/edit_price_dialog.dart';
 class CreateSale extends StatelessWidget {
   final String? page;
 
-  CreateSale({Key? key, this.page}) : super(key: key) {
-    // customersController.getCustomersInShop("all");
-  }
+  CreateSale({Key? key, this.page}) : super(key: key);
 
   SalesController salesController = Get.find<SalesController>();
   ShopController shopController = Get.find<ShopController>();
@@ -42,8 +40,6 @@ class CreateSale extends StatelessWidget {
   AuthController authController = Get.find<AuthController>();
   UserController usercontroller = Get.find<UserController>();
   ProductController productController = Get.find<ProductController>();
-  final FocusNode _focusNode = FocusNode();
-  final GlobalKey _autocompleteKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
@@ -238,6 +234,8 @@ class CreateSale extends StatelessWidget {
                                   customersController.getCustomersInShop("all");
                                   if (isSmallScreen(context)) {
                                     confirmPayment(context, "small");
+                                  } else {
+                                    paymentUi(context: context);
                                   }
                                 }
                               },
@@ -385,17 +383,10 @@ class CreateSale extends StatelessWidget {
                                         ),
                                       ],
                                     ),
-                                    InkWell(
-                                      onTap: () {
-                                        if (!isSmallScreen(context)) {
-                                          paymentUi(context: context);
-                                        }
-                                      },
-                                      child: majorTitle(
-                                          title: "Cash in",
-                                          color: AppColors.mainColor,
-                                          size: 18.0),
-                                    )
+                                    majorTitle(
+                                        title: "Cash in",
+                                        color: AppColors.mainColor,
+                                        size: 18.0)
                                   ],
                                 ),
                               ),
@@ -505,7 +496,7 @@ class CreateSale extends StatelessWidget {
                         size: 18.0),
                   ),
                 if (_needCustomer() &&
-                    salesController.receipt.value!.customerId != null)
+                    salesController.receipt.value?.customerId != null)
                   InkWell(
                     onTap: () {
                       Get.back();
@@ -551,7 +542,7 @@ class CreateSale extends StatelessWidget {
                       children: [
                         majorTitle(
                             title: salesController
-                                .receipt.value!.customerId?.fullName,
+                                .receipt.value?.customerId?.fullName,
                             color: AppColors.mainColor,
                             size: 18.0),
                         const SizedBox(
@@ -624,7 +615,7 @@ class CreateSale extends StatelessWidget {
                 children: [
                   majorTitle(
                       title:
-                          "Total Amount ${htmlPrice(salesController.receipt.value!.grandTotal)}",
+                          "Total Amount ${htmlPrice(salesController.receipt.value?.grandTotal)}",
                       color: Colors.black,
                       size: 14.0),
                   const SizedBox(height: 10),
@@ -660,7 +651,7 @@ class CreateSale extends StatelessWidget {
                   ),
                   const SizedBox(height: 10),
                   if (_needCustomer() &&
-                      salesController.receipt.value!.customerId == null)
+                      salesController.receipt.value?.customerId == null)
                     InkWell(
                       onTap: () {
                         Get.to(() => Scaffold(
@@ -685,7 +676,7 @@ class CreateSale extends StatelessWidget {
                           size: 18.0),
                     ),
                   if (_needCustomer() &&
-                      salesController.receipt.value!.customerId != null)
+                      salesController.receipt.value?.customerId != null)
                     InkWell(
                       onTap: () {
                         Get.to(() => Scaffold(
@@ -707,7 +698,7 @@ class CreateSale extends StatelessWidget {
                         children: [
                           majorTitle(
                               title: salesController
-                                  .receipt.value!.customerId?.fullName,
+                                  .receipt.value?.customerId?.fullName,
                               color: AppColors.mainColor,
                               size: 18.0),
                           const SizedBox(
@@ -767,8 +758,8 @@ class CreateSale extends StatelessWidget {
   }
 
   _needCustomer() {
-    return salesController.receipt.value!.paymentMethod == "Credit" ||
-        salesController.receipt.value!.paymentMethod == "Wallet";
+    return salesController.receipt.value?.paymentMethod == "Credit" ||
+        salesController.receipt.value?.paymentMethod == "Wallet";
   }
 
   Widget showPopUpdialog(

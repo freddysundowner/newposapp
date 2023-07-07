@@ -17,6 +17,7 @@ import '../../controllers/AuthController.dart';
 import '../../controllers/purchase_controller.dart';
 import '../../controllers/supplierController.dart';
 import '../../controllers/user_controller.dart';
+import '../../widgets/alert.dart';
 import '../../widgets/bigtext.dart';
 import '../../widgets/purchases_card.dart';
 import '../../widgets/smalltext.dart';
@@ -438,7 +439,7 @@ class CreatePurchase extends StatelessWidget {
   }
 
   saveFunction(context) {
-    if (purchaseController.invoice.value!.items.isEmpty) {
+    if (purchaseController.invoice.value == null) {
       ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Please select products to sell")));
     } else {
@@ -487,7 +488,7 @@ class CreatePurchase extends StatelessWidget {
                                         borderRadius:
                                             BorderRadius.circular(10)),
                                     prefix: Text(
-                                        "${shopController.currentShop.value!.currency!} ")),
+                                        "${shopController.currentShop.value?.currency!} ")),
                               ),
                             ],
                           ),
@@ -508,7 +509,7 @@ class CreatePurchase extends StatelessWidget {
                               Obx(() {
                                 return minorTitle(
                                     title: htmlPrice(purchaseController
-                                        .invoice.value!.total),
+                                        .invoice.value?.total),
                                     color: Colors.grey,
                                     size: 14);
                               }),
@@ -534,11 +535,11 @@ class CreatePurchase extends StatelessWidget {
                         )
                       ],
                     ),
-                    if (purchaseController.invoice.value!.supplier == null)
+                    if (purchaseController.invoice.value?.supplier == null)
                       const SizedBox(
                         height: 10,
                       ),
-                    if (purchaseController.invoice.value!.supplier == null)
+                    if (purchaseController.invoice.value?.supplier == null)
                       InkWell(
                         onTap: () {
                           _gotoSupplierPage(context);
@@ -548,13 +549,13 @@ class CreatePurchase extends StatelessWidget {
                             color: AppColors.mainColor,
                             size: 18.0),
                       ),
-                    if (purchaseController.invoice.value!.supplier != null)
+                    if (purchaseController.invoice.value?.supplier != null)
                       const SizedBox(
                         height: 10,
                       ),
                     Row(
                       children: [
-                        if (purchaseController.invoice.value!.supplier != null)
+                        if (purchaseController.invoice.value?.supplier != null)
                           InkWell(
                             onTap: () {
                               _gotoSupplierPage(context);
@@ -596,10 +597,10 @@ class CreatePurchase extends StatelessWidget {
                               ],
                             ),
                           ),
-                        if (purchaseController.invoice.value!.supplier != null)
+                        if (purchaseController.invoice.value?.supplier != null)
                           IconButton(
                               onPressed: () {
-                                purchaseController.invoice.value!.supplier =
+                                purchaseController.invoice.value?.supplier =
                                     null;
                                 purchaseController.invoice.refresh();
                               },
@@ -625,8 +626,16 @@ class CreatePurchase extends StatelessWidget {
                                 size: 16.0)),
                         TextButton(
                             onPressed: () {
-                              purchaseController.createPurchase(
-                                  screen: "admin", context: context);
+                              if (purchaseController.invoice.value!.balance! >
+                                      0 &&
+                                  purchaseController.invoice.value!.supplier ==
+                                      null) {
+                                generalAlert(
+                                    title: "Error",
+                                    message: "please select supplier");
+                              } else {
+                                purchaseController.createPurchase();
+                              }
                             },
                             child: majorTitle(
                                 title: "Cash in",

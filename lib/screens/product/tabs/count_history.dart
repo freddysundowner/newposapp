@@ -21,26 +21,26 @@ class ProductCountHistory extends StatelessWidget {
     return Obx(() {
       return productController.countHistory.isEmpty
           ? const Center(
-        child: Text("There are no items to display"),
-      )
+              child: Text("There are no items to display"),
+            )
           : ListView.builder(
               shrinkWrap: true,
               itemCount: productController.countHistory.length,
               itemBuilder: (context, index) {
                 ProductCountModel productModel =
-                productController.countHistory.elementAt(index);
+                    productController.countHistory.elementAt(index);
                 return InkWell(
                   onTap: () {
-                    var diff = productModel.quantity! -
-                        productModel.initialquantity!;
+                    var diff =
+                        productModel.quantity! - productModel.initialquantity!;
                     String message = "";
-                    if (diff > 0) {
+                    if (productModel.initialquantity! >
+                        productModel.quantity!) {
                       message =
-                      "Deleting this count will reduce stock balance by  $diff";
-                    }
-                    if (diff < 0) {
+                          "Deleting this count will increase stock balance by  ${diff.abs()} items";
+                    } else {
                       message =
-                      "Deleting this count will increase stock balance by  ${diff}";
+                          "Deleting this count will reduce stock balance by  ${diff.abs()}";
                     }
                     showDialog(
                         context: context,
@@ -56,28 +56,23 @@ class ProductCountHistory extends StatelessWidget {
                               TextButton(
                                   onPressed: () {
                                     var bal = 0;
+                                    print("diff $diff");
                                     if (diff > 0) {
                                       bal = diff * -1;
                                     }
                                     if (diff < 0) {
-                                      bal = diff;
+                                      bal = diff.abs();
                                     }
-                                    print(bal);
-                                    print(productModel.product!.quantity! +
-                                        bal);
                                     Get.back();
                                     Products().updateProductPart(
                                       product: productModel.product!,
                                       quantity:
-                                      productModel.product!.quantity! +
-                                          bal,
+                                          productModel.product!.quantity! + bal,
                                     );
-                                    Products()
-                                        .deleteProductCount(productModel);
+                                    Products().deleteProductCount(productModel);
                                     productController.countHistory
                                         .removeAt(index);
-                                    productController.countHistory
-                                        .refresh();
+                                    productController.countHistory.refresh();
                                   },
                                   child: const Text("Ok"))
                             ],
@@ -85,8 +80,8 @@ class ProductCountHistory extends StatelessWidget {
                         });
                   },
                   child: Container(
-                    padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 10, vertical: 10),
                     child: Column(
                       children: [
                         Row(
@@ -95,8 +90,7 @@ class ProductCountHistory extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                    '${DateFormat("MMM dd,yyyy, hh:m a").format(
-                                        productModel.createdAt!)} ',
+                                    '${DateFormat("MMM dd,yyyy, hh:m a").format(productModel.createdAt!)} ',
                                     style: const TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 13)),
@@ -107,13 +101,10 @@ class ProductCountHistory extends StatelessWidget {
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 6, vertical: 3),
                                   decoration: BoxDecoration(
-                                      borderRadius:
-                                      BorderRadius.circular(10),
+                                      borderRadius: BorderRadius.circular(10),
                                       color: Colors.black12),
                                   child: Text(
-                                    'previously ${productModel
-                                        .initialquantity}, updated to ${productModel
-                                        .quantity}',
+                                    'previously ${productModel.initialquantity}, updated to ${productModel.quantity}',
                                     style: const TextStyle(fontSize: 12),
                                   ),
                                 ),

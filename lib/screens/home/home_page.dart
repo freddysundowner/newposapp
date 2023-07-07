@@ -508,8 +508,8 @@ class HomePage extends StatelessWidget {
                                         : Colors.white,
                                     fontWeight: FontWeight.bold),
                               ),
-                              Spacer(),
-                              Icon(
+                              const Spacer(),
+                              const Icon(
                                 Icons.arrow_forward_ios_rounded,
                                 color: Colors.white,
                                 size: 15,

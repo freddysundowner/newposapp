@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:pointify/controllers/AuthController.dart';
+import 'package:pointify/controllers/purchase_controller.dart';
 import 'package:pointify/controllers/realm_controller.dart';
 import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/controllers/user_controller.dart';
+import 'package:pointify/main.dart';
 import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/stock/stock_page.dart';
 import 'package:pointify/services/category.dart';
@@ -156,6 +158,18 @@ class ProductController extends GetxController {
         } else {
           await Products().updateProduct(product: product);
         }
+
+        //add produc as a purchase
+        Get.find<PurchaseController>().addNewPurchase(InvoiceItem(ObjectId(),
+            product: product,
+            price: product.buyingPrice,
+            total: product.buyingPrice! * product.quantity!,
+            attendantid: userController.user.value,
+            createdAt: DateTime.now(),
+            itemCount: product.quantity));
+        Get.find<PurchaseController>().createPurchase();
+        //end add product as a purcharse
+
         if (isSmallScreen(Get.context)) {
           Get.back();
         } else {

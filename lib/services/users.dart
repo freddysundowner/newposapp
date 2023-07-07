@@ -37,8 +37,9 @@ class Users {
 
   static RealmResults<UserModel> getAllAttendandsByShop() {
     RealmResults<UserModel> user = realmService.realm.query<UserModel>(
-        " shop == \$0", [Get.find<ShopController>().currentShop.value]);
-    print("attt ${user.length}");
+        " shop == \$0 AND UNID != ${userController.user.value!.UNID}",
+        [Get.find<ShopController>().currentShop.value]);
+
     return user;
   }
 

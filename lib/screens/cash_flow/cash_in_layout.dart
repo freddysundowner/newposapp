@@ -352,5 +352,7 @@ class CashInLayout extends StatelessWidget {
         );
       }
     }
+    cashflowController.textEditingControllerName.clear();
+    cashflowController.textEditingControllerAmount.clear();
   }
 }
