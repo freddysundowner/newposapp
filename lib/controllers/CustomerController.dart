@@ -40,7 +40,7 @@ class CustomerController extends GetxController
   RxString activeItem = RxString("All");
   RxString customerActiveItem = RxString("Credit");
 
-  createCustomer({required page}) async {
+  createCustomer({required page, Function? function}) async {
     try {
       creatingCustomerLoad.value = true;
       LoadingDialog.showLoadingDialog(
@@ -56,8 +56,9 @@ class CustomerController extends GetxController
       Navigator.of(Get.context!, rootNavigator: true).pop();
       clearTexts();
       if (MediaQuery.of(Get.context!).size.width > 600) {
+        print(page);
         if (page == "customersPage") {
-          Get.find<HomeController>().selectedWidget.value = CustomersPage();
+          function!();
         }
         if (page == "createSale") {
           Get.find<HomeController>().selectedWidget.value = CreateSale();

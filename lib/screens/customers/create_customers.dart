@@ -25,63 +25,64 @@ class CreateCustomer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print("page is $page");
     return Scaffold(
-      backgroundColor: Colors.white.withOpacity(0.96),
-      appBar: AppBar(
-          elevation: 0.3,
-          titleSpacing: 0.0,
-          centerTitle: false,
-          backgroundColor: Colors.white,
-          automaticallyImplyLeading: false,
-          leading: IconButton(
-            onPressed: () {
-              if (MediaQuery.of(context).size.width > 600) {
-                if (page == "customersPage") {
-                  Get.find<HomeController>().selectedWidget.value =
-                      CustomersPage();
+        backgroundColor: Colors.white.withOpacity(0.96),
+        appBar: AppBar(
+            elevation: 0.3,
+            titleSpacing: 0.0,
+            centerTitle: false,
+            backgroundColor: Colors.white,
+            automaticallyImplyLeading: false,
+            leading: IconButton(
+              onPressed: () {
+                if (MediaQuery.of(context).size.width > 600) {
+                  if (page == "customersPage") {
+                    chooseCustomer(context: context);
+                  }
+                  if (page == "createSale") {
+                    Get.find<HomeController>().selectedWidget.value =
+                        CreateSale();
+                  }
+                  if (page == "createProduct") {
+                    Get.find<HomeController>().selectedWidget.value =
+                        CreateProduct(
+                      page: "create",
+                      productModel: null,
+                    );
+                  }
+                  if (page == "createPurchase") {
+                    Get.find<HomeController>().selectedWidget.value =
+                        CreatePurchase();
+                  }
+                } else {
+                  Get.back();
                 }
-                if (page == "createSale") {
-                  Get.find<HomeController>().selectedWidget.value =
-                      CreateSale();
-                }
-                if (page == "createProduct") {
-                  Get.find<HomeController>().selectedWidget.value =
-                      CreateProduct(
-                    page: "create",
-                    productModel: null,
-                  );
-                }
-                if (page == "createPurchase") {
-                  Get.find<HomeController>().selectedWidget.value =
-                      CreatePurchase();
-                }
-              } else {
-                Get.back();
-              }
-            },
-            icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
-          ),
-          title: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              majorTitle(
-                  title: "Customer Details", color: Colors.black, size: 16.0),
-              minorTitle(
-                  title: shopController.currentShop.value?.name,
-                  color: Colors.grey),
-            ],
-          )),
-      body: ResponsiveWidget(
-          largeScreen: Align(
-              alignment: Alignment.center,
-              child: Container(
-                  width: MediaQuery.of(context).size.width * 0.4,
-                  height: MediaQuery.of(context).size.height * 0.7,
-                  child: customerInfoCard(context))),
-          smallScreen: SingleChildScrollView(
-            child: customerInfoCard(context),
-          )),
-    );
+              },
+              icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
+            ),
+            title: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                majorTitle(
+                    title: "Customer Details", color: Colors.black, size: 16.0),
+                minorTitle(
+                    title: shopController.currentShop.value?.name,
+                    color: Colors.grey),
+              ],
+            )),
+        body: SingleChildScrollView(
+          child: customerInfoCard(context),
+        )
+        // ResponsiveWidget(
+        //   largeScreen: Align(
+        //       alignment: Alignment.center,
+        //       child: Container(
+        //           width: MediaQuery.of(context).size.width * 0.4,
+        //           height: MediaQuery.of(context).size.height * 0.7,
+        //           child: customerInfoCard(context))),
+        //   smallScreen: ),
+        );
   }
 
   Widget customerInfoCard(context) {
@@ -148,7 +149,11 @@ class CreateCustomer extends StatelessWidget {
               splashColor: Colors.transparent,
               hoverColor: Colors.transparent,
               onTap: () {
-                customersController.createCustomer(page: page);
+                customersController.createCustomer(
+                    page: page,
+                    function: () {
+                      chooseCustomer(context: context);
+                    });
               },
               child: Center(
                 child: Container(
@@ -170,5 +175,64 @@ class CreateCustomer extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  chooseCustomer({required context}) {
+    if (isSmallScreen(context)) {
+      Get.to(() => Scaffold(
+            appBar: AppBar(
+              actions: [
+                IconButton(
+                    onPressed: () {
+                      Get.to(() => CreateCustomer(
+                            page: "customersPage",
+                          ));
+                    },
+                    icon: const Icon(Icons.add))
+              ],
+              title: const Text("Select customer"),
+            ),
+            body: Customers(type: "sale"),
+          ));
+    } else {
+      Get.back();
+      Get.find<HomeController>().selectedWidget.value = Scaffold(
+        appBar: AppBar(
+          elevation: 0.2,
+          backgroundColor: Colors.white,
+          leading: IconButton(
+              onPressed: () {
+                Get.find<HomeController>().selectedWidget.value = CreateSale();
+              },
+              icon: const Icon(
+                Icons.arrow_back_ios,
+                color: Colors.black,
+              )),
+          actions: [
+            IconButton(
+                onPressed: () {
+                  Get.find<HomeController>().selectedWidget.value =
+                      CreateCustomer(
+                    page: "customersPage",
+                  );
+                },
+                icon: const Icon(
+                  Icons.add,
+                  color: Colors.black,
+                ))
+          ],
+          title: const Text(
+            "Select customer",
+            style: TextStyle(color: Colors.black),
+          ),
+        ),
+        body: Customers(
+          type: "sale",
+          function: () {
+            print("called");
+          },
+        ),
+      );
+    }
   }
 }

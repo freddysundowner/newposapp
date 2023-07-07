@@ -341,10 +341,8 @@ class CreateSale extends StatelessWidget {
                                                                               .refresh();
                                                                           Navigator.pop(
                                                                               context);
-
-                                                                          isSmallScreen(context)
-                                                                              ? confirmPayment(context, "small")
-                                                                              : paymentUi(context: context);
+                                                                          confirmPayment(
+                                                                              context);
                                                                         },
                                                                         child:
                                                                             Container(
@@ -598,15 +596,22 @@ class CreateSale extends StatelessWidget {
         });
   }
 
-  confirmPayment(context, type) {
+  confirmPayment(context) {
     showModalBottomSheet(
       context: context,
+      backgroundColor:
+          isSmallScreen(context) ? Colors.white : Colors.transparent,
       isScrollControlled: true,
       builder: (context) {
         return Padding(
           padding:
               EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
           child: Container(
+            margin: EdgeInsets.only(
+                left: isSmallScreen(context)
+                    ? 0
+                    : MediaQuery.of(context).size.width * 0.2),
+            color: Colors.white,
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
             child: Obx(
               () => Column(
@@ -654,21 +659,7 @@ class CreateSale extends StatelessWidget {
                       salesController.receipt.value?.customerId == null)
                     InkWell(
                       onTap: () {
-                        Get.to(() => Scaffold(
-                              appBar: AppBar(
-                                actions: [
-                                  IconButton(
-                                      onPressed: () {
-                                        Get.to(() => CreateCustomer(
-                                              page: "customersPage",
-                                            ));
-                                      },
-                                      icon: const Icon(Icons.add))
-                                ],
-                                title: const Text("Select customer"),
-                              ),
-                              body: Customers(type: "sale"),
-                            ));
+                        chooseCustomer(context: context);
                       },
                       child: majorTitle(
                           title: "Choose Customer",
@@ -679,20 +670,7 @@ class CreateSale extends StatelessWidget {
                       salesController.receipt.value?.customerId != null)
                     InkWell(
                       onTap: () {
-                        Get.to(() => Scaffold(
-                              appBar: AppBar(
-                                actions: [
-                                  IconButton(
-                                      onPressed: () {
-                                        Get.to(() => CreateCustomer(
-                                              page: "customersPage",
-                                            ));
-                                      },
-                                      icon: const Icon(Icons.add))
-                                ],
-                              ),
-                              body: Customers(type: "sale"),
-                            ));
+                        chooseCustomer(context: context);
                       },
                       child: Row(
                         children: [
@@ -830,5 +808,66 @@ class CreateSale extends StatelessWidget {
     }
 
     salesController.changesaleItem(re);
+  }
+
+  chooseCustomer({required context}) {
+    if (isSmallScreen(context)) {
+      Get.to(() => Scaffold(
+            appBar: AppBar(
+              actions: [
+                IconButton(
+                    onPressed: () {
+                      Get.to(() => CreateCustomer(
+                            page: "customersPage",
+                          ));
+                    },
+                    icon: const Icon(Icons.add))
+              ],
+              title: const Text("Select customer"),
+            ),
+            body: Customers(type: "sale"),
+          ));
+    } else {
+      Get.back();
+      Get.find<HomeController>().selectedWidget.value = Scaffold(
+        appBar: AppBar(
+          elevation: 0.2,
+          backgroundColor: Colors.white,
+          leading: IconButton(
+              onPressed: () {
+                Get.find<HomeController>().selectedWidget.value = CreateSale();
+                confirmPayment(Get.context);
+              },
+              icon: const Icon(
+                Icons.arrow_back_ios,
+                color: Colors.black,
+              )),
+          actions: [
+            IconButton(
+                onPressed: () {
+                  Get.find<HomeController>().selectedWidget.value =
+                      CreateCustomer(
+                    page: "customersPage",
+                  );
+                },
+                icon: const Icon(
+                  Icons.add,
+                  color: Colors.black,
+                ))
+          ],
+          title: const Text(
+            "Select customer",
+            style: TextStyle(color: Colors.black),
+          ),
+        ),
+        body: Customers(
+          type: "sale",
+          function: () {
+            confirmPayment(Get.context);
+            print("called");
+          },
+        ),
+      );
+    }
   }
 }

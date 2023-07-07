@@ -22,6 +22,7 @@ class SalesReceipt extends StatelessWidget {
   SalesModel? salesModel;
   String? type = "";
   String? from = "";
+
   SalesReceipt({Key? key, this.salesModel, this.type, this.from})
       : super(key: key) {
     salesController.currentReceipt.value = salesModel;
@@ -30,9 +31,11 @@ class SalesReceipt extends StatelessWidget {
       salesController.getSalesBySaleId(id: salesModel!.id);
     }
   }
+
   ShopController shopController = Get.find<ShopController>();
   SalesController salesController = Get.find<SalesController>();
   List<ReceiptItem> receiptItems = [];
+
   @override
   Widget build(BuildContext context) {
     if (type == "returns") {
@@ -64,10 +67,16 @@ class SalesReceipt extends StatelessWidget {
         actions: [
           IconButton(
               onPressed: () {
-                Get.to(() => PdfPreviewPage(
-                    invoice: salesModel!,
-                    type:
-                        "${_chechPayment(salesController.currentReceipt.value!, type!)} RECEIPT"));
+                isSmallScreen(context)
+                    ? Get.to(() => PdfPreviewPage(
+                        invoice: salesModel!,
+                        type:
+                            "${_chechPayment(salesController.currentReceipt.value!, type!)} RECEIPT"))
+                    : Get.find<HomeController>().selectedWidget.value =
+                        PdfPreviewPage(
+                            invoice: salesModel!,
+                            type:
+                                "${_chechPayment(salesController.currentReceipt.value!, type!)} RECEIPT");
               },
               icon: Icon(
                 Icons.picture_as_pdf,
@@ -399,6 +408,7 @@ String _chechPayment(SalesModel salesModel, String? type) {
 }
 
 onCredit(SalesModel salesModel) => salesModel.creditTotal! > 0;
+
 Color _chechPaymentColor(SalesModel salesModel, String? type) {
   if (salesModel.grandTotal! == 0 || type == "returns") return Colors.red;
   if (salesModel.creditTotal == 0) return Colors.green;
