@@ -32,58 +32,8 @@ class ProductCountHistory extends StatelessWidget {
                         productController.countHistory.elementAt(index);
                     return InkWell(
                       onTap: () {
-                        var diff = productModel.quantity! -
-                            productModel.initialquantity!;
-                        String message = "";
-                        if (diff > 0) {
-                          message =
-                              "Deleting this count will reduce stock balance by  $diff";
-                        }
-                        if (diff < 0) {
-                          message =
-                              "Deleting this count will increase stock balance by  ${diff}";
-                        }
-                        showDialog(
-                            context: context,
-                            builder: (_) {
-                              return AlertDialog(
-                                content: Text(message),
-                                actions: [
-                                  TextButton(
-                                      onPressed: () {
-                                        Get.back();
-                                      },
-                                      child: const Text("Cancel")),
-                                  TextButton(
-                                      onPressed: () {
-                                        var bal = 0;
-                                        if (diff > 0) {
-                                          bal = diff * -1;
-                                        }
-                                        if (diff < 0) {
-                                          bal = diff;
-                                        }
-                                        print(bal);
-                                        print(productModel.product!.quantity! +
-                                            bal);
-                                        Get.back();
-                                        Products().updateProductPart(
-                                          product: productModel.product!,
-                                          quantity:
-                                              productModel.product!.quantity! +
-                                                  bal,
-                                        );
-                                        Products()
-                                            .deleteProductCount(productModel);
-                                        productController.countHistory
-                                            .removeAt(index);
-                                        productController.countHistory
-                                            .refresh();
-                                      },
-                                      child: const Text("Ok"))
-                                ],
-                              );
-                            });
+                        deleteFunction(context,productModel,index);
+
                       },
                       child: Container(
                         padding: const EdgeInsets.symmetric(
@@ -185,7 +135,9 @@ class ProductCountHistory extends StatelessWidget {
                           DataCell(Text(DateFormat("yyyy-dd-MMM ").format(w!))),
                           DataCell(
                             InkWell(
-                              onTap: () {},
+                              onTap: () {
+                                deleteFunction(context,productCountModel,index);
+                              },
                               child: const Icon(
                                 Icons.more_vert,
                                 color: Colors.black,
@@ -197,5 +149,61 @@ class ProductCountHistory extends StatelessWidget {
                     ),
                   ));
     });
+  }
+
+  void deleteFunction(BuildContext context, ProductCountModel productModel,int index) {
+
+    var diff = productModel.quantity! -
+        productModel.initialquantity!;
+    String message = "";
+    if (diff > 0) {
+      message =
+      "Deleting this count will reduce stock balance by  $diff";
+    }
+    if (diff < 0) {
+      message =
+      "Deleting this count will increase stock balance by  ${diff}";
+    }
+    showDialog(
+        context: context,
+        builder: (_) {
+          return AlertDialog(
+            content: Text(message),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    Get.back();
+                  },
+                  child: const Text("Cancel")),
+              TextButton(
+                  onPressed: () {
+                    var bal = 0;
+                    if (diff > 0) {
+                      bal = diff * -1;
+                    }
+                    if (diff < 0) {
+                      bal = diff;
+                    }
+                    print(bal);
+                    print(productModel.product!.quantity! +
+                        bal);
+                    Get.back();
+                    Products().updateProductPart(
+                      product: productModel.product!,
+                      quantity:
+                      productModel.product!.quantity! +
+                          bal,
+                    );
+                    Products()
+                        .deleteProductCount(productModel);
+                    productController.countHistory
+                        .removeAt(index);
+                    productController.countHistory
+                        .refresh();
+                  },
+                  child: const Text("Ok"))
+            ],
+          );
+        });
   }
 }
