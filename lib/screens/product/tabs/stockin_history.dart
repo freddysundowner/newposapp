@@ -36,7 +36,7 @@ class ProductStockInHistory extends StatelessWidget {
           height: 20,
         ),
         Container(
-          padding: EdgeInsets.symmetric(horizontal: 20),
+          padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -175,6 +175,9 @@ class ProductStockHistory extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor:
+            isSmallScreen(context) ? AppColors.mainColor : Colors.white,
+        elevation: 0.2,
         leading: IconButton(
           onPressed: () {
             getYearlyRecords(product, function: (Product product,
@@ -182,58 +185,101 @@ class ProductStockHistory extends StatelessWidget {
               productController.getProductPurchaseHistory(product,
                   fromDate: firstDayofYear, toDate: lastDayofYear);
             }, year: productController.currentYear.value);
-            Get.back();
+            isSmallScreen(context)
+                ? Get.back()
+                : Get.find<HomeController>().selectedWidget.value =
+                ProductHistory(
+                    product: product,
+                  );
           },
-          icon: Icon(Icons.arrow_back_ios),
+          icon: Icon(Icons.arrow_back_ios,
+              color: isSmallScreen(context) ? Colors.white : Colors.black),
         ),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               "Stock-in",
-              style: TextStyle(fontSize: 16),
+              style: TextStyle(
+                  fontSize: 16,
+                  color: isSmallScreen(context) ? Colors.white : Colors.black),
             ),
             Text(
               product.name!,
-              style: TextStyle(fontSize: 12),
+              style: TextStyle(
+                  fontSize: 12,
+                  color: isSmallScreen(context) ? Colors.white : Colors.black),
             )
           ],
         ),
         actions: [
-          const Icon(
+          Icon(
             Icons.picture_as_pdf,
-            color: Colors.white,
+            color: isSmallScreen(context) ? Colors.white : Colors.black,
             size: 25,
           ),
           IconButton(
               onPressed: () async {
-                Get.to(() => DateFilter(
-                  from: "ProductStockInHistory",
-                      function: (value) {
-                        if (value is PickerDateRange) {
-                          final DateTime rangeStartDate = value.startDate!;
-                          final DateTime rangeEndDate = value.endDate!;
-                          productController.filterStartDate.value =
-                              rangeStartDate;
-                          productController.filterEndDate.value = rangeEndDate;
-                        } else if (value is DateTime) {
-                          final DateTime selectedDate = value;
-                          productController.filterStartDate.value =
-                              selectedDate;
-                          productController.filterEndDate.value = selectedDate;
-                        }
+                isSmallScreen(context)
+                    ? Get.to(() => DateFilter(
+                          from: "ProductStockHistory",
+                          product: product,
+                          i: i,
+                          function: (value) {
+                            if (value is PickerDateRange) {
+                              final DateTime rangeStartDate = value.startDate!;
+                              final DateTime rangeEndDate = value.endDate!;
+                              productController.filterStartDate.value =
+                                  rangeStartDate;
+                              productController.filterEndDate.value =
+                                  rangeEndDate;
+                            } else if (value is DateTime) {
+                              final DateTime selectedDate = value;
+                              productController.filterStartDate.value =
+                                  selectedDate;
+                              productController.filterEndDate.value =
+                                  selectedDate;
+                            }
 
-                        productController.getProductPurchaseHistory(
-                          product,
-                          fromDate: productController.filterStartDate.value,
-                          toDate: productController.filterEndDate.value,
-                        );
-                      },
-                    ));
+                            productController.getProductPurchaseHistory(
+                              product,
+                              fromDate: productController.filterStartDate.value,
+                              toDate: productController.filterEndDate.value,
+                            );
+                          },
+                        ))
+                    : Get.find<HomeController>().selectedWidget.value =
+                        DateFilter(
+                        from: "ProductStockHistory",
+                        product: product,
+                        i: i,
+                        function: (value) {
+                          if (value is PickerDateRange) {
+                            final DateTime rangeStartDate = value.startDate!;
+                            final DateTime rangeEndDate = value.endDate!;
+                            productController.filterStartDate.value =
+                                rangeStartDate;
+                            productController.filterEndDate.value =
+                                rangeEndDate;
+                          } else if (value is DateTime) {
+                            final DateTime selectedDate = value;
+                            productController.filterStartDate.value =
+                                selectedDate;
+                            productController.filterEndDate.value =
+                                selectedDate;
+                          }
+
+                          productController.getProductPurchaseHistory(
+                            product,
+                            fromDate: productController.filterStartDate.value,
+                            toDate: productController.filterEndDate.value,
+                          );
+                        },
+                      );
               },
-              icon: const Icon(
+              icon: Icon(
                 Icons.filter_alt,
-                color: Colors.white,
+                color: isSmallScreen(context) ? Colors.white : Colors.black,
               ))
         ],
       ),
@@ -244,7 +290,7 @@ class ProductStockHistory extends StatelessWidget {
               height: 20,
             ),
             Container(
-              padding: EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Text(
                   "From ${'${DateFormat("yyy-MM-dd").format(productController.filterStartDate.value)} - ${DateFormat("yyy-MM-dd").format(productController.filterEndDate.value)}'}"),
             ),
@@ -252,25 +298,77 @@ class ProductStockHistory extends StatelessWidget {
               height: 10,
             ),
             Container(
-              padding: EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Text(
                 "TOTAL ${htmlPrice(productController.productInvoices.fold(0, (previousValue, element) => previousValue + element.total!))} /=",
                 style:
                     const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ),
-            Divider(),
+            const Divider(),
+            isSmallScreen(context)?
             Expanded(
               child: ListView.builder(
                   shrinkWrap: true,
                   itemCount: productController.productInvoices.length,
                   itemBuilder: (context, index) {
-                    InvoiceItem productBody =
-                        productController.productInvoices.elementAt(index);
-
+                    InvoiceItem productBody = productController.productInvoices.elementAt(index);
                     return productPurchaseHistoryContainer(productBody);
                   }),
-            ),
+            ):
+            Container(
+                width: double.infinity,
+                margin: const EdgeInsets.symmetric(horizontal: 5)
+                    .copyWith(bottom: 10),
+                padding:
+                const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+                child: Theme(
+                  data:
+                  Theme.of(context).copyWith(dividerColor: Colors.grey),
+                  child: DataTable(
+                    decoration: BoxDecoration(
+                        border: Border.all(
+                          width: 1,
+                          color: Colors.black,
+                        )),
+                    columnSpacing: 30.0,
+                    columns: const [
+                      DataColumn(
+                          label:
+                          Text('Product', textAlign: TextAlign.center)),
+                      DataColumn(
+                          label: Text('Quantity',
+                              textAlign: TextAlign.center)),
+                      DataColumn(
+                          label: Text('Total',
+                              textAlign: TextAlign.center)),
+                      DataColumn(
+                          label: Text('Attendant',
+                              textAlign: TextAlign.center)),
+                      DataColumn(
+                          label: Text('Date', textAlign: TextAlign.center)),
+                    ],
+                    rows: List.generate(
+                        productController.productInvoices.length, (index) {
+                      InvoiceItem invoiceItem = productController.productInvoices.elementAt(index);
+
+                      final p = invoiceItem.product?.name;
+                      final y = invoiceItem.itemCount;
+                      final h = invoiceItem.product!.selling! *invoiceItem.itemCount!;
+                      final z = invoiceItem.attendantid?.username;
+                      final w = invoiceItem.createdAt;
+
+                      return DataRow(cells: [
+                        DataCell(Text(p.toString())),
+                        DataCell(Text(y.toString())),
+                        DataCell(Text(h.toString())),
+                        DataCell(Text(z.toString())),
+                        DataCell(
+                            Text(DateFormat("yyyy-dd-MMM ").format(w!))),
+                      ]);
+                    }),
+                  ),
+                )),
           ],
         ),
       ),
