@@ -198,6 +198,7 @@ class ProductController extends GetxController {
     supplierName.value = "None";
     selectedMeasure.value = "Kg";
     categoryId.value = null;
+    selectedBadStock.value = null;
   }
 
   getProductsBySort({required String type, String text = ""}) {
@@ -338,6 +339,7 @@ class ProductController extends GetxController {
           product: null);
       showBadStockWidget.value = false;
       saveBadstockLoad.value = false;
+      clearControllers();
     } catch (e) {
       saveBadstockLoad.value = false;
       print(e);
