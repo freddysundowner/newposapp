@@ -224,9 +224,11 @@ class FinancePage extends StatelessWidget {
                   : GridView.builder(
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                           childAspectRatio:
-                              MediaQuery.of(context).size.width >1100
+                              MediaQuery.of(context).size.width > 1100
                                   ? 1.3
-                                  : MediaQuery.of(context).size.width >900 ?1.0:0.7 ,
+                                  : MediaQuery.of(context).size.width > 900
+                                      ? 1.0
+                                      : 0.7,
                           crossAxisCount: 3,
                           crossAxisSpacing: 10,
                           mainAxisSpacing: 10),
@@ -418,7 +420,12 @@ class FinancePage extends StatelessWidget {
             color: Colors.deepPurple.withOpacity(0.1),
             borderRadius: BorderRadius.circular(10)),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: isSmallScreen(Get.context)
+              ? CrossAxisAlignment.start
+              : CrossAxisAlignment.center,
+          mainAxisAlignment: isSmallScreen(Get.context)
+              ? MainAxisAlignment.start
+              : MainAxisAlignment.center,
           children: [
             isSmallScreen(Get.context)
                 ? Row(
@@ -449,7 +456,7 @@ class FinancePage extends StatelessWidget {
                     ],
                   )
                 : Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Container(
                         height: 40,
@@ -463,7 +470,7 @@ class FinancePage extends StatelessWidget {
                         width: 10,
                       ),
                       Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           majorTitle(
                               title: title,
