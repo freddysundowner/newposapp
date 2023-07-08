@@ -189,7 +189,7 @@ class Customers extends StatelessWidget {
                                 type: type);
                           })
                       : customerTable(
-                          customers: results, context: context, type: "sale",function: function);
+                          customers: results, context: context, type: type,function: function);
                 }
               });
         }),
