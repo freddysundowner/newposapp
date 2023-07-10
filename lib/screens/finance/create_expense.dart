@@ -21,6 +21,7 @@ enum ColorLabel {
   grey('Grey', Colors.grey);
 
   const ColorLabel(this.label, this.color);
+
   final String label;
   final Color color;
 }
@@ -35,6 +36,7 @@ enum IconLabel {
   heart('Heart', Icons.favorite);
 
   const IconLabel(this.label, this.icon);
+
   final String label;
   final IconData icon;
 }
@@ -52,47 +54,40 @@ class CreateExpense extends StatelessWidget {
     cashflowController.getCategory(
         "cash-out", Get.find<ShopController>().currentShop.value);
     return Scaffold(
-      appBar: AppBar(
-        titleSpacing: 0,
-        centerTitle: false,
-        backgroundColor: Colors.white,
-        elevation: 0.3,
-        leading: IconButton(
-          onPressed: () {
-            if (MediaQuery.of(context).size.width > 600) {
-              Get.find<HomeController>().selectedWidget.value = ExpensePage();
-            } else {
-              Get.back();
-            }
-          },
-          icon: const Icon(
-            Icons.arrow_back_ios,
-            color: Colors.black,
-          ),
-        ),
-        title:
-            majorTitle(title: " Add Expenses", color: Colors.black, size: 16.0),
-      ),
-      body: ResponsiveWidget(
-          largeScreen: Scaffold(
-            backgroundColor: Colors.white,
-            body: Align(
-              alignment: Alignment.topLeft,
-              child: Container(
-                  color: Colors.white,
-                  width: MediaQuery.of(context).size.width * 0.5,
-                  height: MediaQuery.of(context).size.height * 0.7,
-                  child: expenseCreateCard(context)),
+        appBar: AppBar(
+          titleSpacing: 0,
+          centerTitle: false,
+          backgroundColor: Colors.white,
+          elevation: 0.3,
+          leading: IconButton(
+            onPressed: () {
+              if (MediaQuery.of(context).size.width > 600) {
+                Get.find<HomeController>().selectedWidget.value = ExpensePage();
+              } else {
+                Get.back();
+              }
+            },
+            icon: const Icon(
+              Icons.arrow_back_ios,
+              color: Colors.black,
             ),
           ),
-          smallScreen: ListView(children: [
+          title: majorTitle(
+              title: " Add Expenses", color: Colors.black, size: 16.0),
+        ),
+        body: Container(
+          padding:
+              EdgeInsets.symmetric(horizontal: isSmallScreen(context) ? 0 : 10)
+                  .copyWith(right: isSmallScreen(context) ? 0 : 50),
+          child: ListView(children: [
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: expenseCreateCard(context),
             ),
             const SizedBox(height: 10),
-          ])),
-    );
+          ]),
+        )
+        );
   }
 
   Widget expenseCreateCard(context) {
@@ -108,6 +103,7 @@ class CreateExpense extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Expanded(
                 flex: 1,
@@ -146,13 +142,13 @@ class CreateExpense extends StatelessWidget {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(top: 10.0),
+                padding: const EdgeInsets.only(top: 20.0),
                 child: TextButton(
                   onPressed: () {
                     _addCategory(context);
                   },
                   child: Container(
-                      padding: EdgeInsets.all(8),
+                      padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(10),
@@ -166,12 +162,12 @@ class CreateExpense extends StatelessWidget {
               ),
             ],
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text("Description", style: TextStyle(color: Colors.grey)),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               TextField(
                 controller: expenseController.textEditingControllerName,
                 decoration: InputDecoration(
@@ -180,34 +176,34 @@ class CreateExpense extends StatelessWidget {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.grey),
+                    borderSide: const BorderSide(color: Colors.grey),
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
               )
             ],
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text("Amount", style: TextStyle(color: Colors.grey)),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               TextField(
                 controller: expenseController.textEditingControllerAmount,
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
                     focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.grey),
+                      borderSide: const BorderSide(color: Colors.grey),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     border: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.grey),
+                        borderSide: const BorderSide(color: Colors.grey),
                         borderRadius: BorderRadius.circular(10))),
               ),
             ],
           ),
-          SizedBox(height: 100),
+          const SizedBox(height: 100),
           Center(
             child: InkWell(
               onTap: () {
@@ -215,7 +211,7 @@ class CreateExpense extends StatelessWidget {
               },
               child: Container(
                   padding:
-                      EdgeInsets.only(top: 10, bottom: 10, left: 60, right: 60),
+                      const EdgeInsets.only(top: 10, bottom: 10, left: 60, right: 60),
                   decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(20),
@@ -252,7 +248,7 @@ class CreateExpense extends StatelessWidget {
                 },
                 child: Text(
                   "Cancel".toUpperCase(),
-                  style: TextStyle(color: Colors.blue),
+                  style: const TextStyle(color: Colors.blue),
                 ),
               ),
               TextButton(
@@ -262,7 +258,7 @@ class CreateExpense extends StatelessWidget {
                 },
                 child: Text(
                   "Save now".toUpperCase(),
-                  style: TextStyle(color: Colors.blue),
+                  style: const TextStyle(color: Colors.blue),
                 ),
               ),
             ],

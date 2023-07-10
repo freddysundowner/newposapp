@@ -235,7 +235,8 @@ class ExpensePage extends StatelessWidget {
   Widget addExpenseContainer() {
     return InkWell(
       onTap: () {
-        if (isSmallScreen(Get.context)) {  Get.to(() => CreateExpense());
+        if (isSmallScreen(Get.context)) {
+          Get.to(() => CreateExpense());
 
         } else {
           Get.find<HomeController>().selectedWidget.value = CreateExpense();
