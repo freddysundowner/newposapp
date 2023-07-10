@@ -7,7 +7,7 @@ import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/functions/functions.dart';
 import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/finance/expense_page.dart';
-import 'package:pointify/screens/finance/finance_page.dart';
+import 'package:pointify/screens/finance/financial_page.dart';
 import 'package:pointify/screens/stock/badstocks.dart';
 import 'package:pointify/utils/colors.dart';
 import 'package:pointify/utils/helper.dart';
@@ -54,7 +54,7 @@ class ProfitPage extends StatelessWidget {
             if (page == "salesPage") {
               Get.find<HomeController>().selectedWidget.value = SalesPage();
             } else {
-              Get.find<HomeController>().selectedWidget.value = FinancePage();
+              Get.find<HomeController>().selectedWidget.value = FinancialPage();
             }
           }
         },
