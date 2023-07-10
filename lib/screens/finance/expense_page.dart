@@ -68,121 +68,65 @@ class ExpensePage extends StatelessWidget {
                           color: Colors.grey,
                           size: 13.0),
                     )
-                  : isSmallScreen(context)?
-              ListView.builder(
-                      itemCount: expenseController.expenses.length,
-                      physics: const NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemBuilder: (context, index) {
-                        ExpenseModel expenseModel =
-                            expenseController.expenses.elementAt(index);
+                  : isSmallScreen(context)
+                      ? ListView.builder(
+                          itemCount: expenseController.expenses.length,
+                          physics: const NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          itemBuilder: (context, index) {
+                            ExpenseModel expenseModel =
+                                expenseController.expenses.elementAt(index);
 
-                        return expenseCard(
-                            context: context, expense: expenseModel);
-                      })
-              :Container(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 15, vertical: 10),
-                width: double.infinity,
-                child: Theme(
-                  data: Theme.of(context)
-                      .copyWith(dividerColor: Colors.grey),
-                  child: DataTable(
-                    decoration: BoxDecoration(
-                        border: Border.all(
-                          width: 1,
-                          color: Colors.black,
-                        )),
-                    columnSpacing: 30.0,
-                    columns: [
-                      const DataColumn(
-                          label: Text('Name',
-                              textAlign: TextAlign.center)),
-                      const DataColumn(
-                          label: Text('Category',
-                              textAlign: TextAlign.center)),
-                      DataColumn(
-                          label: Text(
-                              'Amount(${shopController.currentShop.value?.currency})',
-                              textAlign: TextAlign.center)),
-                    ],
-                    rows: List.generate(
-                        expenseController.expenses.length,
-                            (index) {
-                          ExpenseModel expenseModel =
-                          expenseController.expenses
-                              .elementAt(index);
-                          final y = expenseModel.name;
-                          final x = expenseModel.category;
+                            return expenseCard(
+                                context: context, expense: expenseModel);
+                          })
+                      : Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 15, vertical: 10),
+                          width: double.infinity,
+                          child: Theme(
+                            data: Theme.of(context)
+                                .copyWith(dividerColor: Colors.grey),
+                            child: DataTable(
+                              decoration: BoxDecoration(
+                                  border: Border.all(
+                                width: 1,
+                                color: Colors.black,
+                              )),
+                              columnSpacing: 30.0,
+                              columns: [
+                                const DataColumn(
+                                    label: Text('Name',
+                                        textAlign: TextAlign.center)),
+                                const DataColumn(
+                                    label: Text('Category',
+                                        textAlign: TextAlign.center)),
+                                DataColumn(
+                                    label: Text(
+                                        'Amount(${shopController.currentShop.value?.currency})',
+                                        textAlign: TextAlign.center)),
+                              ],
+                              rows: List.generate(
+                                  expenseController.expenses.length, (index) {
+                                ExpenseModel expenseModel =
+                                    expenseController.expenses.elementAt(index);
+                                final y = expenseModel.name;
+                                final x = expenseModel.category;
 
-                          return DataRow(cells: [
-                            DataCell(Text(y!)),
-                            DataCell(Text(x.toString())),
-                            DataCell(Text("${expenseModel.amount}")),
-                          ]);
-                        }),
-                  ),
-                ),
-              );
+                                return DataRow(cells: [
+                                  DataCell(Text(y!)),
+                                  DataCell(Text(x.toString())),
+                                  DataCell(Text("${expenseModel.amount}")),
+                                ]);
+                              }),
+                            ),
+                          ),
+                        );
             }),
           ],
         ),
       ),
     );
-
-    // ResponsiveWidget(
-    //   largeScreen: Scaffold(
-    //       backgroundColor: Colors.white,
-    //       appBar: _appBar(context),
-    //       body: SingleChildScrollView(
-    //         child: Container(
-    //           padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-    //           child: Column(
-    //             children: [
-    //               const SizedBox(height: 5),
-    //               Center(
-    //                 child: Container(
-    //                   width: MediaQuery.of(context).size.width * 0.4,
-    //                   decoration: BoxDecoration(
-    //                       color: Colors.white,
-    //                       borderRadius: BorderRadius.circular(8),
-    //                       boxShadow: const [
-    //                         BoxShadow(
-    //                             color: Colors.black26,
-    //                             offset: Offset(0, 1),
-    //                             blurRadius: 1.0)
-    //                       ]),
-    //                   child: totalsContainer(),
-    //                 ),
-    //               ),
-    //               const SizedBox(height: 20),
-    //               Row(
-    //                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    //                 children: [
-    //                   Obx(() {
-    //                     return majorTitle(
-    //                         title:
-    //                             "${expenseController.expenses.length} Entries",
-    //                         color: Colors.black,
-    //                         size: 15.0);
-    //                   }),
-    //                   addExpenseContainer()
-    //                 ],
-    //               ),
-    //               Obx(() {
-    //                 return expenseController.getExpenseByDateLoad.value
-    //                     ? const Center(
-    //                         child: CircularProgressIndicator(),
-    //                       )
-    //                     : expenseController.expenses.isEmpty
-    //                         ? noItemsFound(context, true)
-    //                         : ;
-    //               }),
-    //             ],
-    //           ),
-    //         ),
-    //       )),
-    //   smallScreen: );
   }
 
   totalsContainer() {
