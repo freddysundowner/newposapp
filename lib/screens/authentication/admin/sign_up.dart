@@ -45,22 +45,22 @@ class SignUp extends StatelessWidget {
             isSmallScreen(context)
                 ? signUpForm(context)
                 : Container(
-                    padding: const EdgeInsets.only(top: 10),
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey,
-                          offset: Offset(0.0, 0.0), //(x,y)
-                          blurRadius: 1.0,
-                        ),
-                      ],
+                padding: const EdgeInsets.only(top: 10),
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey,
+                      offset: Offset(0.0, 0.0), //(x,y)
+                      blurRadius: 1.0,
                     ),
-                    margin: EdgeInsets.only(
-                      left: MediaQuery.of(context).size.width * 0.25,
-                      right: MediaQuery.of(context).size.width * 0.25,
-                    ),
-                    child: signUpForm(context))
+                  ],
+                ),
+                margin: EdgeInsets.only(
+                  left: MediaQuery.of(context).size.width * 0.25,
+                  right: MediaQuery.of(context).size.width * 0.25,
+                ),
+                child: signUpForm(context))
           ],
         ));
   }
@@ -97,9 +97,9 @@ class SignUp extends StatelessWidget {
                     keyboardType: TextInputType.text,
                     decoration: isSmallScreen(context)
                         ? ThemeHelper().textInputDecoration(
-                            'Username*', 'Enter your username')
+                        'Username*', 'Enter your username')
                         : ThemeHelper().textInputDecorationDesktop(
-                            'Username*', 'Enter your username'),
+                        'Username*', 'Enter your username'),
                   ),
                 ),
                 const SizedBox(height: 20.0),
@@ -109,9 +109,9 @@ class SignUp extends StatelessWidget {
                     controller: authController.emailController,
                     decoration: isSmallScreen(context)
                         ? ThemeHelper().textInputDecoration(
-                            "E-mail address*", "Enter your email")
+                        "E-mail address*", "Enter your email")
                         : ThemeHelper().textInputDecorationDesktop(
-                            "E-mail address*", "Enter your email"),
+                        "E-mail address*", "Enter your email"),
                     keyboardType: TextInputType.emailAddress,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -128,9 +128,9 @@ class SignUp extends StatelessWidget {
                     controller: authController.phoneController,
                     decoration: isSmallScreen(context)
                         ? ThemeHelper().textInputDecoration(
-                            "Mobile Number*", "Enter your mobile number")
+                        "Mobile Number*", "Enter your mobile number")
                         : ThemeHelper().textInputDecorationDesktop(
-                            "Mobile Number*", "Enter your mobile number"),
+                        "Mobile Number*", "Enter your mobile number"),
                     keyboardType: TextInputType.phone,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -149,9 +149,9 @@ class SignUp extends StatelessWidget {
                     obscureText: true,
                     decoration: isSmallScreen(context)
                         ? ThemeHelper().textInputDecoration(
-                            "Password*", "Enter your password")
+                        "Password*", "Enter your password")
                         : ThemeHelper().textInputDecorationDesktop(
-                            "Password*", "Enter your password"),
+                        "Password*", "Enter your password"),
                     validator: (val) {
                       if (val!.isEmpty) {
                         return "Please enter your password";
@@ -162,27 +162,27 @@ class SignUp extends StatelessWidget {
                 ),
                 const SizedBox(height: 20.0),
                 Obx(
-                  () => authController.signuserLoad.value
+                      () => authController.signuserLoad.value
                       ? const Center(
-                          child: CircularProgressIndicator(),
-                        )
+                    child: CircularProgressIndicator(),
+                  )
                       : ElevatedButton(
-                          style: ThemeHelper().buttonStyle(),
-                          child: Padding(
-                            padding: const EdgeInsets.fromLTRB(40, 10, 40, 10),
-                            child: Text(
-                              "Register".toUpperCase(),
-                              style: const TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                          onPressed: () {
-                            authController.signUser(context);
-                          },
+                    style: ThemeHelper().buttonStyle(),
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(40, 10, 40, 10),
+                      child: Text(
+                        "Register".toUpperCase(),
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
                         ),
+                      ),
+                    ),
+                    onPressed: () {
+                      authController.signUser(context);
+                    },
+                  ),
                 ),
                 const SizedBox(height: 30.0),
               ],
