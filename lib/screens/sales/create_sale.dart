@@ -232,11 +232,9 @@ class CreateSale extends StatelessWidget {
                                   salesController.receipt.value?.customerId =
                                       null;
                                   customersController.getCustomersInShop("all");
-                                  if (isSmallScreen(context)) {
-                                    confirmPayment(context, );
-                                  } else {
-                                    paymentUi(context: context);
-                                  }
+                                  confirmPayment(
+                                    context,
+                                  );
                                 }
                               },
                               child: Container(
