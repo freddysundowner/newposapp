@@ -50,7 +50,7 @@ class AdminLogin extends StatelessWidget {
               isSmallScreen(context)
                   ? loginForm(context)
                   : Container(
-                      padding: const EdgeInsets.only(top: 20, bottom: 20),
+                      padding: const EdgeInsets.only(top: 40, bottom: 20),
                       decoration: const BoxDecoration(
                         color: Colors.white,
                         boxShadow: [

@@ -62,8 +62,7 @@ class SignUp extends StatelessWidget {
                     ),
                     child: signUpForm(context))
           ],
-        )
-        );
+        ));
   }
 
   Widget signUpForm(context) {
