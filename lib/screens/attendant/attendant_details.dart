@@ -448,8 +448,12 @@ class Permissions extends StatelessWidget {
     attendantController.roles.clear();
     attendantController.nameController.clear();
     // attendantController.nameController.clear();
-    Get.back();
-    Get.back();
+    if (isSmallScreen(Get.context)) {
+      Get.back();
+      Get.back();
+    } else {
+      Get.find<HomeController>().selectedWidget.value = AttendantsPage();
+    }
   }
 
   @override
