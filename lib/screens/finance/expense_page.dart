@@ -129,6 +129,7 @@ class ExpensePage extends StatelessWidget {
     );
   }
 
+
   totalsContainer() {
     return Container(
       height: MediaQuery.of(Get.context!).size.height * 0.2,
