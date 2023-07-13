@@ -36,9 +36,10 @@ class CreateCustomer extends StatelessWidget {
             automaticallyImplyLeading: false,
             leading: IconButton(
               onPressed: () {
-                if (MediaQuery.of(context).size.width > 600) {
+                if (!isSmallScreen(context)) {
                   if (page == "customersPage") {
-                    chooseCustomer(context: context);
+                    Get.find<HomeController>().selectedWidget.value =
+                        CustomersPage();
                   }
                   if (page == "createSale") {
                     Get.find<HomeController>().selectedWidget.value =
