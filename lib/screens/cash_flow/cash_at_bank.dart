@@ -3,6 +3,7 @@ import 'package:pointify/controllers/cashflow_controller.dart';
 import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/cash_flow/cash_flow_manager.dart';
 import 'package:pointify/screens/cash_flow/cashflow_category_history.dart';
+import 'package:pointify/screens/home/home.dart';
 import 'package:pointify/utils/helper.dart';
 import 'package:pointify/widgets/no_items_found.dart';
 import 'package:get/get.dart';
@@ -281,12 +282,18 @@ class CashAtBank extends StatelessWidget {
               children: [
                 InkWell(
                   onTap: () {
-                    print(cashFlowCategory);
-                    Get.to(() => CashCategoryHistory(
-                          cashFlowCategory: cashFlowCategory,
-                          page: "bank",
-                          bank: bankModel,
-                        ));
+                    isSmallScreen(context)
+                        ? Get.to(() => CashCategoryHistory(
+                              cashFlowCategory: cashFlowCategory,
+                              page: "bank",
+                              bank: bankModel,
+                            ))
+                        : Get.find<HomeController>().selectedWidget.value =
+                            CashCategoryHistory(
+                            cashFlowCategory: cashFlowCategory,
+                            page: "bank",
+                            bank: bankModel,
+                          );
                   },
                   child: Text(
                     "View History",
