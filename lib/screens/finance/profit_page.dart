@@ -7,7 +7,7 @@ import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/functions/functions.dart';
 import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/finance/expense_page.dart';
-import 'package:pointify/screens/finance/finance_page.dart';
+import 'package:pointify/screens/finance/financial_page.dart';
 import 'package:pointify/screens/stock/badstocks.dart';
 import 'package:pointify/utils/colors.dart';
 import 'package:pointify/utils/helper.dart';
@@ -54,7 +54,7 @@ class ProfitPage extends StatelessWidget {
             if (page == "salesPage") {
               Get.find<HomeController>().selectedWidget.value = SalesPage();
             } else {
-              Get.find<HomeController>().selectedWidget.value = FinancePage();
+              Get.find<HomeController>().selectedWidget.value = FinancialPage();
             }
           }
         },
@@ -66,27 +66,51 @@ class ProfitPage extends StatelessWidget {
       actions: [
         InkWell(
             onTap: () async {
-              Get.to(() => DateFilter(
-                from: "ProfitPage",
-                    page: page,
-                    headline: headline,
-                    function: (value) {
-                      if (value is PickerDateRange) {
-                        final DateTime rangeStartDate = value.startDate!;
-                        final DateTime rangeEndDate = value.endDate!;
-                        salesController.filterStartDate.value = rangeStartDate;
-                        salesController.filterEndDate.value = rangeEndDate;
-                      } else if (value is DateTime) {
-                        final DateTime selectedDate = value;
-                        salesController.filterStartDate.value = selectedDate;
-                        salesController.filterEndDate.value = selectedDate;
-                      }
+              isSmallScreen(context)
+                  ? Get.to(() => DateFilter(
+                        from: "ProfitPage",
+                        page: page,
+                        headline: headline,
+                        function: (value) {
+                          if (value is PickerDateRange) {
+                            final DateTime rangeStartDate = value.startDate!;
+                            final DateTime rangeEndDate = value.endDate!;
+                            salesController.filterStartDate.value =
+                                rangeStartDate;
+                            salesController.filterEndDate.value = rangeEndDate;
+                          } else if (value is DateTime) {
+                            final DateTime selectedDate = value;
+                            salesController.filterStartDate.value =
+                                selectedDate;
+                            salesController.filterEndDate.value = selectedDate;
+                          }
 
-                      salesController.getProfitTransaction(
-                          fromDate: salesController.filterStartDate.value,
-                          toDate: salesController.filterEndDate.value);
-                    },
-                  ));
+                          salesController.getProfitTransaction(
+                              fromDate: salesController.filterStartDate.value,
+                              toDate: salesController.filterEndDate.value);
+                        },
+                      ))
+                  : Get.find<HomeController>().selectedWidget.value =
+                      DateFilter(
+                      from: "ProfitPage",
+                      function: (value) {
+                        if (value is PickerDateRange) {
+                          final DateTime rangeStartDate = value.startDate!;
+                          final DateTime rangeEndDate = value.endDate!;
+                          salesController.filterStartDate.value =
+                              rangeStartDate;
+                          salesController.filterEndDate.value = rangeEndDate;
+                        } else if (value is DateTime) {
+                          final DateTime selectedDate = value;
+                          salesController.filterStartDate.value = selectedDate;
+                          salesController.filterEndDate.value = selectedDate;
+                        }
+
+                        salesController.getProfitTransaction(
+                            fromDate: salesController.filterStartDate.value,
+                            toDate: salesController.filterEndDate.value);
+                      },
+                    );
             },
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 20),

@@ -4,7 +4,7 @@ import 'package:get/get_core/src/get_main.dart';
 import 'package:intl/intl.dart';
 import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/responsive/responsiveness.dart';
-import 'package:pointify/screens/finance/finance_page.dart';
+import 'package:pointify/screens/finance/financial_page.dart';
 import 'package:pointify/screens/product/tabs/receipts_sales.dart';
 import 'package:pointify/widgets/months_filter.dart';
 
