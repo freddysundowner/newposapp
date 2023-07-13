@@ -12,6 +12,7 @@ import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/utils/colors.dart';
 import 'package:printing/printing.dart';
 import '../../../Real/schema.dart';
+import '../../../screens/product/product_history.dart';
 import '../../../screens/product/tabs/product_sales.dart';
 import '../sales_receipt.dart';
 
@@ -40,7 +41,7 @@ class MonthlyPreviewPage extends StatelessWidget {
               isSmallScreen(context)
                   ? Get.back()
                   : Get.find<HomeController>().selectedWidget.value =
-                      SalesPages(product: product);
+                      ProductHistory(product: product!);
             },
             icon: Icon(
               Icons.arrow_back_ios,

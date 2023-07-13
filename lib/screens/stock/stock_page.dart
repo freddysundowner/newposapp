@@ -165,7 +165,7 @@ class StockPage extends StatelessWidget {
                       : GridView.builder(
                           gridDelegate:
                               SliverGridDelegateWithFixedCrossAxisCount(
-                                  childAspectRatio: 1.7,
+                                  childAspectRatio:MediaQuery.of(context).size.width<900?1.4: 1.6,
                                   crossAxisCount: 3,
                                   crossAxisSpacing:
                                       isSmallScreen(context) ? 2 : 6,
@@ -318,6 +318,7 @@ class StockPage extends StatelessWidget {
               )
             : Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   iconWidget(color: color, icon: icon),
                   const SizedBox(

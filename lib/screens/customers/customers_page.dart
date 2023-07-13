@@ -120,7 +120,9 @@ class CustomersPage extends StatelessWidget {
             Customers(
               type: "",
             ),
-            Debtors()
+            Debtors(
+              type: "",
+            )
           ],
         ),
       ),
@@ -130,8 +132,9 @@ class CustomersPage extends StatelessWidget {
 
 class Customers extends StatelessWidget {
   String type;
-  Function ?function;
-  Customers({Key? key, required this.type,this.function}) : super(key: key);
+  Function? function;
+
+  Customers({Key? key, required this.type, this.function}) : super(key: key);
   CustomerController customersController = Get.find<CustomerController>();
 
   @override
@@ -189,7 +192,10 @@ class Customers extends StatelessWidget {
                                 type: type);
                           })
                       : customerTable(
-                          customers: results, context: context, type: "sale",function: function);
+                          customers: results,
+                          context: context,
+                          type: type,
+                          function: function);
                 }
               });
         }),
@@ -199,7 +205,9 @@ class Customers extends StatelessWidget {
 }
 
 class Debtors extends StatelessWidget {
-  Debtors({Key? key}) : super(key: key);
+  String type;
+
+  Debtors({Key? key, required this.type}) : super(key: key);
   CustomerController customersController = Get.find<CustomerController>();
 
   @override
@@ -238,9 +246,7 @@ class Debtors extends StatelessWidget {
                                     context: context);
                               })
                           : customerTable(
-                              customers: results,
-                              context: context,
-                              type: "sale");
+                              customers: results, context: context, type: type);
                     }
                   });
         }),
