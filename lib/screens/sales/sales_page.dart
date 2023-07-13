@@ -49,9 +49,14 @@ class SalesPage extends StatelessWidget {
               .format(args.value.endDate ?? args.value.startDate),
         );
         isSmallScreen(Get.context)
-            ? Get.to(() => ProfitPage(headline: "from\n$_range",   page: "salesPage",))
-            : Get.find<HomeController>().selectedWidget.value =
-            ProfitPage(headline: "from\n$_range",   page: "salesPage",);
+            ? Get.to(() => ProfitPage(
+                  headline: "from\n$_range",
+                  page: "salesPage",
+                ))
+            : Get.find<HomeController>().selectedWidget.value = ProfitPage(
+                headline: "from\n$_range",
+                page: "salesPage",
+              );
       }
     }
   }
@@ -62,7 +67,7 @@ class SalesPage extends StatelessWidget {
       widget: SingleChildScrollView(
         child: ConstrainedBox(
           constraints:
-          BoxConstraints.expand(height: MediaQuery.of(context).size.height),
+              BoxConstraints.expand(height: MediaQuery.of(context).size.height),
           child: Container(
             padding: const EdgeInsets.all(10),
             child: Column(
@@ -106,8 +111,8 @@ class SalesPage extends StatelessWidget {
                               isSmallScreen(context)
                                   ? Get.to(() => AllSalesPage(page: ""))
                                   : Get.find<HomeController>()
-                                  .selectedWidget
-                                  .value = AllSalesPage(page: "salesPage");
+                                      .selectedWidget
+                                      .value = AllSalesPage(page: "salesPage");
                             },
                             color: Colors.amber.shade100,
                             icon: Icons.today,
@@ -121,7 +126,7 @@ class SalesPage extends StatelessWidget {
                             onPresssed: () {
                               DateTime now = DateTime.now();
                               var lastday =
-                              DateTime(now.year, now.month + 1, 0);
+                                  DateTime(now.year, now.month + 1, 0);
 
                               final noww = DateTime.now();
 
@@ -134,8 +139,8 @@ class SalesPage extends StatelessWidget {
                               isSmallScreen(context)
                                   ? Get.to(() => AllSalesPage(page: ""))
                                   : Get.find<HomeController>()
-                                  .selectedWidget
-                                  .value = AllSalesPage(page: "salesPage");
+                                      .selectedWidget
+                                      .value = AllSalesPage(page: "salesPage");
                             },
                             color: Colors.amber.shade100,
                             icon: Icons.calendar_month,
@@ -151,8 +156,8 @@ class SalesPage extends StatelessWidget {
                               isSmallScreen(context)
                                   ? Get.to(() => MonthFilter(from: "sales"))
                                   : Get.find<HomeController>()
-                                  .selectedWidget
-                                  .value = MonthFilter(from: "sales");
+                                      .selectedWidget
+                                      .value = MonthFilter(from: "sales");
                             },
                             color: Colors.blue.shade100,
                             icon: Icons.menu,
@@ -182,9 +187,9 @@ class SalesPage extends StatelessWidget {
                   color: AppColors.mainColor),
               child: const Center(
                   child: Text(
-                    "Add Sales",
-                    style: TextStyle(color: Colors.white),
-                  ))),
+                "Add Sales",
+                style: TextStyle(color: Colors.white),
+              ))),
         ),
       ),
       floatButton: Container(),
@@ -200,10 +205,10 @@ class SalesPage extends StatelessWidget {
       centerTitle: false,
       leading: IconButton(
         onPressed: () {
-          if (MediaQuery.of(context).size.width > 600) {
-            Get.find<HomeController>().selectedWidget.value = HomePage();
-          } else {
+          if (isSmallScreen(context)) {
             Get.back();
+          } else {
+            Get.find<HomeController>().selectedWidget.value = HomePage();
           }
         },
         icon: const Icon(
@@ -212,53 +217,38 @@ class SalesPage extends StatelessWidget {
         ),
       ),
       title:
-      majorTitle(title: "Sales & Order", color: Colors.black, size: 16.0),
+          majorTitle(title: "Sales & Order", color: Colors.black, size: 16.0),
       actions: [
-        // InkWell(
-        //     onTap: () async {
-        //       final picked = await showDateRangePicker(
-        //         context: context,
-        //         lastDate: DateTime(2079),
-        //         firstDate: DateTime(2019),
-        //       );
-        //       salesController.filterStartDate.value = picked!.start;
-        //       salesController.filterEnndStartDate.value = picked.end;
-        //
-        //       salesController.getFinanceSummary(
-        //           fromDate: picked.start, toDate: picked.end);
-        //     },
-        //     child: Container(
-        //       padding: EdgeInsets.symmetric(horizontal: 20),
-        //       child: Center(
-        //         child: Row(
-        //           children: [
-        //             Text(
-        //               "Filter",
-        //               style: TextStyle(
-        //                   color: AppColors.mainColor,
-        //                   fontWeight: FontWeight.bold),
-        //             ),
-        //             Icon(
-        //               Icons.filter_list_alt,
-        //               color: AppColors.mainColor,
-        //               size: 20,
-        //             )
-        //           ],
-        //         ),
-        //       ),
-        //     ))
+        if (!isSmallScreen(context))
+          InkWell(
+            onTap: () {
+              Get.find<HomeController>().selectedWidget.value = CreateSale(page: "SalesPage",);
+            },
+            child: Container(
+                margin: const EdgeInsets.only(right: 60, bottom: 10, top: 10),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: AppColors.mainColor),
+                child: const Center(
+                    child: Text(
+                  "Add Sales",
+                  style: TextStyle(color: Colors.white),
+                ))),
+          )
       ],
     );
   }
 
   Widget financeCards(
       {required title,
-        required subtitle,
-        required icon,
-        bool? showsummary = true,
-        required onPresssed,
-        required Color color,
-        required amount}) {
+      required subtitle,
+      required icon,
+      bool? showsummary = true,
+      required onPresssed,
+      required Color color,
+      required amount}) {
     return InkWell(
       onTap: () {
         onPresssed();
@@ -304,7 +294,7 @@ class SalesPage extends StatelessWidget {
             if (showsummary == true)
               normalText(
                   title:
-                  " ${title} summary: ${shopController.currentShop.value?.currency}.${amount} ",
+                      " ${title} summary: ${shopController.currentShop.value?.currency}.${amount} ",
                   color: Colors.black,
                   size: 14.0)
           ],
@@ -402,10 +392,10 @@ class MonthFilter extends StatelessWidget {
               return InkWell(
                 onTap: () {
                   DateTime now =
-                  DateTime(salesController.currentYear.value, i + 1);
+                      DateTime(salesController.currentYear.value, i + 1);
                   var lastday = DateTime(now.year, now.month + 1, 0);
                   final noww =
-                  DateTime(salesController.currentYear.value, i + 1);
+                      DateTime(salesController.currentYear.value, i + 1);
                   var firstday = DateTime(noww.year, noww.month, 1);
 
                   var d = DateFormat("yyy-MM-dd").format(
@@ -419,7 +409,7 @@ class MonthFilter extends StatelessWidget {
                     isSmallScreen(context)
                         ? Get.to(() => AllSalesPage(page: ""))
                         : Get.find<HomeController>().selectedWidget.value =
-                        AllSalesPage(page: "salesPage");
+                            AllSalesPage(page: "salesPage");
                   } else {
                     salesController.getProfitTransaction(
                       fromDate: firstday,
@@ -427,14 +417,14 @@ class MonthFilter extends StatelessWidget {
                     );
                     isSmallScreen(context)
                         ? Get.to(() => ProfitPage(
-                      page: "salesPage",
-                        headline:
-                        "from\n${'${DateFormat("yyy-MM-dd").format(firstday)}-${DateFormat("yyy-MM-dd").format(lastday)}'}"))
-                        : Get.find<HomeController>().selectedWidget.value =
-                        ProfitPage(
                             page: "salesPage",
                             headline:
-                            "from\n${'${DateFormat("yyy-MM-dd").format(firstday)}-${DateFormat("yyy-MM-dd").format(lastday)}'}");
+                                "from\n${'${DateFormat("yyy-MM-dd").format(firstday)}-${DateFormat("yyy-MM-dd").format(lastday)}'}"))
+                        : Get.find<HomeController>().selectedWidget.value =
+                            ProfitPage(
+                                page: "salesPage",
+                                headline:
+                                    "from\n${'${DateFormat("yyy-MM-dd").format(firstday)}-${DateFormat("yyy-MM-dd").format(lastday)}'}");
                   }
                 },
                 child: Column(

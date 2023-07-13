@@ -6,13 +6,10 @@ import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/controllers/product_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/functions/functions.dart';
-import 'package:pointify/main.dart';
 import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/customers/customers_page.dart';
 import 'package:pointify/screens/home/home_page.dart';
-import 'package:pointify/screens/sales/all_sales.dart';
-import 'package:pointify/widgets/no_items_found.dart';
-import 'package:pointify/widgets/search_widget.dart';
+import 'package:pointify/screens/sales/sales_page.dart';
 import 'package:get/get.dart';
 import 'package:realm/realm.dart';
 
@@ -23,7 +20,6 @@ import '../../controllers/sales_controller.dart';
 import '../../utils/colors.dart';
 import '../../widgets/bigtext.dart';
 import '../../widgets/sales_container.dart';
-import '../../widgets/smalltext.dart';
 import '../customers/create_customers.dart';
 import '../product/products_screen.dart';
 import 'components/discount_dialog.dart';
@@ -43,6 +39,7 @@ class CreateSale extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     return WillPopScope(
         onWillPop: () async {
           salesController.receipt.value = null;
@@ -59,8 +56,13 @@ class CreateSale extends StatelessWidget {
                   if (isSmallScreen(context)) {
                     Get.back();
                   } else {
-                    Get.find<HomeController>().selectedWidget.value =
-                        HomePage();
+                    if (page == "SalesPage") {
+                      Get.find<HomeController>().selectedWidget.value =
+                          SalesPage();
+                    } else {
+                      Get.find<HomeController>().selectedWidget.value =
+                          HomePage();
+                    }
                   }
 
                   salesController.receipt.value = null;
@@ -233,7 +235,7 @@ class CreateSale extends StatelessWidget {
                                       null;
                                   customersController.getCustomersInShop("all");
                                   if (isSmallScreen(context)) {
-                                    confirmPayment(context);
+                                    confirmPayment(context, "");
                                   } else {
                                     paymentUi(context: context);
                                   }
@@ -583,6 +585,7 @@ class CreateSale extends StatelessWidget {
                             size: 16.0)),
                     TextButton(
                         onPressed: () {
+
                           salesController.saveSale(screen: page ?? "admin");
                         },
                         child: majorTitle(
@@ -719,6 +722,7 @@ class CreateSale extends StatelessWidget {
                               size: 16.0)),
                       TextButton(
                           onPressed: () {
+
                             salesController.saveSale(screen: page ?? "admin");
                           },
                           child: majorTitle(
@@ -865,7 +869,6 @@ class CreateSale extends StatelessWidget {
           type: "sale",
           function: () {
             confirmPayment(Get.context, "small");
-            print("called");
           },
         ),
       );
