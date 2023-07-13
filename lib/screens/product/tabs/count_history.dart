@@ -32,8 +32,7 @@ class ProductCountHistory extends StatelessWidget {
                         productController.countHistory.elementAt(index);
                     return InkWell(
                       onTap: () {
-                        deleteFunction(context,productModel,index);
-
+                        deleteFunction(context, productModel, index);
                       },
                       child: Container(
                         padding: const EdgeInsets.symmetric(
@@ -108,7 +107,6 @@ class ProductCountHistory extends StatelessWidget {
                         DataColumn(
                             label: Text('Updated Count',
                                 textAlign: TextAlign.center)),
-
                         DataColumn(
                             label:
                                 Text('Attendant', textAlign: TextAlign.center)),
@@ -118,7 +116,7 @@ class ProductCountHistory extends StatelessWidget {
                             label:
                                 Text('Actions', textAlign: TextAlign.center)),
                       ],
-                      rows: List.generate( productController.countHistory.length,
+                      rows: List.generate(productController.countHistory.length,
                           (index) {
                         ProductCountModel productCountModel =
                             productController.countHistory.elementAt(index);
@@ -136,7 +134,8 @@ class ProductCountHistory extends StatelessWidget {
                           DataCell(
                             InkWell(
                               onTap: () {
-                                deleteFunction(context,productCountModel,index);
+                                deleteFunction(
+                                    context, productCountModel, index);
                               },
                               child: const Icon(
                                 Icons.more_vert,
@@ -151,18 +150,16 @@ class ProductCountHistory extends StatelessWidget {
     });
   }
 
-  void deleteFunction(BuildContext context, ProductCountModel productModel,int index) {
-
-    var diff = productModel.quantity! -
-        productModel.initialquantity!;
+  void deleteFunction(
+      BuildContext context, ProductCountModel productModel, int index) {
+    var diff = productModel.quantity! - productModel.initialquantity!;
     String message = "";
-    if (diff > 0) {
+    if (productModel.initialquantity! > productModel.quantity!) {
       message =
-      "Deleting this count will reduce stock balance by  $diff";
-    }
-    if (diff < 0) {
+          "Deleting this count will increase stock balance by  ${diff.abs()} items";
+    } else {
       message =
-      "Deleting this count will increase stock balance by  ${diff}";
+          "Deleting this count will reduce stock balance by  ${diff.abs()}";
     }
     showDialog(
         context: context,
@@ -178,28 +175,21 @@ class ProductCountHistory extends StatelessWidget {
               TextButton(
                   onPressed: () {
                     var bal = 0;
+                    print("diff $diff");
                     if (diff > 0) {
                       bal = diff * -1;
                     }
                     if (diff < 0) {
-                      bal = diff;
+                      bal = diff.abs();
                     }
-                    print(bal);
-                    print(productModel.product!.quantity! +
-                        bal);
                     Get.back();
                     Products().updateProductPart(
                       product: productModel.product!,
-                      quantity:
-                      productModel.product!.quantity! +
-                          bal,
+                      quantity: productModel.product!.quantity! + bal,
                     );
-                    Products()
-                        .deleteProductCount(productModel);
-                    productController.countHistory
-                        .removeAt(index);
-                    productController.countHistory
-                        .refresh();
+                    Products().deleteProductCount(productModel);
+                    productController.countHistory.removeAt(index);
+                    productController.countHistory.refresh();
                   },
                   child: const Text("Ok"))
             ],
