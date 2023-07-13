@@ -15,83 +15,71 @@ class SignUp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-          backgroundColor: Colors.white,
-          elevation: 0.0,
-          leading: IconButton(
-              onPressed: () {
-                Get.back();
-              },
-              icon: Icon(
-                Icons.clear,
-                color: Colors.black,
-              ))),
-      backgroundColor: Colors.white,
-      body: ResponsiveWidget(
-          largeScreen: Align(
-            alignment: Alignment.center,
-            child: Container(
-              width: 400,
-              height: MediaQuery.of(context).size.height * 0.7,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(5.0),
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey,
-                    offset: Offset(0.0, 0.0), //(x,y)
-                    blurRadius: 1.0,
-                  ),
-                ],
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(
-                    height: 20,
-                  ),
-                  signUpForm(context),
-                ],
-              ),
+        appBar: AppBar(
+            backgroundColor: Colors.white,
+            elevation: 0.0,
+            leading: IconButton(
+                onPressed: () {
+                  Get.back();
+                },
+                icon: const Icon(
+                  Icons.clear,
+                  color: Colors.black,
+                ))),
+        backgroundColor: Colors.white,
+        body: ListView(
+          children: [
+            Column(
+              children: [
+                Image.asset(
+                  "assets/images/logo2.png",
+                  width: 250,
+                ),
+                const Text("An enterprise at your fingertips."),
+                const SizedBox(
+                  height: 40,
+                ),
+              ],
             ),
-          ),
-          smallScreen: ListView(
-            children: [
-              Column(
-                children: [
-                  Image.asset(
-                    "assets/images/logo2.png",
-                    width: 250,
-                  ),
-                  Text("An enterprise at your fingertips."),
-                  SizedBox(
-                    height: 40,
-                  ),
-                ],
-              ),
-              SizedBox(height: 40),
-              signUpForm(context)
-            ],
-          )),
-    );
+            const SizedBox(height: 40),
+            isSmallScreen(context)
+                ? signUpForm(context)
+                : Container(
+                    padding: const EdgeInsets.only(top: 10),
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey,
+                          offset: Offset(0.0, 0.0), //(x,y)
+                          blurRadius: 1.0,
+                        ),
+                      ],
+                    ),
+                    margin: EdgeInsets.only(
+                      left: MediaQuery.of(context).size.width * 0.25,
+                      right: MediaQuery.of(context).size.width * 0.25,
+                    ),
+                    child: signUpForm(context))
+          ],
+        ));
   }
 
   Widget signUpForm(context) {
     return Column(
       children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 20.0, right: 20),
+        const Padding(
+          padding: EdgeInsets.only(left: 20.0, right: 20),
           child: Text(
             "Create Your Account",
             style: TextStyle(
                 color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),
           ),
         ),
-        SizedBox(height: 4),
+        const SizedBox(height: 4),
         Container(
-          padding: EdgeInsets.all(10),
-          margin: EdgeInsets.all(10),
+          padding: const EdgeInsets.all(10),
+          margin: const EdgeInsets.all(10),
           child: Form(
             key: authController.signupkey,
             child: Column(
@@ -114,7 +102,7 @@ class SignUp extends StatelessWidget {
                             'Username*', 'Enter your username'),
                   ),
                 ),
-                SizedBox(height: 20.0),
+                const SizedBox(height: 20.0),
                 Container(
                   decoration: ThemeHelper().inputBoxDecorationShaddow(),
                   child: TextFormField(
@@ -133,7 +121,7 @@ class SignUp extends StatelessWidget {
                     },
                   ),
                 ),
-                SizedBox(height: 20.0),
+                const SizedBox(height: 20.0),
                 Container(
                   decoration: ThemeHelper().inputBoxDecorationShaddow(),
                   child: TextFormField(
@@ -172,10 +160,10 @@ class SignUp extends StatelessWidget {
                     },
                   ),
                 ),
-                SizedBox(height: 20.0),
+                const SizedBox(height: 20.0),
                 Obx(
                   () => authController.signuserLoad.value
-                      ? Center(
+                      ? const Center(
                           child: CircularProgressIndicator(),
                         )
                       : ElevatedButton(
