@@ -12,11 +12,13 @@ import '../../controllers/home_controller.dart';
 import '../../controllers/shop_controller.dart';
 import '../../utils/colors.dart';
 import '../../widgets/delete_dialog.dart';
+import 'cashflow_categories.dart';
 
 class CashAtBank extends StatelessWidget {
   CashFlowCategory? cashFlowCategory;
+  final String? page;
 
-  CashAtBank({Key? key, this.cashFlowCategory}) : super(key: key) {
+  CashAtBank({Key? key, this.cashFlowCategory, this.page}) : super(key: key) {
     cashflowController.fetchCashAtBank();
   }
 
@@ -48,18 +50,18 @@ class CashAtBank extends StatelessWidget {
       appBar: _appBar(context),
       bottomNavigationBar: BottomAppBar(
         child: Container(
-          padding: EdgeInsets.all(10),
+          padding: const EdgeInsets.all(10),
           height: kToolbarHeight,
           color: Colors.white,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
+              const Text(
                 "Totals",
                 style: TextStyle(color: Colors.black),
               ),
               Container(
-                padding: EdgeInsets.all(5),
+                padding: const EdgeInsets.all(5),
                 decoration: BoxDecoration(
                     color: Colors.grey.withOpacity(0.8),
                     borderRadius: BorderRadius.circular(20)),
@@ -138,7 +140,7 @@ class CashAtBank extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Container(
-        padding: EdgeInsets.all(15),
+        padding: const EdgeInsets.all(15),
         width: double.infinity,
         decoration: BoxDecoration(
           borderRadius: BorderRadiusDirectional.circular(8),
@@ -152,32 +154,32 @@ class CashAtBank extends StatelessWidget {
               height: 4,
               color: Colors.grey.withOpacity(0.3),
             ),
-            SizedBox(height: 4),
+            const SizedBox(height: 4),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Row(
                   children: [
                     Container(),
-                    SizedBox(width: 2),
+                    const SizedBox(width: 2),
                     Container(
                         width: 50,
                         height: 4,
                         color: Colors.grey.withOpacity(0.3)),
                   ],
                 ),
-                Icon(Icons.credit_card, color: Colors.grey)
+                const Icon(Icons.credit_card, color: Colors.grey)
               ],
             ),
-            SizedBox(height: 4),
+            const SizedBox(height: 4),
             Container(
                 width: 100, height: 4, color: Colors.grey.withOpacity(0.3)),
-            SizedBox(height: 10),
-            Divider(
+            const SizedBox(height: 10),
+            const Divider(
               thickness: 0.5,
               color: Colors.grey,
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -200,18 +202,23 @@ class CashAtBank extends StatelessWidget {
       foregroundColor: Colors.black,
       titleSpacing: 0.0,
       centerTitle: false,
-      iconTheme: IconThemeData(color: Colors.black),
-      titleTextStyle: TextStyle(color: Colors.black),
+      iconTheme: const IconThemeData(color: Colors.black),
+      titleTextStyle: const TextStyle(color: Colors.black),
       leading: IconButton(
         onPressed: () {
-          if (MediaQuery.of(context).size.width > 600) {
-            Get.find<HomeController>().selectedWidget.value = CashFlowManager();
-          } else {
+          if (isSmallScreen(context)) {
             Get.back();
+          } else {
+            if (page == "CashFlowCategories") {
+              Get.find<HomeController>().selectedWidget.value =
+                  CashFlowCategories();
+            } else {
+              Get.find<HomeController>().selectedWidget.value =
+                  CashFlowManager();
+            }
           }
-          ;
         },
-        icon: Icon(
+        icon: const Icon(
           Icons.arrow_back_ios,
         ),
       ),
@@ -227,7 +234,7 @@ class CashAtBank extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Container(
-        padding: EdgeInsets.all(15),
+        padding: const EdgeInsets.all(15),
         width: double.infinity,
         decoration: BoxDecoration(
           borderRadius: BorderRadiusDirectional.circular(8),
@@ -238,37 +245,37 @@ class CashAtBank extends StatelessWidget {
           children: [
             Text(
               bankModel.name ?? "",
-              style: TextStyle(color: Colors.grey),
+              style: const TextStyle(color: Colors.grey),
             ),
-            SizedBox(height: 4),
+            const SizedBox(height: 4),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Row(
                   children: [
                     Text("${createShopController.currentShop.value!.currency}"),
-                    SizedBox(width: 2),
+                    const SizedBox(width: 2),
                     Text(
                       "${bankModel.amount}",
-                      style: TextStyle(
+                      style: const TextStyle(
                           color: Colors.black, fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),
-                Icon(Icons.credit_card, color: Colors.grey)
+                const Icon(Icons.credit_card, color: Colors.grey)
               ],
             ),
-            SizedBox(height: 4),
-            Text(
+            const SizedBox(height: 4),
+            const Text(
               "**** **** **** ****",
               style: TextStyle(color: Colors.black),
             ),
-            SizedBox(height: 10),
-            Divider(
+            const SizedBox(height: 10),
+            const Divider(
               thickness: 0.5,
               color: Colors.grey,
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -290,7 +297,7 @@ class CashAtBank extends StatelessWidget {
                     onPressed: () {
                       showBottomSheet(context);
                     },
-                    icon: Icon(Icons.more_vert, color: Colors.grey)),
+                    icon: const Icon(Icons.more_vert, color: Colors.grey)),
               ],
             )
           ],
@@ -317,12 +324,12 @@ class CashAtBank extends StatelessWidget {
                 Container(
                   color: AppColors.mainColor.withOpacity(0.1),
                   width: double.infinity,
-                  child: ListTile(
+                  child: const ListTile(
                     title: Text("Manage Bank"),
                   ),
                 ),
                 ListTile(
-                  leading: Icon(Icons.edit),
+                  leading: const Icon(Icons.edit),
                   onTap: () {
                     Get.back();
                     showDialog(
@@ -330,33 +337,34 @@ class CashAtBank extends StatelessWidget {
                         builder: (_) {
                           return AlertDialog(
                             content: Container(
-                              padding: EdgeInsets.only(
+                              padding: const EdgeInsets.only(
                                   left: 15, right: 15, top: 10, bottom: 3),
                               height: MediaQuery.of(context).size.height * 0.2,
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text("Edit Bank"),
-                                  Spacer(),
+                                  const Text("Edit Bank"),
+                                  const Spacer(),
                                   TextFormField(
                                     decoration: InputDecoration(
-                                        contentPadding: EdgeInsets.all(10),
+                                        contentPadding:
+                                            const EdgeInsets.all(10),
                                         fillColor: Colors.white,
                                         filled: true,
                                         focusedBorder: OutlineInputBorder(
                                             borderRadius:
                                                 BorderRadius.circular(8),
-                                            borderSide: BorderSide(
+                                            borderSide: const BorderSide(
                                                 color: Colors.grey,
                                                 width: 0.5)),
                                         enabledBorder: OutlineInputBorder(
                                             borderRadius:
                                                 BorderRadius.circular(8),
-                                            borderSide: BorderSide(
+                                            borderSide: const BorderSide(
                                                 color: Colors.grey,
                                                 width: 0.5))),
                                   ),
-                                  SizedBox(
+                                  const SizedBox(
                                     height: 10,
                                   ),
                                   Row(
@@ -371,7 +379,7 @@ class CashAtBank extends StatelessWidget {
                                             style: TextStyle(
                                                 color: AppColors.mainColor),
                                           )),
-                                      SizedBox(
+                                      const SizedBox(
                                         width: 10,
                                       ),
                                       TextButton(
@@ -391,25 +399,25 @@ class CashAtBank extends StatelessWidget {
                           );
                         });
                   },
-                  title: Text("Edit"),
+                  title: const Text("Edit"),
                 ),
                 ListTile(
-                  leading: Icon(Icons.delete),
+                  leading: const Icon(Icons.delete),
                   onTap: () {
                     Get.back();
                     deleteDialog(context: context, onPressed: () {});
                   },
-                  title: Text("Delete"),
+                  title: const Text("Delete"),
                 ),
                 ListTile(
-                  leading: Icon(
+                  leading: const Icon(
                     Icons.clear,
                     color: Colors.red,
                   ),
                   onTap: () {
                     Get.back();
                   },
-                  title: Text("Cancel "),
+                  title: const Text("Cancel "),
                 ),
               ],
             ),
@@ -422,7 +430,7 @@ class CashAtBank extends StatelessWidget {
       itemBuilder: (ctx) => [
         PopupMenuItem(
           child: ListTile(
-            leading: Icon(Icons.list),
+            leading: const Icon(Icons.list),
             onTap: () {
               Get.back();
               Get.find<HomeController>().selectedWidget.value =
@@ -431,12 +439,12 @@ class CashAtBank extends StatelessWidget {
                 page: "cashflowcategory",
               );
             },
-            title: Text("View List"),
+            title: const Text("View List"),
           ),
         ),
         PopupMenuItem(
           child: ListTile(
-            leading: Icon(Icons.edit),
+            leading: const Icon(Icons.edit),
             onTap: () {
               Get.back();
               showDialog(
@@ -444,30 +452,30 @@ class CashAtBank extends StatelessWidget {
                   builder: (_) {
                     return Dialog(
                       child: Container(
-                        padding: EdgeInsets.only(
+                        padding: const EdgeInsets.only(
                             left: 15, right: 15, top: 10, bottom: 3),
                         height: MediaQuery.of(context).size.height * 0.2,
                         width: MediaQuery.of(context).size.width * 0.2,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text("Edit Bank"),
-                            Spacer(),
+                            const Text("Edit Bank"),
+                            const Spacer(),
                             TextFormField(
                               decoration: InputDecoration(
-                                  contentPadding: EdgeInsets.all(10),
+                                  contentPadding: const EdgeInsets.all(10),
                                   fillColor: Colors.white,
                                   filled: true,
                                   focusedBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(8),
-                                      borderSide: BorderSide(
+                                      borderSide: const BorderSide(
                                           color: Colors.grey, width: 0.5)),
                                   enabledBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(8),
-                                      borderSide: BorderSide(
+                                      borderSide: const BorderSide(
                                           color: Colors.grey, width: 0.5))),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               height: 10,
                             ),
                             Row(
@@ -482,7 +490,7 @@ class CashAtBank extends StatelessWidget {
                                       style:
                                           TextStyle(color: AppColors.mainColor),
                                     )),
-                                SizedBox(
+                                const SizedBox(
                                   width: 10,
                                 ),
                                 TextButton(
@@ -502,21 +510,21 @@ class CashAtBank extends StatelessWidget {
                     );
                   });
             },
-            title: Text("Edit"),
+            title: const Text("Edit"),
           ),
         ),
         PopupMenuItem(
           child: ListTile(
-            leading: Icon(Icons.delete),
+            leading: const Icon(Icons.delete),
             onTap: () {
               Get.back();
               deleteDialog(context: context, onPressed: () {});
             },
-            title: Text("Delete"),
+            title: const Text("Delete"),
           ),
         ),
       ],
-      icon: Icon(Icons.more_vert),
+      icon: const Icon(Icons.more_vert),
     );
   }
 }
