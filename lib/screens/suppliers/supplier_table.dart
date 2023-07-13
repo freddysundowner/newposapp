@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:pointify/controllers/home_controller.dart';
+import 'package:pointify/controllers/purchase_controller.dart';
 import 'package:pointify/screens/customers/customer_info_page.dart';
 import 'package:get/get.dart';
+import 'package:pointify/screens/purchases/create_purchase.dart';
 import 'package:pointify/screens/suppliers/supplier_info_page.dart';
 
 import '../../../utils/colors.dart';
 import '../../Real/schema.dart';
 
-Widget supplierTable({required customers, required context}) {
+Widget supplierTable(
+    {required customers, required context, Function? function}) {
   return SingleChildScrollView(
     child: Container(
       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
@@ -17,9 +20,9 @@ Widget supplierTable({required customers, required context}) {
         child: DataTable(
           decoration: BoxDecoration(
               border: Border.all(
-                width: 1,
-                color: Colors.black,
-              )),
+            width: 1,
+            color: Colors.black,
+          )),
           columnSpacing: 30.0,
           columns: const [
             DataColumn(label: Text('Name', textAlign: TextAlign.center)),
@@ -37,10 +40,18 @@ Widget supplierTable({required customers, required context}) {
               DataCell(
                 InkWell(
                   onTap: () {
-                    Get.find<HomeController>().selectedWidget.value =
-                        SupplierInfoPage(
-                          supplierModel: supplierModel,
-                        );
+                    if (function != null) {
+                      Get.find<PurchaseController>().invoice.value?.supplier =
+                          supplierModel;
+                      Get.find<HomeController>().selectedWidget.value =
+                          CreatePurchase();
+                      function();
+                    } else {
+                      Get.find<HomeController>().selectedWidget.value =
+                          SupplierInfoPage(
+                        supplierModel: supplierModel,
+                      );
+                    }
                   },
                   child: Align(
                     alignment: Alignment.topRight,
@@ -52,9 +63,9 @@ Widget supplierTable({required customers, required context}) {
                             color: AppColors.mainColor,
                             borderRadius: BorderRadius.circular(3)),
                         width: 75,
-                        child: const Text(
-                          "View",
-                          style: TextStyle(color: Colors.white),
+                        child: Text(
+                          function != null ? "Select" : "View",
+                          style: const TextStyle(color: Colors.white),
                           textAlign: TextAlign.center,
                         ),
                       ),

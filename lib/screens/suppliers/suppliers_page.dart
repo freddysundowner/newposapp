@@ -37,7 +37,6 @@ class SuppliersPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return defaultTab(context);
-
   }
 
   Widget defaultTab(context) {
@@ -142,16 +141,18 @@ class SuppliersPage extends StatelessWidget {
 }
 
 class Suppliers extends StatelessWidget {
-  Suppliers({Key? key, this.type, this.from}) : super(key: key);
+  Suppliers({Key? key, this.type, this.from, this.function}) : super(key: key);
   CustomerController customersController = Get.find<CustomerController>();
   ShopController shopController = Get.find<ShopController>();
   SupplierController supplierController = Get.find<SupplierController>();
   PurchaseController purchaseController = Get.find<PurchaseController>();
   String? type = "";
   String? from = "";
+  Function? function;
 
   @override
   Widget build(BuildContext context) {
+    print(type);
     return Scaffold(
       backgroundColor: Colors.white,
       body: Padding(
@@ -195,7 +196,7 @@ class Suppliers extends StatelessWidget {
                                 }
                               });
                         })
-                    : supplierTable(customers: results, context: context);
+                    : supplierTable(customers: results, context: context,function:function);
               }
             }),
       ),

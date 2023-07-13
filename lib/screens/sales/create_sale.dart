@@ -233,7 +233,7 @@ class CreateSale extends StatelessWidget {
                                       null;
                                   customersController.getCustomersInShop("all");
                                   if (isSmallScreen(context)) {
-                                    confirmPayment(context, );
+                                    confirmPayment(context, "small");
                                   } else {
                                     paymentUi(context: context);
                                   }
