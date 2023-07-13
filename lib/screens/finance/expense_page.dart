@@ -30,146 +30,46 @@ class ExpensePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ResponsiveWidget(
-        largeScreen: Scaffold(
-            backgroundColor: Colors.white,
-            appBar: _appBar(context),
-            body: SingleChildScrollView(
-              child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                child: Column(
-                  children: [
-                    const SizedBox(height: 5),
-                    Center(
-                      child: Container(
-                        width: MediaQuery.of(context).size.width * 0.4,
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(8),
-                            boxShadow: const [
-                              BoxShadow(
-                                  color: Colors.black26,
-                                  offset: Offset(0, 1),
-                                  blurRadius: 1.0)
-                            ]),
-                        child: totalsContainer(),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Obx(() {
-                          return majorTitle(
-                              title:
-                                  "${expenseController.expenses.length} Entries",
-                              color: Colors.black,
-                              size: 15.0);
-                        }),
-                        addExpenseContainer()
-                      ],
-                    ),
-                    Obx(() {
-                      return expenseController.getExpenseByDateLoad.value
-                          ? const Center(
-                              child: CircularProgressIndicator(),
-                            )
-                          : expenseController.expenses.isEmpty
-                              ? noItemsFound(context, true)
-                              : Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 15, vertical: 10),
-                                  width: double.infinity,
-                                  child: Theme(
-                                    data: Theme.of(context)
-                                        .copyWith(dividerColor: Colors.grey),
-                                    child: DataTable(
-                                      decoration: BoxDecoration(
-                                          border: Border.all(
-                                        width: 1,
-                                        color: Colors.black,
-                                      )),
-                                      columnSpacing: 30.0,
-                                      columns: [
-                                        const DataColumn(
-                                            label: Text('Name',
-                                                textAlign: TextAlign.center)),
-                                        const DataColumn(
-                                            label: Text('Category',
-                                                textAlign: TextAlign.center)),
-                                        DataColumn(
-                                            label: Text(
-                                                'Amount(${shopController.currentShop.value?.currency})',
-                                                textAlign: TextAlign.center)),
-                                      ],
-                                      rows: List.generate(
-                                          expenseController.expenses.length,
-                                          (index) {
-                                        ExpenseModel expenseModel =
-                                            expenseController.expenses
-                                                .elementAt(index);
-                                        final y = expenseModel.name;
-                                        final x = expenseModel.category;
-
-                                        return DataRow(cells: [
-                                          DataCell(Container(
-                                              width: 75, child: Text(y!))),
-                                          DataCell(Container(
-                                              width: 75,
-                                              child: Text(x.toString()))),
-                                          DataCell(Container(
-                                              width: 75,
-                                              child: Text(
-                                                  "${expenseModel.amount}"))),
-                                        ]);
-                                      }),
-                                    ),
-                                  ),
-                                );
-                    }),
-                  ],
-                ),
+    return Scaffold(
+      appBar: _appBar(context),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: totalsContainer(),
+            ),
+            const SizedBox(height: 25),
+            Container(
+              padding: const EdgeInsets.only(right: 10, left: 10),
+              child: Align(
+                alignment: Alignment.centerRight,
+                child: addExpenseContainer(),
               ),
-            )),
-        smallScreen: Scaffold(
-          appBar: _appBar(context),
-          body: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Center(
-                  child: totalsContainer(),
-                ),
-                const SizedBox(height: 25),
-                Container(
-                  padding: const EdgeInsets.only(right: 10, left: 10),
-                  child: Align(
-                    alignment: Alignment.centerRight,
-                    child: addExpenseContainer(),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: Obx(() {
-                    return majorTitle(
-                        title: "${expenseController.expenses.length} Entries",
-                        color: Colors.black,
-                        size: 15.0);
-                  }),
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                Obx(() {
-                  return expenseController.expenses.isEmpty
-                      ? Center(
-                          child: majorTitle(
-                              title: "No Entries found",
-                              color: Colors.grey,
-                              size: 13.0),
-                        )
-                      : ListView.builder(
+            ),
+            const SizedBox(height: 10),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: Obx(() {
+                return majorTitle(
+                    title: "${expenseController.expenses.length} Entries",
+                    color: Colors.black,
+                    size: 15.0);
+              }),
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            Obx(() {
+              return expenseController.expenses.isEmpty
+                  ? Center(
+                      child: majorTitle(
+                          title: "No Entries found",
+                          color: Colors.grey,
+                          size: 13.0),
+                    )
+                  : isSmallScreen(context)
+                      ? ListView.builder(
                           itemCount: expenseController.expenses.length,
                           physics: const NeverScrollableScrollPhysics(),
                           shrinkWrap: true,
@@ -179,12 +79,54 @@ class ExpensePage extends StatelessWidget {
 
                             return expenseCard(
                                 context: context, expense: expenseModel);
-                          });
-                }),
-              ],
-            ),
-          ),
-        ));
+                          })
+                      : Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 15, vertical: 10),
+                          width: double.infinity,
+                          child: Theme(
+                            data: Theme.of(context)
+                                .copyWith(dividerColor: Colors.grey),
+                            child: DataTable(
+                              decoration: BoxDecoration(
+                                  border: Border.all(
+                                width: 1,
+                                color: Colors.black,
+                              )),
+                              columnSpacing: 30.0,
+                              columns: [
+                                const DataColumn(
+                                    label: Text('Name',
+                                        textAlign: TextAlign.center)),
+                                const DataColumn(
+                                    label: Text('Category',
+                                        textAlign: TextAlign.center)),
+                                DataColumn(
+                                    label: Text(
+                                        'Amount(${shopController.currentShop.value?.currency})',
+                                        textAlign: TextAlign.center)),
+                              ],
+                              rows: List.generate(
+                                  expenseController.expenses.length, (index) {
+                                ExpenseModel expenseModel =
+                                    expenseController.expenses.elementAt(index);
+                                final y = expenseModel.name;
+                                final x = expenseModel.category;
+
+                                return DataRow(cells: [
+                                  DataCell(Text(y!)),
+                                  DataCell(Text(x.toString())),
+                                  DataCell(Text("${expenseModel.amount}")),
+                                ]);
+                              }),
+                            ),
+                          ),
+                        );
+            }),
+          ],
+        ),
+      ),
+    );
   }
 
   totalsContainer() {
@@ -197,7 +139,8 @@ class ExpensePage extends StatelessWidget {
           Center(
               child: Text(
             "From ${DateFormat("yyy-MM-dd").format(expenseController.filterStartDate.value)} to ${DateFormat("yyy-MM-dd").format(expenseController.filterEnndStartDate.value)}",
-            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            style: const TextStyle(
+                color: Colors.white, fontWeight: FontWeight.bold),
           )),
           const SizedBox(height: 10),
           Row(
@@ -235,8 +178,8 @@ class ExpensePage extends StatelessWidget {
   Widget addExpenseContainer() {
     return InkWell(
       onTap: () {
-        if (isSmallScreen(Get.context)) {  Get.to(() => CreateExpense());
-
+        if (isSmallScreen(Get.context)) {
+          Get.to(() => CreateExpense());
         } else {
           Get.find<HomeController>().selectedWidget.value = CreateExpense();
         }
