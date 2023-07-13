@@ -223,10 +223,17 @@ class WalletPage extends StatelessWidget {
     WalletController walletController = Get.find<WalletController>();
     ShopController shopController = Get.find<ShopController>();
     return showModalBottomSheet<void>(
+        backgroundColor:
+            isSmallScreen(context) ? Colors.white : Colors.transparent,
         context: context,
         builder: (BuildContext context) {
           return Container(
               height: 200,
+              color: Colors.white,
+              margin: EdgeInsets.only(
+                  left: isSmallScreen(context)
+                      ? 0
+                      : MediaQuery.of(context).size.width * 0.2),
               child: Center(
                   child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -242,10 +249,6 @@ class WalletPage extends StatelessWidget {
                       onTap: () async {
                         Navigator.pop(context);
                         walletController.initialPage.value = 0;
-                        // WalletPdf(
-                        //     shop: shopController.currentShop.value!.name!,
-                        //     deposits: walletController.deposits,
-                        //     type: "deposit");
                       },
                       child: Container(
                         width: double.infinity,
