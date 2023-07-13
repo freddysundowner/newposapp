@@ -68,47 +68,49 @@ class ProfitPage extends StatelessWidget {
             onTap: () async {
               isSmallScreen(context)
                   ? Get.to(() => DateFilter(
-                from: "ProfitPage",
-                    page: page,
-                    headline: headline,
-                    function: (value) {
-                      if (value is PickerDateRange) {
-                        final DateTime rangeStartDate = value.startDate!;
-                        final DateTime rangeEndDate = value.endDate!;
-                        salesController.filterStartDate.value = rangeStartDate;
-                        salesController.filterEndDate.value = rangeEndDate;
-                      } else if (value is DateTime) {
-                        final DateTime selectedDate = value;
-                        salesController.filterStartDate.value = selectedDate;
-                        salesController.filterEndDate.value = selectedDate;
-                      }
+                        from: "ProfitPage",
+                        page: page,
+                        headline: headline,
+                        function: (value) {
+                          if (value is PickerDateRange) {
+                            final DateTime rangeStartDate = value.startDate!;
+                            final DateTime rangeEndDate = value.endDate!;
+                            salesController.filterStartDate.value =
+                                rangeStartDate;
+                            salesController.filterEndDate.value = rangeEndDate;
+                          } else if (value is DateTime) {
+                            final DateTime selectedDate = value;
+                            salesController.filterStartDate.value =
+                                selectedDate;
+                            salesController.filterEndDate.value = selectedDate;
+                          }
 
-                      salesController.getProfitTransaction(
-                          fromDate: salesController.filterStartDate.value,
-                          toDate: salesController.filterEndDate.value);
-                    },
-                  ))
-
+                          salesController.getProfitTransaction(
+                              fromDate: salesController.filterStartDate.value,
+                              toDate: salesController.filterEndDate.value);
+                        },
+                      ))
                   : Get.find<HomeController>().selectedWidget.value =
-                  DateFilter(
-                    function: (value) {
-                      if (value is PickerDateRange) {
-                        final DateTime rangeStartDate = value.startDate!;
-                        final DateTime rangeEndDate = value.endDate!;
-                        salesController.filterStartDate.value =
-                            rangeStartDate;
-                        salesController.filterEndDate.value = rangeEndDate;
-                      } else if (value is DateTime) {
-                        final DateTime selectedDate = value;
-                        salesController.filterStartDate.value = selectedDate;
-                        salesController.filterEndDate.value = selectedDate;
-                      }
+                      DateFilter(
+                      from: "ProfitPage",
+                      function: (value) {
+                        if (value is PickerDateRange) {
+                          final DateTime rangeStartDate = value.startDate!;
+                          final DateTime rangeEndDate = value.endDate!;
+                          salesController.filterStartDate.value =
+                              rangeStartDate;
+                          salesController.filterEndDate.value = rangeEndDate;
+                        } else if (value is DateTime) {
+                          final DateTime selectedDate = value;
+                          salesController.filterStartDate.value = selectedDate;
+                          salesController.filterEndDate.value = selectedDate;
+                        }
 
-                      salesController.getProfitTransaction(
-                          fromDate: salesController.filterStartDate.value,
-                          toDate: salesController.filterEndDate.value);
-                    },
-                  );
+                        salesController.getProfitTransaction(
+                            fromDate: salesController.filterStartDate.value,
+                            toDate: salesController.filterEndDate.value);
+                      },
+                    );
             },
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 20),
