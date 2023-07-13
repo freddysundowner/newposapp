@@ -29,6 +29,7 @@ class CreateShop extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print(page);
     Get.find<PlanController>().getPlans();
     return Scaffold(
       backgroundColor: Colors.white,
@@ -39,8 +40,8 @@ class CreateShop extends StatelessWidget {
         centerTitle: false,
         leading: IconButton(
           onPressed: () {
-            if (isSmallScreen(context)) { Get.back();
-
+            if (isSmallScreen(context)) {
+              Get.back();
             } else {
               Get.find<HomeController>().selectedWidget.value = ShopsPage();
             }
@@ -55,12 +56,9 @@ class CreateShop extends StatelessWidget {
       ),
       body: SingleChildScrollView(
         child: Container(
-          decoration: BoxDecoration(
-
-            boxShadow: []
-          ),
-          padding: const EdgeInsets.all(10),
-          margin:  EdgeInsets.symmetric(horizontal: page=="home"?50:0),
+          decoration: BoxDecoration(boxShadow: []),
+          padding: EdgeInsets.all(page == "home" ? 30 : 10),
+          margin: EdgeInsets.symmetric(horizontal: page == "home" ? 50 : 0),
           height: MediaQuery.of(context).size.height,
           child: shopDetails(context),
         ),
@@ -74,15 +72,17 @@ class CreateShop extends StatelessWidget {
       onTap: () {
         shopController.createShop(page: page, context: context);
       },
-      child: Container(
-        padding: const EdgeInsets.all(10),
-        width: double.infinity,
-        decoration: BoxDecoration(
-            border: Border.all(width: 3, color: AppColors.mainColor),
-            borderRadius: BorderRadius.circular(40)),
-        child: Center(
-            child: majorTitle(
-                title: "Create ", color: AppColors.mainColor, size: 18.0)),
+      child: Center(
+        child: Container(
+          padding: const EdgeInsets.all(10),
+          width: page == "home" ? 300 : double.infinity,
+          decoration: BoxDecoration(
+              border: Border.all(width: 3, color: AppColors.mainColor),
+              borderRadius: BorderRadius.circular(40)),
+          child: Center(
+              child: majorTitle(
+                  title: "Create ", color: AppColors.mainColor, size: 18.0)),
+        ),
       ),
     );
   }
@@ -102,26 +102,26 @@ class CreateShop extends StatelessWidget {
         const SizedBox(height: 10),
         InkWell(
           onTap: () {
-            if(page=="home"){
+            if (page == "home") {
               Get.to(() => ShopCategories(
-                selectedItemsCallback: (ShopTypes s) {
-                  Get.back();
-                  shopController.selectedCategory.value = s;
-                },
-                page: page,
-              ));
-            }
-            else{
+                    selectedItemsCallback: (ShopTypes s) {
+                      Get.back();
+                      shopController.selectedCategory.value = s;
+                    },
+                    page: page,
+                  ));
+            } else {
               if (isSmallScreen(context)) {
                 Get.to(() => ShopCategories(
-                  selectedItemsCallback: (ShopTypes s) {
-                    Get.back();
-                    shopController.selectedCategory.value = s;
-                  },
-                  page: page,
-                ));
+                      selectedItemsCallback: (ShopTypes s) {
+                        Get.back();
+                        shopController.selectedCategory.value = s;
+                      },
+                      page: page,
+                    ));
               } else {
-                Get.find<HomeController>().selectedWidget.value = ShopCategories(
+                Get.find<HomeController>().selectedWidget.value =
+                    ShopCategories(
                   page: page,
                   selectedItemsCallback: (ShopTypes s) {
                     Get.find<HomeController>().selectedWidget.value =
@@ -215,7 +215,7 @@ class CreateShop extends StatelessWidget {
                 offColor: Colors.grey)
           ],
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: 30),
         Obx(() {
           return shopController.createShopLoad.value
               ? const Center(child: CircularProgressIndicator())

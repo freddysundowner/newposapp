@@ -8,15 +8,12 @@ import 'package:pointify/controllers/user_controller.dart';
 import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/stock/transfer_history.dart';
 import 'package:pointify/services/product.dart';
-import 'package:pointify/widgets/snackBars.dart';
 import 'package:get/get.dart';
 import 'package:realm/realm.dart';
 
 import '../Real/schema.dart';
-import '../widgets/loading_dialog.dart';
 
 class StockTransferController extends GetxController {
-  GlobalKey<State> _keyLoader = new GlobalKey<State>();
   RxList<ProductTransfer> selectedProducts = RxList([]);
   RxList<StockTransferHistory> transferHistory = RxList([]);
   RxList<ProductHistoryModel> productTransferHistory = RxList([]);
@@ -50,9 +47,6 @@ class StockTransferController extends GetxController {
   }
 
   void submitTranster({required Shop toShop, required context}) async {
-    // try {
-    // LoadingDialog.showLoadingDialog(
-    //     context: context, title: "Transfering Products...", key: _keyLoader);
     ObjectId transferId = ObjectId();
     StockTransferHistory stockTransferHistory = StockTransferHistory(transferId,
         from: Get.find<ShopController>().currentShop.value,
@@ -130,7 +124,6 @@ class StockTransferController extends GetxController {
       Get.find<ProductController>().getProductsBySort(type: "");
     }
     selectedProducts.clear();
-    // gettingTransferHistory(shopId: from, type: "in");
   }
 
   gettingTransferHistory({String type = ""}) async {

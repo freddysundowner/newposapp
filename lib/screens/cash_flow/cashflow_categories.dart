@@ -93,12 +93,12 @@ class CashFlowCategories extends StatelessWidget {
           foregroundColor: Colors.black,
           titleSpacing: 0.0,
           centerTitle: false,
-          iconTheme: IconThemeData(color: Colors.black),
-          titleTextStyle: TextStyle(color: Colors.black),
+          iconTheme: const IconThemeData(color: Colors.black),
+          titleTextStyle: const TextStyle(color: Colors.black),
           title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("Cashflow Category",
+              const Text("Cashflow Category",
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
@@ -109,7 +109,7 @@ class CashFlowCategories extends StatelessWidget {
                       ? ""
                       : createShopController
                           .currentShop.value!.name!.capitalize!,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 12,
                   ),
                 );
@@ -125,7 +125,7 @@ class CashFlowCategories extends StatelessWidget {
                   Get.back();
                 }
               },
-              icon: Icon(Icons.arrow_back_ios)),
+              icon: const Icon(Icons.arrow_back_ios)),
         ),
       ),
     );
@@ -181,7 +181,7 @@ class CashInUi extends StatelessWidget {
                           context: context,
                           builder: (context) {
                             return AlertDialog(
-                              title: Text("Add Category"),
+                              title: const Text("Add Category"),
                               content: Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: TextFormField(
@@ -189,7 +189,7 @@ class CashInUi extends StatelessWidget {
                                         .textEditingControllerCategory,
                                     decoration: InputDecoration(
                                         hintText: "eg.Personal use etc",
-                                        hintStyle: TextStyle(fontSize: 12),
+                                        hintStyle: const TextStyle(fontSize: 12),
                                         border: OutlineInputBorder(
                                           borderRadius:
                                               BorderRadius.circular(10),
@@ -202,7 +202,7 @@ class CashInUi extends StatelessWidget {
                                   },
                                   child: Text(
                                     "Cancel".toUpperCase(),
-                                    style: TextStyle(color: Colors.blue),
+                                    style: const TextStyle(color: Colors.blue),
                                   ),
                                 ),
                                 TextButton(
@@ -213,7 +213,7 @@ class CashInUi extends StatelessWidget {
                                   },
                                   child: Text(
                                     "Save now".toUpperCase(),
-                                    style: TextStyle(color: Colors.blue),
+                                    style: const TextStyle(color: Colors.blue),
                                   ),
                                 ),
                               ],
@@ -221,12 +221,12 @@ class CashInUi extends StatelessWidget {
                           });
                     },
                     child: Container(
-                        padding: EdgeInsets.all(8),
+                        padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                            color: Color.fromARGB(255, 41, 41, 41)
+                            color: const Color.fromARGB(255, 41, 41, 41)
                                 .withOpacity(0.2),
                             borderRadius: BorderRadius.circular(10)),
-                        child: Text(
+                        child: const Text(
                           "+ Add",
                           style: TextStyle(color: Colors.green),
                         )),
@@ -252,11 +252,10 @@ class CashInUi extends StatelessWidget {
               ),
             ),
             Obx(() {
-              return MediaQuery.of(context).size.width > 600
+              return !isSmallScreen(context)
                   ? Container(
                       width: double.infinity,
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+                      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
                       child: Theme(
                         data: Theme.of(context)
                             .copyWith(dividerColor: Colors.grey),
@@ -275,31 +274,28 @@ class CashInUi extends StatelessWidget {
                                 label: Text(
                                     'Amount(${createShopController.currentShop.value?.currency})',
                                     textAlign: TextAlign.center)),
+                            // const DataColumn(
+                            //     label:
+                            //         Text('Date', textAlign: TextAlign.center)),
                             const DataColumn(
-                                label:
-                                    Text('Date', textAlign: TextAlign.center)),
-                            DataColumn(
-                                label: Text('', textAlign: TextAlign.center)),
+                                label: Text('Actions', textAlign: TextAlign.center)),
                           ],
                           rows: List.generate(
                               cashflowController.cashFlowCategories.length,
                               (index) {
-                            CashFlowCategory cashflowCategory =
-                                cashflowController.cashFlowCategories
-                                    .elementAt(index);
+                                CashFlowCategory cashflowCategory = cashflowController.cashFlowCategories.elementAt(index);
                             final y = cashflowCategory.name.toString();
                             final x = cashflowCategory.amount.toString();
-                            final z = cashflowCategory.createdAt!;
+                            // final z = cashflowCategory.!;
                             return DataRow(cells: [
-                              DataCell(Container(child: Text(y))),
-                              DataCell(Container(child: Text(x))),
-                              DataCell(Container(
-                                  child: Text(
-                                      DateFormat("MM-dd-yyyy").format(z)))),
+                              DataCell(Text(y)),
+                              DataCell(Text(x)),
+                              // DataCell(Text(
+                              //     DateFormat("MM-dd-yyyy").format(z))),
                               DataCell(Align(
                                 alignment: Alignment.topRight,
                                 child: Container(
-                                    padding: EdgeInsets.only(top: 10),
+                                    padding: const EdgeInsets.only(top: 10),
                                     child: cashFlowCategoryDialog(context,
                                         cashflowCategory: cashflowCategory)),
                               )),

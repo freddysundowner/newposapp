@@ -11,79 +11,50 @@ class Landing extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: ResponsiveWidget(
-          largeScreen: Container(
-            width: double.infinity,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                landingImage(),
-                landingContent(),
-                customButton(
-                    onTap: () {
-                      Get.to(AttendantLogin());
-                    },
-                    color: AppColors.mainColor,
-                    title: "Cashier",
-                    textColor: Colors.white,
-                    icon: Icons.people_alt_outlined),
-                SizedBox(height: 20),
-                customButton(
-                    onTap: () {
-                      Get.to(AdminLogin());
-                    },
-                    color: Colors.white,
-                    title: "Admin",
-                    textColor: AppColors.mainColor,
-                    icon: Icons.person)
-              ],
-            ),
+        body: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Spacer(),
+        landingContent(),
+        SizedBox(
+          height: isSmallScreen(context) ? 100 : 50,
+        ),
+        Padding(
+          padding: const EdgeInsets.only(left: 30.0, right: 30),
+          child: InkWell(
+            onTap: () {
+              Get.to(AttendantLogin());
+            },
+            child: customButton(
+                onTap: () {
+                  Get.to(AttendantLogin());
+                },
+                color: AppColors.mainColor,
+                title: "Cashier",
+                textColor: Colors.white,
+                icon: Icons.people_alt_outlined),
           ),
-          smallScreen: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Spacer(),
-              landingContent(),
-              SizedBox(
-                height: 100,
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 30.0, right: 30),
-                child: InkWell(
-                  onTap: () {
-                    Get.to(AttendantLogin());
-                  },
-                  child: customButton(
-                      onTap: () {
-                        Get.to(AttendantLogin());
-                      },
-                      color: AppColors.mainColor,
-                      title: "Cashier",
-                      textColor: Colors.white,
-                      icon: Icons.people_alt_outlined),
-                ),
-              ),
-              SizedBox(height: 20),
-              Padding(
-                padding: const EdgeInsets.only(left: 30.0, right: 30),
-                child: InkWell(
-                  onTap: () {
-                    Get.to(AdminLogin());
-                  },
-                  child: customButton(
-                      onTap: () {
-                        Get.to(AdminLogin());
-                      },
-                      color: Colors.white,
-                      title: "Admin",
-                      textColor: AppColors.mainColor,
-                      icon: Icons.person),
-                ),
-              ),
-              Spacer(),
-            ],
-          )),
-    );
+        ),
+        SizedBox(height: 20),
+        Padding(
+          padding: const EdgeInsets.only(left: 30.0, right: 30),
+          child: InkWell(
+            onTap: () {
+              Get.to(AdminLogin());
+            },
+            child: customButton(
+                onTap: () {
+                  Get.to(AdminLogin());
+                },
+                color: Colors.white,
+                title: "Admin",
+                textColor: AppColors.mainColor,
+                icon: Icons.person),
+          ),
+        ),
+        Spacer(),
+      ],
+    ));
   }
 
   Widget landingImage() {

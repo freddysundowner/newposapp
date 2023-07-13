@@ -64,10 +64,10 @@ class SupplierService {
     });
   }
 
-  updateSupplierWalletbalance(Supplier supplier, {int? amount}) async {
+  updateSupplierWalletbalance(Supplier? supplier, {int? amount}) async {
     realmService.realm.write(() {
       if (amount != null) {
-        supplier.balance = amount;
+        supplier?.balance = amount;
       }
     });
   }
