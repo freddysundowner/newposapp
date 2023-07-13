@@ -259,6 +259,8 @@ class AllSalesPage extends StatelessWidget {
             IconButton(
                 onPressed: () async {
                   Get.to(() => DateFilter(
+                    from: "AllSalesPage",
+                    page: page,
                     function: (value) {
                       if (value is PickerDateRange) {
                         final DateTime rangeStartDate =
