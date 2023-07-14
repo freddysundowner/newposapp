@@ -79,58 +79,58 @@ class CreateCustomer extends StatelessWidget {
   Widget customerInfoCard(context) {
     return Card(
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 15, horizontal: 35),
+        padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 35),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 Text("Customer Name".capitalize!),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 TextFormField(
                   controller: customersController.nameController,
                   keyboardType: TextInputType.text,
                   decoration: InputDecoration(
                       isDense: true,
-                      hintStyle: TextStyle(
+                      hintStyle: const TextStyle(
                           color: Colors.grey, fontWeight: FontWeight.bold),
                       hintText: "eg.John Doe",
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: Colors.grey, width: 1),
+                        borderSide: const BorderSide(color: Colors.grey, width: 1),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: Colors.grey, width: 1),
+                        borderSide: const BorderSide(color: Colors.grey, width: 1),
                       ),
                       filled: true,
                       fillColor: Colors.white),
                 )
               ],
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("Phone"),
-                SizedBox(height: 10),
+                const Text("Phone"),
+                const SizedBox(height: 10),
                 TextFormField(
                     controller: customersController.phoneController,
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(
                       isDense: true,
-                      hintStyle: TextStyle(
+                      hintStyle: const TextStyle(
                           color: Colors.grey, fontWeight: FontWeight.bold),
                       hintText: "eg.07XXXXXXXX",
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: Colors.grey, width: 1),
+                        borderSide: const BorderSide(color: Colors.grey, width: 1),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: Colors.grey, width: 1),
+                        borderSide: const BorderSide(color: Colors.grey, width: 1),
                       ),
                     ))
               ],
@@ -159,7 +159,7 @@ class CreateCustomer extends StatelessWidget {
               },
               child: Center(
                 child: Container(
-                  padding: EdgeInsets.all(10),
+                  padding: const EdgeInsets.all(10),
                   width: MediaQuery.of(context).size.width * 0.25,
                   decoration: BoxDecoration(
                       border: Border.all(width: 3, color: AppColors.mainColor),
@@ -172,7 +172,7 @@ class CreateCustomer extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
           ],
         ),
       ),
