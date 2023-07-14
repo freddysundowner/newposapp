@@ -11,6 +11,7 @@ import '../../../../utils/colors.dart';
 import '../../controllers/CustomerController.dart';
 import '../../controllers/shop_controller.dart';
 import '../../controllers/supplierController.dart';
+import '../../widgets/alert.dart';
 import '../../widgets/bigtext.dart';
 import '../../widgets/smalltext.dart';
 
@@ -25,7 +26,6 @@ class CreateCustomer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print("page is $page");
     return Scaffold(
         backgroundColor: Colors.white.withOpacity(0.96),
         appBar: AppBar(
@@ -73,16 +73,7 @@ class CreateCustomer extends StatelessWidget {
             )),
         body: SingleChildScrollView(
           child: customerInfoCard(context),
-        )
-        // ResponsiveWidget(
-        //   largeScreen: Align(
-        //       alignment: Alignment.center,
-        //       child: Container(
-        //           width: MediaQuery.of(context).size.width * 0.4,
-        //           height: MediaQuery.of(context).size.height * 0.7,
-        //           child: customerInfoCard(context))),
-        //   smallScreen: ),
-        );
+        ));
   }
 
   Widget customerInfoCard(context) {
@@ -149,11 +140,22 @@ class CreateCustomer extends StatelessWidget {
               splashColor: Colors.transparent,
               hoverColor: Colors.transparent,
               onTap: () {
-                customersController.createCustomer(
-                    page: page,
-                    function: () {
-                      chooseCustomer(context: context);
-                    });
+                if (customersController.phoneController.text.trim().isEmpty ||
+                    customersController.nameController.text.trim().isEmpty) {
+                  isSmallScreen(context)
+                      ? ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                              content: Text("Please fill out all the fields")))
+                      : generalAlert(
+                          title: "Error",
+                          message: "Please fill out all the fields");
+                } else {
+                  customersController.createCustomer(
+                      page: page,
+                      function: () {
+                        chooseCustomer(context: context);
+                      });
+                }
               },
               child: Center(
                 child: Container(
