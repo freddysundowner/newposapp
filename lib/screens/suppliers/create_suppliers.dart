@@ -35,7 +35,7 @@ class CreateSuppliers extends StatelessWidget {
           automaticallyImplyLeading: false,
           leading: IconButton(
             onPressed: () {
-              if (MediaQuery.of(context).size.width > 600) {
+              if (!isSmallScreen(context)) {
                 if (page == "suppliersPage") {
                   Get.find<HomeController>().selectedWidget.value =
                       SuppliersPage();
@@ -49,6 +49,7 @@ class CreateSuppliers extends StatelessWidget {
                       CreateProduct(
                     page: "create",
                     productModel: null,
+                    clearInputs: false,
                   );
                 }
                 if (page == "createPurchase") {
