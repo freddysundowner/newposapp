@@ -2,6 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
+import 'package:pointify/controllers/home_controller.dart';
+import 'package:pointify/responsive/responsiveness.dart';
+import 'package:pointify/screens/home/home.dart';
 import 'package:realm/realm.dart';
 
 import '../../Real/schema.dart';
@@ -31,6 +34,7 @@ class _ReloadPageState extends State<ReloadPage> {
   }
 
   int countDown = 0;
+
   countDownTimer() async {
     for (int x = 5; x > 0; x--) {
       await Future.delayed(const Duration(seconds: 1)).then((_) {
@@ -39,11 +43,14 @@ class _ReloadPageState extends State<ReloadPage> {
         });
         if (x == 1) {
           userController.getUser();
-          Get.to(() => Scaffold(
-                body: SafeArea(
-                  child: HomePage(),
-                ),
-              ));
+
+          isSmallScreen(context)
+              ? Get.to(() => Scaffold(
+            body: SafeArea(
+              child: HomePage(),
+            ),
+          ))
+              : Get.find<HomeController>().selectedWidget.value = Home();
         }
       });
     }
@@ -55,11 +62,13 @@ class _ReloadPageState extends State<ReloadPage> {
       body: InkWell(
         onTap: () {
           userController.getUser();
-          Get.to(() => Scaffold(
-                body: SafeArea(
-                  child: HomePage(),
-                ),
-              ));
+          isSmallScreen(context)
+              ? Get.to(() => Scaffold(
+            body: SafeArea(
+              child: HomePage(),
+            ),
+          ))
+              : Get.find<HomeController>().selectedWidget.value = Home();
         },
         child: Center(
           child: Column(
