@@ -177,7 +177,10 @@ class _HomeState extends State<Home> {
           Spacer(),
           InkWell(
             onTap: () async {
-              Get.to(() => AttendantsPage(type: "switch"));
+              isSmallScreen(context)
+                  ? Get.to(() => AttendantsPage(type: "switch"))
+                  : Get.find<HomeController>().selectedWidget.value =
+                      AttendantsPage(type: "switch");
             },
             child: Row(
               children: [
