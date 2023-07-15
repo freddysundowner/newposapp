@@ -76,6 +76,7 @@ class HomePage extends StatelessWidget {
         fromDate: fromDate, toDate: toDate, type: "today");
     return RefreshIndicator(
       onRefresh: () async {
+        print(userController.user.value!.permisions);
         await shopController.getShops();
         salesController.getSalesByDate(type: "today");
       },
@@ -530,15 +531,14 @@ class HomePage extends StatelessWidget {
                 function();
               },
         child: Container(
-
           decoration: BoxDecoration(
-              color:shopController.checkSubscription() == false &&
-                  shopController.excludefeatures
-                      .contains(title.toString().toLowerCase()) ==
-                      false
+              color: shopController.checkSubscription() == false &&
+                      shopController.excludefeatures
+                              .contains(title.toString().toLowerCase()) ==
+                          false
                   ? Colors.grey
-                  : Colors.white
-              , borderRadius: BorderRadius.circular(10)),
+                  : Colors.white,
+              borderRadius: BorderRadius.circular(10)),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
