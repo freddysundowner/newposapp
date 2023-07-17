@@ -39,24 +39,19 @@ class CustomersPage extends StatelessWidget {
           titleSpacing: 0.0,
           elevation: 0.3,
           centerTitle: false,
-          leading:
-              Get.find<UserController>().user.value?.usertype == "attendant" &&
-                      !isSmallScreen(context)
-                  ? Container()
-                  : IconButton(
-                      onPressed: () {
-                        if (isSmallScreen(context)) {
-                          Get.back();
-                        } else {
-                          Get.find<HomeController>().selectedWidget.value =
-                              HomePage();
-                        }
-                      },
-                      icon: const Icon(
-                        Icons.arrow_back_ios,
-                        color: Colors.black,
-                      ),
-                    ),
+          leading: IconButton(
+            onPressed: () {
+              if (isSmallScreen(context)) {
+                Get.back();
+              } else {
+                Get.find<HomeController>().selectedWidget.value = HomePage();
+              }
+            },
+            icon: const Icon(
+              Icons.arrow_back_ios,
+              color: Colors.black,
+            ),
+          ),
           title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -158,12 +153,12 @@ class Customers extends StatelessWidget {
                         if (!isSmallScreen(context)) {
                           Get.find<HomeController>().selectedWidget.value =
                               CreateCustomer(
-                                page: "customersPage",
-                              );
+                            page: "customersPage",
+                          );
                         } else {
                           Get.to(() => CreateCustomer(
-                            page: "customersPage",
-                          ));
+                                page: "customersPage",
+                              ));
                         }
                       },
                       child: Column(
