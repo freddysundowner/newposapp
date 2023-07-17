@@ -8,7 +8,7 @@ import 'package:pointify/utils/colors.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 import '../../controllers/sales_controller.dart';
-import 'finance_page.dart';
+import 'financial_page.dart';
 
 class ProductAnalysis extends StatelessWidget {
   ProductAnalysis({Key? key}) : super(key: key);
@@ -84,7 +84,7 @@ class ProductAnalysis extends StatelessWidget {
               if (isSmallScreen(context)) {
                 Get.back();
               } else {
-                Get.find<HomeController>().selectedWidget.value = FinancePage();
+                Get.find<HomeController>().selectedWidget.value = FinancialPage();
               }
             },
             icon: Icon(
