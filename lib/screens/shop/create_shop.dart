@@ -75,7 +75,7 @@ class CreateShop extends StatelessWidget {
       child: Center(
         child: Container(
           padding: const EdgeInsets.all(10),
-          width: page == "home" ? 300 : double.infinity,
+          width: isSmallScreen(context) ? double.infinity : 300,
           decoration: BoxDecoration(
               border: Border.all(width: 3, color: AppColors.mainColor),
               borderRadius: BorderRadius.circular(40)),
