@@ -233,7 +233,9 @@ class CreateSale extends StatelessWidget {
                                       null;
                                   customersController.getCustomersInShop("all");
 
-                                  confirmPayment(context, "");
+                                  confirmPayment(
+                                    context,
+                                  );
                                 }
                               },
                               child: Container(
