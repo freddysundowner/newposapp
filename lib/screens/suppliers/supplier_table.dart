@@ -27,7 +27,7 @@ Widget supplierTable(
           columns: const [
             DataColumn(label: Text('Name', textAlign: TextAlign.center)),
             DataColumn(label: Text('Phone', textAlign: TextAlign.center)),
-            DataColumn(label: Text('', textAlign: TextAlign.center)),
+            DataColumn(label: Text('Action', textAlign: TextAlign.center)),
           ],
           rows: List.generate(customers.length, (index) {
             Supplier supplierModel = customers.elementAt(index);

@@ -49,11 +49,7 @@ class SuppliersPage extends StatelessWidget {
           titleSpacing: 0.0,
           elevation: 0.3,
           centerTitle: false,
-          leading:
-              Get.find<UserController>().user.value?.usertype == "attendant" &&
-                      !isSmallScreen(context)
-                  ? Container()
-                  : IconButton(
+          leading: IconButton(
                       onPressed: () {
                         if (isSmallScreen(context)) {
                           Get.back();
@@ -152,7 +148,6 @@ class Suppliers extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(type);
     return Scaffold(
       backgroundColor: Colors.white,
       body: Padding(
@@ -168,6 +163,9 @@ class Suppliers extends StatelessWidget {
                 return noItemsFound(context, true);
               } else {
                 final results = data.results;
+                if( results.length==0){
+                  return noItemsFound(context, true);
+                }
                 return isSmallScreen(context)
                     ? ListView.builder(
                         itemCount: results.realm.isClosed ? 0 : results.length,
