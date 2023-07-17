@@ -241,7 +241,7 @@ class CreateSale extends StatelessWidget {
                                   }
 
                                   confirmPayment(
-                                    context,
+                                    context,""
                                   );
                                 }
                               },
@@ -827,7 +827,7 @@ class CreateSale extends StatelessWidget {
                 IconButton(
                     onPressed: () {
                       Get.to(() => CreateCustomer(
-                            page: "customersPage",
+                            page: "createSale",
                           ));
                     },
                     icon: const Icon(Icons.add))
@@ -856,7 +856,7 @@ class CreateSale extends StatelessWidget {
                 onPressed: () {
                   Get.find<HomeController>().selectedWidget.value =
                       CreateCustomer(
-                    page: "customersPage",
+                    page: "createSale",
                   );
                 },
                 icon: const Icon(
