@@ -41,17 +41,12 @@ class AllSalesPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _body(context)
-        // ResponsiveWidget(
-        //   largeScreen:,
-        //   smallScreen: _body(context),
-        // )
-        ;
+    return _body(context);
   }
 
   Widget searchWidget() {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       child: Row(
         children: [
           Expanded(
@@ -68,14 +63,14 @@ class AllSalesPage extends StatelessWidget {
                 }
               },
               decoration: InputDecoration(
-                contentPadding: EdgeInsets.fromLTRB(10, 2, 0, 2),
+                contentPadding: const EdgeInsets.fromLTRB(10, 2, 0, 2),
                 suffixIcon: IconButton(
                   onPressed: () {
                     salesController.getSales(
                         receipt: salesController.searchProductController.text,
                         onCredit: salesController.salesInitialIndex.value == 1);
                   },
-                  icon: Icon(Icons.search),
+                  icon: const Icon(Icons.search),
                 ),
                 hintText: "Search by receipt number",
                 border: OutlineInputBorder(
@@ -99,12 +94,12 @@ class AllSalesPage extends StatelessWidget {
           height: 40,
           child: Row(
             children: [
-              SizedBox(
+              const SizedBox(
                 width: 10,
               ),
               Column(
                 children: [
-                  Text("Items"),
+                  const Text("Items"),
                   Text(
                     salesController.allSalesReturns.length.toString(),
                     style: const TextStyle(
@@ -112,12 +107,12 @@ class AllSalesPage extends StatelessWidget {
                   )
                 ],
               ),
-              SizedBox(
+              const SizedBox(
                 width: 20,
               ),
               Column(
                 children: [
-                  Text("Qty"),
+                  const Text("Qty"),
                   Text(
                     salesController.allSalesReturns
                         .fold(
@@ -130,10 +125,10 @@ class AllSalesPage extends StatelessWidget {
                   )
                 ],
               ),
-              Spacer(),
+              const Spacer(),
               Column(
                 children: [
-                  Text("Total"),
+                  const Text("Total"),
                   Text(
                     htmlPrice(salesController.allSalesReturns.fold(
                         0,
@@ -145,7 +140,7 @@ class AllSalesPage extends StatelessWidget {
                   )
                 ],
               ),
-              SizedBox(
+              const SizedBox(
                 width: 10,
               ),
             ],
@@ -198,7 +193,7 @@ class AllSalesPage extends StatelessWidget {
                         Obx(
                           () => Text(
                             "${DateFormat("yyyy-MM-dd").format(salesController.filterStartDate.value)} - ${DateFormat("yyyy-MM-dd").format(salesController.filterEndDate.value)}",
-                            style: TextStyle(color: Colors.blue, fontSize: 13),
+                            style: const TextStyle(color: Colors.blue, fontSize: 13),
                           ),
                         )
                       ],
@@ -234,7 +229,7 @@ class AllSalesPage extends StatelessWidget {
                           Get.back();
                         }
                       },
-                      icon: Icon(
+                      icon: const Icon(
                         Icons.arrow_back_ios,
                         color: Colors.black,
                       ),
@@ -312,7 +307,7 @@ class AllSalesPage extends StatelessWidget {
                         }
                       },
                       tabs: [
-                        Tab(
+                        const Tab(
                             child: Row(children: [
                           Text(
                             "Sales",
@@ -322,7 +317,7 @@ class AllSalesPage extends StatelessWidget {
                                 color: Colors.black),
                           )
                         ])),
-                        Tab(
+                        const Tab(
                             child: Text(
                           "Returns",
                           style: TextStyle(
@@ -332,7 +327,7 @@ class AllSalesPage extends StatelessWidget {
                         )),
                         if (checkPermission(
                             category: "accounts", permission: "analysis"))
-                          Tab(
+                          const Tab(
                               child: Text(
                             "Analysis",
                             style: TextStyle(
@@ -492,7 +487,7 @@ class AllSales extends StatelessWidget {
                         alignment: Alignment.bottomRight,
                         child: Container(
                           width: 200,
-                          padding: EdgeInsets.only(right: 10),
+                          padding: const EdgeInsets.only(right: 10),
                           child: Column(
                             children: [
                               Row(
@@ -528,7 +523,7 @@ class AllSales extends StatelessWidget {
                       })
                   : ListView.builder(
                       shrinkWrap: true,
-                      physics: BouncingScrollPhysics(),
+                      physics: const BouncingScrollPhysics(),
                       itemCount: salesController.allSales.length,
                       itemBuilder: (context, index) {
                         SalesModel salesModel =

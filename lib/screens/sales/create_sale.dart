@@ -236,7 +236,6 @@ class CreateSale extends StatelessWidget {
                                   confirmPayment(
                                     context,
                                   );
-
                                 }
                               },
                               child: Container(
@@ -342,8 +341,8 @@ class CreateSale extends StatelessWidget {
                                                                           Navigator.pop(
                                                                               context);
                                                                           confirmPayment(
-                                                                              context,
-                                                                              );
+                                                                            context,
+                                                                          );
                                                                         },
                                                                         child:
                                                                             Container(
@@ -394,207 +393,6 @@ class CreateSale extends StatelessWidget {
             );
           }),
         ));
-  }
-
-  paymentUi({required context}) {
-    return showDialog(
-        context: context,
-        builder: (_) {
-          return AlertDialog(
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                majorTitle(
-                    title:
-                        "Total Amount ${htmlPrice(salesController.receipt.value!.grandTotal)}",
-                    color: Colors.black,
-                    size: 14.0),
-                const SizedBox(height: 10),
-                majorTitle(
-                    title: "Amount paid", color: Colors.black, size: 14.0),
-                const SizedBox(height: 10),
-                TextFormField(
-                    controller: salesController.amountPaid,
-                    onChanged: (value) {
-                      salesController.getTotalCredit();
-                      salesController.receipt.refresh();
-                    },
-                    keyboardType: TextInputType.number,
-                    autofocus: true,
-                    decoration: InputDecoration(
-                        contentPadding:
-                            const EdgeInsets.symmetric(horizontal: 5),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        prefix: Padding(
-                          padding: const EdgeInsets.only(right: 5),
-                          child:
-                              Text(shopController.currentShop.value!.currency!),
-                        ))),
-                const SizedBox(height: 10),
-                Obx(
-                  () => majorTitle(
-                      title:
-                          "${salesController.changeText.value} ${htmlPrice(salesController.change.value)}",
-                      color: Colors.black,
-                      size: 14.0),
-                ),
-                const SizedBox(height: 10),
-                if (_needCustomer() &&
-                    salesController.receipt.value!.customerId == null)
-                  InkWell(
-                    onTap: () {
-                      Get.back();
-                      Get.find<HomeController>().selectedWidget.value =
-                          Scaffold(
-                        appBar: AppBar(
-                          elevation: 0.2,
-                          backgroundColor: Colors.white,
-                          leading: IconButton(
-                              onPressed: () {
-                                Get.find<HomeController>()
-                                    .selectedWidget
-                                    .value = CreateSale();
-                              },
-                              icon: const Icon(
-                                Icons.arrow_back_ios,
-                                color: Colors.black,
-                              )),
-                          actions: [
-                            IconButton(
-                                onPressed: () {
-                                  Get.find<HomeController>()
-                                      .selectedWidget
-                                      .value = CreateCustomer(
-                                    page: "customersPage",
-                                  );
-                                },
-                                icon: const Icon(
-                                  Icons.add,
-                                  color: Colors.black,
-                                ))
-                          ],
-                          title: const Text(
-                            "Select customer",
-                            style: TextStyle(color: Colors.black),
-                          ),
-                        ),
-                        body: Customers(
-                          type: "sale",
-                          function: () {
-                            paymentUi(context: Get.context);
-                          },
-                        ),
-                      );
-                    },
-                    child: majorTitle(
-                        title: "Choose Customer",
-                        color: AppColors.mainColor,
-                        size: 18.0),
-                  ),
-                if (_needCustomer() &&
-                    salesController.receipt.value?.customerId != null)
-                  InkWell(
-                    onTap: () {
-                      Get.back();
-                      Get.find<HomeController>().selectedWidget.value =
-                          Scaffold(
-                        appBar: AppBar(
-                          backgroundColor: Colors.white,
-                          elevation: 0.1,
-                          leading: IconButton(
-                              onPressed: () {
-                                Get.find<HomeController>()
-                                    .selectedWidget
-                                    .value = CreateSale(
-                                  page: page,
-                                );
-                                paymentUi(context: Get.context);
-                              },
-                              icon: const Icon(
-                                Icons.arrow_back_ios,
-                                color: Colors.black,
-                              )),
-                          actions: [
-                            IconButton(
-                                onPressed: () {
-                                  Get.find<HomeController>()
-                                      .selectedWidget
-                                      .value = CreateCustomer(
-                                    page: "customersPage",
-                                  );
-                                },
-                                icon: const Icon(Icons.add))
-                          ],
-                        ),
-                        body: Customers(
-                          type: "sale",
-                          function: () {
-                            paymentUi(context: Get.context);
-                          },
-                        ),
-                      );
-                    },
-                    child: Row(
-                      children: [
-                        majorTitle(
-                            title: salesController
-                                .receipt.value?.customerId?.fullName,
-                            color: AppColors.mainColor,
-                            size: 18.0),
-                        const SizedBox(
-                          width: 20,
-                        ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 5),
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: (BorderRadius.circular(10)),
-                              border: Border.all(
-                                  color: AppColors.mainColor, width: 1)),
-                          child: Row(
-                            children: [
-                              majorTitle(
-                                  title: "Change",
-                                  color: Colors.red,
-                                  size: 12.0),
-                              const Icon(
-                                Icons.edit,
-                                size: 15,
-                              )
-                            ],
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    TextButton(
-                        onPressed: () {
-                          Get.back();
-                        },
-                        child: majorTitle(
-                            title: "Cancel",
-                            color: AppColors.mainColor,
-                            size: 16.0)),
-                    TextButton(
-                        onPressed: () {
-                          salesController.saveSale(screen: page ?? "admin");
-                        },
-                        child: majorTitle(
-                            title: "Confirm payment",
-                            color: AppColors.mainColor,
-                            size: 16.0)),
-                  ],
-                )
-              ],
-            ),
-          );
-        });
   }
 
   confirmPayment(context) {
@@ -848,7 +646,10 @@ class CreateSale extends StatelessWidget {
                 onPressed: () {
                   Get.find<HomeController>().selectedWidget.value =
                       CreateCustomer(
-                    page: "customersPage",
+                    page: "createSale",
+                    function: () {
+                      chooseCustomer(context: Get.context);
+                    },
                   );
                 },
                 icon: const Icon(
@@ -865,7 +666,6 @@ class CreateSale extends StatelessWidget {
           type: "sale",
           function: () {
             confirmPayment(Get.context);
-            print("called");
           },
         ),
       );

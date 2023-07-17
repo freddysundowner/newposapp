@@ -17,8 +17,9 @@ import '../../widgets/smalltext.dart';
 
 class CreateCustomer extends StatelessWidget {
   final page;
+  Function ?function;
 
-  CreateCustomer({Key? key, required this.page}) : super(key: key) {
+  CreateCustomer({Key? key, required this.page,this.function}) : super(key: key) {
     customersController.nameController.clear();
     customersController.phoneController.clear();
   }
@@ -29,6 +30,7 @@ class CreateCustomer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print(page);
     return Scaffold(
         backgroundColor: Colors.white.withOpacity(0.96),
         appBar: AppBar(
@@ -45,8 +47,7 @@ class CreateCustomer extends StatelessWidget {
                         CustomersPage();
                   }
                   if (page == "createSale") {
-                    Get.find<HomeController>().selectedWidget.value =
-                        CreateSale();
+                   function!();
                   }
                   if (page == "createProduct") {
                     Get.find<HomeController>().selectedWidget.value =
