@@ -16,6 +16,7 @@ import '../../services/customer.dart';
 import '../../utils/colors.dart';
 import '../../widgets/bigtext.dart';
 import '../../widgets/customer_card.dart';
+import '../../widgets/no_items_found.dart';
 import '../../widgets/smalltext.dart';
 
 class CustomersPage extends StatelessWidget {
@@ -236,6 +237,9 @@ class Debtors extends StatelessWidget {
                           color: Colors.black);
                     } else {
                       final results = data.results;
+                      if (results.isEmpty) {
+                        return noItemsFound(context, true);
+                      }
                       return isSmallScreen(context)
                           ? ListView.builder(
                               itemCount:

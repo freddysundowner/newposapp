@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pointify/controllers/shop_controller.dart';
+import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/services/customer.dart';
 import 'package:get/get.dart';
 import 'package:pointify/services/sales.dart';
@@ -173,7 +174,9 @@ class CustomerController extends GetxController
           key: _keyLoader);
       Customer().deleteCustomer(customerModel: customerModel);
       Get.back();
-      Get.back();
+      isSmallScreen(Get.context)
+          ? Get.back()
+          : Get.find<HomeController>().selectedWidget.value = CustomersPage();
     } catch (e) {
       Navigator.of(Get.context!, rootNavigator: true).pop();
     }
