@@ -82,6 +82,7 @@ Widget salesTable(context, page) {
                         SalesReceipt(
                       salesModel: salesModel,
                       type: "",
+                          from: page,
                     );
                   },
                   child: Text(

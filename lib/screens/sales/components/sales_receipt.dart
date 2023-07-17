@@ -17,6 +17,7 @@ import '../../../widgets/alert.dart';
 import '../../../widgets/bigtext.dart';
 import '../../../widgets/normal_text.dart';
 import '../../home/home_page.dart';
+import '../all_sales.dart';
 
 class SalesReceipt extends StatelessWidget {
   SalesModel? salesModel;
@@ -54,7 +55,13 @@ class SalesReceipt extends StatelessWidget {
             if (isSmallScreen(context)) {
               Get.back();
             } else {
-              Get.find<HomeController>().selectedWidget.value = HomePage();
+              if (from == "AllSalesPage") {
+                Get.find<HomeController>().selectedWidget.value = AllSalesPage(
+                  page: "homePage",
+                );
+              } else {
+                Get.find<HomeController>().selectedWidget.value = HomePage();
+              }
             }
           },
           icon: Icon(Icons.clear),

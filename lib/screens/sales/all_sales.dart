@@ -72,7 +72,8 @@ class AllSalesPage extends StatelessWidget {
                   },
                   icon: const Icon(Icons.search),
                 ),
-                hintText: "Search by receipt number",
+                hintText: ""
+                    "Search by receipt number",
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
@@ -202,12 +203,9 @@ class AllSalesPage extends StatelessWidget {
                       "Sales",
                       style: TextStyle(color: Colors.black),
                     ),
-              leading: Get.find<UserController>().user.value?.usertype ==
-                          "attendant" &&
-                      MediaQuery.of(context).size.width > 600
-                  ? null
-                  : IconButton(
+              leading:  IconButton(
                       onPressed: () {
+                        print(page);
                         if (!isSmallScreen(context)) {
                           if (page == "homePage") {
                             Get.find<HomeController>().selectedWidget.value =
@@ -474,12 +472,12 @@ class AllSales extends StatelessWidget {
               child: normalText(
                   title: "No entries found", color: Colors.black, size: 14.0),
             )
-          : MediaQuery.of(context).size.width > 600
+          :! isSmallScreen(context)
               ? SingleChildScrollView(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      salesTable(context, "services"),
+                      salesTable(context, "AllSalesPage"),
                       const SizedBox(
                         height: 10,
                       ),

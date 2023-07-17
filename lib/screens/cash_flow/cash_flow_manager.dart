@@ -341,7 +341,7 @@ class CashFlowManager extends StatelessWidget {
             children: [
               TextButton(
                 onPressed: () {
-                  if (MediaQuery.of(context).size.width > 600) {
+                  if (!isSmallScreen(context)) {
                     Get.find<HomeController>().selectedWidget.value =
                         CashInLayout();
                   } else {
@@ -362,7 +362,7 @@ class CashFlowManager extends StatelessWidget {
               ),
               TextButton(
                 onPressed: () {
-                  if (MediaQuery.of(context).size.width > 600) {
+                  if (!isSmallScreen(context)) {
                     Get.find<HomeController>().selectedWidget.value =
                         CashOutLayout(date: cashFlowController.fromDate.value);
                   } else {

@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:pointify/controllers/cashflow_controller.dart';
 import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/widgets/snackBars.dart';
@@ -85,23 +86,6 @@ class CashOutLayout extends StatelessWidget {
             child: inputFields(context),
           ),
         ),
-
-        //
-        // ResponsiveWidget(
-        //   largeScreen: Container(
-        //     width: MediaQuery.of(context).size.width * 0.35,
-        //     height: MediaQuery.of(context).size.height * 0.7,
-        //     child: Column(
-        //       crossAxisAlignment: CrossAxisAlignment.start,
-        //       children: [
-        //         inputFields(context),
-        //         SizedBox(height: 50),
-        //         Center(child: saveButton(context, date!)),
-        //       ],
-        //     ),
-        //   ),
-        //   smallScreen:,
-        // ),
         bottomNavigationBar: BottomAppBar(
             child: Container(
           width: double.infinity,
@@ -503,6 +487,7 @@ class CashOutLayout extends StatelessWidget {
               TextField(
                 controller: cashFlowController.textEditingControllerAmount,
                 keyboardType: TextInputType.number,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 decoration: InputDecoration(
                   contentPadding:
                       EdgeInsets.symmetric(vertical: 4, horizontal: 10),

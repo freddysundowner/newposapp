@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:pointify/controllers/cashflow_controller.dart';
 import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/responsive/responsiveness.dart';
@@ -315,6 +316,7 @@ class CashInLayout extends StatelessWidget {
                         TextField(
                           controller:
                               cashflowController.textEditingControllerAmount,
+                          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                           keyboardType: TextInputType.number,
                           decoration: InputDecoration(
                             border: OutlineInputBorder(
