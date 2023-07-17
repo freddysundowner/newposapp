@@ -11,6 +11,7 @@ import '../../../../utils/colors.dart';
 import '../../controllers/CustomerController.dart';
 import '../../controllers/shop_controller.dart';
 import '../../controllers/supplierController.dart';
+import '../../widgets/alert.dart';
 import '../../widgets/bigtext.dart';
 import '../../widgets/smalltext.dart';
 
@@ -25,7 +26,6 @@ class CreateCustomer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print("page is $page");
     return Scaffold(
         backgroundColor: Colors.white.withOpacity(0.96),
         appBar: AppBar(
@@ -74,73 +74,64 @@ class CreateCustomer extends StatelessWidget {
             )),
         body: SingleChildScrollView(
           child: customerInfoCard(context),
-        )
-        // ResponsiveWidget(
-        //   largeScreen: Align(
-        //       alignment: Alignment.center,
-        //       child: Container(
-        //           width: MediaQuery.of(context).size.width * 0.4,
-        //           height: MediaQuery.of(context).size.height * 0.7,
-        //           child: customerInfoCard(context))),
-        //   smallScreen: ),
-        );
+        ));
   }
 
   Widget customerInfoCard(context) {
     return Card(
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 15, horizontal: 35),
+        padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 35),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 Text("Customer Name".capitalize!),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 TextFormField(
                   controller: customersController.nameController,
                   keyboardType: TextInputType.text,
                   decoration: InputDecoration(
                       isDense: true,
-                      hintStyle: TextStyle(
+                      hintStyle: const TextStyle(
                           color: Colors.grey, fontWeight: FontWeight.bold),
                       hintText: "eg.John Doe",
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: Colors.grey, width: 1),
+                        borderSide: const BorderSide(color: Colors.grey, width: 1),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: Colors.grey, width: 1),
+                        borderSide: const BorderSide(color: Colors.grey, width: 1),
                       ),
                       filled: true,
                       fillColor: Colors.white),
                 )
               ],
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("Phone"),
-                SizedBox(height: 10),
+                const Text("Phone"),
+                const SizedBox(height: 10),
                 TextFormField(
                     controller: customersController.phoneController,
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(
                       isDense: true,
-                      hintStyle: TextStyle(
+                      hintStyle: const TextStyle(
                           color: Colors.grey, fontWeight: FontWeight.bold),
                       hintText: "eg.07XXXXXXXX",
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: Colors.grey, width: 1),
+                        borderSide: const BorderSide(color: Colors.grey, width: 1),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: Colors.grey, width: 1),
+                        borderSide: const BorderSide(color: Colors.grey, width: 1),
                       ),
                     ))
               ],
@@ -150,15 +141,26 @@ class CreateCustomer extends StatelessWidget {
               splashColor: Colors.transparent,
               hoverColor: Colors.transparent,
               onTap: () {
-                customersController.createCustomer(
-                    page: page,
-                    function: () {
-                      chooseCustomer(context: context);
-                    });
+                if (customersController.phoneController.text.trim().isEmpty ||
+                    customersController.nameController.text.trim().isEmpty) {
+                  isSmallScreen(context)
+                      ? ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                              content: Text("Please fill out all the fields")))
+                      : generalAlert(
+                          title: "Error",
+                          message: "Please fill out all the fields");
+                } else {
+                  customersController.createCustomer(
+                      page: page,
+                      function: () {
+                        chooseCustomer(context: context);
+                      });
+                }
               },
               child: Center(
                 child: Container(
-                  padding: EdgeInsets.all(10),
+                  padding: const EdgeInsets.all(10),
                   width: MediaQuery.of(context).size.width * 0.25,
                   decoration: BoxDecoration(
                       border: Border.all(width: 3, color: AppColors.mainColor),
@@ -171,7 +173,7 @@ class CreateCustomer extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
           ],
         ),
       ),

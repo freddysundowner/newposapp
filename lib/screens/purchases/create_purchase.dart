@@ -481,7 +481,8 @@ class CreatePurchase extends StatelessWidget {
     }
   }
 
-  _gotoSupplierPage(context) {
+  Scaffold _gotoSupplierPage(context) {
+    print("hello");
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
