@@ -25,7 +25,6 @@ class CreateCustomer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print("page is $page");
     return Scaffold(
         backgroundColor: Colors.white.withOpacity(0.96),
         appBar: AppBar(
@@ -36,9 +35,10 @@ class CreateCustomer extends StatelessWidget {
             automaticallyImplyLeading: false,
             leading: IconButton(
               onPressed: () {
-                if (MediaQuery.of(context).size.width > 600) {
+                if (!isSmallScreen(context)) {
                   if (page == "customersPage") {
-                    chooseCustomer(context: context);
+                    Get.find<HomeController>().selectedWidget.value =
+                        CustomersPage();
                   }
                   if (page == "createSale") {
                     Get.find<HomeController>().selectedWidget.value =

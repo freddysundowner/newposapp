@@ -155,9 +155,16 @@ class Customers extends StatelessWidget {
                   return Center(
                     child: InkWell(
                       onTap: () {
-                        Get.to(() => CreateCustomer(
-                              page: "",
-                            ));
+                        if (!isSmallScreen(context)) {
+                          Get.find<HomeController>().selectedWidget.value =
+                              CreateCustomer(
+                                page: "customersPage",
+                              );
+                        } else {
+                          Get.to(() => CreateCustomer(
+                            page: "customersPage",
+                          ));
+                        }
                       },
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
