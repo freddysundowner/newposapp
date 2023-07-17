@@ -1,17 +1,16 @@
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:intl/intl.dart';
 import 'package:pointify/controllers/sales_controller.dart';
 import 'package:pointify/functions/functions.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
-import 'package:syncfusion_flutter_charts/sparkcharts.dart';
+
 
 import '../../controllers/home_controller.dart';
 import '../../controllers/shop_controller.dart';
 import '../../responsive/responsiveness.dart';
 import '../../utils/colors.dart';
+import 'financial_page.dart';
 
 
 class GraphAnalysis extends StatefulWidget {
@@ -25,6 +24,7 @@ class GraphAnalysis extends StatefulWidget {
 class _GraphAnalysisState extends State<GraphAnalysis> {
   SalesController salesController = Get.find<SalesController>();
   ShopController shopController = Get.find<ShopController>();
+
   List<int> getYears(int year) {
     int currentYear = DateTime.now().year;
 
@@ -43,15 +43,20 @@ class _GraphAnalysisState extends State<GraphAnalysis> {
     salesController.getGraphSales();
     return Scaffold(
       appBar: AppBar(
-        title:  Text('Profit Analysis',style: TextStyle(color: isSmallScreen(context)?Colors.white:Colors.black),),
+        title: Text(
+          'Profit Analysis',
+          style: TextStyle(
+              color: isSmallScreen(context) ? Colors.white : Colors.black),
+        ),
         elevation: 0.1,
-        backgroundColor: isSmallScreen(context) ? AppColors.mainColor : Colors.white,
+        backgroundColor:
+            isSmallScreen(context) ? AppColors.mainColor : Colors.white,
         leading: IconButton(
             onPressed: () {
               if (isSmallScreen(context)) {
                 Get.back();
               } else {
-                // Get.find<HomeController>().selectedWidget.value = FinancePage();
+                Get.find<HomeController>().selectedWidget.value = FinancialPage();
               }
             },
             icon: Icon(

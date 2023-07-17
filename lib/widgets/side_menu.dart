@@ -8,7 +8,7 @@ import 'package:pointify/utils/colors.dart';
 import 'package:pointify/widgets/logout.dart';
 import 'package:get/get.dart';
 
-import '../screens/finance/finance_page.dart';
+import '../screens/finance/financial_page.dart';
 import '../screens/home/home_page.dart';
 import '../screens/home/profile_page.dart';
 import '../screens/sales/sales_page.dart';
@@ -42,7 +42,7 @@ class SideMenu extends StatelessWidget {
             if (title == "Home") {
               homeController.selectedWidget.value = HomePage();
             } else if (title == "Profit & Expenses") {
-              homeController.selectedWidget.value = FinancePage();
+              homeController.selectedWidget.value = FinancialPage();
             } else if (title == "Sales & orders") {
               homeController.selectedWidget.value = SalesPage();
             } else if (title == "Shops") {
