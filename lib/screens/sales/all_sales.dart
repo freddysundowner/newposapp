@@ -23,7 +23,7 @@ import '../../widgets/bigtext.dart';
 import '../../widgets/bottom_widget_count_view.dart';
 import '../../widgets/normal_text.dart';
 import '../../widgets/sales_rerurn_card.dart';
-import '../finance/finance_page.dart';
+import '../finance/financial_page.dart';
 import '../finance/profit_page.dart';
 import '../home/home_page.dart';
 import 'components/sales_table.dart';

@@ -25,7 +25,7 @@ import '../sales/all_sales.dart';
 import 'expense_page.dart';
 import 'graph_analysis.dart';
 
-class FinancePage extends StatelessWidget {
+class FinancialPage extends StatelessWidget {
   SalesController salesController = Get.find<SalesController>();
   ShopController shopController = Get.find<ShopController>();
   ExpenseController expenseController = Get.find<ExpenseController>();
@@ -73,7 +73,7 @@ class FinancePage extends StatelessWidget {
     },
   ];
 
-  FinancePage({Key? key}) : super(key: key) {
+  FinancialPage({Key? key}) : super(key: key) {
     salesController.getFinanceSummary(
       fromDate: DateTime.parse(DateFormat("yyy-MM-dd").format(DateTime.now())),
       toDate: DateTime.parse(DateFormat("yyy-MM-dd")
@@ -225,10 +225,10 @@ class FinancePage extends StatelessWidget {
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                           childAspectRatio:
                               MediaQuery.of(context).size.width > 1100
-                                  ? 1.3
+                                  ? 1.6
                                   : MediaQuery.of(context).size.width > 900
-                                      ? 1.0
-                                      : 0.7,
+                                      ? 1.3
+                                      : 1.1,
                           crossAxisCount: 3,
                           crossAxisSpacing: 10,
                           mainAxisSpacing: 10),
@@ -546,7 +546,7 @@ class MonthFilter extends StatelessWidget {
               if (isSmallScreen(context)) {
                 Get.back();
               } else {
-                Get.find<HomeController>().selectedWidget.value = FinancePage();
+                Get.find<HomeController>().selectedWidget.value = FinancialPage();
               }
             },
             icon: Icon(
@@ -712,9 +712,7 @@ financeChat(context) {
   );
 }
 
-class SalesData {
-  SalesData(this.year, this.sales);
 
-  final String year;
-  final double sales;
-}
+
+
+

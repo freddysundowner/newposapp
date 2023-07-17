@@ -30,7 +30,7 @@ import '../../widgets/normal_text.dart';
 import '../../widgets/smalltext.dart';
 import '../customers/customers_page.dart';
 import '../finance/expense_page.dart';
-import '../finance/finance_page.dart';
+import '../finance/financial_page.dart';
 import '../finance/profit_page.dart';
 import '../sales/all_sales.dart';
 import '../sales/sales_page.dart';
@@ -328,10 +328,10 @@ class HomePage extends StatelessWidget {
                               ? null
                               : () {
                                   isSmallScreen(context)
-                                      ? Get.to(() => FinancePage())
+                                      ? Get.to(() => FinancialPage())
                                       : Get.find<HomeController>()
                                           .selectedWidget
-                                          .value = FinancePage();
+                                          .value = FinancialPage();
                                 },
                           child: Row(
                             children: [
@@ -530,15 +530,14 @@ class HomePage extends StatelessWidget {
                 function();
               },
         child: Container(
-
           decoration: BoxDecoration(
-              color:shopController.checkSubscription() == false &&
-                  shopController.excludefeatures
-                      .contains(title.toString().toLowerCase()) ==
-                      false
+              color: shopController.checkSubscription() == false &&
+                      shopController.excludefeatures
+                              .contains(title.toString().toLowerCase()) ==
+                          false
                   ? Colors.grey
-                  : Colors.white
-              , borderRadius: BorderRadius.circular(10)),
+                  : Colors.white,
+              borderRadius: BorderRadius.circular(10)),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,

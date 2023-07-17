@@ -140,7 +140,7 @@ class SalesPage extends StatelessWidget {
       widget: SingleChildScrollView(
         child: ConstrainedBox(
           constraints:
-          BoxConstraints.expand(height: MediaQuery.of(context).size.height),
+              BoxConstraints.expand(height: MediaQuery.of(context).size.height),
           child: Container(
             padding: const EdgeInsets.all(10),
             child: Column(
@@ -385,7 +385,7 @@ class SalesPage extends StatelessWidget {
             if (showsummary == true)
               normalText(
                   title:
-                  " ${title} summary: ${shopController.currentShop.value?.currency}.${amount} ",
+                      " ${title} summary: ${shopController.currentShop.value?.currency}.${amount} ",
                   color: Colors.black,
                   size: 14.0)
           ],
@@ -419,7 +419,25 @@ class MonthFilter extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Pick a month"),
+        elevation: 0.1,
+        backgroundColor:
+            isSmallScreen(context) ? AppColors.mainColor : Colors.white,
+        title: Text(
+          "Pick a month",
+          style: TextStyle(
+              color: isSmallScreen(context) ? Colors.white : Colors.black),
+        ),
+        leading: IconButton(
+            onPressed: () {
+              isSmallScreen(context)
+                  ? Get.back()
+                  : Get.find<HomeController>().selectedWidget.value =
+                      SalesPage();
+            },
+            icon: Icon(
+              Icons.arrow_back_ios,
+              color: isSmallScreen(context) ? Colors.white : Colors.black,
+            )),
         actions: [
           InkWell(
             onTap: () {
@@ -466,8 +484,17 @@ class MonthFilter extends StatelessWidget {
               padding: const EdgeInsets.only(right: 10),
               child: Row(
                 children: [
-                  Obx(() => Text(salesController.currentYear.value.toString())),
-                  const Icon(Icons.arrow_drop_down)
+                  Obx(() => Text(
+                        salesController.currentYear.value.toString(),
+                        style: TextStyle(
+                            color: isSmallScreen(context)
+                                ? Colors.white
+                                : Colors.black),
+                      )),
+                  Icon(
+                    Icons.arrow_drop_down,
+                    color: isSmallScreen(context) ? Colors.white : Colors.black,
+                  )
                 ],
               ),
             ),

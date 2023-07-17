@@ -239,6 +239,10 @@ class CreateSale extends StatelessWidget {
                                   } else {
                                     paymentUi(context: context);
                                   }
+
+                                  confirmPayment(
+                                    context,
+                                  );
                                 }
                               },
                               child: Container(
