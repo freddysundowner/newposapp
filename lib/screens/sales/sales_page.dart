@@ -56,7 +56,7 @@ class SalesPage extends StatelessWidget {
       case "Today":
         {
           var fromDate =
-              DateTime.parse(DateFormat("yyy-MM-dd").format(DateTime.now()));
+          DateTime.parse(DateFormat("yyy-MM-dd").format(DateTime.now()));
           var toDate = DateTime.parse(DateFormat("yyy-MM-dd")
               .format(DateTime.now().add(const Duration(days: 1))));
           salesController.filterStartDate.value = fromDate;
@@ -67,7 +67,7 @@ class SalesPage extends StatelessWidget {
           isSmallScreen(context)
               ? Get.to(() => AllSalesPage(page: ""))
               : Get.find<HomeController>().selectedWidget.value =
-                  AllSalesPage(page: "salesPage");
+              AllSalesPage(page: "salesPage");
         }
         break;
       case "Current Month":
@@ -85,7 +85,7 @@ class SalesPage extends StatelessWidget {
           isSmallScreen(context)
               ? Get.to(() => AllSalesPage(page: ""))
               : Get.find<HomeController>().selectedWidget.value =
-                  AllSalesPage(page: "salesPage");
+              AllSalesPage(page: "salesPage");
         }
 
         break;
@@ -94,7 +94,7 @@ class SalesPage extends StatelessWidget {
           isSmallScreen(context)
               ? Get.to(() => MonthFilter(from: "sales"))
               : Get.find<HomeController>().selectedWidget.value =
-                  MonthFilter(from: "sales");
+              MonthFilter(from: "sales");
         }
         break;
     }
@@ -163,49 +163,49 @@ class SalesPage extends StatelessWidget {
                 Expanded(
                   child: isSmallScreen(context)
                       ? ListView.builder(
-                          shrinkWrap: true,
-                          itemCount: operations.length,
-                          itemBuilder: (context, index) {
-                            return financeCards(
-                                title: operations[index]["title"],
-                                subtitle: operations[index]["subtitle"],
-                                icon: operations[index]["icon"],
-                                onPresssed: () {
-                                  clickOperation(
-                                      operations[index]["title"], context);
-                                },
-                                color: operations[index]["color"],
-                                amount: operations[index]["amount"]);
+                    shrinkWrap: true,
+                    itemCount: operations.length,
+                    itemBuilder: (context, index) {
+                      return financeCards(
+                          title: operations[index]["title"],
+                          subtitle: operations[index]["subtitle"],
+                          icon: operations[index]["icon"],
+                          onPresssed: () {
+                            clickOperation(
+                                operations[index]["title"], context);
                           },
-                        )
+                          color: operations[index]["color"],
+                          amount: operations[index]["amount"]);
+                    },
+                  )
                       : GridView.builder(
-                          itemCount: operations.length,
-                          gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
-                                  childAspectRatio: MediaQuery.of(context)
-                                              .size
-                                              .width >
-                                          1000
-                                      ? 1.6
-                                      : MediaQuery.of(context).size.width > 900
-                                          ? 1.3
-                                          : 0.9,
-                                  crossAxisCount: 3,
-                                  crossAxisSpacing: 10,
-                                  mainAxisSpacing: 10),
-                          itemBuilder: (context, index) {
-                            return financeCardsDesktop(
-                                showsummary: true,
-                                title: operations[index]["title"],
-                                subtitle: operations[index]["subtitle"],
-                                icon: operations[index]["icon"],
-                                onPresssed: () {
-                                  clickOperation(
-                                      operations[index]["title"], context);
-                                },
-                                color: operations[index]["color"],
-                                amount: operations[index]["amount"]);
-                          }),
+                      itemCount: operations.length,
+                      gridDelegate:
+                      SliverGridDelegateWithFixedCrossAxisCount(
+                          childAspectRatio: MediaQuery.of(context)
+                              .size
+                              .width >
+                              1000
+                              ? 1.6
+                              : MediaQuery.of(context).size.width > 900
+                              ? 1.3
+                              : 0.9,
+                          crossAxisCount: 3,
+                          crossAxisSpacing: 10,
+                          mainAxisSpacing: 10),
+                      itemBuilder: (context, index) {
+                        return financeCardsDesktop(
+                            showsummary: true,
+                            title: operations[index]["title"],
+                            subtitle: operations[index]["subtitle"],
+                            icon: operations[index]["icon"],
+                            onPresssed: () {
+                              clickOperation(
+                                  operations[index]["title"], context);
+                            },
+                            color: operations[index]["color"],
+                            amount: operations[index]["amount"]);
+                      }),
                 ),
               ],
             ),
@@ -246,10 +246,10 @@ class SalesPage extends StatelessWidget {
       centerTitle: false,
       leading: IconButton(
         onPressed: () {
-          if (MediaQuery.of(context).size.width > 600) {
-            Get.find<HomeController>().selectedWidget.value = HomePage();
-          } else {
+          if (isSmallScreen(context)) {
             Get.back();
+          } else {
+            Get.find<HomeController>().selectedWidget.value = HomePage();
           }
         },
         icon: const Icon(
@@ -263,9 +263,7 @@ class SalesPage extends StatelessWidget {
         if (!isSmallScreen(context))
           InkWell(
             onTap: () {
-              Get.find<HomeController>().selectedWidget.value = CreateSale(
-                page: "SalesPage",
-              );
+              Get.find<HomeController>().selectedWidget.value = CreateSale(page: "SalesPage",);
             },
             child: Container(
                 margin: const EdgeInsets.only(right: 60, bottom: 10, top: 10),
@@ -348,12 +346,12 @@ class SalesPage extends StatelessWidget {
 
   Widget financeCardsDesktop(
       {required title,
-      required subtitle,
-      required icon,
-      bool? showsummary = true,
-      required onPresssed,
-      required Color color,
-      required amount}) {
+        required subtitle,
+        required icon,
+        bool? showsummary = true,
+        required onPresssed,
+        required Color color,
+        required amount}) {
     return InkWell(
       onTap: () {
         onPresssed();
