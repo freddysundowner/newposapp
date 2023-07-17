@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/product/create_product.dart';
@@ -127,6 +128,7 @@ class CreateSuppliers extends StatelessWidget {
                 TextFormField(
                     controller: supplierController.phoneController,
                     keyboardType: TextInputType.number,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                     decoration: InputDecoration(
                       isDense: true,
                       hintStyle: const TextStyle(
