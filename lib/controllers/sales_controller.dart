@@ -418,9 +418,7 @@ class SalesController extends GetxController
   }
 
   saveSale({screen}) {
-    String size =
-        MediaQuery.of(Get.context!).size.width > 600 ? "large" : "small";
-    print(receipt.value!.grandTotal!);
+    print("page is $screen");
     if (receipt.value?.paymentMethod == "Cash" &&
         receipt.value!.grandTotal! >
             int.parse(amountPaid.text.isEmpty ? "0" : amountPaid.text)) {
@@ -482,7 +480,6 @@ class SalesController extends GetxController
                                   .currentShop
                                   .value
                                   ?.id,
-                              size: size,
                               attendantsId:
                                   Get.find<UserController>().user.value?.id,
                               screen: screen);
@@ -502,7 +499,7 @@ class SalesController extends GetxController
       } else {
         Get.back();
         Get.back();
-        saveReceipt();
+        saveReceipt(page: screen);
       }
       return;
     }
@@ -515,7 +512,7 @@ class SalesController extends GetxController
 
   _onWallet(SalesModel salesModel) => _paymentType(salesModel) == "Wallet";
 
-  void saveReceipt() {
+  void saveReceipt({String? page}) {
     SalesModel receiptData = receipt.value!;
     receiptData.shop = Get.find<ShopController>().currentShop.value;
     receiptData.attendantId = Get.find<UserController>().user.value;
@@ -620,7 +617,6 @@ class SalesController extends GetxController
       {required context,
       required shopId,
       required attendantsId,
-      required size,
       required screen}) {
     showModalBottomSheet(
         context: context,
