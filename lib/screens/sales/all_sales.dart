@@ -222,7 +222,7 @@ class AllSalesPage extends StatelessWidget {
                                 HomePage();
                           } else if (page == "financePage") {
                             Get.find<HomeController>().selectedWidget.value =
-                                FinancePage();
+                                FinancialPage();
                           } else if (page == "profitPage") {
                             Get.find<HomeController>().selectedWidget.value =
                                 ProfitPage();

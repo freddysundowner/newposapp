@@ -343,7 +343,7 @@ class CreateSale extends StatelessWidget {
                                                                               context);
                                                                           confirmPayment(
                                                                               context,
-                                                                              "small");
+                                                                              );
                                                                         },
                                                                         child:
                                                                             Container(
@@ -597,7 +597,7 @@ class CreateSale extends StatelessWidget {
         });
   }
 
-  confirmPayment(context, String s) {
+  confirmPayment(context) {
     showModalBottomSheet(
       context: context,
       backgroundColor:
@@ -837,7 +837,7 @@ class CreateSale extends StatelessWidget {
           leading: IconButton(
               onPressed: () {
                 Get.find<HomeController>().selectedWidget.value = CreateSale();
-                confirmPayment(Get.context, "small");
+                confirmPayment(Get.context);
               },
               icon: const Icon(
                 Icons.arrow_back_ios,
@@ -864,7 +864,7 @@ class CreateSale extends StatelessWidget {
         body: Customers(
           type: "sale",
           function: () {
-            confirmPayment(Get.context, "small");
+            confirmPayment(Get.context);
             print("called");
           },
         ),

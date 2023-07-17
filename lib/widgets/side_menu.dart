@@ -1,22 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:pointify/controllers/AuthController.dart';
 import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/functions/functions.dart';
 import 'package:pointify/screens/attendant/attendants_page.dart';
 import 'package:pointify/screens/shop/shops_page.dart';
-import 'package:pointify/utils/colors.dart';
 import 'package:pointify/widgets/logout.dart';
 import 'package:get/get.dart';
 
 
 import '../controllers/user_controller.dart';
-import '../screens/finance/finance_page.dart';
+import '../screens/finance/financial_page.dart';
 import '../screens/home/home_page.dart';
 import '../screens/home/profile_page.dart';
 import '../screens/sales/sales_page.dart';
 import '../utils/constants.dart';
-import 'delete_dialog.dart';
 
 class SideMenu extends StatelessWidget {
   SideMenu({Key? key}) : super(key: key);
