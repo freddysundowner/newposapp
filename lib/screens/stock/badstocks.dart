@@ -24,7 +24,7 @@ import '../finance/profit_page.dart';
 class BadStockPage extends StatelessWidget {
   final page;
 
-  BadStockPage({Key? key, required this.page}) : super(key: key) {}
+  BadStockPage({Key? key, required this.page}) : super(key: key) ;
 
   ProductController productController = Get.find<ProductController>();
   ShopController shopController = Get.find<ShopController>();
@@ -33,6 +33,10 @@ class BadStockPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    productController.getBadStock(
+        shopId: Get.find<ShopController>().currentShop.value!.id,
+        attendant: '',
+        product: null);
     return WillPopScope(
       onWillPop: () async {
         productController.showBadStockWidget.value = false;

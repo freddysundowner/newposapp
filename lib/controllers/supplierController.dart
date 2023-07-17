@@ -81,9 +81,10 @@ class SupplierController extends GetxController
           createdAt: DateTime.now(),
           shopId: Get.find<ShopController>().currentShop.value?.id.toString());
       SupplierService().createSupplier(supplier);
-      Get.back();
       clearTexts();
+      Get.back();
       if (!isSmallScreen(context)) {
+        print(page);
         if (page == "suppliersPage") {
           Get.find<HomeController>().selectedWidget.value = SuppliersPage();
         }
@@ -94,19 +95,20 @@ class SupplierController extends GetxController
           Get.find<HomeController>().selectedWidget.value = CreateProduct(
             page: "create",
             productModel: null,
+            clearInputs: false,
           );
         }
         if (page == "createPurchase") {
           Get.find<HomeController>().selectedWidget.value = CreatePurchase();
         }
+      } else {
+        Get.back();
       }
 
       creatingSupplierLoad.value = false;
     } catch (e) {
       print(e);
       creatingSupplierLoad.value = false;
-    } finally {
-      Get.back();
     }
   }
 

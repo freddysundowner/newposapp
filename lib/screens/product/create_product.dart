@@ -24,11 +24,19 @@ import '../stock/stock_page.dart';
 class CreateProduct extends StatelessWidget {
   final page;
   final Product? productModel;
+  bool? clearInputs = true;
 
-  CreateProduct({Key? key, required this.page, required this.productModel})
+  CreateProduct(
+      {Key? key,
+      required this.page,
+      required this.productModel,
+      this.clearInputs})
       : super(key: key) {
     if (page == "create") {
-      productController.clearControllers();
+      if (clearInputs!) {
+        productController.clearControllers();
+      }
+
       supplierController.getSuppliersInShop("all");
     } else {
       productController.assignTextFields(productModel!);

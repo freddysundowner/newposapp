@@ -56,13 +56,15 @@ class CustomerController extends GetxController
       Customer().createCustomer(customerModel);
       Navigator.of(Get.context!, rootNavigator: true).pop();
       clearTexts();
-      if (MediaQuery.of(Get.context!).size.width > 600) {
-        print(page);
+      if (!isSmallScreen(Get.context)) {
+        print("page is hello the page is${page}");
         if (page == "customersPage") {
-          function!();
+          Get.find<HomeController>().selectedWidget.value = CustomersPage();
+
         }
         if (page == "createSale") {
-          Get.find<HomeController>().selectedWidget.value = CreateSale();
+          function!();
+          // Get.find<HomeController>().selectedWidget.value = CreateSale();
         }
         if (page == "createProduct") {
           Get.find<HomeController>().selectedWidget.value = CreateProduct(

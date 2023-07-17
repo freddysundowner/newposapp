@@ -2,19 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:pointify/controllers/CustomerController.dart';
+import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/controllers/purchase_controller.dart';
 import 'package:pointify/controllers/sales_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/functions/functions.dart';
+import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/sales/components/return_stock.dart';
 import '../../../widgets/bigtext.dart';
 import '../../../widgets/normal_text.dart';
 import '../../Real/schema.dart';
+import 'all_purchases.dart';
 
 class InvoiceScreen extends StatelessWidget {
   Invoice? invoice;
   String? type = "";
   String? from = "";
+
   InvoiceScreen({Key? key, this.invoice, this.type, this.from}) {
     purchaseController.currentInvoice.value = invoice;
     if (from == "supplierpage") {
@@ -22,10 +26,12 @@ class InvoiceScreen extends StatelessWidget {
       purchaseController.getIvoiceById(invoice!);
     }
   }
+
   ShopController shopController = Get.find<ShopController>();
   PurchaseController purchaseController = Get.find<PurchaseController>();
 
   List<InvoiceItem> invoiceItems = [];
+
   @override
   Widget build(BuildContext context) {
     if (type == "returns") {
@@ -40,9 +46,16 @@ class InvoiceScreen extends StatelessWidget {
         leading: IconButton(
           color: Colors.black,
           onPressed: () {
-            Get.back();
+            if (isSmallScreen(context)) {
+              Get.back();
+            } else {
+              if (from == "AllPurchases") {
+                Get.find<HomeController>().selectedWidget.value =
+                    AllPurchases();
+              }
+            }
           },
-          icon: Icon(Icons.arrow_back_ios),
+          icon: const Icon(Icons.arrow_back_ios),
         ),
         title: Text(
           "Invoice #${purchaseController.currentInvoice.value!.receiptNumber}"
@@ -51,7 +64,7 @@ class InvoiceScreen extends StatelessWidget {
         ),
       ),
       body: Container(
-        margin: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+        margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
         child: Obx(
           () => Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -68,7 +81,7 @@ class InvoiceScreen extends StatelessWidget {
                   if (purchaseController
                           .currentInvoice.value!.supplier?.fullName !=
                       null)
-                    Spacer(),
+                    const Spacer(),
                   Row(
                     children: [
                       normalText(
@@ -86,7 +99,7 @@ class InvoiceScreen extends StatelessWidget {
                   )
                 ],
               ),
-              SizedBox(
+              const SizedBox(
                 height: 20,
               ),
               Row(
@@ -106,7 +119,7 @@ class InvoiceScreen extends StatelessWidget {
                     ],
                   ),
                   if (purchaseController.currentInvoice.value!.balance! < 0)
-                    SizedBox(
+                    const SizedBox(
                       width: 30,
                     ),
                   if (purchaseController.currentInvoice.value!.balance! < 0)
@@ -127,7 +140,7 @@ class InvoiceScreen extends StatelessWidget {
                             size: 18.0)
                       ],
                     ),
-                  SizedBox(
+                  const SizedBox(
                     width: 80,
                   ),
                   if (purchaseController.currentInvoice.value!.balance! < 0 &&
@@ -139,7 +152,7 @@ class InvoiceScreen extends StatelessWidget {
                             title: "Credit Balance",
                             color: Colors.black,
                             size: 14.0),
-                        SizedBox(
+                        const SizedBox(
                           height: 10,
                         ),
                         majorTitle(
@@ -148,12 +161,12 @@ class InvoiceScreen extends StatelessWidget {
                             size: 18.0)
                       ],
                     ),
-                  SizedBox(
+                  const SizedBox(
                     width: 30,
                   ),
                 ],
               ),
-              SizedBox(
+              const SizedBox(
                 height: 20,
               ),
               Row(
@@ -182,7 +195,7 @@ class InvoiceScreen extends StatelessWidget {
                     InkWell(
                       child: Container(
                           padding:
-                              EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                              const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
                           decoration: BoxDecoration(
                               border: Border.all(
                                   color: _chechPaymentColor(invoice!)),
@@ -194,7 +207,7 @@ class InvoiceScreen extends StatelessWidget {
                     )
                 ],
               ),
-              Divider(
+              const Divider(
                 color: Colors.grey,
               ),
               Expanded(
@@ -267,7 +280,7 @@ class InvoiceScreen extends StatelessWidget {
                             );
                           }),
                     ),
-                    Divider(
+                    const Divider(
                       color: Colors.black,
                     ),
                     Expanded(
@@ -325,7 +338,7 @@ class InvoiceScreen extends StatelessWidget {
                             size: 18.0)
                       ],
                     ),
-                    Spacer(),
+                    const Spacer(),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -357,17 +370,17 @@ class InvoiceScreen extends StatelessWidget {
           width: 1.0,
         ))),
         child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
-                padding: EdgeInsets.only(top: 10),
+                padding: const EdgeInsets.only(top: 10),
                 child:
                     majorTitle(title: "Print", color: Colors.black, size: 16.0),
               ),
               Container(
-                padding: EdgeInsets.only(top: 10),
+                padding: const EdgeInsets.only(top: 10),
                 child:
                     majorTitle(title: "Email", color: Colors.black, size: 16.0),
               ),
@@ -426,7 +439,7 @@ showAmountDialog(Invoice invoice) {
             keyboardType: TextInputType.number,
             decoration: InputDecoration(
                 hintText: "eg ${invoice.total}",
-                hintStyle: TextStyle(color: Colors.black),
+                hintStyle: const TextStyle(color: Colors.black),
                 fillColor: Colors.white,
                 filled: true,
                 border:
@@ -439,7 +452,7 @@ showAmountDialog(Invoice invoice) {
               },
               child: Text(
                 "Cancel".toUpperCase(),
-                style: TextStyle(
+                style: const TextStyle(
                   color: Colors.purple,
                   fontWeight: FontWeight.bold,
                 ),
@@ -458,7 +471,7 @@ showAmountDialog(Invoice invoice) {
               },
               child: Text(
                 "Pay".toUpperCase(),
-                style: TextStyle(
+                style: const TextStyle(
                   color: Colors.purple,
                   fontWeight: FontWeight.bold,
                 ),

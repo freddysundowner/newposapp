@@ -120,6 +120,7 @@ class StockPage extends StatelessWidget {
                                         Get.to(() => CreateProduct(
                                               page: "create",
                                               productModel: null,
+                                          clearInputs: true,
                                             ));
                                       }
                                     case "Add to an existing stock":
@@ -197,6 +198,7 @@ class StockPage extends StatelessWidget {
                                             .value = CreateProduct(
                                           page: "create",
                                           productModel: null,
+                                          clearInputs: true,
                                         );
                                       }
                                     case "Add to an existing stock":
