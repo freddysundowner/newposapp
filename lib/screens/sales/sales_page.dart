@@ -260,39 +260,26 @@ class SalesPage extends StatelessWidget {
       title:
           majorTitle(title: "Sales & Order", color: Colors.black, size: 16.0),
       actions: [
-        // InkWell(
-        //     onTap: () async {
-        //       final picked = await showDateRangePicker(
-        //         context: context,
-        //         lastDate: DateTime(2079),
-        //         firstDate: DateTime(2019),
-        //       );
-        //       salesController.filterStartDate.value = picked!.start;
-        //       salesController.filterEnndStartDate.value = picked.end;
-        //
-        //       salesController.getFinanceSummary(
-        //           fromDate: picked.start, toDate: picked.end);
-        //     },
-        //     child: Container(
-        //       padding: EdgeInsets.symmetric(horizontal: 20),
-        //       child: Center(
-        //         child: Row(
-        //           children: [
-        //             Text(
-        //               "Filter",
-        //               style: TextStyle(
-        //                   color: AppColors.mainColor,
-        //                   fontWeight: FontWeight.bold),
-        //             ),
-        //             Icon(
-        //               Icons.filter_list_alt,
-        //               color: AppColors.mainColor,
-        //               size: 20,
-        //             )
-        //           ],
-        //         ),
-        //       ),
-        //     ))
+        if (!isSmallScreen(context))
+          InkWell(
+            onTap: () {
+              Get.find<HomeController>().selectedWidget.value = CreateSale(
+                page: "SalesPage",
+              );
+            },
+            child: Container(
+                margin: const EdgeInsets.only(right: 60, bottom: 10, top: 10),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: AppColors.mainColor),
+                child: const Center(
+                    child: Text(
+                  "Add Sales",
+                  style: TextStyle(color: Colors.white),
+                ))),
+          )
       ],
     );
   }
