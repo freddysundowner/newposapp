@@ -77,8 +77,14 @@ class ProductPage extends StatelessWidget {
                   if (usercontroller.user.value?.usertype == "attendant")
                     InkWell(
                         onTap: () {
-                          Get.to(() => CreateProduct(
-                              page: "create", productModel: null));
+                          isSmallScreen(context)
+                              ? Get.to(() => CreateProduct(
+                                  page: "create", productModel: null))
+                              : Get.find<HomeController>()
+                                      .selectedWidget
+                                      .value =
+                                  CreateProduct(
+                                      page: "create", productModel: null);
                         },
                         child: majorTitle(
                             title: "Add Product",
@@ -234,7 +240,8 @@ class ProductPage extends StatelessWidget {
                                                     .elementAt(index);
 
                                             final y = productBody.name;
-                                            final x = productBody.category?.name;
+                                            final x =
+                                                productBody.category?.name;
                                             final w = productBody.quantity;
                                             final z = productBody.buyingPrice;
                                             final a = productBody.selling;
@@ -372,7 +379,5 @@ class ProductPage extends StatelessWidget {
                   ListTile(leading: Icon(e["icon"]), title: Text(e["title"])),
             ))
         .toList();
-
-
   }
 }
