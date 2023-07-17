@@ -40,7 +40,7 @@ class CreateSuppliers extends StatelessWidget {
           automaticallyImplyLeading: false,
           leading: IconButton(
             onPressed: () {
-              if (MediaQuery.of(context).size.width > 600) {
+              if (!isSmallScreen(context)) {
                 if (page == "suppliersPage") {
                   Get.find<HomeController>().selectedWidget.value =
                       SuppliersPage();
@@ -76,104 +76,93 @@ class CreateSuppliers extends StatelessWidget {
                   color: Colors.grey),
             ],
           )),
-      body: ResponsiveWidget(
-          largeScreen: Align(
-              alignment: Alignment.center,
-              child: Container(
-                  width: MediaQuery.of(context).size.width * 0.4,
-                  height: MediaQuery.of(context).size.height * 0.7,
-                  child: customerInfoCard(context))),
-          smallScreen: SingleChildScrollView(
-            child: customerInfoCard(context),
-          )),
+      body: SingleChildScrollView(
+        child: customerInfoCard(context),
+      ),
     );
   }
 
   Widget customerInfoCard(context) {
-    return Card(
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 35),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 20),
-                Text("Supplier Name".capitalize!),
-                const SizedBox(height: 10),
-                TextFormField(
-                  controller: supplierController.nameController,
-                  keyboardType: TextInputType.text,
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 35),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 20),
+              Text("Supplier Name".capitalize!),
+              const SizedBox(height: 10),
+              TextFormField(
+                controller: supplierController.nameController,
+                keyboardType: TextInputType.text,
+                decoration: InputDecoration(
+                    isDense: true,
+                    hintStyle: const TextStyle(
+                        color: Colors.grey, fontWeight: FontWeight.bold),
+                    hintText: "eg.John Doe",
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: Colors.grey, width: 1),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: Colors.grey, width: 1),
+                    ),
+                    filled: true,
+                    fillColor: Colors.white),
+              )
+            ],
+          ),
+          const SizedBox(height: 20),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text("Phone"),
+              SizedBox(height: 10),
+              TextFormField(
+                  controller: supplierController.phoneController,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   decoration: InputDecoration(
-                      isDense: true,
-                      hintStyle: const TextStyle(
-                          color: Colors.grey, fontWeight: FontWeight.bold),
-                      hintText: "eg.John Doe",
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: Colors.grey, width: 1),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: Colors.grey, width: 1),
-                      ),
-                      filled: true,
-                      fillColor: Colors.white),
-                )
-              ],
-            ),
-            const SizedBox(height: 20),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text("Phone"),
-                SizedBox(height: 10),
-                TextFormField(
-                    controller: supplierController.phoneController,
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                    decoration: InputDecoration(
-                      isDense: true,
-                      hintStyle: const TextStyle(
-                          color: Colors.grey, fontWeight: FontWeight.bold),
-                      hintText: "eg.07XXXXXXXX",
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: Colors.grey, width: 1),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: Colors.grey, width: 1),
-                      ),
-                    ))
-              ],
-            ),
-            SizedBox(height: MediaQuery.of(context).size.height * 0.10),
-            InkWell(
-              splashColor: Colors.transparent,
-              hoverColor: Colors.transparent,
-              onTap: () {
-                supplierController.createSupplier(context: context, page: page);
-              },
-              child: Center(
-                child: Container(
-                  padding: const EdgeInsets.all(10),
-                  width: MediaQuery.of(context).size.width * 0.25,
-                  decoration: BoxDecoration(
-                      border: Border.all(width: 3, color: AppColors.mainColor),
-                      borderRadius: BorderRadius.circular(40)),
-                  child: Center(
-                      child: majorTitle(
-                          title: "Save",
-                          color: AppColors.mainColor,
-                          size: 18.0)),
-                ),
+                    isDense: true,
+                    hintStyle: const TextStyle(
+                        color: Colors.grey, fontWeight: FontWeight.bold),
+                    hintText: "eg.07XXXXXXXX",
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: Colors.grey, width: 1),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: Colors.grey, width: 1),
+                    ),
+                  ))
+            ],
+          ),
+          SizedBox(height: MediaQuery.of(context).size.height * 0.10),
+          InkWell(
+            splashColor: Colors.transparent,
+            hoverColor: Colors.transparent,
+            onTap: () {
+              supplierController.createSupplier(context: context, page: page);
+            },
+            child: Center(
+              child: Container(
+                padding: const EdgeInsets.all(10),
+                width: MediaQuery.of(context).size.width * 0.25,
+                decoration: BoxDecoration(
+                    border: Border.all(width: 3, color: AppColors.mainColor),
+                    borderRadius: BorderRadius.circular(40)),
+                child: Center(
+                    child: majorTitle(
+                        title: "Save", color: AppColors.mainColor, size: 18.0)),
               ),
             ),
-            SizedBox(height: 10),
-          ],
-        ),
+          ),
+          SizedBox(height: 10),
+        ],
       ),
     );
   }
