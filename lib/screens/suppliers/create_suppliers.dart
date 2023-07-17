@@ -18,7 +18,10 @@ import '../../widgets/smalltext.dart';
 class CreateSuppliers extends StatelessWidget {
   final page;
 
-  CreateSuppliers({Key? key, required this.page}) : super(key: key);
+  CreateSuppliers({Key? key, required this.page}) : super(key: key) {
+    supplierController.nameController.clear();
+    supplierController.phoneController.clear();
+  }
 
   CustomerController customersController = Get.find<CustomerController>();
   SupplierController supplierController = Get.find<SupplierController>();
@@ -26,6 +29,7 @@ class CreateSuppliers extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print(page);
     return Scaffold(
       backgroundColor: Colors.white.withOpacity(0.96),
       appBar: AppBar(
