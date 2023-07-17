@@ -181,7 +181,8 @@ class CreatePurchase extends StatelessWidget {
                                 ),
                               ),
                               if (usercontroller.user.value?.usertype ==
-                                  "admin")
+                                      "admin" &&
+                                  isSmallScreen(context))
                                 IconButton(
                                     onPressed: () {
                                       purchaseController.scanQR(

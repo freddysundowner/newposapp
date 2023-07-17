@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:pointify/controllers/user_controller.dart';
 import 'package:pointify/controllers/cashflow_controller.dart';
 import 'package:pointify/controllers/expense_controller.dart';
@@ -61,7 +62,7 @@ class CreateExpense extends StatelessWidget {
           elevation: 0.3,
           leading: IconButton(
             onPressed: () {
-              if (MediaQuery.of(context).size.width > 600) {
+              if (!isSmallScreen(context)) {
                 Get.find<HomeController>().selectedWidget.value = ExpensePage();
               } else {
                 Get.back();
@@ -86,8 +87,7 @@ class CreateExpense extends StatelessWidget {
             ),
             const SizedBox(height: 10),
           ]),
-        )
-        );
+        ));
   }
 
   Widget expenseCreateCard(context) {
@@ -192,6 +192,7 @@ class CreateExpense extends StatelessWidget {
               TextField(
                 controller: expenseController.textEditingControllerAmount,
                 keyboardType: TextInputType.number,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 decoration: InputDecoration(
                     focusedBorder: OutlineInputBorder(
                       borderSide: const BorderSide(color: Colors.grey),
@@ -210,8 +211,8 @@ class CreateExpense extends StatelessWidget {
                 expenseController.saveExpense();
               },
               child: Container(
-                  padding:
-                      const EdgeInsets.only(top: 10, bottom: 10, left: 60, right: 60),
+                  padding: const EdgeInsets.only(
+                      top: 10, bottom: 10, left: 60, right: 60),
                   decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(20),

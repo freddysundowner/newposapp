@@ -83,8 +83,7 @@ class CountHistory extends StatelessWidget {
                   data: Theme.of(context).copyWith(dividerColor: Colors.grey),
                   child: Container(
                     width: double.infinity,
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                     child: FittedBox(
                       fit: BoxFit.scaleDown,
                       child: Container(
