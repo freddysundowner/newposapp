@@ -232,6 +232,7 @@ class CreateSale extends StatelessWidget {
                                   salesController.receipt.value?.customerId =
                                       null;
                                   customersController.getCustomersInShop("all");
+
                                   confirmPayment(
                                     context,
                                   );

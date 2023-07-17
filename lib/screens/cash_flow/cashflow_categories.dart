@@ -11,6 +11,8 @@ import 'package:intl/intl.dart';
 import '../../Real/schema.dart';
 import '../../controllers/home_controller.dart';
 import '../../controllers/shop_controller.dart';
+import '../../utils/colors.dart';
+import 'cash_at_bank.dart';
 import 'components/category_card.dart';
 
 class CashFlowCategories extends StatelessWidget {
@@ -189,7 +191,8 @@ class CashInUi extends StatelessWidget {
                                         .textEditingControllerCategory,
                                     decoration: InputDecoration(
                                         hintText: "eg.Personal use etc",
-                                        hintStyle: const TextStyle(fontSize: 12),
+                                        hintStyle:
+                                            const TextStyle(fontSize: 12),
                                         border: OutlineInputBorder(
                                           borderRadius:
                                               BorderRadius.circular(10),
@@ -255,7 +258,8 @@ class CashInUi extends StatelessWidget {
               return !isSmallScreen(context)
                   ? Container(
                       width: double.infinity,
-                      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 5, vertical: 10),
                       child: Theme(
                         data: Theme.of(context)
                             .copyWith(dividerColor: Colors.grey),
@@ -265,7 +269,7 @@ class CashInUi extends StatelessWidget {
                             width: 1,
                             color: Colors.black,
                           )),
-                          columnSpacing: 30.0,
+                          columnSpacing: 20.0,
                           columns: [
                             const DataColumn(
                                 label:
@@ -274,30 +278,48 @@ class CashInUi extends StatelessWidget {
                                 label: Text(
                                     'Amount(${createShopController.currentShop.value?.currency})',
                                     textAlign: TextAlign.center)),
-                            // const DataColumn(
-                            //     label:
-                            //         Text('Date', textAlign: TextAlign.center)),
                             const DataColumn(
-                                label: Text('Actions', textAlign: TextAlign.center)),
+                                label: Text('Actions',
+                                    textAlign: TextAlign.center)),
                           ],
                           rows: List.generate(
                               cashflowController.cashFlowCategories.length,
                               (index) {
-                                CashFlowCategory cashflowCategory = cashflowController.cashFlowCategories.elementAt(index);
+                            CashFlowCategory cashflowCategory =
+                                cashflowController.cashFlowCategories
+                                    .elementAt(index);
                             final y = cashflowCategory.name.toString();
                             final x = cashflowCategory.amount.toString();
-                            // final z = cashflowCategory.!;
+
                             return DataRow(cells: [
                               DataCell(Text(y)),
                               DataCell(Text(x)),
-                              // DataCell(Text(
-                              //     DateFormat("MM-dd-yyyy").format(z))),
                               DataCell(Align(
                                 alignment: Alignment.topRight,
                                 child: Container(
                                     padding: const EdgeInsets.only(top: 10),
-                                    child: cashFlowCategoryDialog(context,
-                                        cashflowCategory: cashflowCategory)),
+                                    child: y.toLowerCase() == "bank"
+                                        ? InkWell(
+                                      onTap: (){
+                                        Get.find<HomeController>().selectedWidget.value=CashAtBank(page: "CashFlowCategories",);
+                                      },
+                                      child: Container(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 10, vertical: 5),
+                                          margin: const EdgeInsets.all(3),
+                                          decoration: BoxDecoration(
+                                              borderRadius:
+                                              BorderRadius.circular(10),
+                                              color: AppColors.mainColor),
+                                          child: const Text(
+                                            "View",
+                                            style: TextStyle(
+                                                color: Colors.white),
+                                          )),
+                                    )
+                                        : cashFlowCategoryDialog(context,
+                                            cashflowCategory:
+                                                cashflowCategory)),
                               )),
                             ]);
                           }),
