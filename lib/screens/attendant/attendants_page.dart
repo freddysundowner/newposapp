@@ -4,6 +4,7 @@ import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/controllers/sales_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/responsive/responsiveness.dart';
+import 'package:pointify/screens/home/home_page.dart';
 import 'package:pointify/widgets/user_card.dart';
 import 'package:pointify/widgets/no_items_found.dart';
 import 'package:get/get.dart';
@@ -15,6 +16,7 @@ import '../../controllers/user_controller.dart';
 import '../../main.dart';
 import '../../services/users.dart';
 import '../../widgets/smalltext.dart';
+import '../home/home.dart';
 import 'attendant_details.dart';
 
 class AttendantsPage extends StatelessWidget {
@@ -179,9 +181,11 @@ class AttendantsPage extends StatelessWidget {
           if (type == "switch") {
             userController.switcheduser.value = null;
             switchInit();
-            Get.back();
+            isSmallScreen(context)
+                ? Get.back()
+                : Get.find<HomeController>().selectedWidget.value = HomePage();
           } else {
-            if (MediaQuery.of(context).size.width > 600) {
+            if (!isSmallScreen(context)) {
               Get.find<HomeController>().selectedWidget.value =
                   AttendantDetails(
                 userModel: null,

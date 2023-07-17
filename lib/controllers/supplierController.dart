@@ -154,6 +154,8 @@ class SupplierController extends GetxController
       return;
     }
     SupplierService().deleteSupplier(supplier);
-    Get.back();
+    isSmallScreen(Get.context)
+        ? Get.back()
+        : Get.find<HomeController>().selectedWidget.value = SuppliersPage();
   }
 }

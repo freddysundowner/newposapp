@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/customers/customers_page.dart';
@@ -11,14 +12,16 @@ import '../../../../utils/colors.dart';
 import '../../controllers/CustomerController.dart';
 import '../../controllers/shop_controller.dart';
 import '../../controllers/supplierController.dart';
-import '../../widgets/alert.dart';
 import '../../widgets/bigtext.dart';
 import '../../widgets/smalltext.dart';
 
 class CreateCustomer extends StatelessWidget {
   final page;
 
-  CreateCustomer({Key? key, required this.page}) : super(key: key);
+  CreateCustomer({Key? key, required this.page}) : super(key: key) {
+    customersController.nameController.clear();
+    customersController.phoneController.clear();
+  }
 
   CustomerController customersController = Get.find<CustomerController>();
   SupplierController supplierController = Get.find<SupplierController>();
@@ -78,104 +81,94 @@ class CreateCustomer extends StatelessWidget {
   }
 
   Widget customerInfoCard(context) {
-    return Card(
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 35),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 20),
-                Text("Customer Name".capitalize!),
-                const SizedBox(height: 10),
-                TextFormField(
-                  controller: customersController.nameController,
-                  keyboardType: TextInputType.text,
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 35),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 20),
+              Text("Customer Name".capitalize!),
+              const SizedBox(height: 10),
+              TextFormField(
+                controller: customersController.nameController,
+                keyboardType: TextInputType.text,
+                decoration: InputDecoration(
+                    isDense: true,
+                    hintStyle: const TextStyle(
+                        color: Colors.grey, fontWeight: FontWeight.bold),
+                    hintText: "eg.John Doe",
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide:
+                          const BorderSide(color: Colors.grey, width: 1),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide:
+                          const BorderSide(color: Colors.grey, width: 1),
+                    ),
+                    filled: true,
+                    fillColor: Colors.white),
+              )
+            ],
+          ),
+          const SizedBox(height: 20),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text("Phone"),
+              const SizedBox(height: 10),
+              TextFormField(
+                  controller: customersController.phoneController,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   decoration: InputDecoration(
-                      isDense: true,
-                      hintStyle: const TextStyle(
-                          color: Colors.grey, fontWeight: FontWeight.bold),
-                      hintText: "eg.John Doe",
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(color: Colors.grey, width: 1),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(color: Colors.grey, width: 1),
-                      ),
-                      filled: true,
-                      fillColor: Colors.white),
-                )
-              ],
-            ),
-            const SizedBox(height: 20),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text("Phone"),
-                const SizedBox(height: 10),
-                TextFormField(
-                    controller: customersController.phoneController,
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      isDense: true,
-                      hintStyle: const TextStyle(
-                          color: Colors.grey, fontWeight: FontWeight.bold),
-                      hintText: "eg.07XXXXXXXX",
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(color: Colors.grey, width: 1),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(color: Colors.grey, width: 1),
-                      ),
-                    ))
-              ],
-            ),
-            SizedBox(height: MediaQuery.of(context).size.height * 0.10),
-            InkWell(
-              splashColor: Colors.transparent,
-              hoverColor: Colors.transparent,
-              onTap: () {
-                if (customersController.phoneController.text.trim().isEmpty ||
-                    customersController.nameController.text.trim().isEmpty) {
-                  isSmallScreen(context)
-                      ? ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                              content: Text("Please fill out all the fields")))
-                      : generalAlert(
-                          title: "Error",
-                          message: "Please fill out all the fields");
-                } else {
-                  customersController.createCustomer(
-                      page: page,
-                      function: () {
-                        chooseCustomer(context: context);
-                      });
-                }
-              },
-              child: Center(
-                child: Container(
-                  padding: const EdgeInsets.all(10),
-                  width: MediaQuery.of(context).size.width * 0.25,
-                  decoration: BoxDecoration(
-                      border: Border.all(width: 3, color: AppColors.mainColor),
-                      borderRadius: BorderRadius.circular(40)),
-                  child: Center(
-                      child: majorTitle(
-                          title: "Save",
-                          color: AppColors.mainColor,
-                          size: 18.0)),
-                ),
+                    isDense: true,
+                    hintStyle: const TextStyle(
+                        color: Colors.grey, fontWeight: FontWeight.bold),
+                    hintText: "eg.07XXXXXXXX",
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide:
+                          const BorderSide(color: Colors.grey, width: 1),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide:
+                          const BorderSide(color: Colors.grey, width: 1),
+                    ),
+                  ))
+            ],
+          ),
+          SizedBox(height: MediaQuery.of(context).size.height * 0.10),
+          InkWell(
+            splashColor: Colors.transparent,
+            hoverColor: Colors.transparent,
+            onTap: () {
+              customersController.createCustomer(
+                  page: page,
+                  function: () {
+                    chooseCustomer(context: context);
+                  });
+            },
+            child: Center(
+              child: Container(
+                padding: const EdgeInsets.all(10),
+                width: MediaQuery.of(context).size.width * 0.25,
+                decoration: BoxDecoration(
+                    border: Border.all(width: 3, color: AppColors.mainColor),
+                    borderRadius: BorderRadius.circular(40)),
+                child: Center(
+                    child: majorTitle(
+                        title: "Save", color: AppColors.mainColor, size: 18.0)),
               ),
             ),
-            const SizedBox(height: 10),
-          ],
-        ),
+          ),
+          const SizedBox(height: 10),
+        ],
       ),
     );
   }

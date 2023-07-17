@@ -37,6 +37,7 @@ class _HomeState extends State<Home> {
   AuthController authController = Get.find<AuthController>();
 
   final RealmController realmService = Get.put(RealmController());
+
   @override
   void initState() {
     // TODO: implement initState
@@ -168,11 +169,18 @@ class _HomeState extends State<Home> {
       ),
       title: Row(
         children: [
-          majorTitle(title: "Store Admin", color: Colors.black, size: 16.0),
+          majorTitle(
+              title:
+                  "Store ${userController.user.value!.usertype == "attendant" ? "Attendant" : "Admin"}",
+              color: Colors.black,
+              size: 16.0),
           Spacer(),
           InkWell(
             onTap: () async {
-              Get.to(() => AttendantsPage(type: "switch"));
+              isSmallScreen(context)
+                  ? Get.to(() => AttendantsPage(type: "switch"))
+                  : Get.find<HomeController>().selectedWidget.value =
+                      AttendantsPage(type: "switch");
             },
             child: Row(
               children: [

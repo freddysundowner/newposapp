@@ -192,7 +192,9 @@ class CustomerInfoPage extends StatelessWidget {
                               customerController.deleteCustomer(customerModel);
                             });
                       },
-                      icon: const Icon(Icons.delete)),
+                      icon: const Icon(
+                        Icons.delete,
+                      )),
               ],
             ))
         : Scaffold(
@@ -242,7 +244,7 @@ class CustomerInfoPage extends StatelessWidget {
                     ),
                     PopupMenuItem(
                       child: ListTile(
-                        leading: const Icon(Icons.delete),
+                        leading: const Icon(Icons.delete, color: Colors.red),
                         onTap: () {
                           Get.back();
                           generalAlert(

@@ -176,7 +176,9 @@ class CustomerController extends GetxController
           key: _keyLoader);
       Customer().deleteCustomer(customerModel: customerModel);
       Get.back();
-      Get.back();
+      isSmallScreen(Get.context)
+          ? Get.back()
+          : Get.find<HomeController>().selectedWidget.value = CustomersPage();
     } catch (e) {
       Navigator.of(Get.context!, rootNavigator: true).pop();
     }

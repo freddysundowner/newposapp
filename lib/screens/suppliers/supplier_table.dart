@@ -23,11 +23,11 @@ Widget supplierTable(
             width: 1,
             color: Colors.black,
           )),
-          columnSpacing: 30.0,
+          columnSpacing: 50.0,
           columns: const [
             DataColumn(label: Text('Name', textAlign: TextAlign.center)),
             DataColumn(label: Text('Phone', textAlign: TextAlign.center)),
-            DataColumn(label: Text('', textAlign: TextAlign.center)),
+            DataColumn(label: Text('Action', textAlign: TextAlign.center)),
           ],
           rows: List.generate(customers.length, (index) {
             Supplier supplierModel = customers.elementAt(index);

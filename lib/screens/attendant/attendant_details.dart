@@ -179,7 +179,7 @@ class AttendantDetails extends StatelessWidget {
         ),
       ),
       actions: [
-        if (!isSmallScreen(context))
+        if (!isSmallScreen(context) && userModel != null)
           Padding(
             padding: const EdgeInsets.only(right: 8.0),
             child: IconButton(

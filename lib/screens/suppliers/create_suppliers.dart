@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/product/create_product.dart';
@@ -11,14 +12,16 @@ import '../../../../utils/colors.dart';
 import '../../controllers/CustomerController.dart';
 import '../../controllers/shop_controller.dart';
 import '../../controllers/supplierController.dart';
-import '../../widgets/alert.dart';
 import '../../widgets/bigtext.dart';
 import '../../widgets/smalltext.dart';
 
 class CreateSuppliers extends StatelessWidget {
   final page;
 
-  CreateSuppliers({Key? key, required this.page}) : super(key: key);
+  CreateSuppliers({Key? key, required this.page}) : super(key: key) {
+    supplierController.nameController.clear();
+    supplierController.phoneController.clear();
+  }
 
   CustomerController customersController = Get.find<CustomerController>();
   SupplierController supplierController = Get.find<SupplierController>();
@@ -26,6 +29,7 @@ class CreateSuppliers extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print(page);
     return Scaffold(
       backgroundColor: Colors.white.withOpacity(0.96),
       appBar: AppBar(
@@ -50,7 +54,6 @@ class CreateSuppliers extends StatelessWidget {
                       CreateProduct(
                     page: "create",
                     productModel: null,
-                    clearInputs: false,
                   );
                 }
                 if (page == "createPurchase") {
@@ -73,14 +76,15 @@ class CreateSuppliers extends StatelessWidget {
                   color: Colors.grey),
             ],
           )),
-      body: SingleChildScrollView(child: customerInfoCard(context)),
+      body: SingleChildScrollView(
+        child: customerInfoCard(context),
+      ),
     );
   }
 
   Widget customerInfoCard(context) {
     return Container(
-      padding: EdgeInsets.symmetric(
-          vertical: 15, horizontal: isSmallScreen(context) ? 35 : 45),
+      padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 35),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -100,13 +104,11 @@ class CreateSuppliers extends StatelessWidget {
                     hintText: "eg.John Doe",
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide:
-                          const BorderSide(color: Colors.grey, width: 1),
+                      borderSide: BorderSide(color: Colors.grey, width: 1),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide:
-                          const BorderSide(color: Colors.grey, width: 1),
+                      borderSide: BorderSide(color: Colors.grey, width: 1),
                     ),
                     filled: true,
                     fillColor: Colors.white),
@@ -117,11 +119,12 @@ class CreateSuppliers extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text("Phone"),
-              const SizedBox(height: 10),
+              Text("Phone"),
+              SizedBox(height: 10),
               TextFormField(
                   controller: supplierController.phoneController,
                   keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   decoration: InputDecoration(
                     isDense: true,
                     hintStyle: const TextStyle(
@@ -129,13 +132,11 @@ class CreateSuppliers extends StatelessWidget {
                     hintText: "eg.07XXXXXXXX",
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide:
-                          const BorderSide(color: Colors.grey, width: 1),
+                      borderSide: BorderSide(color: Colors.grey, width: 1),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide:
-                          const BorderSide(color: Colors.grey, width: 1),
+                      borderSide: BorderSide(color: Colors.grey, width: 1),
                     ),
                   ))
             ],
@@ -145,17 +146,7 @@ class CreateSuppliers extends StatelessWidget {
             splashColor: Colors.transparent,
             hoverColor: Colors.transparent,
             onTap: () {
-              if (supplierController.phoneController.text.trim().isEmpty ||
-                  supplierController.nameController.text.trim().isEmpty) {
-                isSmallScreen(context)
-                    ? ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                        content: Text("Please fill out all the fields")))
-                    : generalAlert(
-                        title: "Error",
-                        message: "Please fill out all the fields");
-              } else {
-                supplierController.createSupplier(context: context, page: page);
-              }
+              supplierController.createSupplier(context: context, page: page);
             },
             child: Center(
               child: Container(
@@ -170,7 +161,7 @@ class CreateSuppliers extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: 10),
+          SizedBox(height: 10),
         ],
       ),
     );

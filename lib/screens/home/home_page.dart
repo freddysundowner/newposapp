@@ -76,6 +76,7 @@ class HomePage extends StatelessWidget {
         fromDate: fromDate, toDate: toDate, type: "today");
     return RefreshIndicator(
       onRefresh: () async {
+        print(userController.user.value!.permisions);
         await shopController.getShops();
         salesController.getSalesByDate(type: "today");
       },

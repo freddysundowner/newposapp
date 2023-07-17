@@ -58,6 +58,7 @@ class CreateProduct extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print(page);
     // Categories().getProductsCategories();
     return WillPopScope(
       onWillPop: () async {
@@ -97,7 +98,7 @@ class CreateProduct extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               majorTitle(
-                  title: page == "edit" ? "Edit Product" : "Add New Product",
+                  title: page == "edit" ? "Edit Product" : "duct",
                   color: Colors.black,
                   size: 16.0),
               minorTitle(

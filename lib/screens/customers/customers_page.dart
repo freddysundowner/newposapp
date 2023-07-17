@@ -16,6 +16,7 @@ import '../../services/customer.dart';
 import '../../utils/colors.dart';
 import '../../widgets/bigtext.dart';
 import '../../widgets/customer_card.dart';
+import '../../widgets/no_items_found.dart';
 import '../../widgets/smalltext.dart';
 
 class CustomersPage extends StatelessWidget {
@@ -39,24 +40,19 @@ class CustomersPage extends StatelessWidget {
           titleSpacing: 0.0,
           elevation: 0.3,
           centerTitle: false,
-          leading:
-              Get.find<UserController>().user.value?.usertype == "attendant" &&
-                      !isSmallScreen(context)
-                  ? Container()
-                  : IconButton(
-                      onPressed: () {
-                        if (isSmallScreen(context)) {
-                          Get.back();
-                        } else {
-                          Get.find<HomeController>().selectedWidget.value =
-                              HomePage();
-                        }
-                      },
-                      icon: const Icon(
-                        Icons.arrow_back_ios,
-                        color: Colors.black,
-                      ),
-                    ),
+          leading: IconButton(
+            onPressed: () {
+              if (isSmallScreen(context)) {
+                Get.back();
+              } else {
+                Get.find<HomeController>().selectedWidget.value = HomePage();
+              }
+            },
+            icon: const Icon(
+              Icons.arrow_back_ios,
+              color: Colors.black,
+            ),
+          ),
           title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -155,9 +151,16 @@ class Customers extends StatelessWidget {
                   return Center(
                     child: InkWell(
                       onTap: () {
-                        Get.to(() => CreateCustomer(
-                              page: "",
-                            ));
+                        if (!isSmallScreen(context)) {
+                          Get.find<HomeController>().selectedWidget.value =
+                              CreateCustomer(
+                            page: "customersPage",
+                          );
+                        } else {
+                          Get.to(() => CreateCustomer(
+                                page: "customersPage",
+                              ));
+                        }
                       },
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
@@ -234,6 +237,9 @@ class Debtors extends StatelessWidget {
                           color: Colors.black);
                     } else {
                       final results = data.results;
+                      if (results.isEmpty) {
+                        return noItemsFound(context, true);
+                      }
                       return isSmallScreen(context)
                           ? ListView.builder(
                               itemCount:

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:pointify/Real/schema.dart';
 import 'package:pointify/responsive/Appbehaviour.dart';
+import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/services/shop_services.dart';
 import 'package:pointify/bindings.dart';
 import 'package:pointify/controllers/user_controller.dart';
@@ -25,6 +26,7 @@ final AuthController appController = Get.put(AuthController());
 final RealmController realmServices = Get.put(RealmController());
 UserController userController = Get.put<UserController>(UserController());
 String appId = 'application-0-iosyj';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   appController.initialize(appId);
@@ -33,7 +35,7 @@ void main() async {
     setWindowMinSize(const Size(512, 700));
   }
 
-  runApp(MyApp()); 
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -72,7 +74,7 @@ class Authenticate extends StatelessWidget {
         if (users.first.usertype == "attendant") {
           return Scaffold(
             body: SafeArea(
-              child: HomePage(),
+              child: isSmallScreen(Get.context) ? HomePage() : Home(),
             ),
           );
         } else {

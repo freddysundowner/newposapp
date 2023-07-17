@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:pointify/controllers/user_controller.dart';
 
 const homePage = "Home";
 const shopsPage = "Shops";
@@ -9,16 +11,7 @@ const profilePage = "Profile";
 const authPage = "Log Out";
 const allowSubscription = true;
 
-List<Map<String, dynamic>> sidePages = [
-  {"page": homePage, "icon": Icons.home},
-  // {"page": profitsPage, "icon":    Icons.auto_graph},
-  // {"page": salesPage, "icon":   Icons.margin_outlined},
-  {"page": shopsPage, "icon": Icons.shop},
-  {"page": attendantPage, "icon": Icons.people},
 
-  {"page": profilePage, "icon": Icons.person},
-  {"page": authPage, "icon": Icons.logout},
-];
 
 class Constants {
   static final RegExp emailValidatorRegExp =
