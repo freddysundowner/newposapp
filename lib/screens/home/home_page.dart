@@ -30,7 +30,7 @@ import '../../widgets/normal_text.dart';
 import '../../widgets/smalltext.dart';
 import '../customers/customers_page.dart';
 import '../finance/expense_page.dart';
-import '../finance/finance_page.dart';
+import '../finance/financial_page.dart';
 import '../finance/profit_page.dart';
 import '../sales/all_sales.dart';
 import '../sales/sales_page.dart';
@@ -329,10 +329,10 @@ class HomePage extends StatelessWidget {
                               ? null
                               : () {
                                   isSmallScreen(context)
-                                      ? Get.to(() => FinancePage())
+                                      ? Get.to(() => FinancialPage())
                                       : Get.find<HomeController>()
                                           .selectedWidget
-                                          .value = FinancePage();
+                                          .value = FinancialPage();
                                 },
                           child: Row(
                             children: [

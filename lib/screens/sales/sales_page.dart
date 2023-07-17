@@ -27,6 +27,79 @@ class SalesPage extends StatelessWidget {
   ShopController shopController = Get.find<ShopController>();
   ExpenseController expenseController = Get.find<ExpenseController>();
 
+  List<Map<String, dynamic>> operations = [
+    {
+      "title": "Today",
+      "subtitle": "view today sales",
+      "color": Colors.amber.shade100,
+      "icon": Icons.today,
+      "amount": "${Get.find<SalesController>().grossProfit}"
+    },
+    {
+      "title": "Current Month",
+      "subtitle": "Gross & Net profits",
+      "color": Colors.amber.shade100,
+      "icon": Icons.calendar_month,
+      "amount": "${Get.find<SalesController>().grossProfit}"
+    },
+    {
+      "title": "Monthly Profit & Expenses",
+      "subtitle": "Monthly profits versus expenses",
+      "color": Colors.blue.shade100,
+      "icon": Icons.menu,
+      "amount": "${Get.find<SalesController>().grossProfit}"
+    },
+  ];
+
+  clickOperation(title, context) {
+    switch (title) {
+      case "Today":
+        {
+          var fromDate =
+              DateTime.parse(DateFormat("yyy-MM-dd").format(DateTime.now()));
+          var toDate = DateTime.parse(DateFormat("yyy-MM-dd")
+              .format(DateTime.now().add(const Duration(days: 1))));
+          salesController.filterStartDate.value = fromDate;
+          salesController.filterEndDate.value = toDate;
+          salesController.salesInitialIndex.value = 0;
+          salesController.getSalesByDate(fromDate: fromDate, toDate: toDate);
+
+          isSmallScreen(context)
+              ? Get.to(() => AllSalesPage(page: ""))
+              : Get.find<HomeController>().selectedWidget.value =
+                  AllSalesPage(page: "salesPage");
+        }
+        break;
+      case "Current Month":
+        {
+          DateTime now = DateTime.now();
+          var lastday = DateTime(now.year, now.month + 1, 0);
+
+          final noww = DateTime.now();
+
+          var firstday = DateTime(noww.year, noww.month, 1);
+          salesController.filterEndDate.value = lastday;
+          salesController.filterStartDate.value = firstday;
+          salesController.getSalesByDate(fromDate: firstday, toDate: lastday);
+
+          isSmallScreen(context)
+              ? Get.to(() => AllSalesPage(page: ""))
+              : Get.find<HomeController>().selectedWidget.value =
+                  AllSalesPage(page: "salesPage");
+        }
+
+        break;
+      case "Monthly Profit & Expenses":
+        {
+          isSmallScreen(context)
+              ? Get.to(() => MonthFilter(from: "sales"))
+              : Get.find<HomeController>().selectedWidget.value =
+                  MonthFilter(from: "sales");
+        }
+        break;
+    }
+  }
+
   SalesPage({Key? key}) : super(key: key) {
     // salesController.getFinanceSummary(
     //   fromDate: DateTime.parse(DateFormat("yyy-MM-dd").format(DateTime.now())),
@@ -49,9 +122,14 @@ class SalesPage extends StatelessWidget {
               .format(args.value.endDate ?? args.value.startDate),
         );
         isSmallScreen(Get.context)
-            ? Get.to(() => ProfitPage(headline: "from\n$_range",   page: "salesPage",))
-            : Get.find<HomeController>().selectedWidget.value =
-            ProfitPage(headline: "from\n$_range",   page: "salesPage",);
+            ? Get.to(() => ProfitPage(
+                  headline: "from\n$_range",
+                  page: "salesPage",
+                ))
+            : Get.find<HomeController>().selectedWidget.value = ProfitPage(
+                headline: "from\n$_range",
+                page: "salesPage",
+              );
       }
     }
   }
@@ -62,7 +140,7 @@ class SalesPage extends StatelessWidget {
       widget: SingleChildScrollView(
         child: ConstrainedBox(
           constraints:
-          BoxConstraints.expand(height: MediaQuery.of(context).size.height),
+              BoxConstraints.expand(height: MediaQuery.of(context).size.height),
           child: Container(
             padding: const EdgeInsets.all(10),
             child: Column(
@@ -83,83 +161,51 @@ class SalesPage extends StatelessWidget {
                     }),
                 const Divider(),
                 Expanded(
-                  child: ListView(
-                    children: [
-                      Obx(() {
-                        return financeCards(
-                            title: "Today",
-                            subtitle: "view today sales",
-                            showsummary: false,
-                            onPresssed: () {
-                              var fromDate = DateTime.parse(
-                                  DateFormat("yyy-MM-dd")
-                                      .format(DateTime.now()));
-                              var toDate = DateTime.parse(
-                                  DateFormat("yyy-MM-dd").format(DateTime.now()
-                                      .add(const Duration(days: 1))));
-                              salesController.filterStartDate.value = fromDate;
-                              salesController.filterEndDate.value = toDate;
-                              salesController.salesInitialIndex.value = 0;
-                              salesController.getSalesByDate(
-                                  fromDate: fromDate, toDate: toDate);
-
-                              isSmallScreen(context)
-                                  ? Get.to(() => AllSalesPage(page: ""))
-                                  : Get.find<HomeController>()
-                                  .selectedWidget
-                                  .value = AllSalesPage(page: "salesPage");
-                            },
-                            color: Colors.amber.shade100,
-                            icon: Icons.today,
-                            amount: "${salesController.grossProfit}");
-                      }),
-                      Obx(() {
-                        return financeCards(
-                            title: "Current Month",
-                            subtitle: "Gross & Net profits",
-                            showsummary: false,
-                            onPresssed: () {
-                              DateTime now = DateTime.now();
-                              var lastday =
-                              DateTime(now.year, now.month + 1, 0);
-
-                              final noww = DateTime.now();
-
-                              var firstday = DateTime(noww.year, noww.month, 1);
-                              salesController.filterEndDate.value = lastday;
-                              salesController.filterStartDate.value = firstday;
-                              salesController.getSalesByDate(
-                                  fromDate: firstday, toDate: lastday);
-
-                              isSmallScreen(context)
-                                  ? Get.to(() => AllSalesPage(page: ""))
-                                  : Get.find<HomeController>()
-                                  .selectedWidget
-                                  .value = AllSalesPage(page: "salesPage");
-                            },
-                            color: Colors.amber.shade100,
-                            icon: Icons.calendar_month,
-                            amount: "${salesController.grossProfit}");
-                      }),
-                      Obx(() {
-                        return financeCards(
-                            title: "Monthly Profit & Expenses",
-                            subtitle: "Monthly profits versus expenses",
-                            showsummary: false,
-                            onPresssed: () {
-                              // return Get.to(() => MonthFilter(from: "sales"));
-                              isSmallScreen(context)
-                                  ? Get.to(() => MonthFilter(from: "sales"))
-                                  : Get.find<HomeController>()
-                                  .selectedWidget
-                                  .value = MonthFilter(from: "sales");
-                            },
-                            color: Colors.blue.shade100,
-                            icon: Icons.menu,
-                            amount: "${salesController.grossProfit}");
-                      }),
-                    ],
-                  ),
+                  child: isSmallScreen(context)
+                      ? ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: operations.length,
+                          itemBuilder: (context, index) {
+                            return financeCards(
+                                title: operations[index]["title"],
+                                subtitle: operations[index]["subtitle"],
+                                icon: operations[index]["icon"],
+                                onPresssed: () {
+                                  clickOperation(
+                                      operations[index]["title"], context);
+                                },
+                                color: operations[index]["color"],
+                                amount: operations[index]["amount"]);
+                          },
+                        )
+                      : GridView.builder(
+                          itemCount: operations.length,
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                                  childAspectRatio: MediaQuery.of(context)
+                                              .size
+                                              .width >
+                                          1000
+                                      ? 1.6
+                                      : MediaQuery.of(context).size.width > 900
+                                          ? 1.3
+                                          : 0.9,
+                                  crossAxisCount: 3,
+                                  crossAxisSpacing: 10,
+                                  mainAxisSpacing: 10),
+                          itemBuilder: (context, index) {
+                            return financeCardsDesktop(
+                                showsummary: true,
+                                title: operations[index]["title"],
+                                subtitle: operations[index]["subtitle"],
+                                icon: operations[index]["icon"],
+                                onPresssed: () {
+                                  clickOperation(
+                                      operations[index]["title"], context);
+                                },
+                                color: operations[index]["color"],
+                                amount: operations[index]["amount"]);
+                          }),
                 ),
               ],
             ),
@@ -182,9 +228,9 @@ class SalesPage extends StatelessWidget {
                   color: AppColors.mainColor),
               child: const Center(
                   child: Text(
-                    "Add Sales",
-                    style: TextStyle(color: Colors.white),
-                  ))),
+                "Add Sales",
+                style: TextStyle(color: Colors.white),
+              ))),
         ),
       ),
       floatButton: Container(),
@@ -212,7 +258,7 @@ class SalesPage extends StatelessWidget {
         ),
       ),
       title:
-      majorTitle(title: "Sales & Order", color: Colors.black, size: 16.0),
+          majorTitle(title: "Sales & Order", color: Colors.black, size: 16.0),
       actions: [
         // InkWell(
         //     onTap: () async {
@@ -253,12 +299,12 @@ class SalesPage extends StatelessWidget {
 
   Widget financeCards(
       {required title,
-        required subtitle,
-        required icon,
-        bool? showsummary = true,
-        required onPresssed,
-        required Color color,
-        required amount}) {
+      required subtitle,
+      required icon,
+      bool? showsummary = true,
+      required onPresssed,
+      required Color color,
+      required amount}) {
     return InkWell(
       onTap: () {
         onPresssed();
@@ -304,7 +350,57 @@ class SalesPage extends StatelessWidget {
             if (showsummary == true)
               normalText(
                   title:
-                  " ${title} summary: ${shopController.currentShop.value?.currency}.${amount} ",
+                      " ${title} summary: ${shopController.currentShop.value?.currency}.${amount} ",
+                  color: Colors.black,
+                  size: 14.0)
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget financeCardsDesktop(
+      {required title,
+      required subtitle,
+      required icon,
+      bool? showsummary = true,
+      required onPresssed,
+      required Color color,
+      required amount}) {
+    return InkWell(
+      onTap: () {
+        onPresssed();
+      },
+      child: Container(
+        margin: EdgeInsets.only(
+            top: 10,
+            right: isSmallScreen(Get.context) ? 0 : 15,
+            left: isSmallScreen(Get.context) ? 0 : 15),
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+            color: Colors.deepPurple.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(10)),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              height: 40,
+              width: 40,
+              decoration: BoxDecoration(
+                  color: color, borderRadius: BorderRadius.circular(20)),
+              child: Center(child: Icon(icon)),
+            ),
+            const SizedBox(
+              width: 10,
+            ),
+            majorTitle(title: title, color: Colors.black, size: 16.0),
+            const SizedBox(height: 5),
+            minorTitle(title: subtitle, color: Colors.grey),
+            if (showsummary == true)
+              normalText(
+                  title:
+                      " ${title} summary: ${shopController.currentShop.value?.currency}.${amount} ",
                   color: Colors.black,
                   size: 14.0)
           ],
@@ -338,7 +434,25 @@ class MonthFilter extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Pick a month"),
+        elevation: 0.1,
+        backgroundColor:
+            isSmallScreen(context) ? AppColors.mainColor : Colors.white,
+        title: Text(
+          "Pick a month",
+          style: TextStyle(
+              color: isSmallScreen(context) ? Colors.white : Colors.black),
+        ),
+        leading: IconButton(
+            onPressed: () {
+              isSmallScreen(context)
+                  ? Get.back()
+                  : Get.find<HomeController>().selectedWidget.value =
+                      SalesPage();
+            },
+            icon: Icon(
+              Icons.arrow_back_ios,
+              color: isSmallScreen(context) ? Colors.white : Colors.black,
+            )),
         actions: [
           InkWell(
             onTap: () {
@@ -385,8 +499,17 @@ class MonthFilter extends StatelessWidget {
               padding: const EdgeInsets.only(right: 10),
               child: Row(
                 children: [
-                  Obx(() => Text(salesController.currentYear.value.toString())),
-                  const Icon(Icons.arrow_drop_down)
+                  Obx(() => Text(
+                        salesController.currentYear.value.toString(),
+                        style: TextStyle(
+                            color: isSmallScreen(context)
+                                ? Colors.white
+                                : Colors.black),
+                      )),
+                  Icon(
+                    Icons.arrow_drop_down,
+                    color: isSmallScreen(context) ? Colors.white : Colors.black,
+                  )
                 ],
               ),
             ),
@@ -402,10 +525,10 @@ class MonthFilter extends StatelessWidget {
               return InkWell(
                 onTap: () {
                   DateTime now =
-                  DateTime(salesController.currentYear.value, i + 1);
+                      DateTime(salesController.currentYear.value, i + 1);
                   var lastday = DateTime(now.year, now.month + 1, 0);
                   final noww =
-                  DateTime(salesController.currentYear.value, i + 1);
+                      DateTime(salesController.currentYear.value, i + 1);
                   var firstday = DateTime(noww.year, noww.month, 1);
 
                   var d = DateFormat("yyy-MM-dd").format(
@@ -419,7 +542,7 @@ class MonthFilter extends StatelessWidget {
                     isSmallScreen(context)
                         ? Get.to(() => AllSalesPage(page: ""))
                         : Get.find<HomeController>().selectedWidget.value =
-                        AllSalesPage(page: "salesPage");
+                            AllSalesPage(page: "salesPage");
                   } else {
                     salesController.getProfitTransaction(
                       fromDate: firstday,
@@ -427,14 +550,14 @@ class MonthFilter extends StatelessWidget {
                     );
                     isSmallScreen(context)
                         ? Get.to(() => ProfitPage(
-                      page: "salesPage",
-                        headline:
-                        "from\n${'${DateFormat("yyy-MM-dd").format(firstday)}-${DateFormat("yyy-MM-dd").format(lastday)}'}"))
-                        : Get.find<HomeController>().selectedWidget.value =
-                        ProfitPage(
                             page: "salesPage",
                             headline:
-                            "from\n${'${DateFormat("yyy-MM-dd").format(firstday)}-${DateFormat("yyy-MM-dd").format(lastday)}'}");
+                                "from\n${'${DateFormat("yyy-MM-dd").format(firstday)}-${DateFormat("yyy-MM-dd").format(lastday)}'}"))
+                        : Get.find<HomeController>().selectedWidget.value =
+                            ProfitPage(
+                                page: "salesPage",
+                                headline:
+                                    "from\n${'${DateFormat("yyy-MM-dd").format(firstday)}-${DateFormat("yyy-MM-dd").format(lastday)}'}");
                   }
                 },
                 child: Column(

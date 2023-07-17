@@ -6,7 +6,7 @@ import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/functions/functions.dart';
 import 'package:pointify/responsive/responsiveness.dart';
-import 'package:pointify/screens/finance/finance_page.dart';
+import 'package:pointify/screens/finance/financial_page.dart';
 import 'package:pointify/widgets/no_items_found.dart';
 import 'package:pointify/widgets/snackBars.dart';
 import 'package:get/get.dart';
@@ -129,6 +129,7 @@ class ExpensePage extends StatelessWidget {
     );
   }
 
+
   totalsContainer() {
     return Container(
       height: MediaQuery.of(Get.context!).size.height * 0.2,
@@ -207,7 +208,7 @@ class ExpensePage extends StatelessWidget {
               onPressed: () {
                 if (MediaQuery.of(context).size.width > 600) {
                   Get.find<HomeController>().selectedWidget.value =
-                      FinancePage();
+                      FinancialPage();
                 } else {
                   Get.back();
                 }
