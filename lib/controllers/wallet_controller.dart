@@ -44,6 +44,8 @@ class WalletController extends GetxController with GetTickerProviderStateMixin {
       Get.find<CustomerController>().getCustomerById(customerModel);
       Get.find<CustomerController>().customer.refresh();
       Navigator.of(context, rootNavigator: true).pop();
+      getWallet(customerModel, "deposit");
+
     }
   }
 

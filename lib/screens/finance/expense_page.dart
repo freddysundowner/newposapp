@@ -129,7 +129,6 @@ class ExpensePage extends StatelessWidget {
     );
   }
 
-
   totalsContainer() {
     return Container(
       height: MediaQuery.of(Get.context!).size.height * 0.2,
@@ -201,32 +200,28 @@ class ExpensePage extends StatelessWidget {
     return AppBar(
       elevation: 0.3,
       centerTitle: false,
-      leading: Get.find<UserController>().user.value?.usertype == "attendant" &&
-              MediaQuery.of(context).size.width > 600
-          ? null
-          : IconButton(
-              onPressed: () {
-                if (MediaQuery.of(context).size.width > 600) {
-                  Get.find<HomeController>().selectedWidget.value =
-                      FinancialPage();
-                } else {
-                  Get.back();
-                }
+      leading: IconButton(
+        onPressed: () {
+          if (!isSmallScreen(context)) {
+            Get.find<HomeController>().selectedWidget.value = FinancialPage();
+          } else {
+            Get.back();
+          }
 
-                salesController.filterStartDate.value = DateTime.parse(
-                    DateFormat("yyy-MM-dd").format(DateTime.now()));
-                salesController.filterEndDate.value = DateTime.parse(
-                    DateFormat("yyy-MM-dd")
-                        .format(DateTime.now().add(const Duration(days: 1))));
-                salesController.getFinanceSummary(
-                    fromDate: salesController.filterStartDate.value,
-                    toDate: salesController.filterEndDate.value);
-              },
-              icon: const Icon(
-                Icons.arrow_back_ios,
-                color: Colors.white,
-              ),
-            ),
+          salesController.filterStartDate.value =
+              DateTime.parse(DateFormat("yyy-MM-dd").format(DateTime.now()));
+          salesController.filterEndDate.value = DateTime.parse(
+              DateFormat("yyy-MM-dd")
+                  .format(DateTime.now().add(const Duration(days: 1))));
+          salesController.getFinanceSummary(
+              fromDate: salesController.filterStartDate.value,
+              toDate: salesController.filterEndDate.value);
+        },
+        icon: const Icon(
+          Icons.arrow_back_ios,
+          color: Colors.white,
+        ),
+      ),
       title: majorTitle(title: "Expenses", color: Colors.white, size: 16.0),
       actions: [
         InkWell(
