@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/responsive/responsiveness.dart';
@@ -44,7 +45,7 @@ class EditSupplier extends StatelessWidget {
         actions: [
           if (!isSmallScreen(context))
             Padding(
-              padding: const EdgeInsets.only(right: 8.0,top: 3),
+              padding: const EdgeInsets.only(right: 8.0, top: 3),
               child: TextButton(
                   onPressed: () {
                     Get.find<HomeController>().selectedWidget.value =
@@ -58,7 +59,10 @@ class EditSupplier extends StatelessWidget {
         ],
       ),
       body: Container(
-        padding:  EdgeInsets.symmetric(horizontal:isSmallScreen(context) ?10:25,vertical:isSmallScreen(context) ?10:20).copyWith(bottom: 3),
+        padding: EdgeInsets.symmetric(
+                horizontal: isSmallScreen(context) ? 10 : 25,
+                vertical: isSmallScreen(context) ? 10 : 20)
+            .copyWith(bottom: 3),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -75,6 +79,7 @@ class EditSupplier extends StatelessWidget {
             TextFormField(
               controller: supplierController.phoneController,
               keyboardType: TextInputType.phone,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
               decoration: InputDecoration(
                   hintText: "phone number",
                   border: OutlineInputBorder(

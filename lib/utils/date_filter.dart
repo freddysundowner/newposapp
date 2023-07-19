@@ -77,10 +77,9 @@ class DateFilter extends StatelessWidget {
   }
 
   backPress() {
-    print("object");
+    print("object${from}");
     if (from == "ProductReceiptsSales") {
-      Get.find<HomeController>().selectedWidget.value =
-          ProductReceiptsSales(product: product!, i: i!);
+      Get.find<HomeController>().selectedWidget.value = ProductReceiptsSales(product: product!, i: i!);
     } else if (from == "ProductStockHistory") {
       Get.find<HomeController>().selectedWidget.value =
           ProductStockHistory(product: product!, i: i!);

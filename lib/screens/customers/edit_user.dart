@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/responsive/responsiveness.dart';
@@ -21,7 +22,7 @@ class EditCustomer extends StatelessWidget {
       appBar: AppBar(
         elevation: 0.0,
         title: Text(
-          "Edit $userType".capitalize!,
+          "Edit ${userType ?? "Customer"}".capitalize!,
           style:
               const TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
         ),
@@ -73,6 +74,8 @@ class EditCustomer extends StatelessWidget {
             ),
             TextFormField(
               controller: customersController.phoneController,
+              keyboardType: TextInputType.phone,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
               decoration: InputDecoration(
                   hintText: "phone number",
                   border: OutlineInputBorder(

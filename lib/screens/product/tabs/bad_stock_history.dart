@@ -352,9 +352,8 @@ class BadStockHistory extends StatelessWidget {
                               label: Text('Date', textAlign: TextAlign.center)),
                         ],
                         rows: List.generate(
-                            productController.countHistory.length, (index) {
-                          BadStock badStock =
-                              productController.badstocks.elementAt(index);
+                            productController.badstocks.length, (index) {
+                          BadStock badStock = productController.badstocks.elementAt(index);
 
                           final p = badStock.product?.name;
                           final y = badStock.quantity;

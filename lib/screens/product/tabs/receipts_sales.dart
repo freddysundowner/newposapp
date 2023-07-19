@@ -80,32 +80,24 @@ class ProductReceiptsSales extends StatelessWidget {
           ),
           IconButton(
               onPressed: () async {
-                Get.to(() => DateFilter(
-                  from: "ProductReceiptsSales",
-                      function: (value) {
-                        if (value is PickerDateRange) {
-                          final DateTime rangeStartDate = value.startDate!;
-                          final DateTime rangeEndDate = value.endDate!;
-                          salesController.filterStartDate.value =
-                              rangeStartDate;
-                          salesController.filterEndDate.value = rangeEndDate;
-                        } else if (value is DateTime) {
-                          final DateTime selectedDate = value;
-                          salesController.filterStartDate.value = selectedDate;
-                          salesController.filterEndDate.value = selectedDate;
-                        }
-
-                        salesController.getSalesByProductId(
-                            fromDate: salesController.filterStartDate.value,
-                            toDate: salesController.filterEndDate.value,
-                            product: product);
-                        salesController.getReturns(
-                            product: product,
-                            fromDate: salesController.filterStartDate.value,
-                            toDate: salesController.filterEndDate.value,
-                            type: "return");
-                      },
-                    ));
+                isSmallScreen(context)
+                    ? Get.to(() => DateFilter(
+                          from: "ProductReceiptsSales",
+                          i: i,
+                          product: product,
+                          function: (value) {
+                            filterDateFunction(value);
+                          },
+                        ))
+                    : Get.find<HomeController>().selectedWidget.value =
+                        DateFilter(
+                        product: product,
+                        from: "ProductReceiptsSales",
+                        i: i,
+                        function: (value) {
+                          filterDateFunction(value);
+                        },
+                      );
               },
               icon: Icon(
                 Icons.filter_alt,
@@ -329,5 +321,28 @@ class ProductReceiptsSales extends StatelessWidget {
             ],
           )),
     );
+  }
+
+  void filterDateFunction(value) {
+    if (value is PickerDateRange) {
+      final DateTime rangeStartDate = value.startDate!;
+      final DateTime rangeEndDate = value.endDate!;
+      salesController.filterStartDate.value = rangeStartDate;
+      salesController.filterEndDate.value = rangeEndDate;
+    } else if (value is DateTime) {
+      final DateTime selectedDate = value;
+      salesController.filterStartDate.value = selectedDate;
+      salesController.filterEndDate.value = selectedDate;
+    }
+
+    salesController.getSalesByProductId(
+        fromDate: salesController.filterStartDate.value,
+        toDate: salesController.filterEndDate.value,
+        product: product);
+    salesController.getReturns(
+        product: product,
+        fromDate: salesController.filterStartDate.value,
+        toDate: salesController.filterEndDate.value,
+        type: "return");
   }
 }

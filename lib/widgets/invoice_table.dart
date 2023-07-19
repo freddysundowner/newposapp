@@ -10,7 +10,7 @@ import '../functions/functions.dart';
 import '../screens/purchases/invoice_screen.dart';
 import '../utils/colors.dart';
 
-Widget invoiceTable({required context}) {
+Widget invoiceTable({required context ,required  Supplier supplierModel}) {
   PurchaseController purchaseController = Get.find<PurchaseController>();
   return Container(
     padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
@@ -71,6 +71,7 @@ Widget invoiceTable({required context}) {
                             InvoiceScreen(
                           invoice: invoice,
                           type: "",
+
                         );
                       },
                       child: Text(

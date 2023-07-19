@@ -19,9 +19,14 @@ import '../../widgets/smalltext.dart';
 
 class CreateShop extends StatelessWidget {
   final page;
+  bool? clearInputs = false;
 
-  CreateShop({Key? key, required this.page}) : super(key: key) {
-    shopController.clearTextFields();
+  CreateShop({Key? key, required this.page, this.clearInputs})
+      : super(key: key) {
+    if (clearInputs!) {
+      shopController.clearTextFields();
+    }
+
     Interests();
   }
 
@@ -29,28 +34,30 @@ class CreateShop extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(page);
     Get.find<PlanController>().getPlans();
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        titleSpacing: 0,
+        titleSpacing: 3,
         backgroundColor: Colors.white,
         elevation: 0.3,
         centerTitle: false,
-        leading: IconButton(
-          onPressed: () {
-            if (isSmallScreen(context)) {
-              Get.back();
-            } else {
-              Get.find<HomeController>().selectedWidget.value = ShopsPage();
-            }
-          },
-          icon: const Icon(
-            Icons.arrow_back_ios,
-            color: Colors.black,
-          ),
-        ),
+        leading: page == "home"
+            ? null
+            : IconButton(
+                onPressed: () {
+                  if (isSmallScreen(context)) {
+                    Get.back();
+                  } else {
+                    Get.find<HomeController>().selectedWidget.value =
+                        ShopsPage();
+                  }
+                },
+                icon: const Icon(
+                  Icons.arrow_back_ios,
+                  color: Colors.black,
+                ),
+              ),
         title:
             majorTitle(title: "Create Shop", color: Colors.black, size: 16.0),
       ),
@@ -125,7 +132,10 @@ class CreateShop extends StatelessWidget {
                   page: page,
                   selectedItemsCallback: (ShopTypes s) {
                     Get.find<HomeController>().selectedWidget.value =
-                        CreateShop(page: page);
+                        CreateShop(
+                      page: page,
+                      clearInputs: false,
+                    );
 
                     shopController.selectedCategory.value = s;
                   },

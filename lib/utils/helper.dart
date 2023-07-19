@@ -157,7 +157,7 @@ class Helper extends StatelessWidget {
                                     break;
                                   case 5:
                                     {
-                                      Get.to(() => CreateShop(page: "home"));
+                                      Get.to(() => CreateShop(page: "home",clearInputs: true,));
                                     }
                                     break;
                                 }

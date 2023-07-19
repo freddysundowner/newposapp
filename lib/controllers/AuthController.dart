@@ -164,11 +164,12 @@ class AuthController extends GetxController {
         await Get.find<UserController>().getUser();
         Get.find<PlanController>().getPlans();
         if (isSmallScreen(context)) {
-          print("small");
-          Get.off(() => CreateShop(page: "home"));
+          Get.off(() => CreateShop(
+                page: "home",
+                clearInputs: true,
+              ));
         } else {
-          print("lsmall");
-          Get.off(() => CreateShop(page: "home"));
+          Get.off(() => CreateShop(page: "home", clearInputs: true));
         }
 
         signuserLoad.value = false;
@@ -214,6 +215,8 @@ class AuthController extends GetxController {
     await Get.find<RealmController>().currentUser!.value?.logOut();
     Get.find<RealmController>().currentUser?.value = null;
     Get.offAll(() => Landing());
+    Get.find<HomeController>().activeItem.value = "Home";
+    Get.find<HomeController>().selectedWidget.value = HomePage();
     refresh();
   }
 

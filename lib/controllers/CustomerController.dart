@@ -156,9 +156,9 @@ class CustomerController extends GetxController
           address: addressController.text);
       Customer().updateCustomer(customer);
 
-      Navigator.of(context, rootNavigator: true).pop();
+      // Navigator.of(context, rootNavigator: true).pop();
     } catch (e) {
-      Navigator.of(context, rootNavigator: true).pop();
+      // Navigator.of(context, rootNavigator: true).pop();
     }
   }
 

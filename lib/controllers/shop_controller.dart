@@ -69,9 +69,11 @@ class ShopController extends GetxController {
         Get.off(() => Home());
       } else {
         Get.find<HomeController>().selectedWidget.value = ShopsPage();
+        Get.find<HomeController>().activeItem.value = "Home";
       }
     } else if (page == "home") {
       Get.off(() => Home());
+      Get.find<HomeController>().selectedWidget.value = HomePage();
     } else {
       Get.back();
     }
@@ -185,7 +187,10 @@ class ShopController extends GetxController {
       Get.offAll(() => Home());
     } else {
       Users().updateAdmin(userController.user.value!, shop: null);
-      Get.off(() => CreateShop(page: "home"));
+      Get.off(() => CreateShop(
+            page: "home",
+            clearInputs: true,
+          ));
     }
 
     userController.getUser();

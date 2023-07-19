@@ -163,7 +163,7 @@ class AllPurchases extends StatelessWidget {
                                 final w = invoiceData.createdAt;
 
                                 return DataRow(cells: [
-                                  DataCell(Text(y!)),
+                                  DataCell(Text("#${y!}".toUpperCase())),
                                   DataCell(Text(x)),
                                   DataCell(Text(z)),
                                   DataCell(Text(

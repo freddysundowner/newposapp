@@ -501,7 +501,7 @@ class SalesTab extends StatelessWidget {
                               final a = saleOrder.createdAt!;
 
                               return DataRow(cells: [
-                                DataCell(Text(y!)),
+                                DataCell(Text("#${y!}")),
                                 DataCell(Text(x.toString())),
                                 DataCell(Text(z.toString())),
                                 DataCell(
@@ -585,7 +585,7 @@ class RetunsTab extends StatelessWidget {
                           // final a = receiptItem.createdAt;
 
                           return DataRow(cells: [
-                            DataCell(Text(r!)),
+                            DataCell(Text("#${r!}")),
                             DataCell(Text(y!)),
                             DataCell(Text(x.toString())),
                             DataCell(Text(z.toString())),
@@ -683,12 +683,11 @@ class CreditInfo extends StatelessWidget {
                               final a = salesBody.createdAt!;
 
                               return DataRow(cells: [
-                                DataCell(Container(child: Text(y!))),
-                                DataCell(Container(child: Text(x.toString()))),
-                                DataCell(Container(child: Text(z.toString()))),
-                                DataCell(Container(
-                                    child: Text(
-                                        DateFormat("dd-MM-yyyy").format(a)))),
+                                DataCell(Text("#${y!}")),
+                                DataCell(Text(x.toString())),
+                                DataCell(Text(z.toString())),
+                                DataCell(Text(
+                                    DateFormat("dd-MM-yyyy").format(a))),
                                 DataCell(Align(
                                   alignment: Alignment.topRight,
                                   child: Container(
@@ -696,7 +695,7 @@ class CreditInfo extends StatelessWidget {
                                       itemBuilder: (ctx) => [
                                         PopupMenuItem(
                                           child: ListTile(
-                                            leading: Icon(Icons.list),
+                                            leading: const Icon(Icons.list),
                                             onTap: () {
                                               Navigator.pop(context);
                                               if (MediaQuery.of(context)
@@ -713,21 +712,21 @@ class CreditInfo extends StatelessWidget {
                                                     id: salesBody.id));
                                               }
                                             },
-                                            title: Text('View Purchases'),
+                                            title: const Text('View Purchases'),
                                           ),
                                         ),
                                         PopupMenuItem(
                                           child: ListTile(
-                                            leading: Icon(Icons.payment),
+                                            leading: const Icon(Icons.payment),
                                             onTap: () {
                                               Navigator.pop(context);
                                             },
-                                            title: Text('Pay'),
+                                            title: const Text('Pay'),
                                           ),
                                         ),
                                         PopupMenuItem(
                                           child: ListTile(
-                                            leading: Icon(Icons.wallet),
+                                            leading: const Icon(Icons.wallet),
                                             onTap: () {
                                               Navigator.pop(context);
                                               // if (MediaQuery.of(context)
@@ -745,21 +744,21 @@ class CreditInfo extends StatelessWidget {
                                               //       ));
                                               // }
                                             },
-                                            title: Text('Payment History'),
+                                            title: const Text('Payment History'),
                                           ),
                                         ),
                                         PopupMenuItem(
                                           child: ListTile(
                                             leading:
-                                                Icon(Icons.file_copy_outlined),
+                                                const Icon(Icons.file_copy_outlined),
                                             onTap: () async {
                                               Navigator.pop(context);
                                             },
-                                            title: Text('Generate Report'),
+                                            title: const Text('Generate Report'),
                                           ),
                                         ),
                                       ],
-                                      icon: Icon(Icons.more_vert),
+                                      icon: const Icon(Icons.more_vert),
                                     ),
                                   ),
                                 )),

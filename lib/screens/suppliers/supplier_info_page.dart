@@ -322,7 +322,7 @@ class SupplierInfoPage extends StatelessWidget {
                       physics: const NeverScrollableScrollPhysics(),
                       children: [
                         CreditInfo(supplierModel: supplierModel),
-                        Purchase(id: supplierModel.id),
+                        Purchase(supplierModel: supplierModel),
                         ReturnedPurchases(id: supplierModel.id)
                       ],
                     ),
@@ -422,9 +422,10 @@ class SupplierInfoPage extends StatelessWidget {
 }
 
 class Purchase extends StatelessWidget {
-  final id;
 
-  Purchase({Key? key, required this.id}) : super(key: key);
+  final Supplier supplierModel;
+
+  Purchase({Key? key, required this.supplierModel}) : super(key: key);
 
   SupplierController supplierController = Get.find<SupplierController>();
   PurchaseController purchaseController = Get.find<PurchaseController>();
@@ -460,7 +461,7 @@ class Purchase extends StatelessWidget {
                         );
                       })
                   : SingleChildScrollView(
-                      child: invoiceTable(context: context),
+                      child: invoiceTable(context: context,supplierModel: supplierModel),
                     );
     });
   }
@@ -603,7 +604,7 @@ class CreditInfo extends StatelessWidget {
                     return InvoiceCard(invoice: purchaseOrder, tab: "credit");
                   })
               : SingleChildScrollView(
-                  child: invoiceTable(context: context),
+                  child: invoiceTable(context: context,supplierModel: supplierModel),
                 );
     });
   }

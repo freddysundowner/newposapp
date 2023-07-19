@@ -32,7 +32,7 @@ void main() async {
   appController.initialize(appId);
 
   if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
-    setWindowMinSize(const Size(512, 700));
+    setWindowMinSize(const Size(800, 700));
   }
 
   runApp(MyApp());
@@ -80,7 +80,10 @@ class Authenticate extends StatelessWidget {
         } else {
           var shop = ShopService().getShop();
           if (shop.isEmpty) {
-            return CreateShop(page: "home");
+            return CreateShop(
+              page: "home",
+              clearInputs: true,
+            );
           } else {
             return Home();
           }

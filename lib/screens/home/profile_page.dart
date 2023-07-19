@@ -106,6 +106,7 @@ class ProfilePage extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 10),
+            if(isSmallScreen(context))
             Card(
               elevation: 3,
               child: accountCard(

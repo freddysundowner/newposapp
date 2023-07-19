@@ -45,24 +45,6 @@ class WalletPage extends StatelessWidget {
                 ]),
               ),
             )
-        //
-        // ResponsiveWidget(
-        //   largeScreen: Obx(() {
-        //     return Scaffold(
-        //       appBar: _appBar(context, "large"),
-        //       body: SingleChildScrollView(
-        //         physics: const NeverScrollableScrollPhysics(),
-        //         child: Column(
-        //           crossAxisAlignment: CrossAxisAlignment.start,
-        //           children: [
-        //             walletBalanceContainer(context, "large"),
-        //             tabsPage(context)
-        //           ],
-        //         ),
-        //       ),
-        //     );
-        //   }),
-        //   smallScreen:)
         );
   }
 

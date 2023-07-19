@@ -24,8 +24,9 @@ Widget salesTable(context, page) {
         child: Container(
           width: MediaQuery.of(context).size.width,
           child: DataTable(
-            headingTextStyle: const TextStyle(fontSize:16,color: Colors.black,fontWeight: FontWeight.bold),
-            dataTextStyle: const TextStyle(fontSize: 16,color: Colors.black),
+            headingTextStyle: const TextStyle(
+                fontSize: 16, color: Colors.black, fontWeight: FontWeight.bold),
+            dataTextStyle: const TextStyle(fontSize: 16, color: Colors.black),
             decoration: BoxDecoration(
                 border: Border.all(
               width: 1,
@@ -41,6 +42,8 @@ Widget salesTable(context, page) {
                       textAlign: TextAlign.center)),
               const DataColumn(
                   label: Text('Payment Method', textAlign: TextAlign.center)),
+              const DataColumn(
+                  label: Text('Cashier', textAlign: TextAlign.center)),
               const DataColumn(
                   label: Text('Date', textAlign: TextAlign.center)),
               const DataColumn(
@@ -72,9 +75,10 @@ Widget salesTable(context, page) {
               final w = salesModel.createdAt;
 
               return DataRow(cells: [
-                DataCell(Text(y!)),
+                DataCell(Text("#${y!}".toUpperCase())),
                 DataCell(Text(x)),
                 DataCell(Text(z!)),
+                DataCell(Text(h!)),
                 DataCell(Text(DateFormat("yyyy-dd-MMM ").format(w!))),
                 DataCell(InkWell(
                   onTap: () {
@@ -82,7 +86,7 @@ Widget salesTable(context, page) {
                         SalesReceipt(
                       salesModel: salesModel,
                       type: "",
-                          from: page,
+                      from: page,
                     );
                   },
                   child: Text(
