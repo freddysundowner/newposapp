@@ -52,14 +52,14 @@ class ProfilePage extends StatelessWidget {
                         return profileItems(
                             title: "Email",
                             subtitle: authController
-                                .currentUser!.value!.profile.email,
+                                .currentUser!.value?.profile.email,
                             icon: Icons.email);
                       }),
                       const SizedBox(height: 15),
-                      Obx(() {
+                      if(userController.user.value!.username !=null)Obx(() {
                         return profileItems(
                             title: "Username",
-                            subtitle: userController.user.value!.username,
+                            subtitle: userController.user.value!.username ?? "",
                             icon: Icons.person);
                       }),
                     ],

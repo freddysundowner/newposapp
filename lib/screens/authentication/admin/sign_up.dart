@@ -143,21 +143,25 @@ class SignUp extends StatelessWidget {
                 const SizedBox(height: 20.0),
                 Container(
                   decoration: ThemeHelper().inputBoxDecorationShaddow(),
-                  child: TextFormField(
-                    controller: authController.passwordController,
-                    keyboardType: TextInputType.text,
-                    obscureText: true,
-                    decoration: isSmallScreen(context)
-                        ? ThemeHelper().textInputDecoration(
-                        "Password*", "Enter your password")
-                        : ThemeHelper().textInputDecorationDesktop(
-                        "Password*", "Enter your password"),
-                    validator: (val) {
-                      if (val!.isEmpty) {
-                        return "Please enter your password";
-                      }
-                      return null;
-                    },
+                  child: Obx(()=> TextFormField(
+                      controller: authController.passwordController,
+                      keyboardType: TextInputType.text,
+                      obscureText: authController.showPassword.value,
+                      decoration: isSmallScreen(context)
+                          ? ThemeHelper().textInputDecoration(
+                          "Password*", "Enter your password",authController.showPassword.value ?Icons.visibility_off : Icons.visibility , (){
+                        authController.showPassword.value = !authController.showPassword.value;
+                        print(authController.showPassword.value);
+                      })
+                          : ThemeHelper().textInputDecorationDesktop(
+                          "Password*", "Enter your password"),
+                      validator: (val) {
+                        if (val!.isEmpty) {
+                          return "Please enter your password";
+                        }
+                        return null;
+                      },
+                    ),
                   ),
                 ),
                 const SizedBox(height: 20.0),

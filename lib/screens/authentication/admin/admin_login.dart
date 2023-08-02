@@ -119,20 +119,25 @@ class AdminLogin extends StatelessWidget {
                   const SizedBox(height: 20.0),
                   Container(
                     decoration: ThemeHelper().inputBoxDecorationShaddow(),
-                    child: TextFormField(
-                      controller: authController.passwordController,
-                      obscureText: true,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your password';
-                        }
-                        return null;
-                      },
-                      decoration: isSmallScreen(context)
-                          ? ThemeHelper().textInputDecoration(
-                              'Password', 'Enter your password')
-                          : ThemeHelper().textInputDecorationDesktop(
-                              'Password', 'Enter your password'),
+                    child: Obx(()=> TextFormField(
+                        controller: authController.passwordController,
+                        obscureText: authController.showPassword.value,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your password';
+                          }
+                          return null;
+                        },
+                        decoration: isSmallScreen(context)
+                            ? ThemeHelper().textInputDecoration(
+                                'Password', 'Enter your password',authController.showPassword.value ?Icons.visibility_off : Icons.visibility , (){
+                                  authController.showPassword.value = !authController.showPassword.value;
+                                  print(authController.showPassword.value);
+                        })
+                            : ThemeHelper().textInputDecorationDesktop(
+                                'Password', 'Enter your password'),
+
+                      ),
                     ),
                   ),
                   const SizedBox(height: 10.0),

@@ -28,6 +28,7 @@ class AuthController extends GetxController {
   RxString id = RxString("");
   Rxn<Uri> baseUrl = Rxn(null);
   Rxn<App> app = Rxn(null);
+  RxBool showPassword = true.obs;
   ShopController shopController = Get.put(ShopController());
   TextEditingController passwordControllerConfirm = TextEditingController();
   TextEditingController emailController = TextEditingController();
