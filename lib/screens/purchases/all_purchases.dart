@@ -123,8 +123,12 @@ class AllPurchases extends StatelessWidget {
                           child: Container(
                             width: MediaQuery.of(context).size.width,
                             child: DataTable(
-                              headingTextStyle: const TextStyle(fontSize:18,color: Colors.black,fontWeight: FontWeight.bold),
-                              dataTextStyle: const TextStyle(fontSize: 18,color: Colors.black),
+                              headingTextStyle: const TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold),
+                              dataTextStyle: const TextStyle(
+                                  fontSize: 18, color: Colors.black),
                               decoration: BoxDecoration(
                                   border: Border.all(
                                 width: 1,
@@ -171,17 +175,17 @@ class AllPurchases extends StatelessWidget {
                                     style: TextStyle(
                                         color: chechPaymentColor(invoiceData)),
                                   )),
-                                  DataCell(Text(DateFormat("yyyy-dd-MMM hh:mm a")
-                                      .format(w!))),
+                                  DataCell(Text(
+                                      DateFormat("yyyy-dd-MMM hh:mm a")
+                                          .format(w!))),
                                   DataCell(InkWell(
                                     onTap: () {
                                       Get.find<HomeController>()
                                           .selectedWidget
-                                          .value =
-                                          InvoiceScreen(
+                                          .value = InvoiceScreen(
                                         invoice: invoiceData,
                                         type: "",
-                                            from: "AllPurchases",
+                                        from: "AllPurchases",
                                       );
                                     },
                                     child: Text(
@@ -197,67 +201,6 @@ class AllPurchases extends StatelessWidget {
                         ),
                       ),
                     );
-            })
-
-        //   ResponsiveWidget(
-        //   largeScreen: Obx(() {
-        //     return purchaseController.getPurchaseLoad.value
-        //         ? Center(
-        //             child: CircularProgressIndicator(),
-        //           )
-        //         : purchaseController.purchasedItems.isEmpty
-        //             ? noItemsFound(context, true)
-        //             : Padding(
-        //                 padding: const EdgeInsets.symmetric(
-        //                     horizontal: 20.0, vertical: 10),
-        //                 child: SingleChildScrollView(
-        //                   child: Column(
-        //                     crossAxisAlignment: CrossAxisAlignment.start,
-        //                     children: [
-        //                       Container(
-        //                         width: double.infinity,
-        //                         padding: EdgeInsets.symmetric(
-        //                             horizontal: 5, vertical: 10),
-        //                         child:
-
-        // ,
-        // ),
-        //                       SizedBox(
-        //                         height: 10,
-        //                       ),
-        //                       Align(
-        //                         alignment: Alignment.bottomRight,
-        //                         child: Container(
-        //                           width: 250,
-        //                           padding: EdgeInsets.only(right: 10),
-        //                           child: Column(
-        //                             children: [
-        //                               Row(
-        //                                 children: [
-        //                                   Text("Total Purchases:"),
-        //                                   SizedBox(
-        //                                     width: 10,
-        //                                   ),
-        //                                   Text(
-        //                                       "${shopController.currentShop.value?.currency} ${purchaseController.calculatePurchasemount()}"),
-        //                                 ],
-        //                               ),
-        //                               Divider(
-        //                                 thickness: 2,
-        //                                 color: Colors.black,
-        //                               )
-        //                             ],
-        //                           ),
-        //                         ),
-        //                       ),
-        //                       SizedBox(height: 60),
-        //                     ],
-        //                   ),
-        //                 ));
-        //   }),
-        //   smallScreen:
-        //   ,
-        // ),
-        );
+            }));
   }
 }

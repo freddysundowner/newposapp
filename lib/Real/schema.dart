@@ -113,6 +113,7 @@ class _Product {
   _Shop? shop;
   int? discount;
   _UserModel? attendant;
+  _Invoice? invoiceId;
   int? buyingPrice;
   int? minPrice;
   int? badstock;

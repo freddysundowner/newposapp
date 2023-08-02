@@ -19,6 +19,7 @@ import 'package:realm/realm.dart';
 import '../controllers/realm_controller.dart';
 import '../screens/home/home.dart';
 import '../screens/shop/create_shop.dart';
+import '../services/shop_services.dart';
 import '../widgets/alert.dart';
 import '../widgets/snackBars.dart';
 import 'home_controller.dart';
@@ -63,7 +64,15 @@ class AuthController extends GetxController {
         await Get.find<UserController>().getUser(type: "login");
 
         Get.find<PlanController>().getPlans();
-        Get.offAll(() => Home());
+        var shop = ShopService().getShop();
+        if (shop.isEmpty) {
+          Get.offAll(() => CreateShop(
+                page: "home",
+                clearInputs: true,
+              ));
+        } else {
+          Get.offAll(() => Home());
+        }
       } catch (e) {
         print(e);
         showSnackBar(message: "wrong username or password", color: Colors.red);

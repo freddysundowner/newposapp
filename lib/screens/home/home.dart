@@ -132,7 +132,7 @@ class _HomeState extends State<Home> {
                                   ? Colors.white
                                   : Colors.black),
                         ),
-                        Text("Attendants")
+                        const Text("Attendants")
                       ],
                     ),
                   ),
@@ -171,7 +171,7 @@ class _HomeState extends State<Home> {
         children: [
           majorTitle(
               title:
-                  "Store ${userController.user.value!.usertype == "attendant" ? "Attendant" : "Admin"}",
+                  "Store ${userController.user.value?.usertype == "attendant" ? "Attendant" : "Admin"}",
               color: Colors.black,
               size: 16.0),
           Spacer(),

@@ -157,7 +157,7 @@ class ShopController extends GetxController {
 
   checkIfTrial() {
     if (allowSubscription == false) return allowSubscription;
-    int days = currentShop.value!.package == null
+    int days = currentShop.value?.package == null
         ? 14
         : currentShop.value!.package!.time!;
     return days == 14;

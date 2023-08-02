@@ -669,6 +669,7 @@ class Product extends _Product with RealmEntity, RealmObjectBase, RealmObject {
     Shop? shop,
     int? discount,
     UserModel? attendant,
+    Invoice? invoiceId,
     int? buyingPrice,
     int? minPrice,
     int? badstock,
@@ -694,6 +695,7 @@ class Product extends _Product with RealmEntity, RealmObjectBase, RealmObject {
     RealmObjectBase.set(this, 'shop', shop);
     RealmObjectBase.set(this, 'discount', discount);
     RealmObjectBase.set(this, 'attendant', attendant);
+    RealmObjectBase.set(this, 'invoiceId', invoiceId);
     RealmObjectBase.set(this, 'buyingPrice', buyingPrice);
     RealmObjectBase.set(this, 'minPrice', minPrice);
     RealmObjectBase.set(this, 'badstock', badstock);
@@ -766,6 +768,13 @@ class Product extends _Product with RealmEntity, RealmObjectBase, RealmObject {
   @override
   set attendant(covariant UserModel? value) =>
       RealmObjectBase.set(this, 'attendant', value);
+
+  @override
+  Invoice? get invoiceId =>
+      RealmObjectBase.get<Invoice>(this, 'invoiceId') as Invoice?;
+  @override
+  set invoiceId(covariant Invoice? value) =>
+      RealmObjectBase.set(this, 'invoiceId', value);
 
   @override
   int? get buyingPrice => RealmObjectBase.get<int>(this, 'buyingPrice') as int?;
@@ -880,6 +889,8 @@ class Product extends _Product with RealmEntity, RealmObjectBase, RealmObject {
       SchemaProperty('discount', RealmPropertyType.int, optional: true),
       SchemaProperty('attendant', RealmPropertyType.object,
           optional: true, linkTarget: 'UserModel'),
+      SchemaProperty('invoiceId', RealmPropertyType.object,
+          optional: true, linkTarget: 'Invoice'),
       SchemaProperty('buyingPrice', RealmPropertyType.int, optional: true),
       SchemaProperty('minPrice', RealmPropertyType.int, optional: true),
       SchemaProperty('badstock', RealmPropertyType.int, optional: true),

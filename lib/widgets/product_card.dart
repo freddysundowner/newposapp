@@ -118,6 +118,8 @@ showProductModal(context, Product product) {
                             product: product,
                             fromDate: firstday,
                             toDate: lastday);
+                        productController.getProductPurchaseHistory(product,
+                            fromDate: firstday, toDate: lastday);
                       }, year: salesController.currentYear.value);
 
                       Get.to(() => ProductHistory(product: product));

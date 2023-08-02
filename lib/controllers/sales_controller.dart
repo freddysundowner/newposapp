@@ -540,7 +540,8 @@ class SalesController extends GetxController
       var amountPaid = 0;
       if (receiptData.creditTotal!.abs() > walletbalanace) {
         amountPaid = receiptData.creditTotal!;
-        receiptData.creditTotal = (walletbalanace + receiptData.creditTotal!);
+        receiptData.creditTotal =
+            (walletbalanace - receiptData.creditTotal!.abs()).abs();
       } else {
         receiptData.creditTotal = 0;
         amountPaid = receiptData.grandTotal!;
@@ -729,6 +730,8 @@ class SalesController extends GetxController
       fromDate = filterStartDate.value;
       toDate = filterEndDate.value;
     }
+    print(fromDate);
+    print(toDate);
     RealmResults<SalesModel> sales = Sales().getSales(
         fromDate: fromDate,
         receipt: receipt,
@@ -759,6 +762,8 @@ class SalesController extends GetxController
               0)
           .toList());
     }
+
+    print("all sales $allSales");
   }
 
   getProfitTransaction({

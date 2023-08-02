@@ -47,7 +47,7 @@ getYearlyRecords(Product product,
 void getMonthlyProductSales(Product product, int i,
     {required Function function, required int year}) {
   DateTime now = DateTime(year, i + 1);
-  var lastday = DateTime(now.year, now.month + 1, 0);
+  var lastday = DateTime(now.year, now.month + 1, 0).add(Duration(hours: 24));
   final noww = DateTime(year, i + 1);
   var firstday = DateTime(noww.year, noww.month, 1);
 

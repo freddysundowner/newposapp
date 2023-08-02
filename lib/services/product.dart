@@ -30,6 +30,7 @@ class Products {
       {required Product product,
       int? quantity,
       int? buyingPrice,
+      Invoice? invoice,
       int? sellingPrice,
       bool deleted = false,
       bool counted = false,
@@ -42,6 +43,9 @@ class Products {
       }
       if (sellingPrice != null) {
         product.selling = sellingPrice;
+      }
+      if (invoice != null) {
+        product.invoiceId = invoice;
       }
       if (quantity != null) {
         product.quantity = quantity;
@@ -90,7 +94,7 @@ class Products {
         'shop == \$0$filter', [Get.find<ShopController>().currentShop.value]);
 
     if (type == "search") {
-      var newproducts = products.query("name BEGINSWITH \$0", [text!]);
+      var newproducts = products.query("name contains \$0", [text!]);
       return _attendantFilter(newproducts);
     }
 

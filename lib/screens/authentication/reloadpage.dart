@@ -46,11 +46,15 @@ class _ReloadPageState extends State<ReloadPage> {
 
           isSmallScreen(context)
               ? Get.to(() => Scaffold(
-            body: SafeArea(
-              child: HomePage(),
-            ),
-          ))
-              : Get.find<HomeController>().selectedWidget.value = Home();
+                    body: SafeArea(
+                      child: HomePage(),
+                    ),
+                  ))
+              : Get.to(() => Scaffold(
+                    body: SafeArea(
+                      child: Home(),
+                    ),
+                  ));
         }
       });
     }
@@ -64,18 +68,33 @@ class _ReloadPageState extends State<ReloadPage> {
           userController.getUser();
           isSmallScreen(context)
               ? Get.to(() => Scaffold(
-            body: SafeArea(
-              child: HomePage(),
-            ),
-          ))
-              : Get.find<HomeController>().selectedWidget.value = Home();
+                    body: SafeArea(
+                      child: HomePage(),
+                    ),
+                  ))
+              : Get.to(() => Scaffold(
+                    body: SafeArea(
+                      child: Home(),
+                    ),
+                  ));
         },
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Icon(Icons.refresh, size: 120, color: AppColors.mainColor),
+              InkWell(
+                child:
+                    Icon(Icons.refresh, size: 120, color: AppColors.mainColor),
+                onTap: () {
+                  Get.to(() => Scaffold(
+                        body: SafeArea(
+                          child: Home(),
+                        ),
+                      ));
+                  Get.find<HomeController>().selectedWidget.value = Home();
+                },
+              ),
               Text(
                 "Initializing please wait... $countDown",
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),

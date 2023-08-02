@@ -11,6 +11,7 @@ import 'package:pointify/main.dart';
 import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/stock/stock_page.dart';
 import 'package:pointify/services/category.dart';
+import 'package:pointify/services/purchases.dart';
 import 'package:pointify/utils/colors.dart';
 import 'package:pointify/widgets/snackBars.dart';
 import 'package:get/get.dart';
@@ -24,7 +25,6 @@ import '../widgets/alert.dart';
 import '../widgets/loading_dialog.dart';
 
 class ProductController extends GetxController {
-  GlobalKey<State> _keyLoader = new GlobalKey<State>();
   RxList<Product> products = RxList([]);
   RxList<ProductCountModel> productsCount = RxList([]);
   RxList selectedSupplier = RxList([]);
@@ -134,12 +134,14 @@ class ProductController extends GetxController {
         final DateTime now = DateTime.now();
         final DateFormat formatter = DateFormat('yyyy-MM-dd');
         final String formatted = formatter.format(now);
+        print("aaa ${Get.find<UserController>().user.value?.id}");
         Product product = Product(
             productData != null ? productData.id : ObjectId(),
             name: name,
-            quantity: int.parse(qty),
+            quantity: 0,
             buyingPrice: int.parse(buying),
             selling: int.parse(selling),
+            invoiceId: null,
             minPrice:
                 minSelling == "" ? int.parse(selling) : int.parse(minSelling),
             shop: Get.find<ShopController>().currentShop.value,
@@ -163,11 +165,15 @@ class ProductController extends GetxController {
         Get.find<PurchaseController>().addNewPurchase(InvoiceItem(ObjectId(),
             product: product,
             price: product.buyingPrice,
-            total: product.buyingPrice! * product.quantity!,
+            total: product.buyingPrice! * int.parse(qty),
             attendantid: userController.user.value,
             createdAt: DateTime.now(),
-            itemCount: product.quantity));
+            itemCount: int.parse(qty)));
+        Invoice? invoice = Get.find<PurchaseController>().invoice.value;
+        Get.find<PurchaseController>().invoice.value?.balance = 0;
         Get.find<PurchaseController>().createPurchase();
+        await Products().updateProductPart(product: product, invoice: invoice);
+
         //end add product as a purcharse
 
         if (isSmallScreen(Get.context)) {
@@ -202,7 +208,7 @@ class ProductController extends GetxController {
   }
 
   getProductsBySort({required String type, String text = ""}) {
-    products.clear();
+    // products.clear();
     RealmResults<Product> allproducts =
         Products().getProductsBySort(type: type, text: text);
     stockValue.value = allproducts.fold(
@@ -269,8 +275,12 @@ class ProductController extends GetxController {
     }
   }
 
-  deleteProduct({required product}) async {
+  deleteProduct({required Product product}) async {
     await Products().updateProductPart(product: product, deleted: true);
+    if (product.invoiceId != null) {
+      Purchases().deleteInvoiceItems(product.invoiceId!.items);
+      Purchases().deleteInvoices([product.invoiceId!]);
+    }
     getProductsBySort(type: "all");
   }
 

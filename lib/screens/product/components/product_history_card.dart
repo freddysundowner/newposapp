@@ -81,7 +81,7 @@ Widget productPurchaseHistoryContainer(InvoiceItem invoiceItem) {
                           fontSize: 16),
                     ),
                     Text(
-                        'Qty ${invoiceItem.itemCount} @ ${htmlPrice(invoiceItem.product?.buyingPrice)}'),
+                        'Qty ${invoiceItem.itemCount} @ ${htmlPrice(invoiceItem.price)}'),
                     SizedBox(
                       height: 5,
                     ),

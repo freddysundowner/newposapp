@@ -56,8 +56,7 @@ class ProfileUpdate extends StatelessWidget {
           borderRadius: BorderRadius.circular(1.0),
           color: Colors.white,
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: ListView(
           children: [
             const SizedBox(height: 10),
             profileInputWidget(

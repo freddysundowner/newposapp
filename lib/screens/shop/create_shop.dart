@@ -63,9 +63,9 @@ class CreateShop extends StatelessWidget {
       ),
       body: SingleChildScrollView(
         child: Container(
-          decoration: BoxDecoration(boxShadow: []),
-          padding: EdgeInsets.all(page == "home" ? 30 : 10),
-          margin: EdgeInsets.symmetric(horizontal: page == "home" ? 50 : 0),
+          decoration: const BoxDecoration(boxShadow: []),
+          padding: EdgeInsets.all(page == "home" ? 20 : 10),
+          // margin: EdgeInsets.symmetric(horizontal: page == "home" ? 50 : 0),
           height: MediaQuery.of(context).size.height,
           child: shopDetails(context),
         ),

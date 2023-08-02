@@ -76,7 +76,6 @@ class HomePage extends StatelessWidget {
         fromDate: fromDate, toDate: toDate, type: "today");
     return RefreshIndicator(
       onRefresh: () async {
-        print(userController.user.value!.permisions);
         await shopController.getShops();
         salesController.getSalesByDate(type: "today");
       },
@@ -217,48 +216,52 @@ class HomePage extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 20),
-              SizedBox(
-                height: 100,
-                width: double.infinity,
-                child: Column(
-                  children: [
-                    Obx(
-                      () {
-                        return Expanded(
-                          child: isSmallScreen(context)
-                              ? PageView.builder(
-                                  scrollDirection: Axis.horizontal,
-                                  controller: PageController(
-                                      viewportFraction: 0.8,
-                                      initialPage: 1,
-                                      keepPage: false),
-                                  onPageChanged: (value) {},
-                                  itemCount: salesController.homecards.length,
-                                  itemBuilder: (context, index) {
-                                    return showTodaySales(
-                                        context,
-                                        index,
-                                        salesController.homecards
-                                            .elementAt(index));
-                                  })
-                              : ListView.builder(
-                                  scrollDirection: Axis.horizontal,
-                                  itemCount: salesController.homecards.length,
-                                  itemBuilder: (context, index) {
-                                    return showTodaySales(
-                                        context,
-                                        index,
-                                        salesController.homecards
-                                            .elementAt(index));
-                                  }),
+              Obx(
+                () {
+                  return salesController.homecards.isEmpty
+                      ? Container()
+                      : SizedBox(
+                          height: 100,
+                          width: double.infinity,
+                          child: Column(
+                            children: [
+                              Expanded(
+                                child: isSmallScreen(context)
+                                    ? PageView.builder(
+                                        scrollDirection: Axis.horizontal,
+                                        controller: PageController(
+                                            viewportFraction: 0.8,
+                                            initialPage: 1,
+                                            keepPage: false),
+                                        onPageChanged: (value) {},
+                                        itemCount:
+                                            salesController.homecards.length,
+                                        itemBuilder: (context, index) {
+                                          return showTodaySales(
+                                              context,
+                                              index,
+                                              salesController.homecards
+                                                  .elementAt(index));
+                                        })
+                                    : ListView.builder(
+                                        scrollDirection: Axis.horizontal,
+                                        itemCount:
+                                            salesController.homecards.length,
+                                        itemBuilder: (context, index) {
+                                          return showTodaySales(
+                                              context,
+                                              index,
+                                              salesController.homecards
+                                                  .elementAt(index));
+                                        }),
+                              )
+                            ],
+                          ),
                         );
-                      },
-                    ),
-                  ],
-                ),
+                },
               ),
-
               const SizedBox(height: 20),
+
               majorTitle(
                   title: "Enterprise Operations",
                   color: Colors.black,
@@ -370,6 +373,15 @@ class HomePage extends StatelessWidget {
                           onTap: shopController.checkSubscription() == false
                               ? null
                               : () {
+                                  salesController.getFinanceSummary(
+                                    fromDate: DateTime.parse(
+                                        DateFormat("yyy-MM-dd")
+                                            .format(DateTime.now())),
+                                    toDate: DateTime.parse(
+                                        DateFormat("yyy-MM-dd").format(
+                                            DateTime.now()
+                                                .add(const Duration(days: 1)))),
+                                  );
                                   isSmallScreen(context)
                                       ? Get.to(() => SalesPage())
                                       : Get.find<HomeController>()

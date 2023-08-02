@@ -73,6 +73,12 @@ class Purchases {
     });
   }
 
+  deleteInvoiceItemByProductId(List<InvoiceItem> sales) {
+    realmService.realm.write(() {
+      // realmService.realm.de
+    });
+  }
+
   _attendantFilter(RealmResults<Invoice> data) {
     if (userController.switcheduser.value != null) {
       return data

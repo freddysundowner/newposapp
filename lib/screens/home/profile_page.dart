@@ -106,18 +106,18 @@ class ProfilePage extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 10),
-            if(isSmallScreen(context))
-            Card(
-              elevation: 3,
-              child: accountCard(
-                title: "Logout",
-                icon: Icons.logout,
-                showDivider: false,
-                onPressed: () {
-                  logoutAccountDialog(context);
-                },
+            if (isSmallScreen(context))
+              Card(
+                elevation: 3,
+                child: accountCard(
+                  title: "Logout",
+                  icon: Icons.logout,
+                  showDivider: false,
+                  onPressed: () {
+                    logoutAccountDialog(context);
+                  },
+                ),
               ),
-            ),
           ],
         ),
       )),
@@ -219,7 +219,7 @@ class ProfilePage extends StatelessWidget {
         builder: (_) {
           return AlertDialog(
             title: const Center(child: Text("Edit Password")),
-            content: Container(
+            content: SizedBox(
               height: MediaQuery.of(Get.context!).size.height * 0.3,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -311,6 +311,18 @@ class ProfilePage extends StatelessWidget {
                                   message: "Password mismatched",
                                   title: "Error");
                             } else {
+                              if (authController
+                                      .textEditingControllerNewPassword.text
+                                      .toString()
+                                      .trim()
+                                      .length <
+                                  6) {
+                                generalAlert(
+                                    title: "Error",
+                                    message:
+                                        "Password must be more than 6 charactes");
+                                return;
+                              }
                               Get.back();
                               authController.resetPasswordEmail(
                                   profile.email!,

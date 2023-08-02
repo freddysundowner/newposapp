@@ -206,26 +206,27 @@ class AttendantDetails extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        SizedBox(height: 10),
         attendantUserInputs(
             name: "Username", controller: attendantController.nameController),
         SizedBox(height: 15),
-        // majorTitle(title: "Email", color: Colors.black, size: 14.0),
-        // SizedBox(height: 10),
-        // TextFormField(
-        //   controller: attendantController.emailController,
-        //   enabled: true,
-        //   keyboardType: TextInputType.emailAddress,
-        //   decoration: InputDecoration(
-        //     isDense: true,
-        //     contentPadding: EdgeInsets.all(15),
-        //     border: OutlineInputBorder(
-        //         borderRadius: BorderRadius.circular(10),
-        //         borderSide: BorderSide(color: Colors.grey, width: 1)),
-        //     focusedBorder: OutlineInputBorder(
-        //         borderRadius: BorderRadius.circular(10),
-        //         borderSide: BorderSide(color: Colors.grey, width: 1)),
-        //   ),
-        // ),
+        majorTitle(title: "Password", color: Colors.black, size: 14.0),
+        SizedBox(height: 10),
+        TextFormField(
+          controller: attendantController.passwordController,
+          enabled: true,
+          keyboardType: TextInputType.visiblePassword,
+          decoration: InputDecoration(
+            isDense: true,
+            contentPadding: EdgeInsets.all(15),
+            border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(color: Colors.grey, width: 1)),
+            focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(color: Colors.grey, width: 1)),
+          ),
+        ),
         SizedBox(height: 15),
         attendantUserInputs(
             name: "User ID",

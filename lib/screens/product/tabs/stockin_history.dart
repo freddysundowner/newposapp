@@ -119,6 +119,7 @@ class ProductStockInHistory extends StatelessWidget {
                 (Product product, DateTime firstday, DateTime lastday) {
               productController.filterStartDate.value = firstday;
               productController.filterEndDate.value = lastday;
+
               productController.getProductPurchaseHistory(product,
                   fromDate: firstday, toDate: lastday);
             }, year: productController.currentYear.value);
@@ -154,8 +155,7 @@ class ProductStockInHistory extends StatelessWidget {
         .fold(
             0,
             (previousValue, element) =>
-                previousValue +
-                (element.itemCount! * element.product!.buyingPrice!));
+                previousValue + (element.itemCount! * element.price!));
   }
 
   _getDate(String format, int date) {
@@ -188,7 +188,7 @@ class ProductStockHistory extends StatelessWidget {
             isSmallScreen(context)
                 ? Get.back()
                 : Get.find<HomeController>().selectedWidget.value =
-                ProductHistory(
+                    ProductHistory(
                     product: product,
                   );
           },
@@ -300,75 +300,80 @@ class ProductStockHistory extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Text(
-                "TOTAL ${htmlPrice(productController.productInvoices.fold(0, (previousValue, element) => previousValue + element.total!))} /=",
+                "TOTAL ${htmlPrice(productController.productInvoices.fold(0, (previousValue, element) => previousValue + (element.price! * element.itemCount!)))} /=",
                 style:
                     const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ),
             const Divider(),
-            isSmallScreen(context)?
-            Expanded(
-              child: ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: productController.productInvoices.length,
-                  itemBuilder: (context, index) {
-                    InvoiceItem productBody = productController.productInvoices.elementAt(index);
-                    return productPurchaseHistoryContainer(productBody);
-                  }),
-            ):
-            Container(
-                width: double.infinity,
-                margin: const EdgeInsets.symmetric(horizontal: 5)
-                    .copyWith(bottom: 10),
-                padding:
-                const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
-                child: Theme(
-                  data:
-                  Theme.of(context).copyWith(dividerColor: Colors.grey),
-                  child: DataTable(
-                    decoration: BoxDecoration(
-                        border: Border.all(
+            isSmallScreen(context)
+                ? Expanded(
+                    child: ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: productController.productInvoices.length,
+                        itemBuilder: (context, index) {
+                          InvoiceItem productBody = productController
+                              .productInvoices
+                              .elementAt(index);
+                          return productPurchaseHistoryContainer(productBody);
+                        }),
+                  )
+                : Container(
+                    width: double.infinity,
+                    margin: const EdgeInsets.symmetric(horizontal: 5)
+                        .copyWith(bottom: 10),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+                    child: Theme(
+                      data:
+                          Theme.of(context).copyWith(dividerColor: Colors.grey),
+                      child: DataTable(
+                        decoration: BoxDecoration(
+                            border: Border.all(
                           width: 1,
                           color: Colors.black,
                         )),
-                    columnSpacing: 30.0,
-                    columns: const [
-                      DataColumn(
-                          label:
-                          Text('Product', textAlign: TextAlign.center)),
-                      DataColumn(
-                          label: Text('Quantity',
-                              textAlign: TextAlign.center)),
-                      DataColumn(
-                          label: Text('Total',
-                              textAlign: TextAlign.center)),
-                      DataColumn(
-                          label: Text('Attendant',
-                              textAlign: TextAlign.center)),
-                      DataColumn(
-                          label: Text('Date', textAlign: TextAlign.center)),
-                    ],
-                    rows: List.generate(
-                        productController.productInvoices.length, (index) {
-                      InvoiceItem invoiceItem = productController.productInvoices.elementAt(index);
+                        columnSpacing: 30.0,
+                        columns: const [
+                          DataColumn(
+                              label:
+                                  Text('Product', textAlign: TextAlign.center)),
+                          DataColumn(
+                              label: Text('Quantity',
+                                  textAlign: TextAlign.center)),
+                          DataColumn(
+                              label:
+                                  Text('Total', textAlign: TextAlign.center)),
+                          DataColumn(
+                              label: Text('Attendant',
+                                  textAlign: TextAlign.center)),
+                          DataColumn(
+                              label: Text('Date', textAlign: TextAlign.center)),
+                        ],
+                        rows: List.generate(
+                            productController.productInvoices.length, (index) {
+                          InvoiceItem invoiceItem = productController
+                              .productInvoices
+                              .elementAt(index);
 
-                      final p = invoiceItem.product?.name;
-                      final y = invoiceItem.itemCount;
-                      final h = invoiceItem.product!.selling! *invoiceItem.itemCount!;
-                      final z = invoiceItem.attendantid?.username;
-                      final w = invoiceItem.createdAt;
+                          final p = invoiceItem.product?.name;
+                          final y = invoiceItem.itemCount;
+                          final h = invoiceItem.product!.selling! *
+                              invoiceItem.itemCount!;
+                          final z = invoiceItem.attendantid?.username;
+                          final w = invoiceItem.createdAt;
 
-                      return DataRow(cells: [
-                        DataCell(Text(p.toString())),
-                        DataCell(Text(y.toString())),
-                        DataCell(Text(h.toString())),
-                        DataCell(Text(z.toString())),
-                        DataCell(
-                            Text(DateFormat("yyyy-dd-MMM ").format(w!))),
-                      ]);
-                    }),
-                  ),
-                )),
+                          return DataRow(cells: [
+                            DataCell(Text(p.toString())),
+                            DataCell(Text(y.toString())),
+                            DataCell(Text(h.toString())),
+                            DataCell(Text(z.toString())),
+                            DataCell(
+                                Text(DateFormat("yyyy-dd-MMM ").format(w!))),
+                          ]);
+                        }),
+                      ),
+                    )),
           ],
         ),
       ),
