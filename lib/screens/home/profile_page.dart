@@ -232,19 +232,23 @@ class ProfilePage extends StatelessWidget {
                           color: Colors.black,
                           size: 16.0),
                       const SizedBox(height: 5),
-                      TextFormField(
-                        controller:
-                            authController.textEditingControllerNewPassword,
-                        obscureText: true,
-                        decoration: InputDecoration(
-                          contentPadding: const EdgeInsets.all(10),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(5),
-                            borderSide: const BorderSide(color: Colors.grey),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(5),
-                            borderSide: const BorderSide(color: Colors.grey),
+                      Obx(()=> TextFormField(
+                          controller:
+                              authController.textEditingControllerNewPassword,
+                          obscureText: authController.showPassword.value,
+                          decoration: InputDecoration(
+                            suffix: InkWell(child: Icon(authController.showPassword.value ?Icons.visibility_off : Icons.visibility), onTap: (){
+                              authController.showPassword.value = !authController.showPassword.value;
+                            },),
+                            contentPadding: const EdgeInsets.all(10),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(5),
+                              borderSide: const BorderSide(color: Colors.grey),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(5),
+                              borderSide: const BorderSide(color: Colors.grey),
+                            ),
                           ),
                         ),
                       )
@@ -259,19 +263,23 @@ class ProfilePage extends StatelessWidget {
                           color: Colors.black,
                           size: 16.0),
                       const SizedBox(height: 5),
-                      TextFormField(
-                        controller:
-                            authController.textEditingControllerConfirmPassword,
-                        obscureText: true,
-                        decoration: InputDecoration(
-                          contentPadding: const EdgeInsets.all(10),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(5),
-                            borderSide: const BorderSide(color: Colors.grey),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(5),
-                            borderSide: const BorderSide(color: Colors.grey),
+                      Obx(()=> TextFormField(
+                          controller:
+                              authController.textEditingControllerConfirmPassword,
+                          obscureText: authController.showPassword.value,
+                          decoration: InputDecoration(
+                            suffix: InkWell(child: Icon(authController.showPassword.value ?Icons.visibility_off : Icons.visibility), onTap: (){
+                              authController.showPassword.value = !authController.showPassword.value;
+                            },),
+                            contentPadding: const EdgeInsets.all(10),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(5),
+                              borderSide: const BorderSide(color: Colors.grey),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(5),
+                              borderSide: const BorderSide(color: Colors.grey),
+                            ),
                           ),
                         ),
                       )
@@ -322,7 +330,7 @@ class ProfilePage extends StatelessWidget {
                                     message:
                                         "Password must be more than 6 charactes");
                                 return;
-                              }
+                              }authController.showPassword.value = true;
                               Get.back();
                               authController.resetPasswordEmail(
                                   profile.email!,

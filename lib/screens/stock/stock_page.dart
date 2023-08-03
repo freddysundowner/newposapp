@@ -334,9 +334,10 @@ class StockPage extends StatelessWidget {
   }
 
   Widget iconWidget({required color, required icon}) {
+    double size = isSmallScreen(Get.context) ? 40 : 80;
     return Container(
-      height: 40,
-      width: 40,
+      height: size,
+      width: size,
       decoration:
           BoxDecoration(color: color, borderRadius: BorderRadius.circular(20)),
       child: Center(child: Icon(icon)),

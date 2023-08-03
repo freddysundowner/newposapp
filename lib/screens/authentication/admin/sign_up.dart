@@ -154,7 +154,10 @@ class SignUp extends StatelessWidget {
                         print(authController.showPassword.value);
                       })
                           : ThemeHelper().textInputDecorationDesktop(
-                          "Password*", "Enter your password"),
+                          "Password*", "Enter your password",authController.showPassword.value ?Icons.visibility_off : Icons.visibility , (){
+                        authController.showPassword.value = !authController.showPassword.value;
+                        print(authController.showPassword.value);
+                      }),
                       validator: (val) {
                         if (val!.isEmpty) {
                           return "Please enter your password";

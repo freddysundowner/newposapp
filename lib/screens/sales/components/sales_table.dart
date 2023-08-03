@@ -35,13 +35,13 @@ Widget salesTable(context, page) {
             columnSpacing: 30.0,
             columns: [
               const DataColumn(
-                  label: Text('Receipt Number', textAlign: TextAlign.center)),
+                  label: Text('Receipt Number', textAlign: TextAlign.center, overflow: TextOverflow.ellipsis)),
               DataColumn(
                   label: Text(
                       'Amount(${shopController.currentShop.value?.currency})',
                       textAlign: TextAlign.center)),
               const DataColumn(
-                  label: Text('Payment Method', textAlign: TextAlign.center)),
+                  label: Text('Payment Method', textAlign: TextAlign.center, overflow: TextOverflow.ellipsis,)),
               const DataColumn(
                   label: Text('Cashier', textAlign: TextAlign.center)),
               const DataColumn(
@@ -59,7 +59,7 @@ Widget salesTable(context, page) {
                             : salesController.allSales.length, (index) {
               SalesModel salesModel = salesController.allSales.elementAt(index);
               final y = salesModel.receiptNumber;
-              final h = salesModel.attendantId?.username?.capitalize;
+              final h = salesModel.attendantId?.username == null ? " " : salesModel.attendantId?.username?.capitalize;
               final x = htmlPrice(salesModel.items.fold(
                           0,
                           (previousValue, element) =>

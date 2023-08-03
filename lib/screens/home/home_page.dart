@@ -557,10 +557,10 @@ class HomePage extends StatelessWidget {
             children: [
               Icon(
                 iconData,
-                size: 40,
+                size: 55,
                 color: AppColors.mainColor,
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 5),
               Center(
                 child: Text(
                   title,
