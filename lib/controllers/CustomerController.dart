@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pointify/controllers/shop_controller.dart';
+import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/services/customer.dart';
 import 'package:get/get.dart';
 import 'package:pointify/services/sales.dart';
@@ -40,7 +41,7 @@ class CustomerController extends GetxController
   RxString activeItem = RxString("All");
   RxString customerActiveItem = RxString("Credit");
 
-  createCustomer({required page}) async {
+  createCustomer({required page, Function? function}) async {
     try {
       creatingCustomerLoad.value = true;
       LoadingDialog.showLoadingDialog(
@@ -55,12 +56,15 @@ class CustomerController extends GetxController
       Customer().createCustomer(customerModel);
       Navigator.of(Get.context!, rootNavigator: true).pop();
       clearTexts();
-      if (MediaQuery.of(Get.context!).size.width > 600) {
+      if (!isSmallScreen(Get.context)) {
+        print("page is hello the page is${page}");
         if (page == "customersPage") {
           Get.find<HomeController>().selectedWidget.value = CustomersPage();
+
         }
         if (page == "createSale") {
-          Get.find<HomeController>().selectedWidget.value = CreateSale();
+          function!();
+          // Get.find<HomeController>().selectedWidget.value = CreateSale();
         }
         if (page == "createProduct") {
           Get.find<HomeController>().selectedWidget.value = CreateProduct(
@@ -85,8 +89,9 @@ class CustomerController extends GetxController
   getCustomersInShop(type) {
     try {
       customers.clear();
-      RealmResults<CustomerModel> customerresponse =
-          Customer().getCustomersByShopId(type);
+      RealmResults<CustomerModel> customerresponse = Customer()
+          .getCustomersByShopId(
+              type, Get.find<ShopController>().currentShop.value!);
       customers.assignAll(customerresponse.map((e) => e).toList());
     } catch (e) {}
   }
@@ -151,9 +156,9 @@ class CustomerController extends GetxController
           address: addressController.text);
       Customer().updateCustomer(customer);
 
-      Navigator.of(context, rootNavigator: true).pop();
+      // Navigator.of(context, rootNavigator: true).pop();
     } catch (e) {
-      Navigator.of(context, rootNavigator: true).pop();
+      // Navigator.of(context, rootNavigator: true).pop();
     }
   }
 
@@ -171,7 +176,9 @@ class CustomerController extends GetxController
           key: _keyLoader);
       Customer().deleteCustomer(customerModel: customerModel);
       Get.back();
-      Get.back();
+      isSmallScreen(Get.context)
+          ? Get.back()
+          : Get.find<HomeController>().selectedWidget.value = CustomersPage();
     } catch (e) {
       Navigator.of(Get.context!, rootNavigator: true).pop();
     }

@@ -27,6 +27,8 @@ import 'realm_controller.dart';
 class PurchaseController extends GetxController {
   Rxn<Invoice> invoice = Rxn(null);
   RxList<Invoice> purchasedItems = RxList([]);
+  RxInt balance = RxInt(0);
+  RxString balanceText = RxString("Credit Balance");
   RxInt purchasedTotal = RxInt(0);
   RxList<Invoice> creditPurchases = RxList([]);
   Rxn<Invoice> currentInvoice = Rxn(null);
@@ -40,74 +42,53 @@ class PurchaseController extends GetxController {
   ProductController productController = Get.find<ProductController>();
   ShopController shopController = Get.find<ShopController>();
 
-  get balance =>
-      invoice.value!.balance! -
-      int.parse(textEditingControllerAmount.text.isEmpty
-          ? "0"
-          : textEditingControllerAmount.text);
+  createPurchase() async {
+    Invoice? invoiceData = invoice.value;
+    invoiceData?.shop = shopController.currentShop.value;
+    invoiceData?.attendantId = Get.find<UserController>().user.value;
+    invoiceData?.receiptNumber = getRandomString(10);
+    invoiceData?.onCredit = (invoiceData.balance ?? 0) > 0;
+    invoiceData?.createdAt = DateTime.now();
+    invoiceData?.dated = DateTime.now().millisecondsSinceEpoch;
+    invoiceData?.productCount = invoiceData.items.length;
+    invoiceData?.balance = (invoiceData.balance ?? 0) * -1;
 
-  createPurchase({required context, required screen}) async {
-    if (invoice.value!.balance! > 0 && invoice.value!.supplier == null) {
-      generalAlert(title: "Error", message: "please select supplier");
-    } else {
-      Invoice invoiceData = invoice.value!;
-      invoiceData.shop = shopController.currentShop.value;
-      invoiceData.attendantId = Get.find<UserController>().user.value;
-      invoiceData.receiptNumber = getRandomString(10);
-      invoiceData.onCredit = invoiceData.balance! > 0;
-      invoiceData.createdAt = DateTime.now();
-      invoiceData.dated = DateTime.now().millisecondsSinceEpoch;
-      invoiceData.productCount = invoiceData.items.length;
-      invoiceData.balance = invoiceData.balance! * -1;
-
-      if (_onCredit(invoiceData)) {
-        var balance = (invoiceData.supplier!.balance ?? 0);
-        // if (invoiceData.balance == 0) {
-        //   invoiceData.balance = invoiceData.total! * -1;
-        // } else {
-        //   invoiceData.balance = invoiceData.balance! * -1;
-        // }
-        if (invoiceData.balance! > balance) {
-          balance = (balance.abs() + invoiceData.balance!.abs()) * -1;
+    if (_onCredit(invoiceData!)) {
+      var balance = (invoiceData.supplier?.balance ?? 0);
+      if (invoiceData.balance! > balance) {
+        balance = (balance.abs() + invoiceData.balance!.abs()) * -1;
+      } else {
+        if (balance < 0) {
+          balance = (balance.abs() - invoiceData.balance!.abs()) * -1;
         } else {
-          if (balance < 0) {
-            balance = (balance.abs() - invoiceData.balance!.abs()) * -1;
-          } else {
-            balance = balance - invoiceData.balance!.abs();
-          }
-          // if (balance < 0) {
-          //   invoiceData.balance = balance;
-          // } else {
-          //   invoiceData.balance = 0;
-          // }
+          balance = balance - invoiceData.balance!.abs();
         }
-        SupplierService().updateSupplierWalletbalance(invoiceData.supplier!,
-            amount: balance);
       }
-
-      //save purchase invoice
-      Purchases().createPurchase(invoiceData);
-
-      //update product quantities
-      for (var element in invoiceData.items) {
-        Products().updateProductPart(
-            product: element.product!,
-            quantity: element.itemCount! + element.product!.quantity!);
-        //create product history
-        ProductHistoryModel productHistoryModel = ProductHistoryModel(
-            ObjectId(),
-            quantity: element.product!.quantity!,
-            supplier: invoiceData.supplier == null
-                ? ""
-                : invoiceData.supplier!.id.toString(),
-            shop: invoiceData.shop!.id.toString(),
-            product: element.product,
-            type: "purchases");
-        Products().createProductHistory(productHistoryModel);
-      }
-      invoice.value = null;
-      Get.back();
+      SupplierService()
+          .updateSupplierWalletbalance(invoiceData.supplier, amount: balance);
     }
+
+    //save purchase invoice
+    Purchases().createPurchase(invoiceData);
+
+    //update product quantities
+    for (var element in invoiceData.items) {
+      Products().updateProductPart(
+          product: element.product!,
+          quantity: element.itemCount! + element.product!.quantity!);
+      //create product history
+      ProductHistoryModel productHistoryModel = ProductHistoryModel(ObjectId(),
+          quantity: element.product!.quantity!,
+          supplier: invoiceData.supplier == null
+              ? ""
+              : invoiceData.supplier!.id.toString(),
+          shop: invoiceData.shop!.id.toString(),
+          product: element.product,
+          type: "purchases");
+      Products().createProductHistory(productHistoryModel);
+    }
+    Get.back();
+    invoice.value = null;
   }
 
   getPurchase(
@@ -180,35 +161,46 @@ class PurchaseController extends GetxController {
   }
 
   calculateAmount({int? index}) {
-    var total = invoice.value!.total = invoice.value!.items.fold(
+    var total = invoice.value!.items.fold(
         0,
         (previousValue, element) =>
-            previousValue! + (element.itemCount! * element.price!));
+            previousValue + (element.itemCount! * element.price!));
     invoice.value!.total = total;
     var paid = int.parse(textEditingControllerAmount.text.isEmpty
         ? "0"
         : textEditingControllerAmount.text);
-    var balance = total;
-    if (paid > total!) {
+    balance.value = total;
+    print("balance.value ${balance.value}");
+    var balancee = total;
+    if (paid > total) {
       total = total;
-      balance = 0;
+      balancee = 0;
+      balance.value = paid - total;
+      balanceText.value = "Change";
     } else if (paid > 0) {
+      balance.value = paid - total;
       total = paid;
-      balance = balance! - paid;
+      balancee = balancee - paid;
+      balanceText.value = "Credit Balance";
     } else if (paid == 0) {
-      balance = total;
+      balancee = total;
+      balance.value = total;
+      balanceText.value = "Credit Balance";
       total = 0;
     }
-    invoice.value!.balance = balance;
+    balance.refresh();
+    invoice.value!.balance = balancee;
     if (index == -1) {
       return;
     }
 
-    invoice.value?.items[index!].total =
-        invoice.value!.items[index].product!.buyingPrice! *
-            invoice.value!.items[index].itemCount!;
+    // invoice.value?.items[index!].total =
+    //     invoice.value!.items[index].product!.buyingPrice! *
+    //         invoice.value!.items[index].itemCount!;
 
+    print("calculateAmount 3");
     invoice.refresh();
+    print("balancee $balancee");
   }
 
   removeFromList(index) {
@@ -254,7 +246,7 @@ class PurchaseController extends GetxController {
     return subTotal;
   }
 
-  _onCredit(Invoice invoice) => invoice.balance!.abs() > 0;
+  _onCredit(Invoice invoice) => (invoice.balance ?? 0).abs() > 0;
   void returnInvoiceItem(
       InvoiceItem invoiceItem, int quatity, Invoice invoice) {
     var amount = quatity * invoiceItem.price!; // amount to be returned

@@ -76,9 +76,12 @@ class AllPurchases extends StatelessWidget {
                   // PurchasesPdf(
                   //     sales: purchaseController.purchasedItems, type: "type");
                 },
-                child: Icon(
-                  Icons.download,
-                  color: Colors.black,
+                child: const Padding(
+                  padding: EdgeInsets.only(right: 8.0),
+                  child: Icon(
+                    Icons.download,
+                    color: Colors.black,
+                  ),
                 ))
           ],
         ),
@@ -99,150 +102,105 @@ class AllPurchases extends StatelessWidget {
               final results = data.results;
               return isSmallScreen(context)
                   ? ListView.builder(
-                  itemCount: results.realm.isClosed ? 0 : results.length,
-                  physics: const ScrollPhysics(),
-                  shrinkWrap: true,
-                  itemBuilder: (context, index) {
-                    Invoice invoiceData = results.elementAt(index);
-                    return InvoiceCard(invoice: invoiceData);
-                  })
+                      itemCount: results.realm.isClosed ? 0 : results.length,
+                      physics: const ScrollPhysics(),
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) {
+                        Invoice invoiceData = results.elementAt(index);
+                        return InvoiceCard(invoice: invoiceData);
+                      })
                   : Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 10, vertical: 3),
-                child: Theme(
-                  data: Theme.of(context)
-                      .copyWith(dividerColor: Colors.grey),
-                  child: FittedBox(
-                    child: DataTable(
-                      decoration: BoxDecoration(
-                          border: Border.all(
-                            width: 1,
-                            color: Colors.black,
-                          )),
-                      columnSpacing: 30.0,
-                      columns: [
-                        const DataColumn(
-                            label: Text('Receipt Number',
-                                textAlign: TextAlign.center)),
-                        DataColumn(
-                            label: Text(
-                                'Amount(${shopController.currentShop.value?.currency})',
-                                textAlign: TextAlign.center)),
-                        const DataColumn(
-                            label: Text('Products',
-                                textAlign: TextAlign.center)),
-                        const DataColumn(
-                            label: Text('Status',
-                                textAlign: TextAlign.center)),
-                        const DataColumn(
-                            label:
-                            Text('Date', textAlign: TextAlign.center)),
-                        const DataColumn(
-                            label: Text('Actions', textAlign: TextAlign.center)),
-                      ],
-                      rows: List.generate(
-                          results.realm.isClosed ? 0 : results.length,
-                              (index) {
-                            Invoice invoiceData = results.elementAt(index);
-
-                            final y = invoiceData.receiptNumber;
-                            final x = invoiceData.total.toString();
-                            final z = invoiceData.productCount.toString();
-                            final w = invoiceData.createdAt;
-
-                            return DataRow(cells: [
-                              DataCell(Text(y!)),
-                              DataCell(Text(x)),
-                              DataCell(Text(z)),
-                              DataCell(Text(
-                                chechPayment(invoiceData),
-                                style: TextStyle(
-                                    color: chechPaymentColor(invoiceData)),
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 3),
+                      margin: const EdgeInsets.symmetric(horizontal: 10)
+                          .copyWith(top: 10),
+                      child: Theme(
+                        data: Theme.of(context)
+                            .copyWith(dividerColor: Colors.grey),
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Container(
+                            width: MediaQuery.of(context).size.width,
+                            child: DataTable(
+                              headingTextStyle: const TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold),
+                              dataTextStyle: const TextStyle(
+                                  fontSize: 18, color: Colors.black),
+                              decoration: BoxDecoration(
+                                  border: Border.all(
+                                width: 1,
+                                color: Colors.black,
                               )),
-                              DataCell(
-                                  Text(DateFormat("yyyy-dd-MMM hh:mm a").format(w!))),
-                              DataCell(InkWell(
-                                onTap: () {
-                                  Get.find<HomeController>()
-                                      .selectedWidget
-                                      .value = InvoiceScreen(
-                                    invoice: invoiceData,
-                                    type: "",
-                                  );
-                                },
-                                child: Text(
-                                  "View",
-                                  style: TextStyle(color: AppColors.mainColor),
-                                ),
-                              )),
-                            ]);
-                          }),
-                    ),
-                  ),
-                ),
-              );
-            })
+                              columnSpacing: 30.0,
+                              columns: [
+                                const DataColumn(
+                                    label: Text('Receipt Number',
+                                        textAlign: TextAlign.center)),
+                                DataColumn(
+                                    label: Text(
+                                        'Amount(${shopController.currentShop.value?.currency})',
+                                        textAlign: TextAlign.center)),
+                                const DataColumn(
+                                    label: Text('Products',
+                                        textAlign: TextAlign.center)),
+                                const DataColumn(
+                                    label: Text('Status',
+                                        textAlign: TextAlign.center)),
+                                const DataColumn(
+                                    label: Text('Date',
+                                        textAlign: TextAlign.center)),
+                                const DataColumn(
+                                    label: Text('Actions',
+                                        textAlign: TextAlign.center)),
+                              ],
+                              rows: List.generate(
+                                  results.realm.isClosed ? 0 : results.length,
+                                  (index) {
+                                Invoice invoiceData = results.elementAt(index);
 
-      //   ResponsiveWidget(
-      //   largeScreen: Obx(() {
-      //     return purchaseController.getPurchaseLoad.value
-      //         ? Center(
-      //             child: CircularProgressIndicator(),
-      //           )
-      //         : purchaseController.purchasedItems.isEmpty
-      //             ? noItemsFound(context, true)
-      //             : Padding(
-      //                 padding: const EdgeInsets.symmetric(
-      //                     horizontal: 20.0, vertical: 10),
-      //                 child: SingleChildScrollView(
-      //                   child: Column(
-      //                     crossAxisAlignment: CrossAxisAlignment.start,
-      //                     children: [
-      //                       Container(
-      //                         width: double.infinity,
-      //                         padding: EdgeInsets.symmetric(
-      //                             horizontal: 5, vertical: 10),
-      //                         child:
+                                final y = invoiceData.receiptNumber;
+                                final x = invoiceData.total.toString();
+                                final z = invoiceData.productCount.toString();
+                                final w = invoiceData.createdAt;
 
-      // ,
-      // ),
-      //                       SizedBox(
-      //                         height: 10,
-      //                       ),
-      //                       Align(
-      //                         alignment: Alignment.bottomRight,
-      //                         child: Container(
-      //                           width: 250,
-      //                           padding: EdgeInsets.only(right: 10),
-      //                           child: Column(
-      //                             children: [
-      //                               Row(
-      //                                 children: [
-      //                                   Text("Total Purchases:"),
-      //                                   SizedBox(
-      //                                     width: 10,
-      //                                   ),
-      //                                   Text(
-      //                                       "${shopController.currentShop.value?.currency} ${purchaseController.calculatePurchasemount()}"),
-      //                                 ],
-      //                               ),
-      //                               Divider(
-      //                                 thickness: 2,
-      //                                 color: Colors.black,
-      //                               )
-      //                             ],
-      //                           ),
-      //                         ),
-      //                       ),
-      //                       SizedBox(height: 60),
-      //                     ],
-      //                   ),
-      //                 ));
-      //   }),
-      //   smallScreen:
-      //   ,
-      // ),
-    );
+                                return DataRow(cells: [
+                                  DataCell(Text("#${y!}".toUpperCase())),
+                                  DataCell(Text(x)),
+                                  DataCell(Text(z)),
+                                  DataCell(Text(
+                                    chechPayment(invoiceData),
+                                    style: TextStyle(
+                                        color: chechPaymentColor(invoiceData)),
+                                  )),
+                                  DataCell(Text(
+                                      DateFormat("yyyy-dd-MMM hh:mm a")
+                                          .format(w!))),
+                                  DataCell(InkWell(
+                                    onTap: () {
+                                      Get.find<HomeController>()
+                                          .selectedWidget
+                                          .value = InvoiceScreen(
+                                        invoice: invoiceData,
+                                        type: "",
+                                        from: "AllPurchases",
+                                      );
+                                    },
+                                    child: Text(
+                                      "View",
+                                      style:
+                                          TextStyle(color: AppColors.mainColor),
+                                    ),
+                                  )),
+                                ]);
+                              }),
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+            }));
   }
 }

@@ -1,22 +1,54 @@
 import 'package:flutter/material.dart';
-import 'package:pointify/controllers/AuthController.dart';
 import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
+import 'package:pointify/functions/functions.dart';
 import 'package:pointify/screens/attendant/attendants_page.dart';
 import 'package:pointify/screens/shop/shops_page.dart';
-import 'package:pointify/utils/colors.dart';
 import 'package:pointify/widgets/logout.dart';
 import 'package:get/get.dart';
 
+
+import '../controllers/user_controller.dart';
+import '../screens/finance/financial_page.dart';
 import '../screens/home/home_page.dart';
 import '../screens/home/profile_page.dart';
+import '../screens/sales/sales_page.dart';
 import '../utils/constants.dart';
-import 'delete_dialog.dart';
 
 class SideMenu extends StatelessWidget {
   SideMenu({Key? key}) : super(key: key);
   HomeController homeController = Get.find<HomeController>();
   ShopController shopController = Get.find<ShopController>();
+  UserController userController = Get.find<UserController>();
+
+  List<Map<String, dynamic>> sidePages = [
+    {"page": homePage, "icon": Icons.home, "permission": true},
+    {
+      "page": shopsPage,
+      "icon": Icons.shop,
+      "permission":
+          Get.find<UserController>().user.value!.usertype == "attendant"
+              ? checkPermission(category: "shop", permission: "view")
+              : true
+    },
+    {
+      "page": attendantPage,
+      "icon": Icons.people,
+      "permission":
+          Get.find<UserController>().user.value!.usertype == "attendant"
+              ? checkPermission(category: "attendants", permission: "view")
+              : true
+    },
+    {
+      "page": profilePage,
+      "icon": Icons.person,
+      "permission":
+          Get.find<UserController>().user.value!.usertype == "attendant"
+              ? false
+              : true
+    },
+    {"page": authPage, "icon": Icons.logout, "permission": true},
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +57,8 @@ class SideMenu extends StatelessWidget {
       color: const Color(0xff3a3055),
       child: ListView(
         children: sidePages
+            .where((element) => element["permission"] == true)
+            .toList()
             .map((e) => sideMenuItems(
                 icon: e["icon"], title: e["page"], context: context))
             .toList(),
@@ -39,6 +73,10 @@ class SideMenu extends StatelessWidget {
             homeController.activeItem.value = title;
             if (title == "Home") {
               homeController.selectedWidget.value = HomePage();
+            } else if (title == "Profit & Expenses") {
+              homeController.selectedWidget.value = FinancialPage();
+            } else if (title == "Sales & orders") {
+              homeController.selectedWidget.value = SalesPage();
             } else if (title == "Shops") {
               shopController.getShops();
               homeController.selectedWidget.value = ShopsPage();
@@ -59,13 +97,12 @@ class SideMenu extends StatelessWidget {
           },
           child: Container(
             decoration: BoxDecoration(
-              color: homeController.activeItem.value == title
-                  ? const Color(0xffbe741f)
-                  : const Color(0xff3a3055),
-              borderRadius: BorderRadius.circular(10)
-            ),
-            
-            padding: const EdgeInsets.symmetric(vertical: 2,horizontal: 3).copyWith(left: 6),
+                color: homeController.activeItem.value == title
+                    ? const Color(0xffbe741f)
+                    : const Color(0xff3a3055),
+                borderRadius: BorderRadius.circular(10)),
+            padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 3)
+                .copyWith(left: 6),
             margin: const EdgeInsets.symmetric(horizontal: 3).copyWith(top: 3),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -85,8 +122,7 @@ class SideMenu extends StatelessWidget {
                     ),
                     Text(
                       "$title",
-                      style: const TextStyle(
-                          color: Colors.white),
+                      style: const TextStyle(color: Colors.white),
                     )
                   ],
                 ),

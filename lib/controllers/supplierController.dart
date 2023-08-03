@@ -3,6 +3,7 @@ import 'package:pointify/controllers/product_controller.dart';
 import 'package:pointify/controllers/purchase_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/controllers/user_controller.dart';
+import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/suppliers/suppliers_page.dart';
 import 'package:pointify/services/purchases.dart';
 import 'package:pointify/services/supplier.dart';
@@ -80,9 +81,10 @@ class SupplierController extends GetxController
           createdAt: DateTime.now(),
           shopId: Get.find<ShopController>().currentShop.value?.id.toString());
       SupplierService().createSupplier(supplier);
-      Get.back();
       clearTexts();
-      if (MediaQuery.of(context).size.width > 600) {
+      Get.back();
+      if (!isSmallScreen(context)) {
+        print(page);
         if (page == "suppliersPage") {
           Get.find<HomeController>().selectedWidget.value = SuppliersPage();
         }
@@ -93,19 +95,20 @@ class SupplierController extends GetxController
           Get.find<HomeController>().selectedWidget.value = CreateProduct(
             page: "create",
             productModel: null,
+            clearInputs: false,
           );
         }
         if (page == "createPurchase") {
           Get.find<HomeController>().selectedWidget.value = CreatePurchase();
         }
+      } else {
+        Get.back();
       }
 
       creatingSupplierLoad.value = false;
     } catch (e) {
       print(e);
       creatingSupplierLoad.value = false;
-    } finally {
-      Get.back();
     }
   }
 
@@ -120,8 +123,9 @@ class SupplierController extends GetxController
 
   getSuppliersInShop(type) async {
     suppliers.clear();
-    RealmResults<Supplier> suppliersList =
-        SupplierService().getSuppliersByShopId(type: type);
+    RealmResults<Supplier> suppliersList = SupplierService()
+        .getSuppliersByShopId(
+            type: type, shop: Get.find<ShopController>().currentShop.value!);
 
     suppliers.addAll(suppliersList.map((e) => e).toList());
   }
@@ -150,6 +154,8 @@ class SupplierController extends GetxController
       return;
     }
     SupplierService().deleteSupplier(supplier);
-    Get.back();
+    isSmallScreen(Get.context)
+        ? Get.back()
+        : Get.find<HomeController>().selectedWidget.value = SuppliersPage();
   }
 }

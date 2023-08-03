@@ -59,9 +59,9 @@ class CashflowController extends GetxController
 
   fetchCashAtBank() {
     totalcashAtBank.value = 0;
-    RealmResults<BankModel> response = Transactions().getCashAtBank();
+    RealmResults<BankModel> response = Transactions()
+        .getCashAtBank(shop: Get.find<ShopController>().currentShop.value!);
 
-    print("vvv ${response.length}");
     if (response.isNotEmpty) {
       List<BankModel> fetchedData = response.map((e) => e).toList();
       cashAtBanks.assignAll(fetchedData);
@@ -139,6 +139,13 @@ class CashflowController extends GetxController
       Get.find<HomeController>().selectedWidget.value = CashFlowManager();
     }
     textEditingControllerAmount.clear();
+
+    getCashflowSummary(
+      shopId: Get.find<ShopController>().currentShop.value!.id,
+      from: DateTime.parse(DateFormat("yyyy-MM-dd").format(fromDate.value)),
+      to: DateTime.parse(DateFormat("yyyy-MM-dd").format(toDate.value))
+          .add(const Duration(days: 1)),
+    );
   }
 
   clearInputs() {
@@ -154,12 +161,13 @@ class CashflowController extends GetxController
         amount: 0,
         key: textEditingControllerCategory.text.toLowerCase().trim());
     await Transactions().createCategory(cashFlowCategory);
-    getCategory(type);
+    textEditingControllerCategory.clear();
+    getCategory(type, Get.find<ShopController>().currentShop.value);
   }
 
-  void getCategory(type) {
+  void getCategory(type, shop) {
     RealmResults<CashFlowCategory> response =
-        Transactions().getCategory(type: type);
+        Transactions().getCategory(type: type, shop: shop);
     if (response.isNotEmpty) {
       List<CashFlowCategory> cashflowCat = response.map((e) => e).toList();
       cashFlowCategories.assignAll(cashflowCat);
@@ -190,7 +198,11 @@ class CashflowController extends GetxController
     cashOutflowOtherTransactions.clear();
     RealmResults<CashFlowTransaction> response = Transactions()
         .getCashFlowTransaction(
-            group: group, type: type, fromDate: fromDate, toDate: toDate);
+            group: group,
+            type: type,
+            fromDate: fromDate,
+            toDate: toDate,
+            shop: Get.find<ShopController>().currentShop.value);
     List<CashFlowTransaction> cashflowCat = response.map((e) => e).toList();
     cashflowTransactions.assignAll(cashflowCat);
     List<CashFlowTransaction> bankTrans = [];

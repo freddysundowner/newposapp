@@ -32,9 +32,7 @@ import 'components/edit_price_dialog.dart';
 class CreateSale extends StatelessWidget {
   final String? page;
 
-  CreateSale({Key? key, this.page}) : super(key: key) {
-    // customersController.getCustomersInShop("all");
-  }
+  CreateSale({Key? key, this.page}) : super(key: key);
 
   SalesController salesController = Get.find<SalesController>();
   ShopController shopController = Get.find<ShopController>();
@@ -42,8 +40,6 @@ class CreateSale extends StatelessWidget {
   AuthController authController = Get.find<AuthController>();
   UserController usercontroller = Get.find<UserController>();
   ProductController productController = Get.find<ProductController>();
-  final FocusNode _focusNode = FocusNode();
-  final GlobalKey _autocompleteKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
@@ -153,7 +149,7 @@ class CreateSale extends StatelessWidget {
                       width: double.infinity,
                       color: Colors.white,
                       // height: kToolbarHeight*2,
-                      padding: EdgeInsets.fromLTRB(5, 0, 5, 5),
+                      padding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -183,7 +179,8 @@ class CreateSale extends StatelessWidget {
                                     }
                                   },
                                   child: Container(
-                                    padding: EdgeInsets.fromLTRB(15, 5, 15, 5),
+                                    padding:
+                                        const EdgeInsets.fromLTRB(15, 5, 15, 5),
                                     decoration: BoxDecoration(
                                         border: Border.all(color: Colors.grey),
                                         borderRadius:
@@ -204,7 +201,7 @@ class CreateSale extends StatelessWidget {
                           ),
                           // SizedBox(height: 10),
                           // majorTitle(title: "Selling", color: Colors.black, size: 18.0),
-                          SizedBox(height: 10),
+                          const SizedBox(height: 10),
                         ],
                       ),
                     ),
@@ -235,11 +232,14 @@ class CreateSale extends StatelessWidget {
                                   salesController.receipt.value?.customerId =
                                       null;
                                   customersController.getCustomersInShop("all");
-                                  confirmPayment(context, "small");
+
+                                  confirmPayment(
+                                    context,
+                                  );
                                 }
                               },
                               child: Container(
-                                padding: EdgeInsets.all(10),
+                                padding: const EdgeInsets.all(10),
                                 width: double.infinity,
                                 child: Row(
                                   mainAxisAlignment:
@@ -293,7 +293,7 @@ class CreateSale extends StatelessWidget {
                                             ),
                                           ],
                                         ),
-                                        SizedBox(
+                                        const SizedBox(
                                           height: 5,
                                         ),
                                         Row(
@@ -304,7 +304,7 @@ class CreateSale extends StatelessWidget {
                                                 title: "Pay via",
                                                 color: Colors.black,
                                                 size: 16.0),
-                                            SizedBox(
+                                            const SizedBox(
                                               width: 10,
                                             ),
                                             Container(
@@ -341,8 +341,8 @@ class CreateSale extends StatelessWidget {
                                                                           Navigator.pop(
                                                                               context);
                                                                           confirmPayment(
-                                                                              context,
-                                                                              "small");
+                                                                            context,
+                                                                          );
                                                                         },
                                                                         child:
                                                                             Container(
@@ -395,16 +395,23 @@ class CreateSale extends StatelessWidget {
         ));
   }
 
-  confirmPayment(context, type) {
+  confirmPayment(context) {
     showModalBottomSheet(
       context: context,
+      backgroundColor:
+          isSmallScreen(context) ? Colors.white : Colors.transparent,
       isScrollControlled: true,
       builder: (context) {
         return Padding(
           padding:
               EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
           child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+            margin: EdgeInsets.only(
+                left: isSmallScreen(context)
+                    ? 0
+                    : MediaQuery.of(context).size.width * 0.2),
+            color: Colors.white,
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
             child: Obx(
               () => Column(
                 mainAxisSize: MainAxisSize.min,
@@ -412,13 +419,13 @@ class CreateSale extends StatelessWidget {
                 children: [
                   majorTitle(
                       title:
-                          "Total Amount ${htmlPrice(salesController.receipt.value!.grandTotal)}",
+                          "Total Amount ${htmlPrice(salesController.receipt.value?.grandTotal)}",
                       color: Colors.black,
                       size: 14.0),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   majorTitle(
                       title: "Amount paid", color: Colors.black, size: 14.0),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   TextFormField(
                       controller: salesController.amountPaid,
                       onChanged: (value) {
@@ -438,34 +445,20 @@ class CreateSale extends StatelessWidget {
                             child: Text(
                                 shopController.currentShop.value!.currency!),
                           ))),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   Obx(
                     () => majorTitle(
                         title:
-                            "${salesController.changeText.value} ${htmlPrice(salesController.receipt.value!.creditTotal! < 0 ? salesController.change.value : salesController.receipt.value?.creditTotal)}",
+                            "${salesController.changeText.value} ${htmlPrice(salesController.change.value)}",
                         color: Colors.black,
                         size: 14.0),
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   if (_needCustomer() &&
-                      salesController.receipt.value!.customerId == null)
+                      salesController.receipt.value?.customerId == null)
                     InkWell(
                       onTap: () {
-                        Get.to(() => Scaffold(
-                              appBar: AppBar(
-                                actions: [
-                                  IconButton(
-                                      onPressed: () {
-                                        Get.to(() => CreateCustomer(
-                                              page: "customersPage",
-                                            ));
-                                      },
-                                      icon: Icon(Icons.add))
-                                ],
-                                title: const Text("Select customer"),
-                              ),
-                              body: Customers(type: "sale"),
-                            ));
+                        chooseCustomer(context: context);
                       },
                       child: majorTitle(
                           title: "Choose Customer",
@@ -473,36 +466,23 @@ class CreateSale extends StatelessWidget {
                           size: 18.0),
                     ),
                   if (_needCustomer() &&
-                      salesController.receipt.value!.customerId != null)
+                      salesController.receipt.value?.customerId != null)
                     InkWell(
                       onTap: () {
-                        Get.to(() => Scaffold(
-                              appBar: AppBar(
-                                actions: [
-                                  IconButton(
-                                      onPressed: () {
-                                        Get.to(() => CreateCustomer(
-                                              page: "customersPage",
-                                            ));
-                                      },
-                                      icon: Icon(Icons.add))
-                                ],
-                              ),
-                              body: Customers(type: "sale"),
-                            ));
+                        chooseCustomer(context: context);
                       },
                       child: Row(
                         children: [
                           majorTitle(
                               title: salesController
-                                  .receipt.value!.customerId?.fullName,
+                                  .receipt.value?.customerId?.fullName,
                               color: AppColors.mainColor,
                               size: 18.0),
-                          SizedBox(
+                          const SizedBox(
                             width: 20,
                           ),
                           Container(
-                            padding: EdgeInsets.symmetric(horizontal: 5),
+                            padding: const EdgeInsets.symmetric(horizontal: 5),
                             decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: (BorderRadius.circular(10)),
@@ -552,220 +532,11 @@ class CreateSale extends StatelessWidget {
         );
       },
     );
-    // return showDialog(
-    //     context: context,
-    //     builder: (_) {
-    //       return SizedBox(
-    //         width: double.infinity,
-    //         child: AlertDialog(
-    //             title: const Center(child: Text("Confirm Payment")),
-    //             content: Obx(() {
-    //               return salesController.receipt.value == null
-    //                   ? Container(
-    //                       height: 0,
-    //                     )
-    //                   : Column(
-    //                       crossAxisAlignment: CrossAxisAlignment.start,
-    //                       mainAxisSize: MainAxisSize.min,
-    //                       children: [
-    //                         majorTitle(
-    //                             title: "Amount paid",
-    //                             color: Colors.black,
-    //                             size: 14.0),
-    //                         SizedBox(height: 10),
-    //                         Row(
-    //                           children: [
-    //                             Expanded(
-    //                               child: TextFormField(
-    //                                   controller: salesController.amountPaid,
-    //                                   onChanged: (value) {
-    //                                     if (salesController
-    //                                         .amountPaid.text.isEmpty) {
-    //                                       salesController
-    //                                               .receipt.value!.creditTotal =
-    //                                           salesController
-    //                                               .receipt.value!.grandTotal;
-    //                                     } else {
-    //                                       salesController
-    //                                               .receipt.value!.creditTotal =
-    //                                           int.parse(salesController
-    //                                                   .amountPaid.text) -
-    //                                               salesController.receipt.value!
-    //                                                   .grandTotal!;
-    //                                     }
-    //                                     salesController.receipt.refresh();
-    //                                   },
-    //                                   keyboardType: TextInputType.number,
-    //                                   autofocus: false,
-    //                                   decoration: InputDecoration(
-    //                                       contentPadding:
-    //                                           const EdgeInsets.symmetric(
-    //                                               horizontal: 5),
-    //                                       border: OutlineInputBorder(
-    //                                         borderRadius:
-    //                                             BorderRadius.circular(10),
-    //                                       ),
-    //                                       prefix: Padding(
-    //                                         padding:
-    //                                             const EdgeInsets.only(right: 5),
-    //                                         child: Text(shopController
-    //                                             .currentShop.value!.currency!),
-    //                                       ))),
-    //                             ),
-    //                             SizedBox(
-    //                               width: 10,
-    //                             ),
-    //                             Obx(
-    //                               () => majorTitle(
-    //                                   title:
-    //                                       "Balance: ${htmlPrice(salesController.receipt.value?.creditTotal)}",
-    //                                   color: Colors.black,
-    //                                   size: 14.0),
-    //                             ),
-    //                           ],
-    //                         ),
-    //                         const SizedBox(height: 10),
-    //                         if (_needCustomer() &&
-    //                             salesController.receipt.value!.customerId ==
-    //                                 null)
-    //                           InkWell(
-    //                             onTap: () {
-    //                               Get.to(() => Scaffold(
-    //                                     appBar: AppBar(
-    //                                       actions: [
-    //                                         IconButton(
-    //                                             onPressed: () {
-    //                                               Get.to(() => CreateCustomer(
-    //                                                     page: "customersPage",
-    //                                                   ));
-    //                                               // if (MediaQuery.of(context)
-    //                                               //         .size
-    //                                               //         .width >
-    //                                               //     600) {
-    //                                               //   Get.find<HomeController>()
-    //                                               //       .selectedWidget
-    //                                               //       .value = CreateCustomer(
-    //                                               //     page: "customersPage",
-    //                                               //   );
-    //                                               // } else {
-    //                                               //   Get.to(() => CreateCustomer(
-    //                                               //         page: "customersPage",
-    //                                               //       ));
-    //                                               // }
-    //                                             },
-    //                                             icon: Icon(Icons.add))
-    //                                       ],
-    //                                       title: Text("Select customer"),
-    //                                     ),
-    //                                     body: Customers(type: "sale"),
-    //                                   ));
-    //                             },
-    //                             child: majorTitle(
-    //                                 title: "Choose Customer",
-    //                                 color: AppColors.mainColor,
-    //                                 size: 18.0),
-    //                           ),
-    //                         if (_needCustomer() &&
-    //                             salesController.receipt.value!.customerId !=
-    //                                 null)
-    //                           InkWell(
-    //                             onTap: () {
-    //                               Get.to(() => Scaffold(
-    //                                     appBar: AppBar(
-    //                                       actions: [
-    //                                         IconButton(
-    //                                             onPressed: () {
-    //                                               // if (MediaQuery.of(context)
-    //                                               //         .size
-    //                                               //         .width >
-    //                                               //     600) {
-    //                                               //   Get.find<HomeController>()
-    //                                               //       .selectedWidget
-    //                                               //       .value = CreateCustomer(
-    //                                               //     page: "customersPage",
-    //                                               //   );
-    //                                               // } else {
-    //                                               //   Get.to(() => CreateCustomer(
-    //                                               //         page: "customersPage",
-    //                                               //       ));
-    //                                               // }
-    //                                               Get.to(() => CreateCustomer(
-    //                                                     page: "customersPage",
-    //                                                   ));
-    //                                             },
-    //                                             icon: Icon(Icons.add))
-    //                                       ],
-    //                                     ),
-    //                                     body: Customers(type: "sale"),
-    //                                   ));
-    //                             },
-    //                             child: Row(
-    //                               children: [
-    //                                 majorTitle(
-    //                                     title: salesController.receipt.value!
-    //                                         .customerId?.fullName,
-    //                                     color: AppColors.mainColor,
-    //                                     size: 18.0),
-    //                                 SizedBox(
-    //                                   width: 20,
-    //                                 ),
-    //                                 Container(
-    //                                   padding:
-    //                                       EdgeInsets.symmetric(horizontal: 5),
-    //                                   decoration: BoxDecoration(
-    //                                       color: Colors.white,
-    //                                       borderRadius:
-    //                                           (BorderRadius.circular(10)),
-    //                                       border: Border.all(
-    //                                           color: AppColors.mainColor,
-    //                                           width: 1)),
-    //                                   child: Row(
-    //                                     children: [
-    //                                       majorTitle(
-    //                                           title: "Change",
-    //                                           color: Colors.red,
-    //                                           size: 12.0),
-    //                                       Icon(
-    //                                         Icons.edit,
-    //                                         size: 15,
-    //                                       )
-    //                                     ],
-    //                                   ),
-    //                                 )
-    //                               ],
-    //                             ),
-    //                           ),
-    //                         Row(
-    //                           mainAxisAlignment: MainAxisAlignment.end,
-    //                           children: [
-    //                             TextButton(
-    //                                 onPressed: () {
-    //                                   Get.back();
-    //                                 },
-    //                                 child: majorTitle(
-    //                                     title: "Cancel",
-    //                                     color: AppColors.mainColor,
-    //                                     size: 16.0)),
-    //                             TextButton(
-    //                                 onPressed: () {
-    //                                   salesController.saveSale(
-    //                                       screen: page ?? "admin");
-    //                                 },
-    //                                 child: majorTitle(
-    //                                     title: "Cash in",
-    //                                     color: AppColors.mainColor,
-    //                                     size: 16.0)),
-    //                           ],
-    //                         ),
-    //                       ],
-    //                     );
-    //             })),
-    //       );
-    //     });
   }
 
   _needCustomer() {
-    return salesController.receipt.value!.paymentMethod == "Credit";
+    return salesController.receipt.value?.paymentMethod == "Credit" ||
+        salesController.receipt.value?.paymentMethod == "Wallet";
   }
 
   Widget showPopUpdialog(
@@ -776,19 +547,19 @@ class CreateSale extends StatelessWidget {
         if (checkPermission(category: "sales", permission: "edit_price"))
           PopupMenuItem(
             child: ListTile(
-              leading: Icon(Icons.edit),
+              leading: const Icon(Icons.edit),
               onTap: () {
                 Get.back();
                 showEditDialogPrice(
                     productModel: receiptItem.product!, index: index);
               },
-              title: Text("Edit Selling price"),
+              title: const Text("Edit Selling price"),
             ),
           ),
         if (checkPermission(category: "sales", permission: "discount"))
           PopupMenuItem(
             child: ListTile(
-              leading: Icon(Icons.discount),
+              leading: const Icon(Icons.discount),
               onTap: () {
                 Get.back();
                 discountDialog(
@@ -796,21 +567,21 @@ class CreateSale extends StatelessWidget {
                     receiptItem: receiptItem,
                     index: index);
               },
-              title: Text("Give Discount"),
+              title: const Text("Give Discount"),
             ),
           ),
         PopupMenuItem(
           child: ListTile(
-            leading: Icon(Icons.clear),
+            leading: const Icon(Icons.clear),
             onTap: () {
               Get.back();
               salesController.removeFromList(index);
             },
-            title: Text("Delete"),
+            title: const Text("Delete"),
           ),
         ),
       ],
-      icon: Icon(Icons.more_vert),
+      icon: const Icon(Icons.more_vert),
     );
   }
 
@@ -836,5 +607,68 @@ class CreateSale extends StatelessWidget {
     }
 
     salesController.changesaleItem(re);
+  }
+
+  chooseCustomer({required context}) {
+    if (isSmallScreen(context)) {
+      Get.to(() => Scaffold(
+            appBar: AppBar(
+              actions: [
+                IconButton(
+                    onPressed: () {
+                      Get.to(() => CreateCustomer(
+                            page: "customersPage",
+                          ));
+                    },
+                    icon: const Icon(Icons.add))
+              ],
+              title: const Text("Select customer"),
+            ),
+            body: Customers(type: "sale"),
+          ));
+    } else {
+      Get.back();
+      Get.find<HomeController>().selectedWidget.value = Scaffold(
+        appBar: AppBar(
+          elevation: 0.2,
+          backgroundColor: Colors.white,
+          leading: IconButton(
+              onPressed: () {
+                Get.find<HomeController>().selectedWidget.value = CreateSale();
+                confirmPayment(Get.context);
+              },
+              icon: const Icon(
+                Icons.arrow_back_ios,
+                color: Colors.black,
+              )),
+          actions: [
+            IconButton(
+                onPressed: () {
+                  Get.find<HomeController>().selectedWidget.value =
+                      CreateCustomer(
+                    page: "createSale",
+                    function: () {
+                      chooseCustomer(context: Get.context);
+                    },
+                  );
+                },
+                icon: const Icon(
+                  Icons.add,
+                  color: Colors.black,
+                ))
+          ],
+          title: const Text(
+            "Select customer",
+            style: TextStyle(color: Colors.black),
+          ),
+        ),
+        body: Customers(
+          type: "sale",
+          function: () {
+            confirmPayment(Get.context);
+          },
+        ),
+      );
+    }
   }
 }

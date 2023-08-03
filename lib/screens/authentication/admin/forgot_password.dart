@@ -19,72 +19,70 @@ class ForgotPassword extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-          backgroundColor: MediaQuery.of(context).size.width <= 600
-              ? AppColors.mainColor
-              : Colors.white,
-          elevation: 0.0,
-          leading: IconButton(
-              onPressed: () {
-                Get.back();
-              },
-              icon: Icon(
-                Icons.clear,
-                color: MediaQuery.of(context).size.width <= 600
-                    ? Colors.white
-                    : Colors.black,
-              ))),
-      body: ResponsiveWidget(
-          largeScreen: Align(
-            alignment: Alignment.center,
-            child: Container(
-              child: Container(
-                width: 400,
-                height: MediaQuery.of(context).size.height * 0.7,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(1.0),
-                  color: Colors.white,
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Colors.grey,
-                      offset: Offset(0.0, 0.0), //(x,y)
-                      blurRadius: 1.0,
-                    ),
-                  ],
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _title(),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    loginForm(context),
-                  ],
-                ),
+        backgroundColor: Colors.white,
+        appBar: AppBar(
+            backgroundColor: Colors.white,
+            elevation: 0.0,
+            leading: IconButton(
+                onPressed: () {
+                  Get.back();
+                },
+                icon: const Icon(
+                  Icons.clear,
+                  color: Colors.black,
+                ))),
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              Column(
+                children: [
+                  Image.asset(
+                    "assets/images/logo2.png",
+                    width: 250,
+                  ),
+                  const Text("An enterprise at your fingertips."),
+                  const SizedBox(
+                    height: 40,
+                  ),
+                ],
               ),
-            ),
+              const SizedBox(
+                height: 40,
+              ),
+              isSmallScreen(context)
+                  ? Column(
+                      children: [
+                        _title(),
+                        const SizedBox(height: 30.0),
+                        loginForm(context),
+                      ],
+                    )
+                  : Container(
+                      padding: const EdgeInsets.only(top: 30, bottom: 30),
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey,
+                            offset: Offset(0.0, 0.0), //(x,y)
+                            blurRadius: 1.0,
+                          ),
+                        ],
+                      ),
+                      margin: EdgeInsets.only(
+                        left: MediaQuery.of(context).size.width * 0.25,
+                        right: MediaQuery.of(context).size.width * 0.25,
+                      ),
+                      child: Column(
+                        children: [
+                          _title(),
+                          const SizedBox(height: 30.0),
+                          loginForm(context),
+                        ],
+                      )),
+            ],
           ),
-          smallScreen: SingleChildScrollView(
-            child: Column(
-              children: [
-                Container(
-                  height: 200,
-                  child: Header(200, true,
-                      "assets/images/admin.svg"), //let's create a common header widget
-                ),
-                SizedBox(
-                  height: 40,
-                ),
-                _title(),
-                SizedBox(height: 30.0),
-                loginForm(context),
-              ],
-            ),
-          )),
-    );
+        ));
   }
 
   Padding _title() {
@@ -122,7 +120,7 @@ class ForgotPassword extends StatelessWidget {
                           'Email', 'Enter your email'),
                 ),
               ),
-              SizedBox(height: 15.0),
+              const SizedBox(height: 15.0),
               Container(
                 decoration: ThemeHelper().inputBoxDecorationShaddow(),
                 child: TextFormField(
@@ -141,7 +139,7 @@ class ForgotPassword extends StatelessWidget {
                           'new password', 'Enter your new password'),
                 ),
               ),
-              SizedBox(height: 15.0),
+              const SizedBox(height: 15.0),
               Container(
                 decoration: ThemeHelper().inputBoxDecorationShaddow(),
                 child: TextFormField(
@@ -163,7 +161,7 @@ class ForgotPassword extends StatelessWidget {
                           'confirm password', 'Please confirm password'),
                 ),
               ),
-              SizedBox(height: 15.0),
+              const SizedBox(height: 15.0),
               Obx(() {
                 return authController.loginuserLoad.value
                     ? const Center(
@@ -172,7 +170,7 @@ class ForgotPassword extends StatelessWidget {
                     : ElevatedButton(
                         style: ThemeHelper().buttonStyle(),
                         child: Padding(
-                          padding: EdgeInsets.fromLTRB(40, 10, 40, 10),
+                          padding: const EdgeInsets.fromLTRB(40, 10, 40, 10),
                           child: Text(
                             'Send'.toUpperCase(),
                             style: const TextStyle(

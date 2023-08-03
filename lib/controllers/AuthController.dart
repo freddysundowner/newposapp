@@ -5,9 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:pointify/Real/schema.dart';
+import 'package:pointify/controllers/plan_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/controllers/user_controller.dart';
 import 'package:pointify/main.dart';
+import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/authentication/landing.dart';
 import 'package:pointify/screens/authentication/reloadpage.dart';
 import 'package:pointify/screens/home/home_page.dart';
@@ -17,6 +19,7 @@ import 'package:realm/realm.dart';
 import '../controllers/realm_controller.dart';
 import '../screens/home/home.dart';
 import '../screens/shop/create_shop.dart';
+import '../services/shop_services.dart';
 import '../widgets/alert.dart';
 import '../widgets/snackBars.dart';
 import 'home_controller.dart';
@@ -25,6 +28,7 @@ class AuthController extends GetxController {
   RxString id = RxString("");
   Rxn<Uri> baseUrl = Rxn(null);
   Rxn<App> app = Rxn(null);
+  RxBool showPassword = true.obs;
   ShopController shopController = Get.put(ShopController());
   TextEditingController passwordControllerConfirm = TextEditingController();
   TextEditingController emailController = TextEditingController();
@@ -60,7 +64,16 @@ class AuthController extends GetxController {
             emailController.text, passwordController.text);
         await Get.find<UserController>().getUser(type: "login");
 
-        Get.offAll(() => Home());
+        Get.find<PlanController>().getPlans();
+        var shop = ShopService().getShop();
+        if (shop.isEmpty) {
+          Get.offAll(() => CreateShop(
+                page: "home",
+                clearInputs: true,
+              ));
+        } else {
+          Get.offAll(() => Home());
+        }
       } catch (e) {
         print(e);
         showSnackBar(message: "wrong username or password", color: Colors.red);
@@ -86,7 +99,6 @@ class AuthController extends GetxController {
     Get.put(RealmController()).auth();
     var response = await Users.getAttendantbyUid(uid.toString());
     var userdata = response["user"];
-    print(userdata);
     if (userdata["_id"] != null) {
       var email = userdata["email"];
       if (userdata["loggedin"] == null) {
@@ -136,6 +148,12 @@ class AuthController extends GetxController {
   signUser(context) async {
     if (signupkey.currentState!.validate()) {
       try {
+        if (passwordController.text.toString().trim().length < 6) {
+          generalAlert(
+              title: "Error",
+              message: "Password must be more than 6 charactes");
+          return;
+        }
         signuserLoad.value = true;
         await registerUserEmailPassword(
             emailController.text, passwordController.text);
@@ -154,11 +172,14 @@ class AuthController extends GetxController {
         ));
         clearDataFromTextFields();
         await Get.find<UserController>().getUser();
-        if (MediaQuery.of(context).size.width > 600) {
-          Get.find<HomeController>().selectedWidget.value =
-              CreateShop(page: "home");
+        Get.find<PlanController>().getPlans();
+        if (isSmallScreen(context)) {
+          Get.off(() => CreateShop(
+                page: "home",
+                clearInputs: true,
+              ));
         } else {
-          Get.off(() => CreateShop(page: "home"));
+          Get.off(() => CreateShop(page: "home", clearInputs: true));
         }
 
         signuserLoad.value = false;
@@ -202,9 +223,10 @@ class AuthController extends GetxController {
 
   Future<void> logOut() async {
     await Get.find<RealmController>().currentUser!.value?.logOut();
-    // shopController.currentShop.value = null;
     Get.find<RealmController>().currentUser?.value = null;
     Get.offAll(() => Landing());
+    Get.find<HomeController>().activeItem.value = "Home";
+    Get.find<HomeController>().selectedWidget.value = HomePage();
     refresh();
   }
 

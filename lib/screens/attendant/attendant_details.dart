@@ -44,129 +44,105 @@ class AttendantDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ResponsiveWidget(
-        largeScreen: Container(),
-        // Scaffold(
-        //     appBar: _appBar(context),
-        //     body: SingleChildScrollView(
-        //       child: Container(
-        //         padding: const EdgeInsets.only(
-        //             left: 30, top: 10, bottom: 10, right: 300),
-        //         decoration: BoxDecoration(
-        //           color: Colors.white,
-        //         ),
-        //         child: Column(
-        //           crossAxisAlignment: CrossAxisAlignment.start,
-        //           children: [
-        //             userDetails(context),
-        //             majorTitle(
-        //                 title: "Roles & Permissions",
-        //                 color: Colors.black,
-        //                 size: 14.0),
-        //             SizedBox(height: 10),
-        //             // rolesWidget(),
-        //             SizedBox(
-        //               height: 10,
-        //             ),
-        //             deleteAttendant(context)
-        //           ],
-        //         ),
-        //       ),
-        //     )),
-        smallScreen: Helper(
-          widget: SingleChildScrollView(
-            child: Container(
-              padding: EdgeInsets.all(10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Card(
+    return Helper(
+      widget: SingleChildScrollView(
+        child: Container(
+          padding: EdgeInsets.all(10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Card(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                elevation: 5,
+                child: Container(
+                  width: double.infinity,
+                  padding: EdgeInsets.all(10),
+                  child: userDetails(context),
+                ),
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              if (userModel != null)
+                InkWell(
+                  onTap: () {
+                    if (isSmallScreen(context)) {
+                      Get.to(() => Permissions(userModel: userModel));
+                    } else {
+                      Get.find<HomeController>().selectedWidget.value =
+                          Permissions(userModel: userModel);
+                    }
+                  },
+                  child: Card(
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    elevation: 5,
+                    elevation: 1,
                     child: Container(
                       width: double.infinity,
                       padding: EdgeInsets.all(10),
-                      child: userDetails(context),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  if (userModel != null)
-                    InkWell(
-                      onTap: () {
-                        Get.to(() => Permissions(userModel: userModel));
-                      },
-                      child: Card(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        elevation: 1,
-                        child: Container(
-                          width: double.infinity,
-                          padding: EdgeInsets.all(10),
-                          child: Row(
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  majorTitle(
-                                      title: "Update Permissions",
-                                      color: Colors.black,
-                                      size: 16.0),
-                                  minorTitle(
-                                    title: "update roles and permissions",
-                                    color: Colors.grey,
-                                  ),
-                                ],
+                              majorTitle(
+                                  title: "Update Permissions",
+                                  color: Colors.black,
+                                  size: 16.0),
+                              minorTitle(
+                                title: "update roles and permissions",
+                                color: Colors.grey,
                               ),
-                              Spacer(),
-                              Icon(Icons.lock)
                             ],
                           ),
-                        ),
+                          Spacer(),
+                          Icon(Icons.lock)
+                        ],
                       ),
                     ),
-                ],
-              ),
-            ),
+                  ),
+                ),
+            ],
           ),
-          appBar: _appBar(context),
-          bottomNavigationBar: BottomAppBar(
-            color: Colors.white,
-            child: userModel == null
-                ? Container(
-                    height: 0,
-                  )
-                : Container(
+        ),
+      ),
+      appBar: _appBar(context),
+      bottomNavigationBar: BottomAppBar(
+        color: Colors.white,
+        child: userModel == null || !isSmallScreen(context)
+            ? Container(
+                height: 0,
+              )
+            : Container(
+                width: double.infinity,
+                padding: EdgeInsets.all(10),
+                child: InkWell(
+                  onTap: () {
+                    deleteDialog(
+                        context: context,
+                        onPressed: () {
+                          attendantController.deleteAttendant(
+                              userModel: userModel);
+                        });
+                  },
+                  child: SizedBox(
                     width: double.infinity,
-                    padding: EdgeInsets.all(10),
-                    child: InkWell(
-                      onTap: () {
-                        deleteDialog(
-                            context: context,
-                            onPressed: () {
-                              attendantController.deleteAttendant(
-                                  userModel: userModel);
-                            });
-                      },
-                      child: SizedBox(
-                        width: double.infinity,
-                        height: 30,
-                        child: Center(
-                          child: majorTitle(
-                              title: "Remove Attendant",
-                              color: Colors.red,
-                              size: 16.0),
-                        ),
-                      ),
-                    )),
-          ),
-          floatButton: Container(),
-        ));
+                    height: 30,
+                    child: Center(
+                      child: majorTitle(
+                          title: "Remove Attendant",
+                          color: Colors.red,
+                          size: 16.0),
+                    ),
+                  ),
+                )),
+      ),
+      floatButton: Container(),
+    );
   }
 
   AppBar _appBar(context) {
@@ -177,13 +153,13 @@ class AttendantDetails extends StatelessWidget {
       backgroundColor: Colors.white,
       leading: IconButton(
         onPressed: () {
-          if (MediaQuery.of(context).size.width > 600) {
-            Get.find<HomeController>().selectedWidget.value = AttendantsPage();
-          } else {
+          if (isSmallScreen(context)) {
             Get.back();
+          } else {
+            Get.find<HomeController>().selectedWidget.value = AttendantsPage();
           }
         },
-        icon: Icon(
+        icon: const Icon(
           Icons.arrow_back_ios,
           color: Colors.black,
         ),
@@ -199,31 +175,30 @@ class AttendantDetails extends StatelessWidget {
                     : userModel?.username ?? userModel?.username,
                 color: Colors.black,
                 size: 16.0),
-            if (MediaQuery.of(context).size.width > 600)
-              Obx(() {
-                return InkWell(
-                  onTap: () {
-                    // attendantController.updateAttedant(
-                    //   userModel: userModel,
-                    // );
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: AppColors.mainColor, width: 2),
-                    ),
-                    child: majorTitle(
-                        title: "Update Changes",
-                        color: AppColors.mainColor,
-                        size: 14.0),
-                  ),
-                );
-              })
           ],
         ),
       ),
+      actions: [
+        if (!isSmallScreen(context) && userModel != null)
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: IconButton(
+                onPressed: () {
+                  deleteDialog(
+                      context: context,
+                      onPressed: () {
+                        attendantController.deleteAttendant(
+                            userModel: userModel);
+                        Get.find<HomeController>().selectedWidget.value =
+                            AttendantsPage();
+                      });
+                },
+                icon: const Icon(
+                  Icons.delete,
+                  color: Colors.red,
+                )),
+          )
+      ],
     );
   }
 
@@ -231,26 +206,27 @@ class AttendantDetails extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        SizedBox(height: 10),
         attendantUserInputs(
             name: "Username", controller: attendantController.nameController),
         SizedBox(height: 15),
-        // majorTitle(title: "Email", color: Colors.black, size: 14.0),
-        // SizedBox(height: 10),
-        // TextFormField(
-        //   controller: attendantController.emailController,
-        //   enabled: true,
-        //   keyboardType: TextInputType.emailAddress,
-        //   decoration: InputDecoration(
-        //     isDense: true,
-        //     contentPadding: EdgeInsets.all(15),
-        //     border: OutlineInputBorder(
-        //         borderRadius: BorderRadius.circular(10),
-        //         borderSide: BorderSide(color: Colors.grey, width: 1)),
-        //     focusedBorder: OutlineInputBorder(
-        //         borderRadius: BorderRadius.circular(10),
-        //         borderSide: BorderSide(color: Colors.grey, width: 1)),
-        //   ),
-        // ),
+        majorTitle(title: "Password", color: Colors.black, size: 14.0),
+        SizedBox(height: 10),
+        TextFormField(
+          controller: attendantController.passwordController,
+          enabled: true,
+          keyboardType: TextInputType.visiblePassword,
+          decoration: InputDecoration(
+            isDense: true,
+            contentPadding: EdgeInsets.all(15),
+            border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(color: Colors.grey, width: 1)),
+            focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(color: Colors.grey, width: 1)),
+          ),
+        ),
         SizedBox(height: 15),
         attendantUserInputs(
             name: "User ID",
@@ -262,7 +238,10 @@ class AttendantDetails extends StatelessWidget {
               height: 50,
               child: InkWell(
                 onTap: () {
-                  Get.to(() => Permissions());
+                  isSmallScreen(context)
+                      ? Get.to(() => Permissions())
+                      : Get.find<HomeController>().selectedWidget.value =
+                          Permissions();
                 },
                 child: Container(
                   padding: EdgeInsets.all(10),
@@ -354,24 +333,28 @@ class AttendantDetails extends StatelessWidget {
           height: 10,
         ),
         if (userModel != null)
-          SizedBox(
-              height: 50,
-              child: InkWell(
-                onTap: () {
-                  attendantController.updateAttedant(userModel: userModel!);
-                },
-                child: Container(
-                  padding: EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                      border: Border.all(width: 3, color: AppColors.mainColor),
-                      borderRadius: BorderRadius.circular(40)),
-                  child: Center(
-                      child: majorTitle(
-                          title: "Update",
-                          color: AppColors.mainColor,
-                          size: 18.0)),
-                ),
-              )),
+          Center(
+            child: SizedBox(
+                height: 50,
+                width: isSmallScreen(context) ? double.infinity : 200,
+                child: InkWell(
+                  onTap: () {
+                    attendantController.updateUser(userModel: userModel!);
+                  },
+                  child: Container(
+                    padding: EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                        border:
+                            Border.all(width: 3, color: AppColors.mainColor),
+                        borderRadius: BorderRadius.circular(40)),
+                    child: Center(
+                        child: majorTitle(
+                            title: "Update",
+                            color: AppColors.mainColor,
+                            size: 18.0)),
+                  ),
+                )),
+          ),
       ],
     );
   }
@@ -379,6 +362,7 @@ class AttendantDetails extends StatelessWidget {
 
 class Permissions extends StatelessWidget {
   UserModel? userModel;
+
   Permissions({Key? key, this.userModel}) : super(key: key);
   UserController attendantController = Get.find<UserController>();
 
@@ -465,15 +449,75 @@ class Permissions extends StatelessWidget {
     attendantController.roles.clear();
     attendantController.nameController.clear();
     // attendantController.nameController.clear();
-    Get.back();
-    Get.back();
+    if (isSmallScreen(Get.context)) {
+      Get.back();
+      Get.back();
+    } else {
+      Get.find<HomeController>().selectedWidget.value = AttendantsPage();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Permissions"),
+        backgroundColor:
+            isSmallScreen(context) ? AppColors.mainColor : Colors.white,
+        leading: IconButton(
+            onPressed: () {
+              if (isSmallScreen(context)) {
+                Get.back();
+              } else {
+                Get.find<HomeController>().selectedWidget.value =
+                    AttendantDetails(
+                  userModel: userModel,
+                );
+              }
+            },
+            icon: Icon(
+              Icons.arrow_back_ios,
+              color: isSmallScreen(context) ? Colors.white : Colors.black,
+            )),
+        title: Text(
+          "Permissions",
+          style: TextStyle(
+              color: isSmallScreen(context) ? Colors.white : Colors.black),
+        ),
+        elevation: 0.2,
+        actions: [
+          if (!isSmallScreen(context))
+            InkWell(
+              splashColor: Colors.transparent,
+              onTap: () {
+                var all = [];
+                for (var element in attendantController.roles) {
+                  all.add({
+                    "key": element["key"],
+                    "value": jsonEncode(element["value"])
+                  });
+                }
+                if (userModel == null) {
+                  _createAttendant(all);
+                } else {
+                  attendantController.updateUser(
+                      userModel: userModel!, permissions: jsonEncode(all));
+                }
+              },
+              child: Container(
+                padding: const EdgeInsets.all(8),
+                margin: const EdgeInsets.all(5).copyWith(right: 15),
+                height: kToolbarHeight,
+                decoration: BoxDecoration(
+                    border: Border.all(width: 3, color: AppColors.mainColor),
+                    borderRadius: BorderRadius.circular(40)),
+                child: Center(
+                    child: majorTitle(
+                        title: "Update Changes",
+                        color: AppColors.mainColor,
+                        size: 18.0)),
+              ),
+            )
+        ],
       ),
       body: Container(
         child: Obx(
@@ -530,7 +574,7 @@ class Permissions extends StatelessWidget {
         ),
       ),
       bottomNavigationBar: Container(
-        height: 50,
+        height: isSmallScreen(context) ? 50 : 0,
         margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
         child: InkWell(
           splashColor: Colors.transparent,
@@ -545,7 +589,7 @@ class Permissions extends StatelessWidget {
             if (userModel == null) {
               _createAttendant(all);
             } else {
-              attendantController.updateAttedant(
+              attendantController.updateUser(
                   userModel: userModel!, permissions: jsonEncode(all));
             }
           },

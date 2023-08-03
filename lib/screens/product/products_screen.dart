@@ -6,6 +6,7 @@ import 'package:pointify/controllers/sales_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
 import 'package:get/get.dart';
 import 'package:pointify/responsive/responsiveness.dart';
+import 'package:pointify/screens/purchases/create_purchase.dart';
 import 'package:pointify/screens/sales/create_sale.dart';
 import 'package:pointify/screens/sales/sale_order_item.dart';
 import 'package:realm/realm.dart';
@@ -66,6 +67,7 @@ class ProductsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print(type);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -81,6 +83,9 @@ class ProductsScreen extends StatelessWidget {
                 if (type == "sale") {
                   Get.find<HomeController>().selectedWidget.value =
                       CreateSale();
+                } else if (type == "purchase") {
+                  Get.find<HomeController>().selectedWidget.value =
+                      CreatePurchase();
                 }
               }
             },
@@ -108,7 +113,6 @@ class ProductsScreen extends StatelessWidget {
                                 return function!(product);
                               }
                             : (Product product) {
-                                print("hello");
                                 InvoiceItem invoiceItem = InvoiceItem(
                                     ObjectId(),
                                     product: product,
@@ -118,7 +122,16 @@ class ProductsScreen extends StatelessWidget {
                                         Get.find<UserController>().user.value,
                                     createdAt: DateTime.now(),
                                     itemCount: 1);
-                                Get.back();
+                                if (isSmallScreen(context)) {
+                                  Get.back();
+                                } else {
+                                  if (type == "purchase") {
+                                    Get.find<HomeController>()
+                                        .selectedWidget
+                                        .value = CreatePurchase();
+                                  } else {}
+                                }
+
                                 purchaseController.addNewPurchase(invoiceItem);
                               });
                   }),

@@ -30,6 +30,7 @@ class ShopCategories extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print(page);
     return Scaffold(
       resizeToAvoidBottomInset: false, // set
       appBar: AppBar(
@@ -38,15 +39,19 @@ class ShopCategories extends StatelessWidget {
         leading: IconButton(
           icon: const Icon(Icons.clear, color: Colors.black),
           onPressed: () {
-            if (isSmallScreen(context)) {
+            if (page == "home") {
+              Get.back();
+            } else if (isSmallScreen(context)) {
               Get.back();
             } else {
               if (page == "details") {
                 Get.find<HomeController>().selectedWidget.value =
                     ShopDetails(shopModel: shopModel!);
               } else {
-                Get.find<HomeController>().selectedWidget.value =
-                    CreateShop(page: page);
+                Get.find<HomeController>().selectedWidget.value = CreateShop(
+                  page: page,
+                  clearInputs: false,
+                );
               }
             }
 

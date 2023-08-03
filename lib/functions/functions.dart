@@ -2,6 +2,7 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/controllers/user_controller.dart';
 import 'package:flutter/material.dart';
@@ -29,6 +30,11 @@ List<int> getYears(int year) {
   return yearsTilPresent;
 }
 
+showDate(int date) => Text(
+      '${DateFormat("MMM dd yyyy hh:mm a").format(DateTime.fromMillisecondsSinceEpoch(date))} ',
+      style: const TextStyle(fontSize: 11, fontStyle: FontStyle.italic),
+    );
+
 getYearlyRecords(Product product,
     {required Function function, required int year}) {
   DateTime now = DateTime(year, 1);
@@ -41,7 +47,7 @@ getYearlyRecords(Product product,
 void getMonthlyProductSales(Product product, int i,
     {required Function function, required int year}) {
   DateTime now = DateTime(year, i + 1);
-  var lastday = DateTime(now.year, now.month + 1, 0);
+  var lastday = DateTime(now.year, now.month + 1, 0).add(Duration(hours: 24));
   final noww = DateTime(year, i + 1);
   var firstday = DateTime(noww.year, noww.month, 1);
 

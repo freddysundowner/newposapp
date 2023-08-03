@@ -18,10 +18,22 @@ class Expense {
 
   RealmResults<ExpenseModel> getExpenseByDate(
       {DateTime? fromDate, DateTime? toDate, Shop? shop}) {
+    if (fromDate == null) {
+      RealmResults<ExpenseModel> expenses = realmService.realm
+          .query<ExpenseModel>(
+              'shop == \$0', [shopController.currentShop.value?.id.toString()]);
+      return expenses;
+    }
     RealmResults<ExpenseModel> expenses = realmService.realm.query<
             ExpenseModel>(
-        'shop == \$0 AND date > ${fromDate!.millisecondsSinceEpoch} AND date < ${toDate!.millisecondsSinceEpoch}',
+        'shop == \$0 AND date > ${fromDate.millisecondsSinceEpoch} AND date < ${toDate!.millisecondsSinceEpoch}',
         [shopController.currentShop.value?.id.toString()]);
     return expenses;
+  }
+
+  deleteExpenses(List<ExpenseModel> sales) {
+    realmService.realm.write(() {
+      realmService.realm.deleteMany(sales);
+    });
   }
 }

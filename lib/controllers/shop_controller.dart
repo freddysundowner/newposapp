@@ -1,7 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pointify/Real/schema.dart';
+import 'package:pointify/controllers/plan_controller.dart';
 import 'package:pointify/responsive/responsiveness.dart';
+import 'package:pointify/screens/shop/create_shop.dart';
+import 'package:pointify/services/plans_service.dart';
+import 'package:pointify/services/sales.dart';
 import 'package:pointify/services/shop_services.dart';
 import 'package:pointify/controllers/AuthController.dart';
 import 'package:pointify/controllers/home_controller.dart';
@@ -37,6 +41,7 @@ class ShopController extends GetxController {
   Rxn<Shop> currentShop = Rxn(null);
   RxList<Shop> allShops = RxList([]);
   RxList<ShopTypes> categories = RxList([]);
+  RxList excludefeatures = RxList(["usage", 'stock']);
 
   createShop({required page, required context}) async {
     if (terms.isFalse) {
@@ -47,7 +52,10 @@ class ShopController extends GetxController {
     final newItem = Shop(ObjectId(),
         name: nameController.text,
         location: reqionController.text,
+        subscriptiondate: DateTime.now().millisecondsSinceEpoch,
         owner: appController.app.value!.currentUser!.id,
+        package:
+            Get.find<PlanController>().plans.where((p0) => p0.price == 0).first,
         currency:
             currency.isEmpty ? Constants.currenciesData[0] : currency.value);
     newItem.type = Get.find<ShopController>().selectedCategory.value;
@@ -56,14 +64,16 @@ class ShopController extends GetxController {
     getShops();
     Get.find<UserController>().getUser();
     clearTextFields();
-    if (MediaQuery.of(context).size.width > 600) {
+    if (!isSmallScreen(context)) {
       if (page == "home") {
-        Get.find<HomeController>().selectedWidget.value = HomePage();
+        Get.off(() => Home());
       } else {
         Get.find<HomeController>().selectedWidget.value = ShopsPage();
+        Get.find<HomeController>().activeItem.value = "Home";
       }
     } else if (page == "home") {
       Get.off(() => Home());
+      Get.find<HomeController>().selectedWidget.value = HomePage();
     } else {
       Get.back();
     }
@@ -74,10 +84,15 @@ class ShopController extends GetxController {
   getShops({String name = ""}) async {
     try {
       gettingShopsLoad.value = true;
-
+      allShops.clear();
       RealmResults<Shop> response = await ShopService().getShop(name: name);
       if (response.isNotEmpty) {
-        allShops.assignAll(response.map((e) => e).toList());
+        if (name.isNotEmpty) {
+          allShops.assignAll(
+              response.where((e) => e.name!.contains(name)).toList());
+        } else {
+          allShops.assignAll(response.map((e) => e).toList());
+        }
       } else {
         allShops.value = [];
       }
@@ -128,17 +143,57 @@ class ShopController extends GetxController {
     }
   }
 
-  deleteShop({required Shop shop, required context}) async {
-    try {
-      deleteShopLoad.value = true;
-      var response = await ShopService().deleteItem(shop);
-      getShops();
-      Get.back();
-      showSnackBar(message: "shop deleted", color: AppColors.mainColor);
-      deleteShopLoad.value = false;
-    } catch (e) {
-      deleteShopLoad.value = false;
+  checkDaysRemaining() {
+    if (allowSubscription == false) return 999999;
+    int days = currentShop.value!.subscriptiondate == null
+        ? 0
+        : DateTime.fromMillisecondsSinceEpoch(
+                currentShop.value!.subscriptiondate!)
+            .add(Duration(days: currentShop.value!.package!.time!))
+            .difference(DateTime.now())
+            .inDays;
+    return days;
+  }
+
+  checkIfTrial() {
+    if (allowSubscription == false) return allowSubscription;
+    int days = currentShop.value?.package == null
+        ? 14
+        : currentShop.value!.package!.time!;
+    return days == 14;
+  }
+
+  checkSubscription() {
+    if (allowSubscription == false) return !allowSubscription;
+    Packages? packages = currentShop.value?.package;
+    if (packages != null) {
+      DateTime subscriptionedndate = DateTime.fromMillisecondsSinceEpoch(
+              currentShop.value!.subscriptiondate!)
+          .add(Duration(days: packages.time!));
+      var active = subscriptionedndate.millisecondsSinceEpoch >
+          currentShop.value!.subscriptiondate!;
+      return active;
     }
+    return false;
+  }
+
+  deleteShop({required Shop shop, required context}) async {
+    Get.find<RealmController>().deleteShopData(shop);
+
+    //update current shop
+    RealmResults<Shop> response = ShopService().getShop();
+    if (response.isNotEmpty) {
+      Users().updateAdmin(userController.user.value!, shop: response.first);
+      Get.offAll(() => Home());
+    } else {
+      Users().updateAdmin(userController.user.value!, shop: null);
+      Get.off(() => CreateShop(
+            page: "home",
+            clearInputs: true,
+          ));
+    }
+
+    userController.getUser();
   }
 
   getCategories() async {

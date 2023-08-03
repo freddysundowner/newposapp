@@ -16,6 +16,7 @@ import '../../Real/schema.dart';
 import '../../controllers/AuthController.dart';
 import '../../controllers/home_controller.dart';
 import '../../controllers/supplierController.dart';
+import '../../data/interests.dart';
 import '../../services/category.dart';
 import '../../services/supplier.dart';
 import '../stock/stock_page.dart';
@@ -23,11 +24,19 @@ import '../stock/stock_page.dart';
 class CreateProduct extends StatelessWidget {
   final page;
   final Product? productModel;
+  bool? clearInputs = true;
 
-  CreateProduct({Key? key, required this.page, required this.productModel})
+  CreateProduct(
+      {Key? key,
+      required this.page,
+      required this.productModel,
+      this.clearInputs})
       : super(key: key) {
     if (page == "create") {
-      productController.clearControllers();
+      if (clearInputs!) {
+        productController.clearControllers();
+      }
+
       supplierController.getSuppliersInShop("all");
     } else {
       productController.assignTextFields(productModel!);
@@ -49,6 +58,8 @@ class CreateProduct extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print(page);
+    // Categories().getProductsCategories();
     return WillPopScope(
       onWillPop: () async {
         productController.selectedSupplier.clear();
@@ -87,7 +98,7 @@ class CreateProduct extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               majorTitle(
-                  title: page == "edit" ? "Edit Product" : "Add New Product",
+                  title: page == "edit" ? "Edit Product" : "duct",
                   color: Colors.black,
                   size: 16.0),
               minorTitle(
@@ -271,7 +282,6 @@ class CreateProduct extends StatelessWidget {
                           inputFormatters: [
                             FilteringTextInputFormatter.digitsOnly
                           ],
-
                           decoration: InputDecoration(
                             fillColor: Colors.white,
                             filled: true,
@@ -389,6 +399,7 @@ class CreateProduct extends StatelessWidget {
                                           Categories().getProductCategories(),
                                       builder: (context, snapshot) {
                                         final data = snapshot.data;
+                                        print(data);
 
                                         if (data == null) {
                                           return const Center(
@@ -520,7 +531,9 @@ class CreateProduct extends StatelessWidget {
                                     return StreamBuilder<
                                             RealmResultsChanges<Supplier>>(
                                         stream: SupplierService()
-                                            .getSuppliersByShopId()
+                                            .getSuppliersByShopId(
+                                                shop: shopController
+                                                    .currentShop.value!)
                                             .changes,
                                         builder:
                                             (context, AsyncSnapshot snapshot) {

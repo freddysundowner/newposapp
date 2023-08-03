@@ -3,6 +3,7 @@ import 'package:pointify/controllers/AuthController.dart';
 import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/controllers/user_controller.dart';
 import 'package:pointify/main.dart';
+import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/cash_flow/cash_flow_manager.dart';
 import 'package:pointify/screens/finance/expense_page.dart';
 import 'package:pointify/screens/product/create_product.dart';
@@ -67,8 +68,10 @@ class Helper extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: appBar,
-      floatingActionButton: floatButton != null
-          ? Container()
+      floatingActionButton: floatButton != null || !isSmallScreen(context)
+          ? Container(
+              height: 0,
+            )
           : userController.user.value?.usertype == "attendant" ||
                   userController.switcheduser.value != null
               ? null
@@ -154,7 +157,7 @@ class Helper extends StatelessWidget {
                                     break;
                                   case 5:
                                     {
-                                      Get.to(() => CreateShop(page: "home"));
+                                      Get.to(() => CreateShop(page: "home",clearInputs: true,));
                                     }
                                     break;
                                 }

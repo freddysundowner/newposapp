@@ -26,205 +26,109 @@ class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: ResponsiveWidget(
-        largeScreen: Obx(() {
-          return Container(
-            width: double.infinity,
-            color: Colors.grey.withOpacity(0.2),
-            padding: EdgeInsets.symmetric(vertical: 30, horizontal: 50),
-            child: Container(
-              padding: EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(8),
-                  boxShadow: [
-                    BoxShadow(
-                        color: Colors.black26,
-                        offset: Offset(0, 1),
-                        blurRadius: 1.0)
-                  ]),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(
-                    height: 20,
-                  ),
-                  majorTitle(
-                      title: "User Details", color: Colors.black, size: 18.0),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Row(
+        body:
+            // isSmallScreen(context)
+            //     ?
+            SafeArea(
+      child: SingleChildScrollView(
+          child: Container(
+        padding: EdgeInsets.symmetric(
+                horizontal: isSmallScreen(context) ? 10 : 20, vertical: 10)
+            .copyWith(right: isSmallScreen(context) ? 10 : 50),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 20),
+            majorTitle(title: "User Details", color: Colors.black, size: 18.0),
+            const SizedBox(height: 10),
+            Card(
+                elevation: 3,
+                child: Container(
+                  padding: const EdgeInsets.all(15),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          majorTitle(
-                              title: "Username:",
-                              color: Colors.grey,
-                              size: 18.0),
-                          SizedBox(height: 20),
-                          majorTitle(
-                              title: "Email:", color: Colors.grey, size: 18.0),
-                          SizedBox(height: 20),
-                          majorTitle(
-                              title: "Phone:", color: Colors.grey, size: 18.0),
-                        ],
-                      ),
-                      SizedBox(width: 40),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          minorTitle(
-                              title: authController
-                                  .currentUser!.value!.profile.name,
-                              color: Colors.black,
-                              size: 18),
-                          SizedBox(height: 20),
-                          minorTitle(
-                              title: authController
-                                  .currentUser!.value!.profile.email,
-                              color: Colors.black,
-                              size: 18),
-                        ],
-                      )
+                      Obx(() {
+                        return profileItems(
+                            title: "Email",
+                            subtitle: authController
+                                .currentUser!.value?.profile.email,
+                            icon: Icons.email);
+                      }),
+                      const SizedBox(height: 15),
+                      if(userController.user.value!.username !=null)Obx(() {
+                        return profileItems(
+                            title: "Username",
+                            subtitle: userController.user.value!.username ?? "",
+                            icon: Icons.person);
+                      }),
                     ],
                   ),
-                  SizedBox(height: 20),
-                  Divider(
-                    thickness: 1,
-                    color: Colors.grey.withOpacity(0.2),
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  majorTitle(
-                      title: "Settings", color: Colors.black, size: 18.0),
-                  SizedBox(height: 20),
-                  accountCardDesktop(
+                )),
+            const SizedBox(height: 10),
+            majorTitle(title: "Settings", color: Colors.black, size: 18.0),
+            const SizedBox(height: 10),
+            Card(
+              elevation: 3,
+              child: Column(
+                children: [
+                  accountCard(
                       title: "Edit Profile",
+                      icon: Icons.edit,
                       onPressed: () {
-                        Get.find<HomeController>().selectedWidget.value =
-                            ProfileUpdate();
-                        // Get.to(() => ProfileUpdate());
+                        if (isSmallScreen(context)) {
+                          Get.to(() => ProfileUpdate());
+                        } else {
+                          Get.find<HomeController>().selectedWidget.value =
+                              ProfileUpdate();
+                        }
                       }),
-                  SizedBox(height: 10),
-                  accountCardDesktop(
-                      title: "Password Setting",
+                  accountCard(
+                      title: "Password Settings",
+                      icon: Icons.lock,
                       onPressed: () {
-                        // showPasswordResetDialog();
+                        showPasswordResetDialog(
+                            authController.currentUser!.value!.profile);
                       }),
-                  SizedBox(height: 10),
-                  accountCardDesktop(title: "Subscriptions", onPressed: () {}),
-                  SizedBox(height: 10),
-                  accountCardDesktop(
+                  accountCard(
+                      showDivider: false,
                       title: "Delete Account",
+                      icon: Icons.delete,
                       onPressed: () {
                         deleteDialog(
                             context: context,
                             onPressed: () {
-                              // authController.deleteAdmin(
-                              //     context: context,
-                              //     id: authController.currentUser.value?.id);
+                              print("b");
+                              // authController.deleteAdmin();
                             });
                       }),
                 ],
               ),
             ),
-          );
-        }),
-        smallScreen: SafeArea(
-          child: SingleChildScrollView(
-              child: Container(
-            padding: EdgeInsets.all(10),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(height: 20),
-                majorTitle(
-                    title: "User Details", color: Colors.black, size: 18.0),
-                SizedBox(height: 10),
-                Card(
-                    elevation: 3,
-                    child: Container(
-                      padding: EdgeInsets.all(15),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Obx(() {
-                            return profileItems(
-                                title: "Email",
-                                subtitle: Get.find<RealmController>()
-                                    .currentUser!
-                                    .value!
-                                    .profile
-                                    .email,
-                                icon: Icons.email);
-                          }),
-                          SizedBox(height: 15),
-                          Obx(() {
-                            return profileItems(
-                                title: "Username",
-                                subtitle: userController.user.value!.username,
-                                icon: Icons.person);
-                          }),
-                        ],
-                      ),
-                    )),
-                SizedBox(height: 10),
-                majorTitle(title: "Settings", color: Colors.black, size: 18.0),
-                SizedBox(height: 10),
-                Card(
-                  elevation: 3,
-                  child: Column(
-                    children: [
-                      accountCard(
-                          title: "Edit Profile",
-                          icon: Icons.edit,
-                          onPressed: () {
-                            Get.to(() => ProfileUpdate());
-                          }),
-                      accountCard(
-                          title: "Password Settings",
-                          icon: Icons.lock,
-                          onPressed: () {
-                            showPasswordResetDialog(
-                                authController.currentUser!.value!.profile);
-                          }),
-                      accountCard(
-                          title: "Delete Account",
-                          icon: Icons.delete,
-                          onPressed: () {
-                            deleteDialog(
-                                context: context,
-                                onPressed: () {
-                                  print("b");
-                                  // authController.deleteAdmin();
-                                });
-                          }),
-                    ],
-                  ),
+            const SizedBox(height: 10),
+            if (isSmallScreen(context))
+              Card(
+                elevation: 3,
+                child: accountCard(
+                  title: "Logout",
+                  icon: Icons.logout,
+                  showDivider: false,
+                  onPressed: () {
+                    logoutAccountDialog(context);
+                  },
                 ),
-                SizedBox(height: 10),
-                Card(
-                  elevation: 3,
-                  child: accountCard(
-                    title: "Logout",
-                    icon: Icons.logout,
-                    onPressed: () {
-                      logoutAccountDialog(context);
-                    },
-                  ),
-                ),
-              ],
-            ),
-          )),
+              ),
+          ],
         ),
-      ),
-    );
+      )),
+    ));
   }
 
-  Widget accountCard({required title, required icon, required onPressed}) {
+  Widget accountCard(
+      {required title,
+      required icon,
+      required onPressed,
+      bool? showDivider = true}) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(10, 5, 10, 0),
       child: InkWell(
@@ -232,7 +136,7 @@ class ProfilePage extends StatelessWidget {
           onPressed();
         },
         child: Container(
-          padding: EdgeInsets.all(15),
+          padding: const EdgeInsets.all(15),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -240,19 +144,21 @@ class ProfilePage extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Icon(icon, color: AppColors.mainColor),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   majorTitle(title: title, color: Colors.grey, size: 16.0),
-                  Spacer(),
-                  Icon(
+                  const Spacer(),
+                  const Icon(
                     Icons.arrow_forward_ios_outlined,
                     color: Colors.black,
                   ),
                 ],
               ),
-              SizedBox(height: 10),
-              Divider(
-                color: Colors.grey,
-              )
+              const SizedBox(height: 10),
+              if (showDivider!)
+                const Divider(
+                  color: Colors.black,
+                  thickness: 0.1,
+                )
             ],
           ),
         ),
@@ -268,13 +174,13 @@ class ProfilePage extends StatelessWidget {
           onPressed();
         },
         child: Container(
-          padding: EdgeInsets.all(5),
+          padding: const EdgeInsets.all(5),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               majorTitle(title: title, color: Colors.grey, size: 16.0),
-              Spacer(),
-              Icon(
+              const Spacer(),
+              const Icon(
                 Icons.arrow_forward_ios_outlined,
                 color: Colors.grey,
               ),
@@ -295,7 +201,7 @@ class ProfilePage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             majorTitle(title: title, color: AppColors.mainColor, size: 18.0),
-            SizedBox(height: 5),
+            const SizedBox(height: 5),
             minorTitle(
               title: subtitle,
               color: Colors.black,
@@ -312,8 +218,8 @@ class ProfilePage extends StatelessWidget {
         context: Get.context!,
         builder: (_) {
           return AlertDialog(
-            title: Center(child: Text("Edit Password")),
-            content: Container(
+            title: const Center(child: Text("Edit Password")),
+            content: SizedBox(
               height: MediaQuery.of(Get.context!).size.height * 0.3,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -325,26 +231,30 @@ class ProfilePage extends StatelessWidget {
                           title: "New Password",
                           color: Colors.black,
                           size: 16.0),
-                      SizedBox(height: 5),
-                      TextFormField(
-                        controller:
-                            authController.textEditingControllerNewPassword,
-                        obscureText: true,
-                        decoration: InputDecoration(
-                          contentPadding: EdgeInsets.all(10),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(5),
-                            borderSide: BorderSide(color: Colors.grey),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(5),
-                            borderSide: BorderSide(color: Colors.grey),
+                      const SizedBox(height: 5),
+                      Obx(()=> TextFormField(
+                          controller:
+                              authController.textEditingControllerNewPassword,
+                          obscureText: authController.showPassword.value,
+                          decoration: InputDecoration(
+                            suffix: InkWell(child: Icon(authController.showPassword.value ?Icons.visibility_off : Icons.visibility), onTap: (){
+                              authController.showPassword.value = !authController.showPassword.value;
+                            },),
+                            contentPadding: const EdgeInsets.all(10),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(5),
+                              borderSide: const BorderSide(color: Colors.grey),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(5),
+                              borderSide: const BorderSide(color: Colors.grey),
+                            ),
                           ),
                         ),
                       )
                     ],
                   ),
-                  SizedBox(height: 5),
+                  const SizedBox(height: 5),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -352,26 +262,30 @@ class ProfilePage extends StatelessWidget {
                           title: "Confirm Password",
                           color: Colors.black,
                           size: 16.0),
-                      SizedBox(height: 5),
-                      TextFormField(
-                        controller:
-                            authController.textEditingControllerConfirmPassword,
-                        obscureText: true,
-                        decoration: InputDecoration(
-                          contentPadding: const EdgeInsets.all(10),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(5),
-                            borderSide: BorderSide(color: Colors.grey),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(5),
-                            borderSide: BorderSide(color: Colors.grey),
+                      const SizedBox(height: 5),
+                      Obx(()=> TextFormField(
+                          controller:
+                              authController.textEditingControllerConfirmPassword,
+                          obscureText: authController.showPassword.value,
+                          decoration: InputDecoration(
+                            suffix: InkWell(child: Icon(authController.showPassword.value ?Icons.visibility_off : Icons.visibility), onTap: (){
+                              authController.showPassword.value = !authController.showPassword.value;
+                            },),
+                            contentPadding: const EdgeInsets.all(10),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(5),
+                              borderSide: const BorderSide(color: Colors.grey),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(5),
+                              borderSide: const BorderSide(color: Colors.grey),
+                            ),
                           ),
                         ),
                       )
                     ],
                   ),
-                  Spacer(),
+                  const Spacer(),
                   Row(
                     // crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.end,
@@ -405,6 +319,18 @@ class ProfilePage extends StatelessWidget {
                                   message: "Password mismatched",
                                   title: "Error");
                             } else {
+                              if (authController
+                                      .textEditingControllerNewPassword.text
+                                      .toString()
+                                      .trim()
+                                      .length <
+                                  6) {
+                                generalAlert(
+                                    title: "Error",
+                                    message:
+                                        "Password must be more than 6 charactes");
+                                return;
+                              }authController.showPassword.value = true;
                               Get.back();
                               authController.resetPasswordEmail(
                                   profile.email!,

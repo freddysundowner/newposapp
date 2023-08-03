@@ -11,7 +11,7 @@ logoutAccountDialog(context) {
       context: context,
       builder: (_) {
         return AlertDialog(
-          title: Text("Logout"),
+          title: const Text("Logout"),
           content: majorTitle(
               title: "You will be logout from you account",
               color: Colors.grey,

@@ -11,6 +11,7 @@ import 'package:pointify/screens/product/tabs/bad_stock_history.dart';
 import 'package:pointify/screens/product/tabs/product_sales.dart';
 import 'package:pointify/screens/product/tabs/stockin_history.dart';
 import 'package:pointify/screens/product/tabs/count_history.dart';
+import 'package:pointify/utils/colors.dart';
 
 import '../../Real/schema.dart';
 import '../../controllers/stock_transfer_controller.dart';
@@ -35,6 +36,8 @@ class ProductHistory extends StatelessWidget {
         appBar: AppBar(
           elevation: 0.0,
           titleSpacing: 0.0,
+          backgroundColor:
+              isSmallScreen(context) ? AppColors.mainColor : Colors.white,
           centerTitle: false,
           leading: IconButton(
               onPressed: () {
@@ -45,15 +48,21 @@ class ProductHistory extends StatelessWidget {
                   Get.back();
                 }
               },
-              icon: Icon(Icons.arrow_back_ios)),
+              icon: Icon(Icons.arrow_back_ios,
+                  color: isSmallScreen(context) ? Colors.white : Colors.black)),
           title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 "${product.name!}",
-                style: const TextStyle(fontSize: 16),
+                style: TextStyle(
+                    fontSize: 16,
+                    color:
+                        isSmallScreen(context) ? Colors.white : Colors.black),
               ),
-              minorTitle(title: "History", color: Colors.white),
+              minorTitle(
+                  title: "History",
+                  color: isSmallScreen(context) ? Colors.white : Colors.black),
             ],
           ),
           actions: [
@@ -121,9 +130,17 @@ class ProductHistory extends StatelessWidget {
                 padding: const EdgeInsets.only(right: 10),
                 child: Row(
                   children: [
-                    Obx(() =>
-                        Text(productController.currentYear.value.toString())),
-                    Icon(Icons.arrow_drop_down)
+                    Obx(() => Text(
+                          productController.currentYear.value.toString(),
+                          style: TextStyle(
+                              color: isSmallScreen(context)
+                                  ? Colors.white
+                                  : Colors.black),
+                        )),
+                    Icon(Icons.arrow_drop_down,
+                        color: isSmallScreen(context)
+                            ? Colors.white
+                            : Colors.black)
                   ],
                 ),
               ),

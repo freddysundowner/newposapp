@@ -19,11 +19,12 @@ import '../../controllers/product_controller.dart';
 import '../../utils/themer.dart';
 import '../../widgets/bigtext.dart';
 import '../../widgets/no_items_found.dart';
+import '../finance/profit_page.dart';
 
 class BadStockPage extends StatelessWidget {
   final page;
 
-  BadStockPage({Key? key, required this.page}) : super(key: key) {}
+  BadStockPage({Key? key, required this.page}) : super(key: key) ;
 
   ProductController productController = Get.find<ProductController>();
   ShopController shopController = Get.find<ShopController>();
@@ -32,6 +33,10 @@ class BadStockPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    productController.getBadStock(
+        shopId: Get.find<ShopController>().currentShop.value!.id,
+        attendant: '',
+        product: null);
     return WillPopScope(
       onWillPop: () async {
         productController.showBadStockWidget.value = false;
@@ -53,6 +58,9 @@ class BadStockPage extends StatelessWidget {
                     if (page == "services") {
                       Get.find<HomeController>().selectedWidget.value =
                           AllSalesPage(page: "badstock");
+                    } else if (page == "profitspage") {
+                      Get.find<HomeController>().selectedWidget.value =
+                          ProfitPage();
                     } else {
                       Get.find<HomeController>().selectedWidget.value =
                           StockPage();
@@ -82,9 +90,9 @@ class BadStockPage extends StatelessWidget {
                     productController.showBadStockWidget.value = true;
                     productController.getProductsBySort(type: "all");
                     isSmallScreen(context)
-                        ? Get.to(() => badStockWidget(context: context))
+                        ? Get.to(() => CreateBadStock(page: page))
                         : Get.find<HomeController>().selectedWidget.value =
-                            badStockWidget(context: context);
+                            CreateBadStock(page: page);
                   },
                   child: Container(
                     padding: const EdgeInsets.all(10),
@@ -103,10 +111,27 @@ class BadStockPage extends StatelessWidget {
               IconButton(
                   onPressed: () async {
                     final picked = await showDateRangePicker(
-                      context: Get.context!,
-                      lastDate: DateTime(2079),
-                      firstDate: DateTime(2019),
-                    );
+                        context: Get.context!,
+                        lastDate: DateTime(2079),
+                        firstDate: DateTime(2019),
+                        builder: (context, child) {
+                          return Column(
+                            children: [
+                              ConstrainedBox(
+                                constraints:
+                                    BoxConstraints(maxWidth: double.infinity),
+                                child: Container(
+                                    margin: EdgeInsets.only(
+                                      left: isSmallScreen(context)
+                                          ? 0
+                                          : MediaQuery.of(context).size.width *
+                                              0.2,
+                                    ),
+                                    child: child),
+                              )
+                            ],
+                          );
+                        });
                     Get.find<ProductController>().getBadStock(
                         shopId: shopController.currentShop.value!.id,
                         attendant: '',
@@ -240,55 +265,53 @@ class BadStockPage extends StatelessWidget {
                                   child: Theme(
                                     data: Theme.of(context)
                                         .copyWith(dividerColor: Colors.grey),
-                                    child: FittedBox(
-                                      child: DataTable(
-                                        decoration: BoxDecoration(
-                                            border: Border.all(
-                                          width: 1,
-                                          color: Colors.black,
-                                        )),
-                                        columnSpacing: 30.0,
-                                        columns: const [
-                                          DataColumn(
-                                              label: Text('Name',
-                                                  textAlign: TextAlign.center)),
-                                          DataColumn(
-                                              label: Text('Reason',
-                                                  textAlign: TextAlign.center)),
-                                          DataColumn(
-                                              label: Text('Quantity',
-                                                  textAlign: TextAlign.center)),
-                                          DataColumn(
-                                              label: Text('Attendant',
-                                                  textAlign: TextAlign.center)),
-                                          DataColumn(
-                                              label: Text('Date',
-                                                  textAlign: TextAlign.center)),
-                                        ],
-                                        rows: List.generate(
-                                            productController.badstocks.length,
-                                            (index) {
-                                          BadStock badstock = productController
-                                              .badstocks
-                                              .elementAt(index);
-                                          final y = badstock.product?.name;
-                                          final r = badstock.description;
-                                          final h = badstock.quantity;
-                                          final x =
-                                              badstock.attendantId?.username;
-                                          final z = badstock.createdAt;
+                                    child: DataTable(
+                                      decoration: BoxDecoration(
+                                          border: Border.all(
+                                        width: 1,
+                                        color: Colors.black,
+                                      )),
+                                      columnSpacing: 30.0,
+                                      columns: const [
+                                        DataColumn(
+                                            label: Text('Name',
+                                                textAlign: TextAlign.center)),
+                                        DataColumn(
+                                            label: Text('Reason',
+                                                textAlign: TextAlign.center)),
+                                        DataColumn(
+                                            label: Text('Quantity',
+                                                textAlign: TextAlign.center)),
+                                        DataColumn(
+                                            label: Text('Attendant',
+                                                textAlign: TextAlign.center)),
+                                        DataColumn(
+                                            label: Text('Date',
+                                                textAlign: TextAlign.center)),
+                                      ],
+                                      rows: List.generate(
+                                          productController.badstocks.length,
+                                          (index) {
+                                        BadStock badstock = productController
+                                            .badstocks
+                                            .elementAt(index);
+                                        final y = badstock.product?.name;
+                                        final r = badstock.description;
+                                        final h = badstock.quantity;
+                                        final x =
+                                            badstock.attendantId?.username;
+                                        final z = badstock.createdAt;
 
-                                          return DataRow(cells: [
-                                            DataCell(Text(y!)),
-                                            DataCell(Text(r!)),
-                                            DataCell(Text(h.toString())),
-                                            DataCell(Text(x!)),
-                                            DataCell(Text(
-                                                DateFormat("yyyy-dd-MMM ")
-                                                    .format(z!))),
-                                          ]);
-                                        }),
-                                      ),
+                                        return DataRow(cells: [
+                                          DataCell(Text(y!)),
+                                          DataCell(Text(r!)),
+                                          DataCell(Text(h.toString())),
+                                          DataCell(Text(x!)),
+                                          DataCell(Text(
+                                              DateFormat("yyyy-dd-MMM ")
+                                                  .format(z!))),
+                                        ]);
+                                      }),
                                     ),
                                   ),
                                 );
@@ -298,8 +321,16 @@ class BadStockPage extends StatelessWidget {
           )),
     );
   }
+}
 
-  Widget badStockWidget({required BuildContext context}) {
+class CreateBadStock extends StatelessWidget {
+  final page;
+  ProductController productController = Get.find<ProductController>();
+
+  CreateBadStock({Key? key, required this.page}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -313,9 +344,8 @@ class BadStockPage extends StatelessWidget {
             if (isSmallScreen(Get.context)) {
               Get.back();
             } else {
-              Get.back();
-              // Get.find<HomeController>().selectedWidget.value =
-              //   BadStockPage(page: "stockpage");
+              Get.find<HomeController>().selectedWidget.value =
+                  BadStockPage(page: page);
             }
           },
           icon: const Icon(
@@ -326,10 +356,9 @@ class BadStockPage extends StatelessWidget {
         ),
       ),
       body: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-        width: isSmallScreen(context)
-            ? double.infinity
-            : MediaQuery.of(context).size.width * 0.4,
+        margin: EdgeInsets.symmetric(
+            horizontal: isSmallScreen(context) ? 10 : 20, vertical: 10),
+        width: double.infinity,
         child: Column(
           children: [
             Column(
@@ -378,6 +407,11 @@ class BadStockPage extends StatelessWidget {
                           type: "badstock",
                           function: (Product product) {
                             productController.selectedBadStock.value = product;
+
+                            Get.find<HomeController>().selectedWidget.value =
+                                CreateBadStock(
+                              page: page,
+                            );
                           },
                         );
                       }
@@ -501,7 +535,11 @@ class BadStockPage extends StatelessWidget {
                               } else {
                                 productController.saveBadStock(
                                     page: page, context: context);
-                                Get.back();
+                                isSmallScreen(context)
+                                    ? Get.back()
+                                    : Get.find<HomeController>()
+                                        .selectedWidget
+                                        .value = BadStockPage(page: page);
                               }
                             },
                           );

@@ -17,80 +17,81 @@ class AttendantLogin extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-          backgroundColor: MediaQuery.of(context).size.width <= 600
-              ? AppColors.mainColor
-              : Colors.white,
-          elevation: 0.0,
-          leading: IconButton(
-              onPressed: () {
-                Get.back();
-              },
-              icon: Icon(
-                Icons.clear,
-                color: MediaQuery.of(context).size.width <= 600
-                    ? Colors.white
-                    : Colors.black,
-              ))),
-      backgroundColor: Colors.white,
-      body: ResponsiveWidget(
-          largeScreen: Align(
-            alignment: Alignment.center,
-            child: Container(
-              width: 400,
-              height: MediaQuery.of(context).size.height * 0.7,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(5.0),
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey,
-                    offset: Offset(0.0, 0.0), //(x,y)
-                    blurRadius: 1.0,
-                  ),
-                ],
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
+        appBar: AppBar(
+            backgroundColor: MediaQuery.of(context).size.width <= 600
+                ? Colors.transparent
+                : Colors.white,
+            elevation: 0.0,
+            leading: IconButton(
+                onPressed: () {
+                  Get.back();
+                },
+                icon: Icon(
+                  Icons.clear,
+                  color: Colors.black,
+                ))),
+        backgroundColor: Colors.white,
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              Column(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 22),
-                    child: Text(
-                      'Login As Cashier',
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    ),
+                  Image.asset(
+                    "assets/images/logo2.png",
+                    width: 250,
                   ),
+                  Text("An enterprise at your fingertips."),
                   SizedBox(
                     height: 20,
                   ),
-                  loginAttendant(context),
                 ],
               ),
-            ),
+              SizedBox(
+                height: 40,
+              ),
+              isSmallScreen(context)
+                  ? Column(
+                      children: [
+                        Text(
+                          'Login as a cashier',
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold),
+                        ),
+                        SizedBox(height: 30.0),
+                        loginAttendant(context),
+                      ],
+                    )
+                  : Container(
+                      padding: const EdgeInsets.only(top: 20, bottom: 40),
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey,
+                            offset: Offset(0.0, 0.0), //(x,y)
+                            blurRadius: 1.0,
+                          ),
+                        ],
+                      ),
+                      margin: EdgeInsets.only(
+                        left: MediaQuery.of(context).size.width * 0.25,
+                        right: MediaQuery.of(context).size.width * 0.25,
+                      ),
+                      child: Column(
+                        children: [
+                          Text(
+                            'Login as a cashier',
+                            style: TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold),
+                          ),
+                          SizedBox(height: 30.0),
+                          loginAttendant(context),
+                        ],
+                      )),
+            ],
           ),
-          smallScreen: SingleChildScrollView(
-            child: Column(
-              children: [
-                Container(
-                  height: 200,
-                  child: Header(200, true,
-                      "assets/images/worker.svg"), //let's create a common header widget
-                ),
-                SizedBox(
-                  height: 40,
-                ),
-                Text(
-                  'Login As Cashier',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: 30.0),
-                loginAttendant(context),
-              ],
-            ),
-          )),
-    );
+        )
+        );
   }
 
   Widget loginAttendant(context) {

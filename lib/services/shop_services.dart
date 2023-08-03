@@ -14,28 +14,21 @@ class ShopService {
   }
 
   void createShopType(ShopTypes shopTypes) {
-    print("createShopType");
     realmService.realm
         .write<ShopTypes>(() => realmService.realm.add<ShopTypes>(shopTypes));
   }
 
   getShop({String name = ""}) {
-    RealmResults<Shop> shops;
     if (userController.user.value!.usertype == "attendant" &&
         checkPermission(category: "stocks", permission: "transfer")) {
-      shops = realmService.realm.query<Shop>(
-          r'owner == $0', [userController.user.value!.shop!.owner]);
+      RealmResults<Shop> shops = realmService.realm.query<Shop>(
+          r'owner == $0', [userController.user.value?.shop?.owner]);
+      return shops;
     } else {
-      shops = realmService.realm
-          .query<Shop>(r'owner == $0', [realmService.currentUser!.value!.id]);
+      RealmResults<Shop> shops = realmService.realm
+          .query<Shop>(r'owner == $0', [realmService.currentUser?.value?.id]);
+      return shops;
     }
-
-    if (name.isNotEmpty) {
-      RealmResults<Shop> shopsFiltered =
-          shops.query('name BEGINSWITH \$0', [name]);
-      return shopsFiltered;
-    }
-    return shops;
   }
 
   RealmResults<ShopTypes> getShopTypes() {
@@ -50,13 +43,27 @@ class ShopService {
   Future<void> updateItem(Shop shop,
       {String? name,
       String? location,
+      Packages? package,
       String? currency,
       ShopTypes? type}) async {
     realmService.realm.write(() {
-      shop.name = name;
-      shop.location = location;
-      shop.currency = currency;
-      shop.type = type;
+      if (name != null) {
+        shop.name = name;
+      }
+
+      if (location != null) {
+        shop.location = location;
+      }
+      if (currency != null) {
+        shop.currency = currency;
+      }
+      if (type != null) {
+        shop.type = type;
+      }
+      if (package != null) {
+        shop.package = package;
+        shop.subscriptiondate = DateTime.now().millisecondsSinceEpoch;
+      }
     });
   }
 }

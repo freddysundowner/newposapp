@@ -81,9 +81,11 @@ Widget productPurchaseHistoryContainer(InvoiceItem invoiceItem) {
                           fontSize: 16),
                     ),
                     Text(
-                        'Qty ${invoiceItem.itemCount} @ ${htmlPrice(invoiceItem.product?.selling)}'),
-                    if (invoiceItem.createdAt != null)
-                      Text('${invoiceItem.createdAt} ')
+                        'Qty ${invoiceItem.itemCount} @ ${htmlPrice(invoiceItem.price)}'),
+                    SizedBox(
+                      height: 5,
+                    ),
+                    if (invoiceItem.date != null) showDate(invoiceItem.date!)
                   ],
                 )
               ],

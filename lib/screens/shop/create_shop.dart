@@ -9,6 +9,7 @@ import 'package:get/get.dart';
 import 'package:switcher_button/switcher_button.dart';
 
 import '../../Real/schema.dart';
+import '../../controllers/plan_controller.dart';
 import '../../services/shop_services.dart';
 import '../../data/interests.dart';
 import '../../utils/colors.dart';
@@ -18,9 +19,14 @@ import '../../widgets/smalltext.dart';
 
 class CreateShop extends StatelessWidget {
   final page;
+  bool? clearInputs = false;
 
-  CreateShop({Key? key, required this.page}) : super(key: key) {
-    shopController.clearTextFields();
+  CreateShop({Key? key, required this.page, this.clearInputs})
+      : super(key: key) {
+    if (clearInputs!) {
+      shopController.clearTextFields();
+    }
+
     Interests();
   }
 
@@ -28,32 +34,38 @@ class CreateShop extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Get.find<PlanController>().getPlans();
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        titleSpacing: 0,
+        titleSpacing: 3,
         backgroundColor: Colors.white,
         elevation: 0.3,
         centerTitle: false,
-        leading: IconButton(
-          onPressed: () {
-            if (MediaQuery.of(context).size.width > 600) {
-              Get.find<HomeController>().selectedWidget.value = ShopsPage();
-            } else {
-              Get.back();
-            }
-          },
-          icon: const Icon(
-            Icons.arrow_back_ios,
-            color: Colors.black,
-          ),
-        ),
+        leading: page == "home"
+            ? null
+            : IconButton(
+                onPressed: () {
+                  if (isSmallScreen(context)) {
+                    Get.back();
+                  } else {
+                    Get.find<HomeController>().selectedWidget.value =
+                        ShopsPage();
+                  }
+                },
+                icon: const Icon(
+                  Icons.arrow_back_ios,
+                  color: Colors.black,
+                ),
+              ),
         title:
             majorTitle(title: "Create Shop", color: Colors.black, size: 16.0),
       ),
       body: SingleChildScrollView(
         child: Container(
-          padding: EdgeInsets.all(10),
+          decoration: const BoxDecoration(boxShadow: []),
+          padding: EdgeInsets.all(page == "home" ? 20 : 10),
+          // margin: EdgeInsets.symmetric(horizontal: page == "home" ? 50 : 0),
           height: MediaQuery.of(context).size.height,
           child: shopDetails(context),
         ),
@@ -67,15 +79,17 @@ class CreateShop extends StatelessWidget {
       onTap: () {
         shopController.createShop(page: page, context: context);
       },
-      child: Container(
-        padding: EdgeInsets.all(10),
-        width: double.infinity,
-        decoration: BoxDecoration(
-            border: Border.all(width: 3, color: AppColors.mainColor),
-            borderRadius: BorderRadius.circular(40)),
-        child: Center(
-            child: majorTitle(
-                title: "Create ", color: AppColors.mainColor, size: 18.0)),
+      child: Center(
+        child: Container(
+          padding: const EdgeInsets.all(10),
+          width: isSmallScreen(context) ? double.infinity : 300,
+          decoration: BoxDecoration(
+              border: Border.all(width: 3, color: AppColors.mainColor),
+              borderRadius: BorderRadius.circular(40)),
+          child: Center(
+              child: majorTitle(
+                  title: "Create ", color: AppColors.mainColor, size: 18.0)),
+        ),
       ),
     );
   }
@@ -84,18 +98,18 @@ class CreateShop extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         shopWidget(
             controller: shopController.nameController, name: "Shop Name"),
-        SizedBox(height: 10),
-        Text(
+        const SizedBox(height: 10),
+        const Text(
           "Business Type",
           style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
         ),
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         InkWell(
           onTap: () {
-            if (isSmallScreen(context)) {
+            if (page == "home") {
               Get.to(() => ShopCategories(
                     selectedItemsCallback: (ShopTypes s) {
                       Get.back();
@@ -104,15 +118,29 @@ class CreateShop extends StatelessWidget {
                     page: page,
                   ));
             } else {
-              Get.find<HomeController>().selectedWidget.value = ShopCategories(
-                page: page,
-                selectedItemsCallback: (ShopTypes s) {
-                  Get.find<HomeController>().selectedWidget.value =
-                      CreateShop(page: page);
+              if (isSmallScreen(context)) {
+                Get.to(() => ShopCategories(
+                      selectedItemsCallback: (ShopTypes s) {
+                        Get.back();
+                        shopController.selectedCategory.value = s;
+                      },
+                      page: page,
+                    ));
+              } else {
+                Get.find<HomeController>().selectedWidget.value =
+                    ShopCategories(
+                  page: page,
+                  selectedItemsCallback: (ShopTypes s) {
+                    Get.find<HomeController>().selectedWidget.value =
+                        CreateShop(
+                      page: page,
+                      clearInputs: false,
+                    );
 
-                  shopController.selectedCategory.value = s;
-                },
-              );
+                    shopController.selectedCategory.value = s;
+                  },
+                );
+              }
             }
           },
           child: Container(
@@ -131,12 +159,12 @@ class CreateShop extends StatelessWidget {
             ),
           ),
         ),
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         shopWidget(
             controller: shopController.reqionController, name: "Location"),
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         majorTitle(title: "Currency", color: Colors.black, size: 16.0),
-        SizedBox(height: 5),
+        const SizedBox(height: 5),
         Card(
           elevation: 1,
           child: InkWell(
@@ -161,7 +189,7 @@ class CreateShop extends StatelessWidget {
                   });
             },
             child: Container(
-              padding: EdgeInsets.all(10),
+              padding: const EdgeInsets.all(10),
               child: Row(
                 children: [
                   Obx(() {
@@ -170,21 +198,21 @@ class CreateShop extends StatelessWidget {
                         style: const TextStyle(
                             color: Colors.black, fontSize: 12.0));
                   }),
-                  Spacer(),
-                  Icon(Icons.arrow_drop_down)
+                  const Spacer(),
+                  const Icon(Icons.arrow_drop_down)
                 ],
               ),
             ),
           ),
         ),
-        SizedBox(height: 20),
+        const SizedBox(height: 20),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Row(
               children: [
                 majorTitle(title: "Accept", color: Colors.black, size: 13.0),
-                SizedBox(width: 4),
+                const SizedBox(width: 4),
                 minorTitle(
                     title: "terms and conditions", color: AppColors.mainColor)
               ],
@@ -197,7 +225,7 @@ class CreateShop extends StatelessWidget {
                 offColor: Colors.grey)
           ],
         ),
-        SizedBox(height: 10),
+        const SizedBox(height: 30),
         Obx(() {
           return shopController.createShopLoad.value
               ? const Center(child: CircularProgressIndicator())

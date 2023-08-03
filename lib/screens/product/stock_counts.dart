@@ -213,7 +213,7 @@ class StockCount extends StatelessWidget {
                                         ],
                                       ),
                                       isSmallScreen(context)
-                                          ? _incrementQuantityWidget(
+                                          ? _incrementQuantityWidget(context,
                                               productCountModel: productCount)
                                           : Container(),
                                     ],
@@ -224,6 +224,7 @@ class StockCount extends StatelessWidget {
                                           child: Container(
                                               width: 80,
                                               child: _incrementQuantityWidget(
+                                                  context,
                                                   productCountModel:
                                                       productCount)),
                                         )
@@ -309,7 +310,7 @@ class StockCount extends StatelessWidget {
                                       width: 80,
                                       margin: const EdgeInsets.only(
                                           top: 10, right: 3),
-                                      child: _incrementQuantityWidget(
+                                      child: _incrementQuantityWidget(context,
                                           productCountModel: productBody)))),
                             ]);
                           }),
@@ -318,50 +319,15 @@ class StockCount extends StatelessWidget {
                     );
             })
           ]),
-        )
-        // ResponsiveWidget(
-        //   largeScreen: Container(
-        //     padding: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
-        //     child: SingleChildScrollView(
-        //       child: Column(
-        //         crossAxisAlignment: CrossAxisAlignment.start,
-        //         children: [
-        //           SizedBox(height: 5),
-        //           Padding(
-        //             padding: const EdgeInsets.symmetric(horizontal: 8.0),
-        //             child: Row(
-        //               children: [
-        //                 Expanded(child: searchTextField()),
-        //                 SizedBox(width: 50),
-        //                 sortWidget(context)
-        //               ],
-        //             ),
-        //           ),
-        //           SizedBox(height: 15),
-        //           Obx(() {
-        //             return productController.getProductCountLoad.value
-        //                 ? Center(
-        //                     child: CircularProgressIndicator(),
-        //                   )
-        //                 : productController.products.length == 0
-        //                     ? noItemsFound(context, true)
-        //                     :;
-        //       })
-        //     ],
-        //   ),
-        // ),
-        //   ),
-        //   smallScreen:,
-        // ),
-        );
+        ));
   }
 
-  Widget _incrementQuantityWidget(
+  Widget _incrementQuantityWidget(BuildContext context,
       {required ProductCountModel productCountModel}) {
     return InkWell(
       onTap: () {
         showDialog(
-            context: Get.context!,
+            context: context,
             builder: (_) {
               return AlertDialog(
                 title: const Text(
@@ -389,7 +355,7 @@ class StockCount extends StatelessWidget {
                       Products().createProductCount(
                           productCountModel: productCountModel);
                       Get.back();
-                      productController.productsCount.refresh();
+                      productController.getProductsCount(type: "all");
                     },
                     child: Text(
                       "Okay".toUpperCase(),

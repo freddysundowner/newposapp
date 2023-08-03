@@ -1,25 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
-import '../controllers/home_controller.dart';
-import '../screens/attendant/attendants_page.dart';
-import '../screens/home/home_page.dart';
-import '../screens/home/profile_page.dart';
-import '../screens/shop/shops_page.dart';
+import 'package:pointify/controllers/user_controller.dart';
 
 const homePage = "Home";
 const shopsPage = "Shops";
 const attendantPage = "Attendants";
+const profitsPage = "Profit & Expenses";
+const salesPage = "Sales & orders";
 const profilePage = "Profile";
 const authPage = "Log Out";
+const allowSubscription = true;
 
-List<Map<String, dynamic>> sidePages = [
-  {"page": homePage, "icon": Icons.home},
-  {"page": shopsPage, "icon": Icons.shop},
-  {"page": attendantPage, "icon": Icons.people},
-  {"page": profilePage, "icon": Icons.person},
-  {"page": authPage, "icon": Icons.logout},
-];
+
 
 class Constants {
   static final RegExp emailValidatorRegExp =

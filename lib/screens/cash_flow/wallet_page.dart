@@ -36,31 +36,16 @@ class WalletPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ResponsiveWidget(
-        largeScreen: Obx(() {
-          return Scaffold(
-            appBar: _appBar(context, "large"),
-            body: SingleChildScrollView(
-              physics: const NeverScrollableScrollPhysics(),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  walletBalanceContainer(context, "large"),
-                  tabsPage(context)
-                ],
-              ),
-            ),
-          );
-        }),
-        smallScreen: Obx(() => Helper(
-              appBar: _appBar(context, "small"),
+    return Obx(() => Helper(
+              appBar: _appBar(context),
               widget: SingleChildScrollView(
                 child: Column(children: [
                   walletBalanceContainer(context, "small"),
                   tabsPage(context)
                 ]),
               ),
-            )));
+            )
+        );
   }
 
   Widget tabsPage(context) {
@@ -144,7 +129,7 @@ class WalletPage extends StatelessWidget {
                   fontWeight: FontWeight.bold),
             ),
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           if (checkPermission(category: "customers", permission: "deposit"))
             InkWell(
               onTap: () {
@@ -158,7 +143,7 @@ class WalletPage extends StatelessWidget {
                         : "large");
               },
               child: Container(
-                padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
+                padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(15),
                     color:
@@ -176,19 +161,19 @@ class WalletPage extends StatelessWidget {
     );
   }
 
-  AppBar _appBar(context, type) {
+  AppBar _appBar(context) {
     return AppBar(
       elevation: 0.2,
-      backgroundColor: type == "small" ? AppColors.mainColor : Colors.white,
+      backgroundColor: AppColors.mainColor,
       leading: IconButton(
           onPressed: () {
             if (page != null && page == "makesale") {
-              if (MediaQuery.of(Get.context!).size.width > 600) {
-                Get.find<HomeController>().selectedWidget.value = CreateSale();
-              } else {
+              if (isSmallScreen(context)) {
                 Get.back();
+              } else {
+                Get.find<HomeController>().selectedWidget.value = CreateSale();
               }
-            } else if (type == "large") {
+            } else if (!isSmallScreen(context)) {
               Get.find<HomeController>().selectedWidget.value =
                   CustomerInfoPage(
                 customerModel: customerModel,
@@ -197,13 +182,13 @@ class WalletPage extends StatelessWidget {
               Get.back();
             }
           },
-          icon: Icon(
+          icon: const Icon(
             Icons.arrow_back_ios,
-            color: type == "small" ? Colors.white : Colors.black,
+            color: Colors.white,
           )),
       title: Text(
         "${customerModel.fullName}".capitalize!,
-        style: TextStyle(color: type == "small" ? Colors.white : Colors.black),
+        style: const TextStyle(color: Colors.white),
       ),
       centerTitle: false,
       actions: [
@@ -213,8 +198,7 @@ class WalletPage extends StatelessWidget {
                 showModalSheet(
                     context, customerModel.fullName, customerModel.id);
               },
-              icon: Icon(Icons.download,
-                  color: type == "small" ? Colors.white : Colors.black))
+              icon: const Icon(Icons.download, color: Colors.white))
       ],
     );
   }
@@ -223,39 +207,42 @@ class WalletPage extends StatelessWidget {
     WalletController walletController = Get.find<WalletController>();
     ShopController shopController = Get.find<ShopController>();
     return showModalBottomSheet<void>(
+        backgroundColor:
+            isSmallScreen(context) ? Colors.white : Colors.transparent,
         context: context,
         builder: (BuildContext context) {
           return Container(
               height: 200,
+              color: Colors.white,
+              margin: EdgeInsets.only(
+                  left: isSmallScreen(context)
+                      ? 0
+                      : MediaQuery.of(context).size.width * 0.2),
               child: Center(
                   child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                      padding: EdgeInsets.all(10),
+                      padding: const EdgeInsets.all(10),
                       width: double.infinity,
                       color: Colors.grey.withOpacity(0.7),
-                      child: Text('Select Download Option')),
+                      child: const Text('Select Download Option')),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: InkWell(
                       onTap: () async {
                         Navigator.pop(context);
                         walletController.initialPage.value = 0;
-                        // WalletPdf(
-                        //     shop: shopController.currentShop.value!.name!,
-                        //     deposits: walletController.deposits,
-                        //     type: "deposit");
                       },
                       child: Container(
                         width: double.infinity,
                         child: Row(
                           children: [
-                            Icon(Icons.arrow_downward),
-                            SizedBox(
+                            const Icon(Icons.arrow_downward),
+                            const SizedBox(
                               width: 10,
                             ),
-                            Container(child: Text('Deposit History '))
+                            Container(child: const Text('Deposit History '))
                           ],
                         ),
                       ),
@@ -276,11 +263,11 @@ class WalletPage extends StatelessWidget {
                         width: double.infinity,
                         child: Row(
                           children: [
-                            Icon(Icons.cloud_download_outlined),
-                            SizedBox(
+                            const Icon(Icons.cloud_download_outlined),
+                            const SizedBox(
                               width: 10,
                             ),
-                            Container(child: Text('Usage History'))
+                            Container(child: const Text('Usage History'))
                           ],
                         ),
                       ),
@@ -296,12 +283,12 @@ class WalletPage extends StatelessWidget {
                         width: double.infinity,
                         child: Row(
                           children: [
-                            Icon(Icons.clear),
-                            SizedBox(
+                            const Icon(Icons.clear),
+                            const SizedBox(
                               width: 10,
                             ),
                             Container(
-                                child: Text(
+                                child: const Text(
                               'Cancel',
                               style: TextStyle(color: Colors.red),
                             ))
@@ -336,51 +323,63 @@ class DepositHistory extends StatelessWidget {
               ? const Center(
                   child: Text("No Entries found"),
                 )
-              : MediaQuery.of(context).size.width > 600
+              : !isSmallScreen(context)
                   ? SingleChildScrollView(
                       child: Container(
                         width: double.infinity,
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 5, vertical: 10),
+                            horizontal: 15, vertical: 10),
                         child: Theme(
                           data: Theme.of(context)
                               .copyWith(dividerColor: Colors.grey),
-                          child: DataTable(
-                            decoration: BoxDecoration(
-                                border: Border.all(
-                              width: 1,
-                              color: Colors.black,
-                            )),
-                            columnSpacing: 30.0,
-                            columns: [
-                              DataColumn(
-                                  label: Text('Receipt Number',
-                                      textAlign: TextAlign.center)),
-                              DataColumn(
-                                  label: Text(
-                                      'Amount(${shopController.currentShop.value?.currency})',
-                                      textAlign: TextAlign.center)),
-                              DataColumn(
-                                  label: Text('Date',
-                                      textAlign: TextAlign.center)),
-                            ],
-                            rows: List.generate(
-                                walletController.deposits.length, (index) {
-                              DepositModel depositModel =
-                                  walletController.deposits.elementAt(index);
-                              final y = depositModel.recieptNumber;
-                              final x = depositModel.amount.toString();
-                              final w = depositModel.createdAt!;
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Container(
+                              width: MediaQuery.of(context).size.width,
+                              child: DataTable(
+                                headingTextStyle: const TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold),
+                                dataTextStyle: const TextStyle(
+                                    fontSize: 18, color: Colors.black),
+                                decoration: BoxDecoration(
+                                    border: Border.all(
+                                  width: 1,
+                                  color: Colors.black,
+                                )),
+                                columnSpacing: 30.0,
+                                columns: [
+                                  const DataColumn(
+                                      label: Text('Receipt Number',
+                                          textAlign: TextAlign.center)),
+                                  DataColumn(
+                                      label: Text(
+                                          'Amount(${shopController.currentShop.value?.currency})',
+                                          textAlign: TextAlign.center)),
+                                  const DataColumn(
+                                      label: Text('Date',
+                                          textAlign: TextAlign.center)),
+                                ],
+                                rows: List.generate(
+                                    walletController.deposits.length, (index) {
+                                  DepositModel depositModel = walletController
+                                      .deposits
+                                      .elementAt(index);
+                                  final y = depositModel.recieptNumber;
+                                  final x = depositModel.amount.toString();
+                                  final w = depositModel.createdAt!;
 
-                              return DataRow(cells: [
-                                DataCell(Container(width: 75, child: Text(y!))),
-                                DataCell(Container(width: 75, child: Text(x))),
-                                DataCell(Container(
-                                    child: Text(
+                                  return DataRow(cells: [
+                                    DataCell(Text("#${y!}")),
+                                    DataCell(Text(x)),
+                                    DataCell(Text(
                                         DateFormat("yyyy-dd-MMM hh:mm a")
-                                            .format(w)))),
-                              ]);
-                            }),
+                                            .format(w))),
+                                  ]);
+                                }),
+                              ),
+                            ),
                           ),
                         ),
                       ),

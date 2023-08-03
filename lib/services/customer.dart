@@ -17,13 +17,12 @@ class Customer {
         () => realmService.realm.add<CustomerModel>(customerModel));
   }
 
-  RealmResults<CustomerModel> getCustomersByShopId(String type) {
+  RealmResults<CustomerModel> getCustomersByShopId(String type, Shop shop) {
     RealmResults<CustomerModel> customers = realmService.realm
         .query<CustomerModel>(
-            r'shopId == $0 AND TRUEPREDICATE SORT(createdAt DESC)',
-            [shopController.currentShop.value]);
+            r'shopId == $0 AND TRUEPREDICATE SORT(createdAt DESC)', [shop]);
     if (type == "debtors") {
-      return customers.query("walletBalance < 0 ");
+      return customers.query("onCredit == true");
     }
     return customers;
   }
@@ -31,7 +30,6 @@ class Customer {
   getCustomersById(CustomerModel customerModel) {
     RealmResults<CustomerModel> customer = realmService.realm
         .query<CustomerModel>(r'_id == $0', [customerModel.id]);
-    print(customer.first.walletBalance);
     return customer.first;
   }
 
@@ -44,14 +42,26 @@ class Customer {
     });
   }
 
-  updateCustomer(CustomerModel customerModel) async {
-    realmService.realm.write<CustomerModel>(() =>
-        realmService.realm.add<CustomerModel>(customerModel, update: true));
+  updateCustomer(CustomerModel customerModel, {bool? onCredit}) async {
+    if (onCredit != null) {
+      realmService.realm.write(() {
+        customerModel.onCredit = onCredit;
+      });
+    } else {
+      realmService.realm.write<CustomerModel>(() =>
+          realmService.realm.add<CustomerModel>(customerModel, update: true));
+    }
   }
 
   deleteCustomer({required CustomerModel customerModel}) async {
     realmService.realm.write(() {
       realmService.realm.delete(customerModel);
+    });
+  }
+
+  deleteCustomers(List<CustomerModel> sales) {
+    realmService.realm.write(() {
+      realmService.realm.deleteMany(sales);
     });
   }
 

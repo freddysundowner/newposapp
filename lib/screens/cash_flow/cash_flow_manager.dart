@@ -9,7 +9,7 @@ import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/functions/functions.dart';
 import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/cash_flow/components/loading_shimmer.dart';
-import 'package:pointify/screens/finance/finance_page.dart';
+import 'package:pointify/screens/finance/financial_page.dart';
 import 'package:pointify/utils/colors.dart';
 import 'package:pointify/utils/helper.dart';
 import 'package:get/get.dart';
@@ -126,7 +126,7 @@ class CashFlowManager extends StatelessWidget {
           children: [
             cashInHandWidget(context, "small"),
             cashFlowCategory(context),
-            dataTable(),
+            dataTable(context),
           ],
         ),
       ),
@@ -218,10 +218,32 @@ class CashFlowManager extends StatelessWidget {
                   InkWell(
                     onTap: () async {
                       final picked = await showDateRangePicker(
-                        context: context,
-                        lastDate: DateTime(2079),
-                        firstDate: DateTime(2019),
-                      );
+                          context: context,
+                          lastDate: DateTime(2079),
+                          firstDate: DateTime(2019),
+                          builder: (context, child) {
+                            return Column(
+                              children: [
+                                ConstrainedBox(
+                                  constraints: BoxConstraints(
+                                    maxWidth: MediaQuery.of(context).size.width,
+                                  ),
+                                  child: Container(
+                                      margin: EdgeInsets.only(
+                                          left: isSmallScreen(context)
+                                              ? 0
+                                              : MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.2,
+                                         ),
+                                      child: child),
+                                )
+                              ],
+                            );
+                          });
+
+                      print(picked);
                       cashFlowController.fromDate.value = picked!.start;
                       cashFlowController.toDate.value = picked.end;
                       cashFlowController.getCashflowSummary(
@@ -319,7 +341,7 @@ class CashFlowManager extends StatelessWidget {
             children: [
               TextButton(
                 onPressed: () {
-                  if (MediaQuery.of(context).size.width > 600) {
+                  if (!isSmallScreen(context)) {
                     Get.find<HomeController>().selectedWidget.value =
                         CashInLayout();
                   } else {
@@ -340,7 +362,7 @@ class CashFlowManager extends StatelessWidget {
               ),
               TextButton(
                 onPressed: () {
-                  if (MediaQuery.of(context).size.width > 600) {
+                  if (!isSmallScreen(context)) {
                     Get.find<HomeController>().selectedWidget.value =
                         CashOutLayout(date: cashFlowController.fromDate.value);
                   } else {
@@ -371,11 +393,11 @@ class CashFlowManager extends StatelessWidget {
   Widget cashFlowCategory(context) {
     return InkWell(
       onTap: () {
-        if (MediaQuery.of(context).size.width > 600) {
+        if (isSmallScreen(context)) {
+          Get.to(CashFlowCategories());
+        } else {
           Get.find<HomeController>().selectedWidget.value =
               CashFlowCategories();
-        } else {
-          Get.to(CashFlowCategories());
         }
       },
       child: Container(
@@ -421,12 +443,13 @@ class CashFlowManager extends StatelessWidget {
           style: TextStyle(fontSize: 11),
         );
 
-  Widget dataTable() {
+  Widget dataTable(context) {
     return Obx(() {
       return Column(
         children: [
           Container(
             height: 250,
+            width: MediaQuery.of(context).size.width,
             child: DataTable(
                 // Datatable widget that have the property columns and rows.
                 columns: [

@@ -49,7 +49,7 @@ Widget monthsFilter(Function function, {Function? counts, Function? totals}) {
                       children: [
                         Text(
                           totals!(month["month"].toString()),
-                          style: TextStyle(fontSize: 11),
+                          style: const TextStyle(fontSize: 11),
                         ),
                         const Icon(
                           Icons.arrow_forward_ios_rounded,

@@ -36,12 +36,10 @@ class SuppliersPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ResponsiveWidget(
-        largeScreen: defaultTab("large", context),
-        smallScreen: defaultTab("small", context));
+    return defaultTab(context);
   }
 
-  Widget defaultTab(types, context) {
+  Widget defaultTab(context) {
     return DefaultTabController(
       length: 2,
       initialIndex: 0,
@@ -51,20 +49,16 @@ class SuppliersPage extends StatelessWidget {
           titleSpacing: 0.0,
           elevation: 0.3,
           centerTitle: false,
-          leading:
-              Get.find<UserController>().user.value?.usertype == "attendant" &&
-                      MediaQuery.of(context).size.width > 600
-                  ? Container()
-                  : IconButton(
+          leading: IconButton(
                       onPressed: () {
-                        if (types == "large") {
+                        if (isSmallScreen(context)) {
+                          Get.back();
+                        } else {
                           Get.find<HomeController>().selectedWidget.value =
                               HomePage();
-                        } else {
-                          Get.back();
                         }
                       },
-                      icon: Icon(
+                      icon: const Icon(
                         Icons.arrow_back_ios,
                         color: Colors.black,
                       ),
@@ -82,7 +76,7 @@ class SuppliersPage extends StatelessWidget {
             if (checkPermission(category: "suppliers", permission: "manage"))
               InkWell(
                 onTap: () {
-                  if (types == "large") {
+                  if (!isSmallScreen(context)) {
                     Get.find<HomeController>().selectedWidget.value =
                         CreateSuppliers(
                       page: "suppliersPage",
@@ -96,7 +90,7 @@ class SuppliersPage extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.all(10),
                   child: Container(
-                    padding: EdgeInsets.fromLTRB(5, 2, 5, 2),
+                    padding: const EdgeInsets.fromLTRB(5, 2, 5, 2),
                     decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: (BorderRadius.circular(10)),
@@ -143,13 +137,14 @@ class SuppliersPage extends StatelessWidget {
 }
 
 class Suppliers extends StatelessWidget {
-  Suppliers({Key? key, this.type, this.from}) : super(key: key);
+  Suppliers({Key? key, this.type, this.from, this.function}) : super(key: key);
   CustomerController customersController = Get.find<CustomerController>();
   ShopController shopController = Get.find<ShopController>();
   SupplierController supplierController = Get.find<SupplierController>();
   PurchaseController purchaseController = Get.find<PurchaseController>();
   String? type = "";
   String? from = "";
+  Function? function;
 
   @override
   Widget build(BuildContext context) {
@@ -158,16 +153,21 @@ class Suppliers extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.only(top: 5),
         child: StreamBuilder<RealmResultsChanges<Supplier>>(
-            stream: SupplierService().getSuppliersByShopId(type: from!).changes,
+            stream: SupplierService()
+                .getSuppliersByShopId(
+                    type: from!, shop: shopController.currentShop.value!)
+                .changes,
             builder: (context, AsyncSnapshot snapshot) {
               final data = snapshot.data;
               if (data == null) {
                 return noItemsFound(context, true);
               } else {
                 final results = data.results;
-                return MediaQuery.of(context).size.width > 600
-                    ? supplierTable(customers: results, context: context)
-                    : ListView.builder(
+                if( results.length==0){
+                  return noItemsFound(context, true);
+                }
+                return isSmallScreen(context)
+                    ? ListView.builder(
                         itemCount: results.realm.isClosed ? 0 : results.length,
                         itemBuilder: (context, index) {
                           Supplier supplierModel = results.elementAt(index);
@@ -180,8 +180,7 @@ class Suppliers extends StatelessWidget {
                                       supplier;
                                   Get.back();
                                 } else {
-                                  if (MediaQuery.of(Get.context!).size.width >
-                                      600) {
+                                  if (!isSmallScreen(context)) {
                                     Get.find<HomeController>()
                                         .selectedWidget
                                         .value = SupplierInfoPage(
@@ -194,7 +193,8 @@ class Suppliers extends StatelessWidget {
                                   }
                                 }
                               });
-                        });
+                        })
+                    : supplierTable(customers: results, context: context,function:function);
               }
             }),
       ),

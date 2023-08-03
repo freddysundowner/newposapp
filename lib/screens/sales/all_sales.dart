@@ -6,6 +6,7 @@ import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/functions/functions.dart';
 import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/sales/create_sale.dart';
+import 'package:pointify/screens/sales/sales_page.dart';
 import 'package:pointify/screens/stock/badstocks.dart';
 import 'package:pointify/utils/helper.dart';
 import 'package:pointify/widgets/sales_card.dart';
@@ -22,7 +23,7 @@ import '../../widgets/bigtext.dart';
 import '../../widgets/bottom_widget_count_view.dart';
 import '../../widgets/normal_text.dart';
 import '../../widgets/sales_rerurn_card.dart';
-import '../finance/finance_page.dart';
+import '../finance/financial_page.dart';
 import '../finance/profit_page.dart';
 import '../home/home_page.dart';
 import 'components/sales_table.dart';
@@ -40,15 +41,12 @@ class AllSalesPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ResponsiveWidget(
-      largeScreen: _body(context),
-      smallScreen: _body(context),
-    );
+    return _body(context);
   }
 
   Widget searchWidget() {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       child: Row(
         children: [
           Expanded(
@@ -65,16 +63,17 @@ class AllSalesPage extends StatelessWidget {
                 }
               },
               decoration: InputDecoration(
-                contentPadding: EdgeInsets.fromLTRB(10, 2, 0, 2),
+                contentPadding: const EdgeInsets.fromLTRB(10, 2, 0, 2),
                 suffixIcon: IconButton(
                   onPressed: () {
                     salesController.getSales(
                         receipt: salesController.searchProductController.text,
                         onCredit: salesController.salesInitialIndex.value == 1);
                   },
-                  icon: Icon(Icons.search),
+                  icon: const Icon(Icons.search),
                 ),
-                hintText: "Search by receipt number",
+                hintText: ""
+                    "Search by receipt number",
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
@@ -96,12 +95,12 @@ class AllSalesPage extends StatelessWidget {
           height: 40,
           child: Row(
             children: [
-              SizedBox(
+              const SizedBox(
                 width: 10,
               ),
               Column(
                 children: [
-                  Text("Items"),
+                  const Text("Items"),
                   Text(
                     salesController.allSalesReturns.length.toString(),
                     style: const TextStyle(
@@ -109,12 +108,12 @@ class AllSalesPage extends StatelessWidget {
                   )
                 ],
               ),
-              SizedBox(
+              const SizedBox(
                 width: 20,
               ),
               Column(
                 children: [
-                  Text("Qty"),
+                  const Text("Qty"),
                   Text(
                     salesController.allSalesReturns
                         .fold(
@@ -127,10 +126,10 @@ class AllSalesPage extends StatelessWidget {
                   )
                 ],
               ),
-              Spacer(),
+              const Spacer(),
               Column(
                 children: [
-                  Text("Total"),
+                  const Text("Total"),
                   Text(
                     htmlPrice(salesController.allSalesReturns.fold(
                         0,
@@ -142,7 +141,7 @@ class AllSalesPage extends StatelessWidget {
                   )
                 ],
               ),
-              SizedBox(
+              const SizedBox(
                 width: 10,
               ),
             ],
@@ -195,7 +194,7 @@ class AllSalesPage extends StatelessWidget {
                         Obx(
                           () => Text(
                             "${DateFormat("yyyy-MM-dd").format(salesController.filterStartDate.value)} - ${DateFormat("yyyy-MM-dd").format(salesController.filterEndDate.value)}",
-                            style: TextStyle(color: Colors.blue, fontSize: 13),
+                            style: const TextStyle(color: Colors.blue, fontSize: 13),
                           ),
                         )
                       ],
@@ -204,13 +203,10 @@ class AllSalesPage extends StatelessWidget {
                       "Sales",
                       style: TextStyle(color: Colors.black),
                     ),
-              leading: Get.find<UserController>().user.value?.usertype ==
-                          "attendant" &&
-                      MediaQuery.of(context).size.width > 600
-                  ? null
-                  : IconButton(
+              leading:  IconButton(
                       onPressed: () {
-                        if (MediaQuery.of(context).size.width > 600) {
+                        print(page);
+                        if (!isSmallScreen(context)) {
                           if (page == "homePage") {
                             Get.find<HomeController>().selectedWidget.value =
                                 HomePage();
@@ -219,16 +215,19 @@ class AllSalesPage extends StatelessWidget {
                                 HomePage();
                           } else if (page == "financePage") {
                             Get.find<HomeController>().selectedWidget.value =
-                                FinancePage();
+                                FinancialPage();
                           } else if (page == "profitPage") {
                             Get.find<HomeController>().selectedWidget.value =
                                 ProfitPage();
+                          } else if (page == "salesPage") {
+                            Get.find<HomeController>().selectedWidget.value =
+                                SalesPage();
                           }
                         } else {
                           Get.back();
                         }
                       },
-                      icon: Icon(
+                      icon: const Icon(
                         Icons.arrow_back_ios,
                         color: Colors.black,
                       ),
@@ -252,45 +251,22 @@ class AllSalesPage extends StatelessWidget {
                       )),
                 IconButton(
                     onPressed: () async {
-                      Get.to(() => DateFilter(
-                            function: (value) {
-                              if (value is PickerDateRange) {
-                                final DateTime rangeStartDate =
-                                    value.startDate!;
-                                final DateTime rangeEndDate = value.endDate!;
-                                salesController.filterStartDate.value =
-                                    rangeStartDate;
-                                salesController.filterEndDate.value =
-                                    rangeEndDate;
-                              } else if (value is DateTime) {
-                                final DateTime selectedDate = value;
-                                salesController.filterStartDate.value =
-                                    selectedDate;
-                                salesController.filterEndDate.value =
-                                    selectedDate;
-                              }
-
-                              salesController.getSales(
-                                  fromDate:
-                                      salesController.filterStartDate.value,
-                                  toDate: salesController.filterEndDate.value);
-
-                              salesController.getProductComparison(
-                                  fromDate:
-                                      salesController.filterStartDate.value,
-                                  toDate: salesController.filterEndDate.value);
-                              salesController.getDailySalesGraph(
-                                  fromDate:
-                                      salesController.filterStartDate.value,
-                                  toDate: salesController.filterEndDate.value);
-
-                              salesController.getReturns(
-                                  fromDate:
-                                      salesController.filterStartDate.value,
-                                  toDate: salesController.filterEndDate.value,
-                                  type: "returns");
-                            },
-                          ));
+                      isSmallScreen(context)
+                          ? Get.to(() => DateFilter(
+                                from: "AllSalesPage",
+                                page: page,
+                                function: (value) {
+                                  parseFuncton(value);
+                                },
+                              ))
+                          : Get.find<HomeController>().selectedWidget.value =
+                              DateFilter(
+                              from: "AllSalesPage",
+                              page: page,
+                              function: (value) {
+                                parseFuncton(value);
+                              },
+                            );
                     },
                     icon: const Icon(
                       Icons.filter_alt,
@@ -329,7 +305,7 @@ class AllSalesPage extends StatelessWidget {
                         }
                       },
                       tabs: [
-                        Tab(
+                        const Tab(
                             child: Row(children: [
                           Text(
                             "Sales",
@@ -339,7 +315,7 @@ class AllSalesPage extends StatelessWidget {
                                 color: Colors.black),
                           )
                         ])),
-                        Tab(
+                        const Tab(
                             child: Text(
                           "Returns",
                           style: TextStyle(
@@ -349,7 +325,7 @@ class AllSalesPage extends StatelessWidget {
                         )),
                         if (checkPermission(
                             category: "accounts", permission: "analysis"))
-                          Tab(
+                          const Tab(
                               child: Text(
                             "Analysis",
                             style: TextStyle(
@@ -389,12 +365,42 @@ class AllSalesPage extends StatelessWidget {
           ),
         ));
   }
+
+  void parseFuncton(value) {
+    if (value is PickerDateRange) {
+      final DateTime rangeStartDate = value.startDate!;
+      final DateTime rangeEndDate = value.endDate!;
+      salesController.filterStartDate.value = rangeStartDate;
+      salesController.filterEndDate.value = rangeEndDate;
+    } else if (value is DateTime) {
+      final DateTime selectedDate = value;
+      salesController.filterStartDate.value = selectedDate;
+      salesController.filterEndDate.value = selectedDate;
+    }
+
+    salesController.getSales(
+        fromDate: salesController.filterStartDate.value,
+        toDate: salesController.filterEndDate.value);
+
+    salesController.getProductComparison(
+        fromDate: salesController.filterStartDate.value,
+        toDate: salesController.filterEndDate.value);
+    salesController.getDailySalesGraph(
+        fromDate: salesController.filterStartDate.value,
+        toDate: salesController.filterEndDate.value);
+
+    salesController.getReturns(
+        fromDate: salesController.filterStartDate.value,
+        toDate: salesController.filterEndDate.value,
+        type: "returns");
+  }
 }
 
 class Analysis extends StatelessWidget {
   Analysis({Key? key}) : super(key: key);
 
   SalesController salesController = Get.find<SalesController>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -466,12 +472,12 @@ class AllSales extends StatelessWidget {
               child: normalText(
                   title: "No entries found", color: Colors.black, size: 14.0),
             )
-          : MediaQuery.of(context).size.width > 600
+          :! isSmallScreen(context)
               ? SingleChildScrollView(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      salesTable(context, "services"),
+                      salesTable(context, "AllSalesPage"),
                       const SizedBox(
                         height: 10,
                       ),
@@ -479,7 +485,7 @@ class AllSales extends StatelessWidget {
                         alignment: Alignment.bottomRight,
                         child: Container(
                           width: 200,
-                          padding: EdgeInsets.only(right: 10),
+                          padding: const EdgeInsets.only(right: 10),
                           child: Column(
                             children: [
                               Row(
@@ -515,7 +521,7 @@ class AllSales extends StatelessWidget {
                       })
                   : ListView.builder(
                       shrinkWrap: true,
-                      physics: BouncingScrollPhysics(),
+                      physics: const BouncingScrollPhysics(),
                       itemCount: salesController.allSales.length,
                       itemBuilder: (context, index) {
                         SalesModel salesModel =

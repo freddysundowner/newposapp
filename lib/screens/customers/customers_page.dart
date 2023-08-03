@@ -5,7 +5,6 @@ import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/customers/components/customer_table.dart';
 import 'package:pointify/screens/customers/create_customers.dart';
 import 'package:pointify/screens/home/home_page.dart';
-import 'package:pointify/widgets/no_items_found.dart';
 import 'package:get/get.dart';
 
 import '../../Real/schema.dart';
@@ -17,6 +16,7 @@ import '../../services/customer.dart';
 import '../../utils/colors.dart';
 import '../../widgets/bigtext.dart';
 import '../../widgets/customer_card.dart';
+import '../../widgets/no_items_found.dart';
 import '../../widgets/smalltext.dart';
 
 class CustomersPage extends StatelessWidget {
@@ -32,12 +32,6 @@ class CustomersPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ResponsiveWidget(
-        largeScreen: defaultTab("large", context),
-        smallScreen: defaultTab("small", context));
-  }
-
-  Widget defaultTab(types, context) {
     return DefaultTabController(
       length: 2,
       child: Scaffold(
@@ -46,24 +40,19 @@ class CustomersPage extends StatelessWidget {
           titleSpacing: 0.0,
           elevation: 0.3,
           centerTitle: false,
-          leading:
-              Get.find<UserController>().user.value?.usertype == "attendant" &&
-                      MediaQuery.of(context).size.width > 600
-                  ? Container()
-                  : IconButton(
-                      onPressed: () {
-                        if (types == "large") {
-                          Get.find<HomeController>().selectedWidget.value =
-                              HomePage();
-                        } else {
-                          Get.back();
-                        }
-                      },
-                      icon: Icon(
-                        Icons.arrow_back_ios,
-                        color: Colors.black,
-                      ),
-                    ),
+          leading: IconButton(
+            onPressed: () {
+              if (isSmallScreen(context)) {
+                Get.back();
+              } else {
+                Get.find<HomeController>().selectedWidget.value = HomePage();
+              }
+            },
+            icon: const Icon(
+              Icons.arrow_back_ios,
+              color: Colors.black,
+            ),
+          ),
           title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -77,7 +66,7 @@ class CustomersPage extends StatelessWidget {
             if (checkPermission(category: "customers", permission: "manage"))
               InkWell(
                 onTap: () {
-                  if (types == "large") {
+                  if (!isSmallScreen(context)) {
                     Get.find<HomeController>().selectedWidget.value =
                         CreateCustomer(
                       page: "customersPage",
@@ -91,7 +80,7 @@ class CustomersPage extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.all(10),
                   child: Container(
-                    padding: EdgeInsets.fromLTRB(5, 2, 5, 2),
+                    padding: const EdgeInsets.fromLTRB(5, 2, 5, 2),
                     decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: (BorderRadius.circular(10)),
@@ -116,8 +105,8 @@ class CustomersPage extends StatelessWidget {
                   .getCustomersInShop(value == 0 ? "all" : "debtors");
             },
             tabs: [
-              Tab(text: "All"),
-              Tab(text: "Debtors"),
+              const Tab(text: "All"),
+              const Tab(text: "Debtors"),
             ],
           ),
         ),
@@ -127,7 +116,9 @@ class CustomersPage extends StatelessWidget {
             Customers(
               type: "",
             ),
-            Debtors()
+            Debtors(
+              type: "",
+            )
           ],
         ),
       ),
@@ -137,7 +128,9 @@ class CustomersPage extends StatelessWidget {
 
 class Customers extends StatelessWidget {
   String type;
-  Customers({Key? key, required this.type}) : super(key: key);
+  Function? function;
+
+  Customers({Key? key, required this.type, this.function}) : super(key: key);
   CustomerController customersController = Get.find<CustomerController>();
 
   @override
@@ -145,64 +138,69 @@ class Customers extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       body: Padding(
-        padding: EdgeInsets.only(top: 5),
+        padding: const EdgeInsets.only(top: 5),
         child: Obx(() {
-          return customersController.gettingCustomersLoad.value
-              ? const Center(
-                  child: CircularProgressIndicator(),
-                )
-              : MediaQuery.of(context).size.width > 600
-                  ? customersController.customers.isEmpty
-                      ? noItemsFound(context, true)
-                      : customerTable(
-                          customers: customersController.customers,
-                          context: context)
-                  : StreamBuilder(
-                      stream: Customer().getCustomersByShopId("all").changes,
-                      builder: (context, snapshot) {
-                        final data = snapshot.data;
-                        if (data == null || data.results.isEmpty) {
-                          return Center(
-                            child: InkWell(
-                              onTap: () {
-                                Get.to(() => CreateCustomer(
-                                      page: "",
-                                    ));
-                              },
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    "Add",
-                                    style: TextStyle(
-                                        color: AppColors.mainColor,
-                                        fontSize: 21),
-                                  ),
-                                  Icon(
-                                    Icons.add_circle_outline_outlined,
-                                    size: 60,
-                                    color: AppColors.mainColor,
-                                  ),
-                                ],
-                              ),
-                            ),
+          return StreamBuilder(
+              stream: Customer()
+                  .getCustomersByShopId(
+                      "all", Get.find<ShopController>().currentShop.value!)
+                  .changes,
+              builder: (context, snapshot) {
+                final data = snapshot.data;
+                if (data == null || data.results.isEmpty) {
+                  return Center(
+                    child: InkWell(
+                      onTap: () {
+                        if (!isSmallScreen(context)) {
+                          Get.find<HomeController>().selectedWidget.value =
+                              CreateCustomer(
+                            page: "customersPage",
                           );
                         } else {
-                          final results = data.results;
-                          return ListView.builder(
-                              itemCount:
-                                  results.realm.isClosed ? 0 : results.length,
-                              itemBuilder: (context, index) {
-                                CustomerModel customerModel =
-                                    results.elementAt(index);
-                                return customerWidget(
-                                    customerModel: customerModel,
-                                    context: context,
-                                    type: type);
-                              });
+                          Get.to(() => CreateCustomer(
+                                page: "customersPage",
+                              ));
                         }
-                      });
+                      },
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "Add",
+                            style: TextStyle(
+                                color: AppColors.mainColor, fontSize: 21),
+                          ),
+                          Icon(
+                            Icons.add_circle_outline_outlined,
+                            size: 60,
+                            color: AppColors.mainColor,
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                } else {
+                  final results = data.results;
+                  return isSmallScreen(context)
+                      ? ListView.builder(
+                          itemCount:
+                              results.realm.isClosed ? 0 : results.length,
+                          itemBuilder: (context, index) {
+                            CustomerModel customerModel =
+                                results.elementAt(index);
+                            return customerWidget(
+                                customerModel: customerModel,
+                                context: context,
+                                type: type);
+                          })
+                      : customerTable(
+                          customers: results,
+                          context: context,
+                          type: type,
+                          function: function);
+                }
+              });
         }),
       ),
     );
@@ -210,7 +208,9 @@ class Customers extends StatelessWidget {
 }
 
 class Debtors extends StatelessWidget {
-  Debtors({Key? key}) : super(key: key);
+  String type;
+
+  Debtors({Key? key, required this.type}) : super(key: key);
   CustomerController customersController = Get.find<CustomerController>();
 
   @override
@@ -218,30 +218,30 @@ class Debtors extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       body: Padding(
-        padding: EdgeInsets.only(top: 5),
+        padding: const EdgeInsets.only(top: 5),
         child: Obx(() {
           return customersController.gettingCustomersLoad.value
               ? const Center(
                   child: CircularProgressIndicator(),
                 )
-              : MediaQuery.of(context).size.width > 600
-                  ? customersController.customers.isEmpty
-                      ? noItemsFound(context, true)
-                      : customerTable(
-                          customers: customersController.customers,
-                          context: context)
-                  : StreamBuilder(
-                      stream:
-                          Customer().getCustomersByShopId("debtors").changes,
-                      builder: (context, snapshot) {
-                        final data = snapshot.data;
-                        if (data == null) {
-                          return minorTitle(
-                              title: "This shop doesn't have products yet",
-                              color: Colors.black);
-                        } else {
-                          final results = data.results;
-                          return ListView.builder(
+              : StreamBuilder(
+                  stream: Customer()
+                      .getCustomersByShopId("debtors",
+                          Get.find<ShopController>().currentShop.value!)
+                      .changes,
+                  builder: (context, snapshot) {
+                    final data = snapshot.data;
+                    if (data == null) {
+                      return minorTitle(
+                          title: "This shop doesn't have products yet",
+                          color: Colors.black);
+                    } else {
+                      final results = data.results;
+                      if (results.isEmpty) {
+                        return noItemsFound(context, true);
+                      }
+                      return isSmallScreen(context)
+                          ? ListView.builder(
                               itemCount:
                                   results.realm.isClosed ? 0 : results.length,
                               itemBuilder: (context, index) {
@@ -250,9 +250,11 @@ class Debtors extends StatelessWidget {
                                 return customerWidget(
                                     customerModel: customerModel,
                                     context: context);
-                              });
-                        }
-                      });
+                              })
+                          : customerTable(
+                              customers: results, context: context, type: type);
+                    }
+                  });
         }),
       ),
     );

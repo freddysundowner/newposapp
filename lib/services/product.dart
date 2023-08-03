@@ -30,6 +30,7 @@ class Products {
       {required Product product,
       int? quantity,
       int? buyingPrice,
+      Invoice? invoice,
       int? sellingPrice,
       bool deleted = false,
       bool counted = false,
@@ -42,6 +43,9 @@ class Products {
       }
       if (sellingPrice != null) {
         product.selling = sellingPrice;
+      }
+      if (invoice != null) {
+        product.invoiceId = invoice;
       }
       if (quantity != null) {
         product.quantity = quantity;
@@ -90,7 +94,7 @@ class Products {
         'shop == \$0$filter', [Get.find<ShopController>().currentShop.value]);
 
     if (type == "search") {
-      var newproducts = products.query("name BEGINSWITH \$0", [text!]);
+      var newproducts = products.query("name contains \$0", [text!]);
       return _attendantFilter(newproducts);
     }
 
@@ -122,9 +126,8 @@ class Products {
   }
 
   Product? getProductByName(String text, Shop shop) {
-    RealmResults<Product> products = realmService.realm
-        .query<Product>('shop == \$0 AND deleted == false', [shop]);
-    products.query(r'name == $0', [text]);
+    RealmResults<Product> products = realmService.realm.query<Product>(
+        "shop == \$0 AND deleted == false AND name == '$text'", [shop]);
     return products.isNotEmpty ? products.first : null;
   }
 
@@ -273,7 +276,7 @@ class Products {
 
   RealmResults<ProductCountModel> getProductCountByShopId(Shop shop) {
     RealmResults<ProductCountModel> returns =
-        realmService.realm.query<ProductCountModel>('shop == \$0', [shop]);
+        realmService.realm.query<ProductCountModel>('shopId == \$0', [shop]);
     return returns;
   }
 

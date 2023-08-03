@@ -82,56 +82,65 @@ class CountHistory extends StatelessWidget {
               : Theme(
                   data: Theme.of(context).copyWith(dividerColor: Colors.grey),
                   child: Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                     child: FittedBox(
-                      child: DataTable(
-                        decoration: BoxDecoration(
-                            border: Border.all(
-                          width: 1,
-                          color: Colors.black,
-                        )),
-                        columnSpacing: 30.0,
-                        columns: const [
-                          DataColumn(
-                              label: Text('Name', textAlign: TextAlign.center)),
-                          DataColumn(
-                              label: Text('System Count',
-                                  textAlign: TextAlign.center)),
-                          DataColumn(
-                              label: Text('Physical Count',
-                                  textAlign: TextAlign.center)),
-                          DataColumn(
-                              label: Text('Buying Price ',
-                                  textAlign: TextAlign.center)),
-                          DataColumn(
-                              label: Text('Selling Price ',
-                                  textAlign: TextAlign.center)),
-                          DataColumn(
-                              label: Text('Date', textAlign: TextAlign.center)),
-                        ],
-                        rows: List.generate(
-                            productController.countHistory.length, (index) {
-                          ProductCountModel productBody =
-                              productController.countHistory.elementAt(index);
-                          final y = productBody.product?.name;
-                          final x = productBody.initialquantity;
-                          final f = productBody.quantity;
-                          final b = productBody.product?.buyingPrice;
-                          final s = productBody.product?.selling;
-                          final z = productBody.createdAt!;
-                          // final a =
-                          //     productBody.attendantId!.username ?? "";
+                      fit: BoxFit.scaleDown,
+                      child: Container(
+                        width: MediaQuery.of(context).size.width,
+                        child: DataTable(
+                          headingTextStyle: const TextStyle(fontSize:16,color: Colors.black,fontWeight: FontWeight.bold),
+                          dataTextStyle: const TextStyle(fontSize: 18,color: Colors.black),
+                          decoration: BoxDecoration(
+                              border: Border.all(
+                            width: 1,
+                            color: Colors.black,
+                          )),
+                          columnSpacing: 30.0,
+                          columns: const [
+                            DataColumn(
+                                label:
+                                    Text('Name', textAlign: TextAlign.center)),
+                            DataColumn(
+                                label: Text('System Count',
+                                    textAlign: TextAlign.center)),
+                            DataColumn(
+                                label: Text('Physical Count',
+                                    textAlign: TextAlign.center)),
+                            DataColumn(
+                                label: Text('Buying Price ',
+                                    textAlign: TextAlign.center)),
+                            DataColumn(
+                                label: Text('Selling Price ',
+                                    textAlign: TextAlign.center)),
+                            DataColumn(
+                                label:
+                                    Text('Date', textAlign: TextAlign.center)),
+                          ],
+                          rows: List.generate(
+                              productController.countHistory.length, (index) {
+                            ProductCountModel productBody =
+                                productController.countHistory.elementAt(index);
+                            final y = productBody.product?.name;
+                            final x = productBody.initialquantity;
+                            final f = productBody.quantity;
+                            final b = productBody.product?.buyingPrice;
+                            final s = productBody.product?.selling;
+                            final z = productBody.createdAt!;
+                            // final a =
+                            //     productBody.attendantId!.username ?? "";
 
-                          return DataRow(cells: [
-                            DataCell(Text(y!)),
-                            DataCell(Text(x.toString())),
-                            DataCell(Text(f.toString())),
-                            DataCell(Text(b.toString())),
-                            DataCell(Text(s.toString())),
-                            DataCell(Text(DateFormat("yyyy-MM-dd").format(z))),
-                          ]);
-                        }),
+                            return DataRow(cells: [
+                              DataCell(Text(y!)),
+                              DataCell(Text(x.toString())),
+                              DataCell(Text(f.toString())),
+                              DataCell(Text(b.toString())),
+                              DataCell(Text(s.toString())),
+                              DataCell(
+                                  Text(DateFormat("yyyy-MM-dd").format(z))),
+                            ]);
+                          }),
+                        ),
                       ),
                     ),
                   ),

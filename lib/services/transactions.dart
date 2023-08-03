@@ -13,11 +13,16 @@ class Transactions {
   final RealmController realmService = Get.find<RealmController>();
   final ShopController shopController = Get.find<ShopController>();
 
-  RealmResults<BankModel> getCashAtBank() {
-    RealmResults<BankModel> response = realmService.realm.query<BankModel>(
-        r'shop == $0',
-        [Get.find<ShopController>().currentShop.value!.id.toString()]);
+  RealmResults<BankModel> getCashAtBank({Shop? shop}) {
+    RealmResults<BankModel> response = realmService.realm
+        .query<BankModel>(r'shop == $0', [shop!.id.toString()]);
     return response;
+  }
+
+  deleteBankModelByShopId(List<BankModel> sales) {
+    realmService.realm.write(() {
+      realmService.realm.deleteMany(sales);
+    });
   }
 
   RealmResults<BankModel> getBankByName(String name) {
@@ -64,11 +69,29 @@ class Transactions {
         () => realmService.realm.add<CashFlowCategory>(cashFlowCategory));
   }
 
-  RealmResults<CashFlowCategory> getCategory({required type}) {
+  RealmResults<CashFlowCategory> getCategory({required type, Shop? shop}) {
     RealmResults<CashFlowCategory> response = realmService.realm
-        .query<CashFlowCategory>("shop == \$0 AND type == '$type' ",
-            [shopController.currentShop.value!.id.toString()]);
+        .query<CashFlowCategory>(
+            "shop == \$0 AND type == '$type' ", [shop!.id.toString()]);
     return response;
+  }
+
+  RealmResults<CashFlowCategory> getCashFlowCategory(Shop shop) {
+    RealmResults<CashFlowCategory> response = realmService.realm
+        .query<CashFlowCategory>("shop == \$0", [shop.id.toString()]);
+    return response;
+  }
+
+  deleteCashFlowTransactionByShopId(List<CashFlowTransaction> sales) {
+    realmService.realm.write(() {
+      realmService.realm.deleteMany(sales);
+    });
+  }
+
+  deleteCashFlowCategoryByShopId(List<CashFlowCategory> sales) {
+    realmService.realm.write(() {
+      realmService.realm.deleteMany(sales);
+    });
   }
 
   RealmResults<BankTransactions> getBakTransactions({required id}) {
@@ -99,12 +122,17 @@ class Transactions {
     String? group,
     String? type,
     DateTime? fromDate,
+    Shop? shop,
     DateTime? toDate,
   }) {
-    print(type);
+    if (fromDate == null) {
+      RealmResults<CashFlowTransaction> response =
+          realmService.realm.query<CashFlowTransaction>("shop == \$0", [shop]);
+      return response;
+    }
     RealmResults<CashFlowTransaction> response = realmService.realm.query<
             CashFlowTransaction>(
-        "shop == \$0 AND date > ${fromDate!.millisecondsSinceEpoch} AND date < ${toDate!.millisecondsSinceEpoch} AND TRUEPREDICATE SORT(date DESC)",
+        "shop == \$0 AND date > ${fromDate.millisecondsSinceEpoch} AND date < ${toDate!.millisecondsSinceEpoch} AND TRUEPREDICATE SORT(date DESC)",
         [shopController.currentShop.value]);
     if (group != null && group == "bank") {
       var responsedata = response.query("bank != NULL AND type == 'cash-out'");

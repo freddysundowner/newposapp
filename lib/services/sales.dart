@@ -71,7 +71,7 @@ class Sales {
     print(receipt);
     String filter = "";
     if (onCredit) {
-      filter += " AND creditTotal < 0";
+      filter += " AND creditTotal > 0";
     }
     if (shop != null) {
       RealmResults<SalesModel> invoices =
@@ -88,13 +88,6 @@ class Sales {
     RealmResults<SalesModel> invoices = realmService.realm.query<SalesModel>(
         'shop == \$0 $filter AND TRUEPREDICATE SORT(createdAt DESC)',
         [shopController.currentShop.value]);
-    // if (receipt.isNotEmpty) {
-    //   var ii = invoices
-    //       .where(
-    //           (e) => e.receiptNumber.toString().toLowerCase().contains(receipt))
-    //       .toList();
-    //   return _attendantFilter(ii as RealmResults<SalesModel>);
-    // }
 
     if (invoices.isNotEmpty) {
       RealmResults<SalesModel> dateinvoices = invoices.query(

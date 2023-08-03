@@ -3,12 +3,15 @@ import 'package:pointify/utils/colors.dart';
 
 class ThemeHelper {
   InputDecoration textInputDecoration(
-      [String lableText = "", String hintText = ""]) {
+      [String lableText = "", String hintText = "", IconData = null, Function? function]) {
     return InputDecoration(
       labelText: lableText,
       hintText: hintText,
       fillColor: Colors.white,
       filled: true,
+      suffix: IconData !=null ? InkWell(child: Icon(IconData), onTap: (){
+        function!();
+      },) : null,
       contentPadding: EdgeInsets.fromLTRB(20, 10, 20, 10),
       focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(100.0),
@@ -26,12 +29,15 @@ class ThemeHelper {
   }
 
   InputDecoration textInputDecorationDesktop(
-      [String lableText = "", String hintText = ""]) {
+      [String lableText = "", String hintText = "", IconData, Function? function]) {
     return InputDecoration(
       labelText: lableText,
       hintText: hintText,
       fillColor: Colors.white,
       filled: true,
+      suffix: IconData !=null ? InkWell(child: Icon(IconData), onTap: (){
+        function!();
+      },) : null,
       contentPadding: EdgeInsets.fromLTRB(20, 10, 20, 10),
       focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8.0),

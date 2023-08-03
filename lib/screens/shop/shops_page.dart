@@ -100,10 +100,8 @@ class ShopsPage extends StatelessWidget {
 
                                 return DataRow(cells: [
                                   DataCell(Text(y!)),
-                                  DataCell(
-                                      Text(x.toString())),
-                                  DataCell(
-                                      Text(z.toString())),
+                                  DataCell(Text(x.toString())),
+                                  DataCell(Text(z.toString())),
                                   DataCell(
                                     InkWell(
                                       onTap: () {
@@ -113,15 +111,15 @@ class ShopsPage extends StatelessWidget {
                                             ShopDetails(shopModel: shopModel);
                                       },
                                       child: Align(
-                                        child:  Center(
+                                        child: Center(
                                           child: Container(
-                                            padding:const EdgeInsets.all(5),
-                                            margin:const EdgeInsets.all(5),
+                                            padding: const EdgeInsets.all(5),
+                                            margin: const EdgeInsets.all(5),
                                             decoration: BoxDecoration(
                                                 color: AppColors.mainColor,
                                                 borderRadius:
                                                     BorderRadius.circular(3)),
-                                            child:const Text(
+                                            child: const Text(
                                               "Edit",
                                               style: TextStyle(
                                                   color: Colors.white),
@@ -147,11 +145,15 @@ class ShopsPage extends StatelessWidget {
     HomeController homeController = Get.find<HomeController>();
     return InkWell(
       onTap: () {
-        if (MediaQuery.of(context).size.width > 600) {
-          homeController.selectedWidget.value = CreateShop(page: "shop");
+        if (!isSmallScreen(context)) {
+          homeController.selectedWidget.value = CreateShop(
+            page: "shop",
+            clearInputs: true,
+          );
         } else {
           Get.to(CreateShop(
             page: "shop",
+            clearInputs: true,
           ));
         }
       },
