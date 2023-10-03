@@ -173,8 +173,6 @@ class AuthController extends GetxController {
             color: Colors.red);
         signuserLoad.value = false;
       }
-    } else {
-      showSnackBar(message: "please fill all fields", color: Colors.red);
     }
   }
 
