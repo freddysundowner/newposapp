@@ -111,6 +111,7 @@ class ShopsPage extends StatelessWidget {
                                             ShopDetails(shopModel: shopModel);
                                       },
                                       child: Align(
+                                        alignment: Alignment.topRight,
                                         child: Center(
                                           child: Container(
                                             padding: const EdgeInsets.all(5),
@@ -127,7 +128,6 @@ class ShopsPage extends StatelessWidget {
                                             ),
                                           ),
                                         ),
-                                        alignment: Alignment.topRight,
                                       ),
                                     ),
                                   ),
@@ -179,7 +179,7 @@ class ShopsPage extends StatelessWidget {
     return TextFormField(
       controller: shopController.searchController,
       onChanged: (value) {
-        shopController.getShops(name: value);
+        shopController.getShops(name: value.trim().toLowerCase());
       },
       decoration: InputDecoration(
         contentPadding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
@@ -188,7 +188,7 @@ class ShopsPage extends StatelessWidget {
             if (shopController.searchController.text == "") {
             } else {
               shopController.getShops(
-                  name: shopController.searchController.text);
+                  name: shopController.searchController.text.trim().toLowerCase());
             }
           },
           icon: const Icon(Icons.search),

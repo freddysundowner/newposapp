@@ -74,7 +74,7 @@ class Sales {
     }
     if (shop != null) {
       RealmResults<SalesModel> invoices =
-          realmService.realm.query<SalesModel>('shop == \$0 $filter AND dated > ${fromDate!.millisecondsSinceEpoch} AND dated < ${toDate!.millisecondsSinceEpoch} AND TRUEPREDICATE SORT(createdAt DESC) ', [shop]);
+          realmService.realm.query<SalesModel>('shop == \$0 $filter AND dated > ${fromDate?.millisecondsSinceEpoch} AND dated < ${toDate?.millisecondsSinceEpoch} AND TRUEPREDICATE SORT(createdAt DESC) ', [shop]);
       return _attendantFilter(invoices);
     }
     if (customer != null) {

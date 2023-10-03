@@ -98,8 +98,7 @@ class ProfilePage extends StatelessWidget {
                         deleteDialog(
                             context: context,
                             onPressed: () {
-                              print("b");
-                              // authController.deleteAdmin();
+                              authController.deleteAdmin();
                             });
                       }),
                 ],

@@ -194,20 +194,14 @@ class RealmController extends GetxController {
   }
 
   deleteShopData(element) {
-    //delete sales by this shop
-    List<SalesModel> sales =
-        Sales().getSales(shop: element).map((e) => e).toList();
-    print("sales ${sales.length}");
+    List<SalesModel> sales = Sales().getSales(shop: element).map((e) => e).toList();
     if (sales.isNotEmpty) {
-      print("${element.name} sales ${sales.length}");
       Sales().deleteSaleByShopId(sales);
     }
     //delete sales receipts by this shop
     List<ReceiptItem> saleReceipts =
         Sales().getSaleReceipts(shop: element).map((e) => e).toList();
-    print("saleReceipts ${saleReceipts.length}");
     if (saleReceipts.isNotEmpty) {
-      print("${element.name} saleReceipts ${saleReceipts.length}");
       Sales().deleteReceiptItemByShopId(saleReceipts);
     }
     //delete sales receipts by this shop
@@ -215,9 +209,7 @@ class RealmController extends GetxController {
         .getTransHistory(shop: element, type: "out")
         .map((e) => e)
         .toList();
-    print("stockTransfer ${stockTransfer.length}");
     if (stockTransfer.isNotEmpty) {
-      print("${element.name} stockTransfer ${stockTransfer.length}");
       Products().deleteTransHistoryByShopId(stockTransfer);
     }
     //delete sales receipts by this shop
@@ -225,25 +217,19 @@ class RealmController extends GetxController {
         .getProductHistory("", shop: element.id.toString())
         .map((e) => e)
         .toList();
-    print("productHistory ${productHistory.length}");
     if (productHistory.isNotEmpty) {
-      print("${element.name} productHistory ${productHistory.length}");
       Products().deleteProductHistoryModelByShopId(productHistory);
     }
     //delete sales receipts by this shop
     List<ProductCountModel> productCuntHistory =
         Products().getProductCountByShopId(element).map((e) => e).toList();
-    print("productCuntHistory ${productCuntHistory.length}");
     if (productCuntHistory.isNotEmpty) {
-      print("${element.name} productCuntHistory ${productCuntHistory.length}");
       Products().deleteProductCountModelByShopId(productCuntHistory);
     }
     //delete sales receipts by this shop
     List<Product> products =
         Products().getProductsBySort(shop: element).map((e) => e).toList();
-    print("products ${products.length}");
     if (products.isNotEmpty) {
-      print("${element.name} products ${products.length}");
       Products().deleteProductsByShopId(products);
     }
     //delete customerss by this shop
@@ -251,9 +237,7 @@ class RealmController extends GetxController {
         .getCustomersByShopId("", shopController.currentShop.value!)
         .map((e) => e)
         .toList();
-    print("customers ${customers.length}");
     if (customers.isNotEmpty) {
-      print("${element.name} customers ${customers.length}");
       Customer().deleteCustomers(customers);
     }
     //delete expenses by this shop
@@ -261,9 +245,7 @@ class RealmController extends GetxController {
         .getExpenseByDate(shop: shopController.currentShop.value!)
         .map((e) => e)
         .toList();
-    print("expenses ${expenses.length}");
     if (expenses.isNotEmpty) {
-      print("${element.name} expenses ${expenses.length}");
       Expense().deleteExpenses(expenses);
     }
     //delete expenses by this shop
@@ -272,9 +254,7 @@ class RealmController extends GetxController {
           .getPaymentsByShop(shop: shopController.currentShop.value!)
           .map((e) => e)
           .toList();
-      print("payments ${payments.length}");
       if (payments.isNotEmpty) {
-        print("${element.name} payments ${payments.length}");
         Payment().deletePayments(payments);
       }
     } catch (e) {}
@@ -283,9 +263,7 @@ class RealmController extends GetxController {
         .getPurchase(shop: shopController.currentShop.value!)
         .map((e) => e)
         .toList();
-    print("invoices ${invoices.length}");
     if (invoices.isNotEmpty) {
-      print("${element.name} invoices ${invoices.length}");
       Purchases().deleteInvoices(invoices);
     }
     //delete expenses by this shop
@@ -293,9 +271,7 @@ class RealmController extends GetxController {
         .getInvoiceItems(shop: shopController.currentShop.value!)
         .map((e) => e)
         .toList();
-    print("invoiceitems ${invoiceitems.length}");
     if (invoiceitems.isNotEmpty) {
-      print("${element.name} invoiceitems ${invoiceitems.length}");
       Purchases().deleteInvoiceItems(invoiceitems);
     }
     //delete expenses by this shop
@@ -303,9 +279,7 @@ class RealmController extends GetxController {
         .getSuppliersByShopId(shop: shopController.currentShop.value!)
         .map((e) => e)
         .toList();
-    print("suppliers ${suppliers.length}");
     if (suppliers.isNotEmpty) {
-      print("${element.name} suppliers ${suppliers.length}");
       SupplierService().deleteSuppliers(suppliers);
     }
     //delete expenses by this shop
@@ -313,9 +287,7 @@ class RealmController extends GetxController {
         .getCashAtBank(shop: shopController.currentShop.value!)
         .map((e) => e)
         .toList();
-    print("banks ${banks.length}");
     if (banks.isNotEmpty) {
-      print("${element.name} banks ${banks.length}");
       Transactions().deleteBankModelByShopId(banks);
     }
     //delete expenses by this shop
@@ -323,9 +295,7 @@ class RealmController extends GetxController {
         .getCashFlowCategory(shopController.currentShop.value!)
         .map((e) => e)
         .toList();
-    print("transactions ${transactions.length}");
     if (transactions.isNotEmpty) {
-      print("${element.name} transactions ${transactions.length}");
       Transactions().deleteCashFlowCategoryByShopId(transactions);
     }
     //delete expenses by this shop
@@ -333,12 +303,9 @@ class RealmController extends GetxController {
         .getCashFlowTransaction(shop: shopController.currentShop.value)
         .map((e) => e)
         .toList();
-    print("transactions ${transactionsCashFlow.length}");
     if (transactionsCashFlow.isNotEmpty) {
-      print("${element.name} transactions ${transactionsCashFlow.length}");
       Transactions().deleteCashFlowTransactionByShopId(transactionsCashFlow);
     }
-    print("deleting ${element.name}");
     ShopService().deleteItem(element);
   }
 
@@ -356,7 +323,6 @@ class RealmController extends GetxController {
     //     .app
     //     .value!
     //     .deleteUser(Get.find<AuthController>().app.value!.currentUser!);
-    print("deleting");
     // Get.find<AuthController>().logOut();
   }
 }
