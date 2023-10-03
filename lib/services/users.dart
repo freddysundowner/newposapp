@@ -44,15 +44,8 @@ class Users {
   }
 
   static getAttendantbyUid(String uid) async {
-    App app  = App(AppConfiguration(appId));
-
-    user = await app.logIn(
-        Credentials.EmailPassword("caleb@mongodb.com", "MySekritPwd"));
-    config = new PartitionSyncConfiguration("_part", user);
-    realm = await Realm.GetInstanceAsync(config);
-
     String url =
-        "http://localhost:5000/auth/$uid";
+        "https://us-east-1.aws.data.mongodb-api.com/app/application-0-iosyj/endpoint/getattendantmeta?uid=$uid";
     var response = await DbBase().databaseRequest(url, DbBase().getRequestType);
 
     return jsonDecode(response);
