@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'bigtext.dart';
 
-Widget profileInputWidget({required controller, required name}) {
+Widget profileInputWidget({required controller, required name,required type}) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
@@ -11,6 +11,7 @@ Widget profileInputWidget({required controller, required name}) {
       SizedBox(height: 5),
       TextFormField(
         controller: controller,
+        keyboardType: TextInputType.phone,
         decoration: InputDecoration(
             contentPadding: EdgeInsets.all(20),
             focusedBorder: OutlineInputBorder(
