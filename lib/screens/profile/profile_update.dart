@@ -68,7 +68,7 @@ class ProfileUpdate extends StatelessWidget {
             profileInputWidget(
               controller: authController.phoneController,
               name: "Phone",
-              type: "phone"
+              type: "number"
             ),
             const SizedBox(height: 30),
             updateButton(context: context)
