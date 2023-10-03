@@ -186,7 +186,7 @@ class ShopsPage extends StatelessWidget {
         suffixIcon: IconButton(
           onPressed: () {
             if (shopController.searchController.text == "") {
-            } else {
+            } else  {
               shopController.getShops(
                   name: shopController.searchController.text.trim().toLowerCase());
             }
