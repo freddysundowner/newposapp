@@ -16,6 +16,7 @@ import '../../../utils/themer.dart';
 import '../../../widgets/alert.dart';
 import '../../../widgets/bigtext.dart';
 import '../../../widgets/normal_text.dart';
+import '../../customers/customer_info_page.dart';
 import '../../home/home_page.dart';
 import '../all_sales.dart';
 
@@ -58,6 +59,10 @@ class SalesReceipt extends StatelessWidget {
               if (from == "AllSalesPage") {
                 Get.find<HomeController>().selectedWidget.value = AllSalesPage(
                   page: "homePage",
+                );
+              }else if (from == "CustomerInfoPage") {
+                Get.find<HomeController>().selectedWidget.value = CustomerInfoPage(
+                  customerModel: salesModel!.customerId!,
                 );
               } else {
                 Get.find<HomeController>().selectedWidget.value = HomePage();
@@ -555,11 +560,11 @@ showAmountDialog(SalesModel salesBody) {
                     ),
                   ),
                 ),
-                Text(
+                const Text(
                   "Enter Amount",
                   style: TextStyle(color: Colors.black, fontSize: 12),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
                 TextFormField(
@@ -602,7 +607,6 @@ showAmountDialog(SalesModel salesBody) {
                       message:
                           "You cannot pay more than ${htmlPrice(salesBody.creditTotal!.abs())}");
                 } else {
-                  print("v");
                   if (salesController.paynowMethod.value == "Wallet") {
                     var walletBalance =
                         (salesBody.customerId!.walletBalance ?? 0);
@@ -616,11 +620,11 @@ showAmountDialog(SalesModel salesBody) {
                         generalAlert(
                             title: "Warning",
                             message:
-                                "Wallet balance can only pay ${htmlPrice(walletBalance)} continue?",
+                            walletBalance < 0 ? "Wallet balance is not sufficient to pay ${htmlPrice(amountPaid)}" : "Wallet balance can only pay ${htmlPrice(walletBalance)} continue?",
                             function: () {
                               print("paying $tobepaid");
-                              // salesController.payCredit(
-                              //     salesBody: salesBody, amount: amountPaid);
+                              salesController.payCredit(
+                                  salesBody: salesBody, amount: amountPaid);
                             });
                       } else {
                         salesController.payCredit(

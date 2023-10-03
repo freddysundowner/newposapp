@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pointify/controllers/cashflow_controller.dart';
 import 'package:pointify/controllers/sales_controller.dart';
 import 'package:pointify/controllers/user_controller.dart';
 import 'package:pointify/controllers/expense_controller.dart';
@@ -24,12 +25,18 @@ import 'create_expense.dart';
 class ExpensePage extends StatelessWidget {
   ExpensePage({Key? key}) : super(key: key);
   SalesController salesController = Get.find<SalesController>();
-  ExpenseController expenseController = Get.find<ExpenseController>();
+  CashflowController cashflowController = Get.find<CashflowController>();
   ShopController shopController = Get.find<ShopController>();
   AuthController authController = Get.find<AuthController>();
 
   @override
   Widget build(BuildContext context) {
+    cashflowController.getCashFlowTransactions(
+      fromDate: DateTime.parse(DateFormat("yyyy-MM-dd").format(cashflowController.fromDate.value)),
+      toDate: DateTime.parse(DateFormat("yyyy-MM-dd").format(cashflowController.toDate.value))
+          .add(const Duration(days: 1)),
+    );
+    
     return Scaffold(
       appBar: _appBar(context),
       body: SingleChildScrollView(
@@ -52,7 +59,7 @@ class ExpensePage extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 10),
               child: Obx(() {
                 return majorTitle(
-                    title: "${expenseController.expenses.length} Entries",
+                    title: "${cashflowController.cashOutflowOtherTransactions.length} Entries",
                     color: Colors.black,
                     size: 15.0);
               }),
@@ -61,7 +68,7 @@ class ExpensePage extends StatelessWidget {
               height: 10,
             ),
             Obx(() {
-              return expenseController.expenses.isEmpty
+              return cashflowController.cashOutflowOtherTransactions.isEmpty
                   ? Center(
                       child: majorTitle(
                           title: "No Entries found",
@@ -70,12 +77,12 @@ class ExpensePage extends StatelessWidget {
                     )
                   : isSmallScreen(context)
                       ? ListView.builder(
-                          itemCount: expenseController.expenses.length,
+                          itemCount: cashflowController.cashOutflowOtherTransactions.length,
                           physics: const NeverScrollableScrollPhysics(),
                           shrinkWrap: true,
                           itemBuilder: (context, index) {
-                            ExpenseModel expenseModel =
-                                expenseController.expenses.elementAt(index);
+                            CashFlowTransaction expenseModel =
+                                cashflowController.cashOutflowOtherTransactions.elementAt(index);
 
                             return expenseCard(
                                 context: context, expense: expenseModel);
@@ -107,11 +114,11 @@ class ExpensePage extends StatelessWidget {
                                         textAlign: TextAlign.center)),
                               ],
                               rows: List.generate(
-                                  expenseController.expenses.length, (index) {
-                                ExpenseModel expenseModel =
-                                    expenseController.expenses.elementAt(index);
-                                final y = expenseModel.name;
-                                final x = expenseModel.category;
+                                  cashflowController.cashOutflowOtherTransactions.length, (index) {
+                                CashFlowTransaction expenseModel =
+                                    cashflowController.cashOutflowOtherTransactions.elementAt(index);
+                                final y = expenseModel.bank!.name;
+                                final x = expenseModel.cashFlowCategory!.name;
 
                                 return DataRow(cells: [
                                   DataCell(Text(y!)),
@@ -138,7 +145,7 @@ class ExpensePage extends StatelessWidget {
           const SizedBox(height: 30),
           Center(
               child: Text(
-            "From ${DateFormat("yyy-MM-dd").format(expenseController.filterStartDate.value)} to ${DateFormat("yyy-MM-dd").format(expenseController.filterEnndStartDate.value)}",
+            "From ${DateFormat("yyy-MM-dd").format(cashflowController.fromDate.value)} to ${DateFormat("yyy-MM-dd").format(cashflowController.toDate.value)}",
             style: const TextStyle(
                 color: Colors.white, fontWeight: FontWeight.bold),
           )),
@@ -160,7 +167,7 @@ class ExpensePage extends StatelessWidget {
                       const SizedBox(width: 10),
                       Obx(
                         () => Text(
-                          htmlPrice(expenseController.totalExpenses.value),
+                          htmlPrice(cashflowController.cashOutflowOtherTransactions.fold(0, (previousValue, element) => previousValue + element.amount!)),
                           style: const TextStyle(color: Colors.white),
                         ),
                       )
@@ -181,7 +188,7 @@ class ExpensePage extends StatelessWidget {
         if (isSmallScreen(Get.context)) {
           Get.to(() => CreateExpense());
         } else {
-          Get.find<HomeController>().selectedWidget.value = CreateExpense();
+          Get.find<HomeController>().selectedWidget.value = CreateExpense(from: "ExpensePage",);
         }
       },
       child: Container(
@@ -231,8 +238,8 @@ class ExpensePage extends StatelessWidget {
                 lastDate: DateTime(2079),
                 firstDate: DateTime(2019),
               );
-              expenseController.filterStartDate.value = picked!.start;
-              expenseController.filterEnndStartDate.value = picked.end;
+              cashflowController.fromDate.value = picked!.start;
+              cashflowController.toDate.value = picked.end;
               Get.find<SalesController>().getProfitTransaction(
                   fromDate: picked.start, toDate: picked.end);
             },
@@ -259,13 +266,13 @@ class ExpensePage extends StatelessWidget {
         if (Get.find<UserController>().user.value?.usertype == "admin")
           InkWell(
             onTap: () {
-              if (expenseController.expenses.isEmpty) {
+              if (cashflowController.cashOutflowOtherTransactions.isEmpty) {
                 showSnackBar(
                     message: "No items to download", color: Colors.black);
               } else {
                 // ExpensePdf(
                 //     shop: shopController.currentShop.value!.name!,
-                //     expenses: expenseController.expenses);
+                //     expenses: cashflowController.cashOutflowOtherTransactions);
               }
             },
             child: const Icon(

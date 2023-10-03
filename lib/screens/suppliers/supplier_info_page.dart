@@ -531,6 +531,8 @@ class ReturnedPurchases extends StatelessWidget {
                                   textAlign: TextAlign.center)),
                           DataColumn(
                               label: Text('Date', textAlign: TextAlign.center)),
+                          DataColumn(
+                              label: Text('Action', textAlign: TextAlign.center)),
                         ],
                         rows: List.generate(
                             purchaseController.currentInvoiceReturns.length,
@@ -550,6 +552,19 @@ class ReturnedPurchases extends StatelessWidget {
                             DataCell(
                                 Text(purchaseReturn.attendantid!.username!)),
                             DataCell(Text(DateFormat("dd-MM-yyyy").format(a))),
+                            DataCell(Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 1.0),
+                              child: InkWell(
+                                  onTap: () {
+                                    Get.find<HomeController>().selectedWidget.value =
+                                        InvoiceScreen(
+                                            invoice: purchaseReturn.invoice, type: "returns", from: "supplierpage");
+                                  },
+                                  child: Text(
+                                    "View",
+                                    style: TextStyle(color: AppColors.mainColor),
+                                  )),
+                            )),
                           ]);
                         }),
                       ),

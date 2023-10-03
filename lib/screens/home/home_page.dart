@@ -67,7 +67,7 @@ class HomePage extends StatelessWidget {
       "icon": Icons.people_outline_outlined,
       "category": "customers"
     },
-    {"title": "Usage", "icon": Icons.data_usage, "category": "usage"},
+    // {"title": "Usage", "icon": Icons.data_usage, "category": "usage"},
   ];
 
   @override
@@ -87,66 +87,65 @@ class HomePage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // SizedBox(height: 50),
 
-              Obx(
-                () => shopController.checkIfTrial() ||
-                        shopController.checkDaysRemaining() < 10
-                    ? Container(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 10, horizontal: 20),
-                        decoration: BoxDecoration(
-                          color: Colors.red,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Center(
-                          child: Obx(
-                            () => Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: shopController.checkIfTrial()
-                                  ? MainAxisAlignment.spaceBetween
-                                  : MainAxisAlignment.start,
-                              children: [
-                                if (shopController.checkIfTrial())
-                                  const Text(
-                                    "You are using trial period",
-                                    style: TextStyle(color: Colors.white),
-                                  ),
-                                if (!shopController.checkIfTrial() &&
-                                    shopController.checkDaysRemaining() < 10)
-                                  Text(
-                                    "${shopController.checkDaysRemaining()} days remaining",
-                                    style: const TextStyle(color: Colors.white),
-                                  ),
-                                if (shopController.checkIfTrial())
-                                  InkWell(
-                                    onTap: () {
-                                      isSmallScreen(context)
-                                          ? Get.to(() => ExtendUsage())
-                                          : Get.find<HomeController>()
-                                              .selectedWidget
-                                              .value = ExtendUsage();
-                                    },
-                                    child: Container(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 10, vertical: 4),
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.circular(50),
-                                      ),
-                                      child: const Text(
-                                        "Upgrade now",
-                                        style: TextStyle(color: Colors.red),
-                                      ),
-                                    ),
-                                  )
-                              ],
-                            ),
-                          ),
-                        ),
-                      )
-                    : Container(),
-              ),
+              // Obx(
+              //   () => (shopController.checkIfTrial() ||
+              //       shopController.checkDaysRemaining() < 10)  && userController.user.value?.usertype == "admin"
+              //       ? Container(
+              //           padding: const EdgeInsets.symmetric(
+              //               vertical: 10, horizontal: 20),
+              //           decoration: BoxDecoration(
+              //             color: Colors.red,
+              //             borderRadius: BorderRadius.circular(8),
+              //           ),
+              //           child: Center(
+              //             child: Obx(
+              //               () => Row(
+              //                 crossAxisAlignment: CrossAxisAlignment.center,
+              //                 mainAxisAlignment: shopController.checkIfTrial()
+              //                     ? MainAxisAlignment.spaceBetween
+              //                     : MainAxisAlignment.start,
+              //                 children: [
+              //                   if (shopController.checkIfTrial())
+              //                     const Text(
+              //                       "You are using trial period",
+              //                       style: TextStyle(color: Colors.white),
+              //                     ),
+              //                   if (!shopController.checkIfTrial() &&
+              //                       shopController.checkDaysRemaining() < 10)
+              //                     Text(
+              //                       "${shopController.checkDaysRemaining()} days remaining",
+              //                       style: const TextStyle(color: Colors.white),
+              //                     ),
+              //                   if (shopController.checkIfTrial())
+              //                     InkWell(
+              //                       onTap: () {
+              //                         isSmallScreen(context)
+              //                             ? Get.to(() => ExtendUsage())
+              //                             : Get.find<HomeController>()
+              //                                 .selectedWidget
+              //                                 .value = ExtendUsage();
+              //                       },
+              //                       child: Container(
+              //                         padding: const EdgeInsets.symmetric(
+              //                             horizontal: 10, vertical: 4),
+              //                         decoration: BoxDecoration(
+              //                           color: Colors.white,
+              //                           borderRadius: BorderRadius.circular(50),
+              //                         ),
+              //                         child: const Text(
+              //                           "Upgrade now",
+              //                           style: TextStyle(color: Colors.red),
+              //                         ),
+              //                       ),
+              //                     )
+              //                 ],
+              //               ),
+              //             ),
+              //           ),
+              //         )
+              //       : Container(),
+              // ),
               Row(
                 children: [
                   majorTitle(
@@ -154,14 +153,14 @@ class HomePage extends StatelessWidget {
                   const SizedBox(
                     width: 5,
                   ),
-                  majorTitle(
-                      title: shopController.checkSubscription() == false
-                          ? "Expired"
-                          : "Active",
-                      color: shopController.checkSubscription()
-                          ? Colors.green
-                          : Colors.red,
-                      size: 10.0),
+                  // majorTitle(
+                  //     title: shopController.checkSubscription() == false
+                  //         ? "Expired"
+                  //         : "Active",
+                  //     color: shopController.checkSubscription()
+                  //         ? Colors.green
+                  //         : Colors.red,
+                  //     size: 10.0),
                   if (userController.user.value?.usertype == "attendant")
                     const Spacer(),
                   if (userController.user.value?.usertype == "attendant")
@@ -331,6 +330,12 @@ class HomePage extends StatelessWidget {
                           onTap: shopController.checkSubscription() == false
                               ? null
                               : () {
+
+                            salesController.getFinanceSummary(
+                              fromDate: DateTime.parse(DateFormat("yyy-MM-dd").format(DateTime.now())),
+                              toDate: DateTime.parse(DateFormat("yyy-MM-dd")
+                                  .format(DateTime.now().add(const Duration(days: 1)))),
+                            );
                                   isSmallScreen(context)
                                       ? Get.to(() => FinancialPage())
                                       : Get.find<HomeController>()
@@ -597,7 +602,7 @@ class HomePage extends StatelessWidget {
                 .format(Get.find<CashflowController>().fromDate.value)),
             to: DateTime.parse(DateFormat("yyyy-MM-dd")
                     .format(Get.find<CashflowController>().toDate.value))
-                .add(const Duration(days: 1)),
+                .add(const Duration(hours: 24)),
           );
           isSmallScreen(context)
               ? Get.to(() => CashFlowManager())

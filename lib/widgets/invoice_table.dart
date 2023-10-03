@@ -70,7 +70,7 @@ Widget invoiceTable({required context ,required  Supplier supplierModel}) {
                         Get.find<HomeController>().selectedWidget.value =
                             InvoiceScreen(
                           invoice: invoice,
-                          type: "",
+                          type: "", from: "SupplierInfoPage",
 
                         );
                       },

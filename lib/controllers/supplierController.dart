@@ -1,20 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:pointify/controllers/product_controller.dart';
-import 'package:pointify/controllers/purchase_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
-import 'package:pointify/controllers/user_controller.dart';
 import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/suppliers/suppliers_page.dart';
-import 'package:pointify/services/purchases.dart';
 import 'package:pointify/services/supplier.dart';
-import 'package:pointify/utils/colors.dart';
 import 'package:pointify/widgets/alert.dart';
-import 'package:pointify/widgets/snackBars.dart';
 import 'package:get/get.dart';
 import 'package:realm/realm.dart';
 
 import '../Real/schema.dart';
-import '../functions/functions.dart';
 import '../screens/product/create_product.dart';
 import '../screens/sales/create_sale.dart';
 import '../screens/purchases/create_purchase.dart';

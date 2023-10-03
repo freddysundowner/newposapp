@@ -81,6 +81,40 @@ Future<Uint8List> salesReceipt(SalesModel invoice, type) async {
                               ])
                           .toList())),
               SizedBox(height: 10),
+              if(invoice.creditTotal! > 0)Align(
+                alignment: Alignment.topRight,
+                child: SizedBox(
+                    width: 200,
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Text(
+                            "Unpaid ${htmlPrice(invoice.creditTotal!)}",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 16),
+                          ),
+                          Divider(
+                              thickness: 1,
+                              color: const PdfColor.fromInt(0xFF000000))
+                        ])),
+              ),
+              if(invoice.creditTotal! > 0)Align(
+                alignment: Alignment.topRight,
+                child: SizedBox(
+                    width: 200,
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Text(
+                            "Total paid ${htmlPrice(invoice.grandTotal! - invoice.creditTotal!)}",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 16),
+                          ),
+                          Divider(
+                              thickness: 1,
+                              color: const PdfColor.fromInt(0xFF000000))
+                        ])),
+              ),
               Align(
                 alignment: Alignment.topRight,
                 child: SizedBox(
@@ -89,7 +123,7 @@ Future<Uint8List> salesReceipt(SalesModel invoice, type) async {
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           Text(
-                            "Totals ${htmlPrice(invoice.grandTotal)}",
+                            "Totals ${htmlPrice(invoice.grandTotal!)}",
                             style: TextStyle(
                                 fontWeight: FontWeight.bold, fontSize: 16),
                           ),

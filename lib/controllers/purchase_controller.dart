@@ -2,27 +2,21 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
-import 'package:pointify/controllers/AuthController.dart';
 import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/controllers/product_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
-import 'package:pointify/controllers/supplierController.dart';
 import 'package:pointify/controllers/user_controller.dart';
 import 'package:pointify/functions/functions.dart';
-import 'package:pointify/screens/purchases/all_purchases.dart';
+import 'package:pointify/screens/purchases/invoice_screen.dart';
 import 'package:pointify/services/product.dart';
 import 'package:pointify/services/purchases.dart';
-import 'package:pointify/services/sales.dart';
-import 'package:pointify/widgets/alert.dart';
-import 'package:pointify/widgets/loading_dialog.dart';
 import 'package:get/get.dart';
 import 'package:realm/realm.dart';
 
 import '../Real/schema.dart';
+import '../responsive/responsiveness.dart';
 import '../services/supplier.dart';
 import '../widgets/snackBars.dart';
-import 'CustomerController.dart';
-import 'realm_controller.dart';
 
 class PurchaseController extends GetxController {
   Rxn<Invoice> invoice = Rxn(null);
@@ -66,10 +60,10 @@ class PurchaseController extends GetxController {
       }
       SupplierService()
           .updateSupplierWalletbalance(invoiceData.supplier, amount: balance);
+    }else{
+      //save purchase invoice
+      Purchases().createPurchase(invoiceData);
     }
-
-    //save purchase invoice
-    Purchases().createPurchase(invoiceData);
 
     //update product quantities
     for (var element in invoiceData.items) {
@@ -88,6 +82,18 @@ class PurchaseController extends GetxController {
       Products().createProductHistory(productHistoryModel);
     }
     Get.back();
+    if (isSmallScreen(Get.context!)) {
+      Get.to(() => InvoiceScreen(
+        invoice: invoiceData,
+        type: "",
+      ));
+    } else {
+      Get.find<HomeController>().selectedWidget.value = InvoiceScreen(
+        invoice: invoiceData,
+        from: "invoicepage",
+        type: "",
+      );
+    }
     invoice.value = null;
   }
 
@@ -97,6 +103,11 @@ class PurchaseController extends GetxController {
       DateTime? fromDate,
       DateTime? toDate}) async {
     purchasedItems.clear();
+
+    print(supplier?.id);
+    print(onCredit);
+    print(fromDate);
+    print(toDate);
     RealmResults<Invoice> invoices = Purchases().getPurchase(
         supplier: supplier,
         onCredit: onCredit,
@@ -193,14 +204,7 @@ class PurchaseController extends GetxController {
     if (index == -1) {
       return;
     }
-
-    // invoice.value?.items[index!].total =
-    //     invoice.value!.items[index].product!.buyingPrice! *
-    //         invoice.value!.items[index].itemCount!;
-
-    print("calculateAmount 3");
     invoice.refresh();
-    print("balancee $balancee");
   }
 
   removeFromList(index) {
@@ -219,10 +223,6 @@ class PurchaseController extends GetxController {
       if (productController.products.isEmpty) {
         showSnackBar(
             message: "product doesnot exist in this shop", color: Colors.red);
-      } else {
-        for (int i = 0; i < productController.products.length; i++) {
-          // addNewPurchase(productController.products[i]);
-        }
       }
     } on PlatformException {
       showSnackBar(
@@ -315,7 +315,6 @@ class PurchaseController extends GetxController {
       if (currentInvoiceReturns
               .indexWhere((element) => element.invoice!.id == e.invoice!.id) ==
           -1) {
-        print(e.invoice!.id);
         currentInvoiceReturns.add(e);
       }
     }

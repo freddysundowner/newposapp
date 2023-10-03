@@ -149,7 +149,7 @@ class ProductHistory extends StatelessWidget {
         ),
         body: DefaultTabController(
             initialIndex: 0,
-            length: 5,
+            length: 4,
             child: Builder(builder: (context) {
               return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

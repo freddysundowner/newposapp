@@ -58,7 +58,7 @@ class PurchaseOrderItems extends StatelessWidget {
       ),
       body: ResponsiveWidget(largeScreen: Obx(() {
         return purchaseController.getPurchaseOrderItemLoad.value
-            ? Column(
+            ? const Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Center(
@@ -181,7 +181,7 @@ class PurchaseOrderItems extends StatelessWidget {
             ? const Center(
                 child: CircularProgressIndicator(),
               )
-            : purchaseController.invoice.value!.items.length == 0
+            : purchaseController.invoice.value!.items.isEmpty
                 ? const Center(
                     child: Text("No stock Entries Found"),
                   )

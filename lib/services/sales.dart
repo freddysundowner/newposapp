@@ -68,15 +68,14 @@ class Sales {
       CustomerModel? customer,
       String receipt = "",
       String total = ""}) {
-    print(receipt);
     String filter = "";
     if (onCredit) {
       filter += " AND creditTotal > 0";
     }
     if (shop != null) {
       RealmResults<SalesModel> invoices =
-          realmService.realm.query<SalesModel>('shop == \$0 ', [shop]);
-      return invoices;
+          realmService.realm.query<SalesModel>('shop == \$0 $filter AND dated > ${fromDate!.millisecondsSinceEpoch} AND dated < ${toDate!.millisecondsSinceEpoch} AND TRUEPREDICATE SORT(createdAt DESC) ', [shop]);
+      return _attendantFilter(invoices);
     }
     if (customer != null) {
       RealmResults<SalesModel> invoices = realmService.realm.query<SalesModel>(
@@ -87,7 +86,7 @@ class Sales {
 
     RealmResults<SalesModel> invoices = realmService.realm.query<SalesModel>(
         'shop == \$0 $filter AND TRUEPREDICATE SORT(createdAt DESC)',
-        [shopController.currentShop.value]);
+        [shop ?? shopController.currentShop.value]);
 
     if (invoices.isNotEmpty) {
       RealmResults<SalesModel> dateinvoices = invoices.query(

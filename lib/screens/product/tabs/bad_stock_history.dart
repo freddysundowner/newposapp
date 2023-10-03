@@ -349,6 +349,8 @@ class BadStockHistory extends StatelessWidget {
                               label: Text('Selling Price',
                                   textAlign: TextAlign.center)),
                           DataColumn(
+                              label: Text('attendant', textAlign: TextAlign.center)),
+                          DataColumn(
                               label: Text('Date', textAlign: TextAlign.center)),
                         ],
                         rows: List.generate(
@@ -359,6 +361,7 @@ class BadStockHistory extends StatelessWidget {
                           final y = badStock.quantity;
                           final h = badStock.product?.buyingPrice;
                           final z = badStock.product?.selling;
+                          final b = badStock.attendantId?.username;
                           final w = badStock.createdAt;
 
                           return DataRow(cells: [
@@ -366,6 +369,7 @@ class BadStockHistory extends StatelessWidget {
                             DataCell(Text(y.toString())),
                             DataCell(Text(h.toString())),
                             DataCell(Text(z.toString())),
+                            DataCell(Text(b.toString())),
                             DataCell(
                                 Text(DateFormat("yyyy-dd-MMM ").format(w!))),
                           ]);

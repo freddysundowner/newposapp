@@ -245,15 +245,6 @@ class CashInUi extends StatelessWidget {
                         color: Colors.grey.shade600,
                       ),
                     ))),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                "TIP: Drag and drop related categories to combine them",
-                style: TextStyle(
-                  color: Colors.grey.shade600,
-                ),
-              ),
-            ),
             Obx(() {
               return !isSmallScreen(context)
                   ? Container(

@@ -1,6 +1,4 @@
-import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:pointify/controllers/realm_controller.dart';
 import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/controllers/product_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
@@ -89,7 +87,6 @@ class StockTransferController extends GetxController {
           Products().getProductByName(element.product!.name!, toShop);
       if (productExists != null) {
         var qty = productExists.quantity! + quantityToAdd;
-        print("exists $qty");
         Products().updateProductPart(product: productExists, quantity: qty);
       } else {
         Product product = Product(ObjectId(),
@@ -136,7 +133,6 @@ class StockTransferController extends GetxController {
       gettingTransferHistoryLoad.value = false;
       refresh();
     } catch (e) {
-      print(e);
       gettingTransferHistoryLoad.value = false;
     }
   }

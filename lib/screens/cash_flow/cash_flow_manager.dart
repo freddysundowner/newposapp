@@ -20,6 +20,7 @@ import '../../controllers/expense_controller.dart';
 import '../../controllers/product_controller.dart';
 import '../../controllers/sales_controller.dart';
 import '../../controllers/shop_controller.dart';
+import '../finance/create_expense.dart';
 import '../home/home_page.dart';
 import 'cash_at_bank.dart';
 import 'cash_in_layout.dart';
@@ -362,12 +363,10 @@ class CashFlowManager extends StatelessWidget {
               ),
               TextButton(
                 onPressed: () {
-                  if (!isSmallScreen(context)) {
-                    Get.find<HomeController>().selectedWidget.value =
-                        CashOutLayout(date: cashFlowController.fromDate.value);
+                  if (isSmallScreen(Get.context)) {
+                    Get.to(() => CreateExpense());
                   } else {
-                    Get.to(() =>
-                        CashOutLayout(date: cashFlowController.fromDate.value));
+                    Get.find<HomeController>().selectedWidget.value = CreateExpense(from: "CashFlowManager");
                   }
                 },
                 child: Container(

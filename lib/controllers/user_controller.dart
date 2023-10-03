@@ -1,10 +1,10 @@
 import 'dart:convert';
-import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pointify/controllers/AuthController.dart';
 import 'package:pointify/controllers/cashflow_controller.dart';
-import 'package:pointify/controllers/realm_controller.dart';
+import 'package:pointify/controllers/plan_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/main.dart';
 import 'package:pointify/services/transactions.dart';
@@ -12,8 +12,9 @@ import 'package:pointify/widgets/alert.dart';
 import 'package:realm/realm.dart';
 
 import '../Real/schema.dart';
+import '../screens/home/home.dart';
+import '../screens/shop/create_shop.dart';
 import '../services/shop_services.dart';
-import '../data/interests.dart';
 import '../services/users.dart';
 
 class UserController extends GetxController {
@@ -103,45 +104,68 @@ class UserController extends GetxController {
     roles.value = all;
   }
 
+  int countDown = 0;
+
+  countDownTimer() async {
+    for (int x = 5; x > 0; x--) {
+      await Future.delayed(const Duration(seconds: 1)).then((_) {
+        print(x);
+        if (x == 1) {
+          RealmResults<UserModel> userdata = Users.getUserUser();
+          print(x);
+
+            userController.user.value = userdata.first;
+            Get.find<PlanController>().getPlans();
+            var shop = ShopService().getShop();
+            Get.find<AuthController>().loginuserLoad.value = false;
+            print("shops ${shop.length}");
+            if (shop.isEmpty) {
+              Get.offAll(() =>
+                  CreateShop(
+                    page: "home",
+                    clearInputs: true,
+                  ));
+            } else {
+              Get.offAll(() => Home());
+            }
+
+        }
+      });
+    }
+  }
   getUser({String? type, int? uid}) async {
-    RealmResults<UserModel> userdata = Users.getUserUser(uid: uid);
-    if (type == "login") {
-      if (userdata.isEmpty) {
-        Users.createUser(UserModel(
-          ObjectId.fromHexString(
-              Get.find<RealmController>().currentUser!.value!.id),
-          Random().nextInt(098459),
-          usertype: "admin",
-          authId: Get.find<RealmController>().currentUser!.value!.id,
-          deleted: false,
-          fullnames:
-              Get.find<RealmController>().currentUser?.value!.profile.name,
-        ));
-        userdata = Users.getUserUser();
-        return;
+    if(type == "login"){
+      countDownTimer();
+    }else {
+      RealmResults<UserModel> userdata = Users.getUserUser(uid: uid);
+      user.value = userdata.first;
+      if (userdata.isNotEmpty &&
+          userdata
+              .map((e) => e)
+              .toList()
+              .first
+              .shop != null) {
+        shopController.currentShop.value =
+            userdata
+                .map((e) => e)
+                .toList()
+                .first
+                .shop;
+      } else {
+        print("user.value ${user.value}");
+        RealmResults<Shop> response = await ShopService().getShop();
+        if (response.isNotEmpty) {
+          shopController.currentShop.value = response.first;
+        }
       }
-    }
-    if (userdata.isEmpty) {
-      await appController.logOut();
-      return;
-    }
-    user.value = userdata.first;
-    if (userdata.isNotEmpty &&
-        userdata.map((e) => e).toList().first.shop != null) {
-      shopController.currentShop.value =
-          userdata.map((e) => e).toList().first.shop;
-    } else {
-      RealmResults<Shop> response = await ShopService().getShop();
-      if (response.isNotEmpty) {
-        shopController.currentShop.value = response.first;
+      await _createDefaultCashFlowCategory();
+      if (user.value!.usertype == "attendant") {
+        getRoles(user.value!);
+        roles.refresh();
       }
+      shopController.currentShop.refresh();
     }
-    await _createDefaultCashFlowCategory();
-    if (user.value!.usertype == "attendant") {
-      getRoles(user.value!);
-      roles.refresh();
-    }
-    shopController.currentShop.refresh();
+
   }
 
   Future<void> _createDefaultCashFlowCategory() async {

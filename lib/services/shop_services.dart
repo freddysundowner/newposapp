@@ -19,14 +19,16 @@ class ShopService {
   }
 
   getShop({String name = ""}) {
-    if (userController.user.value!.usertype == "attendant" &&
+    print("userController.user.value!.usertype ${userController.user.value}");
+    if (userController.user.value?.usertype !=null && userController.user.value?.usertype == "attendant" &&
         checkPermission(category: "stocks", permission: "transfer")) {
       RealmResults<Shop> shops = realmService.realm.query<Shop>(
           r'owner == $0', [userController.user.value?.shop?.owner]);
       return shops;
     } else {
+      print("realmService.currentUser?.value?.id.toString() ${realmService.currentUser?.value?.id.toString()}");
       RealmResults<Shop> shops = realmService.realm
-          .query<Shop>(r'owner == $0', [realmService.currentUser?.value?.id]);
+          .query<Shop>(r'owner == $0', [realmService.currentUser?.value?.id.toString()]);
       return shops;
     }
   }

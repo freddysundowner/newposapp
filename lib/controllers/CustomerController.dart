@@ -3,18 +3,14 @@ import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/services/customer.dart';
 import 'package:get/get.dart';
-import 'package:pointify/services/sales.dart';
 import 'package:pointify/widgets/alert.dart';
 import 'package:realm/realm.dart';
 
 import '../Real/schema.dart';
 import '../screens/customers/customers_page.dart';
 import '../screens/product/create_product.dart';
-import '../screens/sales/create_sale.dart';
 import '../screens/purchases/create_purchase.dart';
-import '../utils/colors.dart';
 import '../widgets/loading_dialog.dart';
-import '../widgets/snackBars.dart';
 import 'home_controller.dart';
 
 class CustomerController extends GetxController
@@ -57,14 +53,12 @@ class CustomerController extends GetxController
       Navigator.of(Get.context!, rootNavigator: true).pop();
       clearTexts();
       if (!isSmallScreen(Get.context)) {
-        print("page is hello the page is${page}");
         if (page == "customersPage") {
           Get.find<HomeController>().selectedWidget.value = CustomersPage();
 
         }
         if (page == "createSale") {
           function!();
-          // Get.find<HomeController>().selectedWidget.value = CreateSale();
         }
         if (page == "createProduct") {
           Get.find<HomeController>().selectedWidget.value = CreateProduct(
@@ -155,10 +149,7 @@ class CustomerController extends GetxController
           email: emailController.text,
           address: addressController.text);
       Customer().updateCustomer(customer);
-
-      // Navigator.of(context, rootNavigator: true).pop();
     } catch (e) {
-      // Navigator.of(context, rootNavigator: true).pop();
     }
   }
 

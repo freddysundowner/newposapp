@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pointify/controllers/AuthController.dart';
 import 'package:pointify/controllers/realm_controller.dart';
+import 'package:pointify/controllers/sales_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/responsive/responsiveness.dart';
+import 'package:pointify/services/sales.dart';
 import 'package:pointify/widgets/bigtext.dart';
 
 import '../Real/schema.dart';
@@ -11,6 +13,7 @@ import '../Real/schema.dart';
 showShopModalBottomSheet(context) {
   ShopController shopController = Get.find<ShopController>();
   RealmController realmService = Get.find<RealmController>();
+  SalesController salesController = Get.find<SalesController>();
   showModalBottomSheet(
     context: context,
     backgroundColor: isSmallScreen(context) ? Colors.white : Colors.transparent,
@@ -33,6 +36,7 @@ showShopModalBottomSheet(context) {
                 onTap: () {
                   Get.back();
                   realmService.setDefaulShop(shopBody);
+                  salesController.getSalesByDate(type: "today",shop: shopBody);
                 },
                 child: Container(
                   padding: const EdgeInsets.all(10),

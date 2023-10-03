@@ -26,6 +26,7 @@ import '../../utils/colors.dart';
 import '../../widgets/delete_dialog.dart';
 import '../../widgets/snackBars.dart';
 import '../cash_flow/payment_history.dart';
+import '../sales/components/sales_receipt.dart';
 import '../stock/purchase_order_item.dart';
 
 class CustomerInfoPage extends StatelessWidget {
@@ -490,6 +491,9 @@ class SalesTab extends StatelessWidget {
                               DataColumn(
                                   label: Text('Date',
                                       textAlign: TextAlign.center)),
+                              DataColumn(
+                                  label: Text('',
+                                      textAlign: TextAlign.center)),
                             ],
                             rows: List.generate(salesController.allSales.length,
                                 (index) {
@@ -506,6 +510,23 @@ class SalesTab extends StatelessWidget {
                                 DataCell(Text(z.toString())),
                                 DataCell(
                                     Text(DateFormat("dd-MM-yyyy").format(a))),
+
+                                DataCell(InkWell(
+                                  onTap: (){
+                                    Get.find<HomeController>().selectedWidget.value = SalesReceipt(
+                                      salesModel: saleOrder,
+                                      type: "",
+                                      from: "CustomerInfoPage",
+                                    );
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(vertical: 1.0),
+                                    child: Text(
+                                      "View",
+                                      style: TextStyle(color: AppColors.mainColor),
+                                    ),
+                                  ),
+                                )),
                               ]);
                             }),
                           ),
@@ -523,6 +544,7 @@ class RetunsTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print("salesController.currentReceiptReturns.length ${salesController.currentReceiptReturns.length}");
     return Obx(() {
       return salesController.currentReceiptReturns.isEmpty
           ? Container(
@@ -568,8 +590,8 @@ class RetunsTab extends StatelessWidget {
                           DataColumn(
                               label:
                                   Text('Total', textAlign: TextAlign.center)),
-                          // DataColumn(
-                          //     label: Text('Date', textAlign: TextAlign.center)),
+                          DataColumn(
+                              label: Text('', textAlign: TextAlign.center)),
                         ],
                         rows: List.generate(
                             salesController.currentReceiptReturns.length,
@@ -589,6 +611,23 @@ class RetunsTab extends StatelessWidget {
                             DataCell(Text(y!)),
                             DataCell(Text(x.toString())),
                             DataCell(Text(z.toString())),
+                            DataCell(InkWell(
+                              onTap: (){
+                                Get.find<HomeController>().selectedWidget.value =SalesReceipt(
+                                  salesModel: receiptItem.receipt,
+                                  type: "returns",
+                                  from: "CustomerInfoPage",
+                                );
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 1.0),
+                                child: Text(
+                                  "View",
+                                  style: TextStyle(color: AppColors.mainColor),
+                                ),
+                              ),
+                            )),
+
                             // DataCell(Text(DateFormat("dd-MM-yyyy").format(a!))),
                           ]);
                         }),
@@ -688,77 +727,19 @@ class CreditInfo extends StatelessWidget {
                                 DataCell(Text(z.toString())),
                                 DataCell(Text(
                                     DateFormat("dd-MM-yyyy").format(a))),
-                                DataCell(Align(
-                                  alignment: Alignment.topRight,
-                                  child: Container(
-                                    child: PopupMenuButton(
-                                      itemBuilder: (ctx) => [
-                                        PopupMenuItem(
-                                          child: ListTile(
-                                            leading: const Icon(Icons.list),
-                                            onTap: () {
-                                              Navigator.pop(context);
-                                              if (MediaQuery.of(context)
-                                                      .size
-                                                      .width >
-                                                  600) {
-                                                Get.find<HomeController>()
-                                                        .selectedWidget
-                                                        .value =
-                                                    PurchaseOrderItems(
-                                                        id: salesBody.id);
-                                              } else {
-                                                Get.to(() => PurchaseOrderItems(
-                                                    id: salesBody.id));
-                                              }
-                                            },
-                                            title: const Text('View Purchases'),
-                                          ),
-                                        ),
-                                        PopupMenuItem(
-                                          child: ListTile(
-                                            leading: const Icon(Icons.payment),
-                                            onTap: () {
-                                              Navigator.pop(context);
-                                            },
-                                            title: const Text('Pay'),
-                                          ),
-                                        ),
-                                        PopupMenuItem(
-                                          child: ListTile(
-                                            leading: const Icon(Icons.wallet),
-                                            onTap: () {
-                                              Navigator.pop(context);
-                                              // if (MediaQuery.of(context)
-                                              //         .size
-                                              //         .width >
-                                              //     600) {
-                                              //   Get.find<HomeController>()
-                                              //       .selectedWidget
-                                              //       .value = PaymentHistory(
-                                              //     id: salesBody.id!,
-                                              //   );
-                                              // } else {
-                                              //   Get.to(() => PaymentHistory(
-                                              //         id: salesBody.id!,
-                                              //       ));
-                                              // }
-                                            },
-                                            title: const Text('Payment History'),
-                                          ),
-                                        ),
-                                        PopupMenuItem(
-                                          child: ListTile(
-                                            leading:
-                                                const Icon(Icons.file_copy_outlined),
-                                            onTap: () async {
-                                              Navigator.pop(context);
-                                            },
-                                            title: const Text('Generate Report'),
-                                          ),
-                                        ),
-                                      ],
-                                      icon: const Icon(Icons.more_vert),
+                                DataCell(InkWell(
+                                  onTap: (){
+                                    Get.find<HomeController>().selectedWidget.value =SalesReceipt(
+                                      salesModel: salesBody,
+                                      type: "",
+                                      from: "CustomerInfoPage",
+                                    );
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(vertical: 1.0),
+                                    child: Text(
+                                      "View",
+                                      style: TextStyle(color: AppColors.mainColor),
                                     ),
                                   ),
                                 )),

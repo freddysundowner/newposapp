@@ -5,12 +5,10 @@ import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/controllers/user_controller.dart';
 import 'package:pointify/controllers/wallet_controller.dart';
-import 'package:pointify/main.dart';
 import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/cash_flow/wallet_page.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:pointify/screens/customers/customers_page.dart';
 import 'package:pointify/screens/sales/components/sales_receipt.dart';
 import 'package:pointify/widgets/alert.dart';
 import 'package:realm/realm.dart';
@@ -23,6 +21,7 @@ import '../services/payment.dart';
 import '../services/product.dart';
 import '../services/sales.dart';
 import '../utils/colors.dart';
+import 'cashflow_controller.dart';
 
 class SalesData {
   SalesData(this.year, this.sales);
@@ -311,13 +310,14 @@ class SalesController extends GetxController
             ((element.price! * element.quantity!) -
                 (element.quantity! * element.product!.buyingPrice!)));
 
-    Get.find<ExpenseController>().getExpenseByDate(
+    Get.find<CashflowController>().getCashFlowTransactions(
       fromDate: fromDate,
       toDate: toDate,
+      type: "cash-out"
     );
   }
 
-  changesaleItem(ReceiptItem value) {
+  changeSaleItem(ReceiptItem value) {
     var index = -1;
     if (receipt.value != null) {
       index = receipt.value!.items
@@ -418,7 +418,6 @@ class SalesController extends GetxController
   }
 
   saveSale({screen}) {
-    print("page is $screen");
     if (receipt.value?.paymentMethod == "Cash" &&
         receipt.value!.grandTotal! >
             int.parse(amountPaid.text.isEmpty ? "0" : amountPaid.text)) {
@@ -539,9 +538,13 @@ class SalesController extends GetxController
       }
       var amountPaid = 0;
       if (receiptData.creditTotal!.abs() > walletbalanace) {
-        amountPaid = receiptData.creditTotal!;
-        receiptData.creditTotal =
-            (walletbalanace - receiptData.creditTotal!.abs()).abs();
+        if(walletbalanace < 0){
+          amountPaid = receiptData.creditTotal!.abs();
+        }else{
+          receiptData.creditTotal =
+              (walletbalanace - receiptData.creditTotal!.abs()).abs();
+          amountPaid = (walletbalanace - receiptData.creditTotal!.abs());
+        }
       } else {
         receiptData.creditTotal = 0;
         amountPaid = receiptData.grandTotal!;
@@ -595,7 +598,7 @@ class SalesController extends GetxController
     } else {
       Get.find<HomeController>().selectedWidget.value = SalesReceipt(
         salesModel: receiptData,
-        type: "",
+        type: "invoicepage",
       );
     }
 
@@ -730,8 +733,6 @@ class SalesController extends GetxController
       fromDate = filterStartDate.value;
       toDate = filterEndDate.value;
     }
-    print(fromDate);
-    print(toDate);
     RealmResults<SalesModel> sales = Sales().getSales(
         fromDate: fromDate,
         receipt: receipt,
@@ -762,8 +763,6 @@ class SalesController extends GetxController
               0)
           .toList());
     }
-
-    print("all sales $allSales");
   }
 
   getProfitTransaction({
@@ -793,8 +792,8 @@ class SalesController extends GetxController
             previousValue! +
             (element.product!.buyingPrice! * element.quantity!));
 
-    Get.find<ExpenseController>()
-        .getExpenseByDate(fromDate: fromDate, toDate: toDate);
+    Get.find<CashflowController>()
+        .getCashFlowTransactions(fromDate: fromDate, toDate: toDate,type: "cash-in");
   }
 
   @override
@@ -946,10 +945,11 @@ class SalesController extends GetxController
     Payment().createPayHistory(payHistory);
 
     //deduct from wallet debt
-    if (paynowMethod.value == "Wallet") {
+    if (paynowMethod.value == "Wallet" || walletBalance < 0) {
+      print(walletBalance.abs()-amount);
       Get.find<WalletController>().WalletTransaction(
           customerModel: salesBody.customerId!,
-          amount: amount,
+          amount: amount.abs(),
           type: "usage",
           salesModel: salesBody);
     }
@@ -971,16 +971,17 @@ class SalesController extends GetxController
         total: total, name: name, key: type, color: color, iconData: icon));
   }
 
-  void getSalesByDate({DateTime? fromDate, DateTime? toDate, String? type}) {
+  void getSalesByDate({DateTime? fromDate, DateTime? toDate, String? type, Shop? shop}) {
     todaySales.clear();
     allSales.clear();
     if (type == "today") {
       fromDate = DateTime.parse(DateFormat("yyy-MM-dd").format(DateTime.now()));
       toDate = DateTime.parse(DateFormat("yyy-MM-dd")
-          .format(DateTime.now().add(const Duration(days: 1))));
+          .format(DateTime.now().add(const Duration(hours: 24))));
     }
     RealmResults<SalesModel> response =
-        Sales().getSales(fromDate: fromDate, toDate: toDate);
+        Sales().getSales(fromDate: fromDate, toDate: toDate, shop: shop);
+
 
     if (type == "today") {
       _generateHomeCard(
@@ -991,9 +992,10 @@ class SalesController extends GetxController
           color: Color(0xffbe741f),
           icon: Icons.auto_graph_rounded); //0xff34a8e0 //ffbe741f
 
-      Get.find<ExpenseController>().getExpenseByDate(
+      Get.find<CashflowController>().getCashFlowTransactions(
         fromDate: fromDate,
         toDate: toDate,
+        type: "cash-in"
       );
       if (checkPermission(category: "accounts", permission: "analysis")) {
         _generateHomeCard(
@@ -1033,6 +1035,8 @@ class SalesController extends GetxController
         0, (previousValue, element) => previousValue + element.grandTotal!);
     todaySales.addAll(response.map((e) => e).toList());
     allSales.addAll(response.map((e) => e).toList());
+
+    print("allSales ${allSales.length}");
     allSales.refresh();
     todaySales.refresh();
   }

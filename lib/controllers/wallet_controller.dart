@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pointify/controllers/CustomerController.dart';
-import 'package:pointify/controllers/home_controller.dart';
-import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/controllers/user_controller.dart';
-import 'package:pointify/screens/sales/create_sale.dart';
 import 'package:get/get.dart';
 import 'package:pointify/services/customer.dart';
 import 'package:realm/realm.dart';
@@ -12,7 +9,6 @@ import '../functions/functions.dart';
 import '../services/wallet.dart';
 import '../widgets/alert.dart';
 import '../widgets/loading_dialog.dart';
-import 'realm_controller.dart';
 
 class WalletController extends GetxController with GetTickerProviderStateMixin {
   final GlobalKey<State> _keyLoader = new GlobalKey<State>();
@@ -70,9 +66,10 @@ class WalletController extends GetxController with GetTickerProviderStateMixin {
       Customer().updateCustomerWalletbalance(customerModel,
           amount: (customerModel.walletBalance ?? 0) + (newbalance ?? amount));
     } else if (type == "usage") {
+      var a = (newbalance ?? amount);
+     var b  = (customerModel.walletBalance ?? 0 ) +a;
       Customer().updateCustomerWalletbalance(customerModel,
-          amount: (customerModel.walletBalance ?? 0) -
-              (newbalance ?? amount).abs());
+          amount: b);
     }
   }
 

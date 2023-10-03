@@ -68,21 +68,21 @@ class Helper extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: appBar,
-      floatingActionButton: floatButton != null || !isSmallScreen(context)
-          ? Container(
-              height: 0,
-            )
-          : userController.user.value?.usertype == "attendant" ||
-                  userController.switcheduser.value != null
-              ? null
-              : FloatingActionButton(
-                  onPressed: () {
-                    showShortCutBottomSheet(context: context);
-                  },
-                  child: const Center(
-                    child: Icon(Icons.menu, color: Colors.white),
-                  ),
-                ),
+      // floatingActionButton: floatButton != null || !isSmallScreen(context)
+      //     ? Container(
+      //         height: 0,
+      //       )
+      //     : userController.user.value?.usertype == "attendant" ||
+      //             userController.switcheduser.value != null
+      //         ? null
+      //         : FloatingActionButton(
+      //             onPressed: () {
+      //               showShortCutBottomSheet(context: context);
+      //             },
+      //             child: const Center(
+      //               child: Icon(Icons.menu, color: Colors.white),
+      //             ),
+      //           ),
       body: widget,
       bottomNavigationBar: bottomNavigationBar,
     );

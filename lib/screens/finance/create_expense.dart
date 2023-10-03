@@ -13,6 +13,7 @@ import '../../Real/schema.dart';
 import '../../controllers/AuthController.dart';
 import '../../utils/colors.dart';
 import '../../widgets/bigtext.dart';
+import '../cash_flow/cash_flow_manager.dart';
 
 enum ColorLabel {
   blue('Blue', Colors.blue),
@@ -43,8 +44,8 @@ enum IconLabel {
 }
 
 class CreateExpense extends StatelessWidget {
-  CreateExpense({Key? key}) : super(key: key);
-  ExpenseController expenseController = Get.find<ExpenseController>();
+  String ? from;
+  CreateExpense({Key? key, this.from}) : super(key: key);
   ShopController shopController = Get.find<ShopController>();
   AuthController authController = Get.find<AuthController>();
   UserController attendantController = Get.find<UserController>();
@@ -63,7 +64,19 @@ class CreateExpense extends StatelessWidget {
           leading: IconButton(
             onPressed: () {
               if (!isSmallScreen(context)) {
-                Get.find<HomeController>().selectedWidget.value = ExpensePage();
+                print(from);
+                if(from =="CashFlowManager"){
+                  Get.find<HomeController>().selectedWidget.value = CashFlowManager();
+
+                }
+                if(from =="ExpensePage"){
+                  Get.find<HomeController>().selectedWidget.value = ExpensePage();
+
+                }
+                if(from =="ExpensePage"){
+                  Get.find<HomeController>().selectedWidget.value = ExpensePage();
+
+                }
               } else {
                 Get.back();
               }
@@ -122,20 +135,21 @@ class CreateExpense extends StatelessWidget {
                             color: Colors.grey,
                           ),
                           borderRadius: BorderRadius.circular(10)),
-                      child: DropdownMenu<CashFlowCategory>(
-                        width: MediaQuery.of(context).size.width * 0.65,
-                        enableFilter: true,
-                        requestFocusOnTap: true,
-                        hintText: 'Select category',
-                        dropdownMenuEntries: cashFlowCategories,
-                        inputDecorationTheme: const InputDecorationTheme(
-                          filled: false,
-                          contentPadding: EdgeInsets.zero,
-                          border: InputBorder.none,
+                      child: Obx(()=> DropdownMenu<CashFlowCategory>(
+                          width: MediaQuery.of(context).size.width * 0.65,
+                          enableFilter: true,
+                          requestFocusOnTap: true,
+                          hintText: 'Select category',
+                          dropdownMenuEntries: cashflowController.cashFlowCategories.map((c) => DropdownMenuEntry<CashFlowCategory>(value: c, label: c.name!)).toList(),
+                          inputDecorationTheme: const InputDecorationTheme(
+                            filled: false,
+                            contentPadding: EdgeInsets.zero,
+                            border: InputBorder.none,
+                          ),
+                          onSelected: (CashFlowCategory? c) {
+                            cashflowController.selectedcashOutGroups.value = c!;
+                          },
                         ),
-                        onSelected: (CashFlowCategory? c) {
-                          expenseController.selectedExpense.value = c!.name!;
-                        },
                       ),
                     ),
                   ],
@@ -169,7 +183,7 @@ class CreateExpense extends StatelessWidget {
               const Text("Description", style: TextStyle(color: Colors.grey)),
               const SizedBox(height: 10),
               TextField(
-                controller: expenseController.textEditingControllerName,
+                controller: cashflowController.textEditingControllerName,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
                     borderSide: const BorderSide(color: Colors.grey),
@@ -190,7 +204,7 @@ class CreateExpense extends StatelessWidget {
               const Text("Amount", style: TextStyle(color: Colors.grey)),
               const SizedBox(height: 10),
               TextField(
-                controller: expenseController.textEditingControllerAmount,
+                controller: cashflowController.textEditingControllerAmount,
                 keyboardType: TextInputType.number,
                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 decoration: InputDecoration(
@@ -208,7 +222,8 @@ class CreateExpense extends StatelessWidget {
           Center(
             child: InkWell(
               onTap: () {
-                expenseController.saveExpense();
+                // expenseController.saveExpense();
+                cashflowController.createTransaction(type: "cash-out");
               },
               child: Container(
                   padding: const EdgeInsets.only(

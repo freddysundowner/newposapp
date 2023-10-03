@@ -13,16 +13,11 @@ import 'package:intl/intl.dart';
 import 'package:realm/realm.dart';
 import '../Real/schema.dart';
 import '../services/transactions.dart';
-import '../services/users.dart';
-import '../widgets/loading_dialog.dart';
 
 class CashflowController extends GetxController
     with GetTickerProviderStateMixin {
   final GlobalKey<State> _keyLoader = new GlobalKey<State>();
   RxList<CashFlowCategory> cashFlowCategories = RxList([]);
-
-  // RxList<CashFlowCategory> cashOutGroups = RxList([]);
-  // RxList<BankTransactions> bankTransactions = RxList([]);
   RxList<CashFlowTransaction> cashflowTransactions = RxList([]);
   RxList<CashFlowTransaction> categoryCashflowTransactions = RxList([]);
   RxList<CashFlowTransaction> cashOutflowOtherTransactions = RxList([]);
@@ -88,7 +83,6 @@ class CashflowController extends GetxController
       );
       var response =
           Transactions().getBankByName(textEditingControllerBankName.text);
-      print("response ${response.length}");
       if (response.isNotEmpty) {
         generalAlert(
             title: "Error", message: "${bankModel.name} already exists");
@@ -123,6 +117,7 @@ class CashflowController extends GetxController
           bankModel: selectedBank.value!,
           amount: (selectedBank.value!.amount ?? 0) + amount);
     }
+
     Transactions().updateCashFlowCategory(
         cashFlowCategory: selectedcashOutGroups.value!,
         amount: (selectedcashOutGroups.value!.amount ?? 0) + amount);
@@ -171,7 +166,6 @@ class CashflowController extends GetxController
     if (response.isNotEmpty) {
       List<CashFlowCategory> cashflowCat = response.map((e) => e).toList();
       cashFlowCategories.assignAll(cashflowCat);
-      // getCategoriesTotal();
     } else {
       cashFlowCategories.value = [];
     }
@@ -193,6 +187,7 @@ class CashflowController extends GetxController
     DateTime? toDate,
   }) async {
     totalcashAtBankHistory.value = 0;
+    cashflowOtherTransactions.clear();
     cashflowTransactions.clear();
     cashInflowOtherTransactions.clear();
     cashOutflowOtherTransactions.clear();
@@ -244,9 +239,7 @@ class CashflowController extends GetxController
 
       cashflowTransactions.removeWhere(
           (element) => element.cashFlowCategory!.id == cashFlowCategory!.id);
-      // cashFlowCategories.refresh();
       Transactions().deleteCategory(cashFlowCategory: cashFlowCategory);
-      // getCategory(cashFlowCategory!.type);
     } catch (e) {
       print(e);
     }

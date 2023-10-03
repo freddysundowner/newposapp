@@ -31,7 +31,7 @@ class PdfPreviewPage extends StatelessWidget {
                   : Get.find<HomeController>().selectedWidget.value =
                       SalesReceipt(
                       salesModel: invoice,
-                      type: type,
+                      type: "return",
                     );
             },
             icon: Icon(Icons.arrow_back_ios,

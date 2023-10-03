@@ -4,13 +4,9 @@ import 'package:pointify/Real/schema.dart';
 import 'package:pointify/controllers/plan_controller.dart';
 import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/shop/create_shop.dart';
-import 'package:pointify/services/plans_service.dart';
-import 'package:pointify/services/sales.dart';
 import 'package:pointify/services/shop_services.dart';
-import 'package:pointify/controllers/AuthController.dart';
 import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/controllers/realm_controller.dart';
-import 'package:pointify/controllers/sales_controller.dart';
 import 'package:pointify/controllers/user_controller.dart';
 import 'package:pointify/main.dart';
 import 'package:pointify/utils/constants.dart';
@@ -23,7 +19,6 @@ import '../screens/home/home.dart';
 import '../screens/home/home_page.dart';
 import '../screens/shop/shops_page.dart';
 import '../services/users.dart';
-import '../utils/colors.dart';
 
 class ShopController extends GetxController {
   TextEditingController nameController = TextEditingController();

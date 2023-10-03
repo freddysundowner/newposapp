@@ -2,10 +2,8 @@ import 'dart:math';
 
 import 'package:get/get.dart';
 import 'package:pointify/Real/schema.dart';
-import 'package:pointify/controllers/plan_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/controllers/user_controller.dart';
-import 'package:pointify/main.dart';
 import 'package:pointify/services/customer.dart';
 import 'package:pointify/services/product.dart';
 import 'package:pointify/services/purchases.dart';
@@ -125,11 +123,6 @@ class RealmController extends GetxController {
         deleted: false,
       ));
     } else {
-      // ShopService().updateItem(shop,
-      //     package: Get.find<PlanController>()
-      //         .plans
-      //         .where((p0) => p0.price == 0)
-      //         .first);
       Users().updateAdmin(admin.first, shop: shop);
     }
 

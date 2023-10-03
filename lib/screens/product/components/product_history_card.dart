@@ -135,7 +135,8 @@ Widget productBadStockHistory(BadStock badStock) {
             Column(
               children: [
                 Text('BP/=  ${htmlPrice(badStock.product!.buyingPrice)}'),
-                Text('SP/=  ${htmlPrice(badStock.product!.selling)}')
+                Text('SP/=  ${htmlPrice(badStock.product!.selling)}'),
+                Text('by:  ${badStock.attendantId?.username}', style: TextStyle(fontStyle: FontStyle.italic),)
               ],
             )
           ],

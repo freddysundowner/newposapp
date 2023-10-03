@@ -35,9 +35,6 @@ class CreatePurchase extends StatelessWidget {
   SupplierController supplierController = Get.find<SupplierController>();
   AuthController authController = Get.find<AuthController>();
   ProductController productController = Get.find<ProductController>();
-  final FocusNode _focusNode = FocusNode();
-  final GlobalKey _autocompleteKey = GlobalKey();
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   UserController usercontroller = Get.find<UserController>();
 
   @override
@@ -63,6 +60,7 @@ class CreatePurchase extends StatelessWidget {
                     Get.find<HomeController>().selectedWidget.value =
                         StockPage();
                   }
+
                 },
                 icon: const Icon(
                   Icons.arrow_back_ios,

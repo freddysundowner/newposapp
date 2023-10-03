@@ -104,9 +104,9 @@ class CustomersPage extends StatelessWidget {
               customersController
                   .getCustomersInShop(value == 0 ? "all" : "debtors");
             },
-            tabs: [
-              const Tab(text: "All"),
-              const Tab(text: "Debtors"),
+            tabs: const [
+              Tab(text: "All"),
+              Tab(text: "Creditors"),
             ],
           ),
         ),

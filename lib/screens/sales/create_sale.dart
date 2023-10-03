@@ -606,7 +606,7 @@ class CreateSale extends StatelessWidget {
       Get.find<HomeController>().selectedWidget.value = CreateSale();
     }
 
-    salesController.changesaleItem(re);
+    salesController.changeSaleItem(re);
   }
 
   chooseCustomer({required context}) {

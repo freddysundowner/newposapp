@@ -28,8 +28,6 @@ class CashOutLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    cashFlowController.getCategory(
-        "cash-out", Get.find<ShopController>().currentShop.value);
     return WillPopScope(
       onWillPop: () async {
         cashFlowController.clearInputs();

@@ -81,6 +81,14 @@ class StockPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     productController.getProductsBySort(type: "all");
+    print(enterpriseOperations
+        .where((e) =>
+    checkPermission(
+        category: e["category"],
+        permission: e["permission"]) ==
+        true)
+        .toList()
+        .length);
     return Helper(
         widget: SingleChildScrollView(
           child: Container(

@@ -44,8 +44,15 @@ class Users {
   }
 
   static getAttendantbyUid(String uid) async {
+    App app  = App(AppConfiguration(appId));
+
+    user = await app.logIn(
+        Credentials.EmailPassword("caleb@mongodb.com", "MySekritPwd"));
+    config = new PartitionSyncConfiguration("_part", user);
+    realm = await Realm.GetInstanceAsync(config);
+
     String url =
-        "https://us-east-1.aws.data.mongodb-api.com/app/application-0-iosyj/endpoint/getattendantmeta?uid=$uid";
+        "http://localhost:5000/auth/$uid";
     var response = await DbBase().databaseRequest(url, DbBase().getRequestType);
 
     return jsonDecode(response);
@@ -55,7 +62,7 @@ class Users {
       {UserModel? userModel, int? uid, String? username}) {
     if (uid != null) {
       RealmResults<UserModel> user =
-          realmService.realm.query<UserModel>('UNID == ${uid} ');
+          realmService.realm.query<UserModel>('UNID == $uid ');
       return user;
     }
     if (username != null) {
@@ -69,6 +76,8 @@ class Users {
           .query<UserModel>(r'_id == $0  AND deleted == false', [userModel.id]);
       return user;
     }
+
+    print("realmService.currentUser!.value!.id.toString() bb ${realmService.currentUser!.value!.id.toString()}");
     RealmResults<UserModel> user = realmService.realm.query<UserModel>(
         r'authId == $0', [realmService.currentUser!.value!.id.toString()]);
     return user;

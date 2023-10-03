@@ -171,7 +171,7 @@ class _HomeState extends State<Home> {
         children: [
           majorTitle(
               title:
-                  "Store ${userController.user.value?.usertype == "attendant" ? "Attendant" : "Admin"}",
+                  "Welcome ${userController.user.value?.username}",
               color: Colors.black,
               size: 16.0),
           Spacer(),
@@ -195,9 +195,9 @@ class _HomeState extends State<Home> {
                                     "logged in as ${userController.switcheduser.value?.username}",
                                 color: Colors.red,
                                 size: 12)
-                            : minorTitle(
+                            : userController.switcheduser.value?.usertype =="admin"? minorTitle(
                                 title: "Switch Account",
-                                color: AppColors.mainColor);
+                                color: AppColors.mainColor) : Container();
                       },
                     )
                   ],

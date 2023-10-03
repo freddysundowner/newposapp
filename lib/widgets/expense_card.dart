@@ -9,7 +9,7 @@ import '../controllers/user_controller.dart';
 import '../controllers/expense_controller.dart';
 import 'delete_dialog.dart';
 
-Widget expenseCard({required context, required ExpenseModel expense}) {
+Widget expenseCard({required context, required CashFlowTransaction expense}) {
   ShopController shopController = Get.find<ShopController>();
   return GestureDetector(
     onTap: () {},
@@ -42,7 +42,7 @@ Widget expenseCard({required context, required ExpenseModel expense}) {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "${expense.name}",
+                        "${expense.cashFlowCategory?.name}",
                         style: TextStyle(
                             color: Colors.black, fontWeight: FontWeight.w600),
                       ),
@@ -59,32 +59,32 @@ Widget expenseCard({required context, required ExpenseModel expense}) {
                             border: Border.all(width: 0.2, color: Colors.grey),
                             borderRadius: BorderRadius.circular(50)),
                         child: Text(
-                          "${expense.category}",
+                          "${expense.cashFlowCategory!.name}",
                           style: TextStyle(color: Colors.grey, fontSize: 10),
                         ),
                       ),
                       SizedBox(height: 3),
                       Row(
                         children: [
-                          if (expense.createdAt != null)
+                          if (expense.date != null)
                             Expanded(
                               flex: 6,
                               child: Text(
                                 DateFormat("yyyy-MM-dd hh:mm a")
-                                    .format(expense.createdAt!),
-                                style: TextStyle(color: Colors.grey),
+                                    .format(DateTime.fromMicrosecondsSinceEpoch(expense.date!)),
+                                style: const TextStyle(color: Colors.grey),
                               ),
                             ),
-                          Expanded(
-                            flex: 3,
-                            child: Text(
-                              expense.attendantId == null
-                                  ? ""
-                                  : "By-${expense.attendantId!.username}",
-                              style: const TextStyle(
-                                  color: Color.fromRGBO(158, 158, 158, 1)),
-                            ),
-                          ),
+                          // Expanded(
+                          //   flex: 3,
+                          //   child: Text(
+                          //     expense.attendantId == null
+                          //         ? ""
+                          //         : "By-${expense.attendantId!.username}",
+                          //     style: const TextStyle(
+                          //         color: Color.fromRGBO(158, 158, 158, 1)),
+                          //   ),
+                          // ),
                         ],
                       )
                     ],

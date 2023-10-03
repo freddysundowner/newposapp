@@ -43,14 +43,12 @@ class Purchases {
       }
       return _attendantFilter(invoices);
     }
-    RealmResults<Invoice> invoices;
+    RealmResults<Invoice> invoices  = realmService.realm.query<Invoice>(
+        r'shop == $0 AND TRUEPREDICATE SORT(createdAt DESC)', [shop]);
     if (shop == null) {
       invoices = realmService.realm.query<Invoice>(
           r'shop == $0 AND TRUEPREDICATE SORT(createdAt DESC)',
           [shopController.currentShop.value]);
-    } else {
-      invoices = realmService.realm.query<Invoice>(
-          r'shop == $0 AND TRUEPREDICATE SORT(createdAt DESC)', [shop]);
     }
 
     if (fromDate != null) {

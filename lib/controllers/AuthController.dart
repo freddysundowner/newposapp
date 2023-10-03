@@ -17,9 +17,7 @@ import 'package:pointify/services/users.dart';
 import 'package:realm/realm.dart';
 
 import '../controllers/realm_controller.dart';
-import '../screens/home/home.dart';
 import '../screens/shop/create_shop.dart';
-import '../services/shop_services.dart';
 import '../widgets/alert.dart';
 import '../widgets/snackBars.dart';
 import 'home_controller.dart';
@@ -63,22 +61,8 @@ class AuthController extends GetxController {
         await logInUserEmailPassword(
             emailController.text, passwordController.text);
         await Get.find<UserController>().getUser(type: "login");
-
-        Get.find<PlanController>().getPlans();
-        var shop = ShopService().getShop();
-        if (shop.isEmpty) {
-          Get.offAll(() => CreateShop(
-                page: "home",
-                clearInputs: true,
-              ));
-        } else {
-          Get.offAll(() => Home());
-        }
       } catch (e) {
-        print(e);
         showSnackBar(message: "wrong username or password", color: Colors.red);
-        loginuserLoad.value = false;
-      } finally {
         loginuserLoad.value = false;
       }
     } else {
@@ -116,7 +100,6 @@ class AuthController extends GetxController {
         };
         loggedInUser.functions
             .call("createAttendantMeta", [updatedCustomUserData]).then((value) {
-          print("going in now");
 
           attendantUidController.clear();
           attendantPasswordController.clear();

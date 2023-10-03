@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:pointify/Real/schema.dart';
+import 'package:pointify/controllers/cashflow_controller.dart';
 import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/controllers/product_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
@@ -28,7 +29,7 @@ class ProfitPage extends StatelessWidget {
 
   SalesController salesController = Get.find<SalesController>();
   ShopController shopController = Get.find<ShopController>();
-  ExpenseController expensesController = Get.find<ExpenseController>();
+  CashflowController cashflowController = Get.find<CashflowController>();
 
   @override
   Widget build(BuildContext context) {
@@ -175,7 +176,7 @@ class ProfitPage extends StatelessWidget {
                             const SizedBox(width: 10),
                             Text(
                               htmlPrice(salesController.grossProfit.value -
-                                  expensesController.totalExpenses.value),
+                                  cashflowController.cashflowOtherTransactions.fold(0, (previousValue, element) => previousValue + element.amount!)),
                               style: const TextStyle(color: Colors.white),
                             )
                           ],
@@ -329,9 +330,10 @@ class ProfitPage extends StatelessWidget {
                   const SizedBox(height: 15),
                   InkWell(
                     onTap: () {
-                      expensesController.getExpenseByDate(
-                        fromDate: expensesController.filterStartDate.value,
-                        toDate: expensesController.filterEnndStartDate.value,
+                      cashflowController.getCashFlowTransactions(
+                        fromDate: cashflowController.fromDate.value,
+                        toDate: cashflowController.toDate.value,
+                        type: "cash-in"
                       );
                       isSmallScreen(context)
                           ? Get.to(() => ExpensePage())
@@ -363,7 +365,7 @@ class ProfitPage extends StatelessWidget {
                           ],
                         ),
                         Text(
-                          htmlPrice(expensesController.totalExpenses.value),
+                          htmlPrice(cashflowController.cashOutflowOtherTransactions.fold(0, (previousValue, element) => previousValue + element.amount!)),
                           style: const TextStyle(color: Colors.black),
                         )
                       ],

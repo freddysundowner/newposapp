@@ -1,28 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
-import 'package:pointify/controllers/AuthController.dart';
 import 'package:pointify/controllers/purchase_controller.dart';
-import 'package:pointify/controllers/realm_controller.dart';
 import 'package:pointify/controllers/home_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
 import 'package:pointify/controllers/user_controller.dart';
 import 'package:pointify/main.dart';
 import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/screens/stock/stock_page.dart';
-import 'package:pointify/services/category.dart';
 import 'package:pointify/services/purchases.dart';
-import 'package:pointify/utils/colors.dart';
 import 'package:pointify/widgets/snackBars.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:realm/realm.dart';
 
 import '../Real/schema.dart';
-import '../screens/sales/all_sales.dart';
 import '../services/product.dart';
 import '../widgets/alert.dart';
-import '../widgets/loading_dialog.dart';
 
 class ProductController extends GetxController {
   RxList<Product> products = RxList([]);
@@ -386,7 +380,6 @@ class ProductController extends GetxController {
         .getProductPurchaseHistory(
             product: product, fromDate: fromDate, toDate: toDate);
     productInvoices.addAll(productsHistory.map((e) => e).toList());
-    print("vvv ${productInvoices.length}");
     productInvoices.refresh();
   }
 }

@@ -12,7 +12,9 @@ import 'package:pointify/screens/sales/components/return_stock.dart';
 import '../../../widgets/bigtext.dart';
 import '../../../widgets/normal_text.dart';
 import '../../Real/schema.dart';
+import '../suppliers/supplier_info_page.dart';
 import 'all_purchases.dart';
+import 'create_purchase.dart';
 
 class InvoiceScreen extends StatelessWidget {
   Invoice? invoice;
@@ -49,7 +51,14 @@ class InvoiceScreen extends StatelessWidget {
             if (isSmallScreen(context)) {
               Get.back();
             } else {
-              if (from == "AllPurchases") {
+              print(Get.previousRoute);
+              if (from == "invoicepage") {
+                Get.find<HomeController>().selectedWidget.value =
+                    CreatePurchase();
+              }else if (from == "SupplierInfoPage" || from == "supplierpage") {
+                Get.find<HomeController>().selectedWidget.value =
+                    SupplierInfoPage(supplierModel: purchaseController.currentInvoice.value!.supplier!,);
+              }else if (from == "AllPurchases") {
                 Get.find<HomeController>().selectedWidget.value =
                     AllPurchases();
               }

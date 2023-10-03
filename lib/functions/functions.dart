@@ -1,5 +1,4 @@
 import 'dart:math';
-import 'dart:typed_data';
 
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -8,7 +7,6 @@ import 'package:pointify/controllers/user_controller.dart';
 import 'package:flutter/material.dart';
 
 import '../Real/schema.dart';
-import '../controllers/sales_controller.dart';
 
 String htmlPrice(amount) {
   return "${Get.find<ShopController>().currentShop.value?.currency.toString().toUpperCase()} ${amount}";

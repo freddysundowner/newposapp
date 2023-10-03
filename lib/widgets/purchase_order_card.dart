@@ -10,7 +10,6 @@ import '../Real/schema.dart';
 import 'normal_text.dart';
 
 Widget InvoiceCard({required Invoice invoice, String? tab}) {
-  ShopController shopController = Get.find<ShopController>();
   return InkWell(
     onTap: () {
       Get.to(() => InvoiceScreen(
