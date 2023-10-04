@@ -334,8 +334,10 @@ class ProfilePage extends StatelessWidget {
                               authController.showPassword.value = true;
                               Get.back();
                               authController.resetPasswordEmail(
-                                  profile.email!,
-                                  authController
+                                type: "admin",
+
+                                  email:profile.email!,
+                               password : authController
                                       .textEditingControllerConfirmPassword
                                       .text);
                               authController

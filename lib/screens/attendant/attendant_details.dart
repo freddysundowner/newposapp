@@ -47,7 +47,7 @@ class AttendantDetails extends StatelessWidget {
     return Helper(
       widget: SingleChildScrollView(
         child: Container(
-          padding: EdgeInsets.all(10),
+          padding: const EdgeInsets.all(10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -58,11 +58,11 @@ class AttendantDetails extends StatelessWidget {
                 elevation: 5,
                 child: Container(
                   width: double.infinity,
-                  padding: EdgeInsets.all(10),
+                  padding: const EdgeInsets.all(10),
                   child: userDetails(context),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 20,
               ),
               if (userModel != null)
@@ -82,7 +82,7 @@ class AttendantDetails extends StatelessWidget {
                     elevation: 1,
                     child: Container(
                       width: double.infinity,
-                      padding: EdgeInsets.all(10),
+                      padding: const EdgeInsets.all(10),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -99,8 +99,8 @@ class AttendantDetails extends StatelessWidget {
                               ),
                             ],
                           ),
-                          Spacer(),
-                          Icon(Icons.lock)
+                          const Spacer(),
+                          const Icon(Icons.lock)
                         ],
                       ),
                     ),
@@ -119,7 +119,7 @@ class AttendantDetails extends StatelessWidget {
               )
             : Container(
                 width: double.infinity,
-                padding: EdgeInsets.all(10),
+                padding: const EdgeInsets.all(10),
                 child: InkWell(
                   onTap: () {
                     deleteDialog(
@@ -206,33 +206,33 @@ class AttendantDetails extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         attendantUserInputs(
             name: "Username", controller: attendantController.nameController),
-        SizedBox(height: 15),
+        const SizedBox(height: 15),
         majorTitle(title: "Password", color: Colors.black, size: 14.0),
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         TextFormField(
           controller: attendantController.passwordController,
           enabled: true,
           keyboardType: TextInputType.visiblePassword,
           decoration: InputDecoration(
             isDense: true,
-            contentPadding: EdgeInsets.all(15),
+            contentPadding: const EdgeInsets.all(15),
             border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(color: Colors.grey, width: 1)),
+                borderSide: const BorderSide(color: Colors.grey, width: 1)),
             focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(color: Colors.grey, width: 1)),
+                borderSide: const BorderSide(color: Colors.grey, width: 1)),
           ),
         ),
-        SizedBox(height: 15),
+        const SizedBox(height: 15),
         attendantUserInputs(
             name: "User ID",
             controller: attendantController.attendantId, //81975
             enabled: false),
-        SizedBox(height: 15),
+        const SizedBox(height: 15),
         if (userModel == null)
           SizedBox(
               height: 50,
@@ -244,7 +244,7 @@ class AttendantDetails extends StatelessWidget {
                           Permissions();
                 },
                 child: Container(
-                  padding: EdgeInsets.all(10),
+                  padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
                       border: Border.all(width: 3, color: AppColors.mainColor),
                       borderRadius: BorderRadius.circular(40)),
@@ -312,8 +312,9 @@ class AttendantDetails extends StatelessWidget {
                                     return;
                                   }
                                   Get.find<AuthController>().resetPasswordEmail(
-                                      userModel!.email!,
-                                      attendantController
+                                      type: "attendant",
+                                     email: userModel!.email!,
+                                      password:attendantController
                                           .passwordController.text);
                                 },
                                 child: majorTitle(
@@ -329,7 +330,7 @@ class AttendantDetails extends StatelessWidget {
                     color: AppColors.mainColor,
                     size: 17.0),
               )),
-        SizedBox(
+        const SizedBox(
           height: 10,
         ),
         if (userModel != null)
@@ -342,7 +343,7 @@ class AttendantDetails extends StatelessWidget {
                     attendantController.updateUser(userModel: userModel!);
                   },
                   child: Container(
-                    padding: EdgeInsets.all(10),
+                    padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
                         border:
                             Border.all(width: 3, color: AppColors.mainColor),
@@ -376,7 +377,7 @@ class Permissions extends StatelessWidget {
               title: key.capitalize!.replaceAll("_", " "),
               color: Colors.black,
               size: 14.0),
-          Spacer(),
+          const Spacer(),
           Obx(
             () => SwitcherButton(
               onColor: AppColors.mainColor,
@@ -544,13 +545,13 @@ class Permissions extends StatelessWidget {
                       child: Row(
                         children: [
                           Text(title.toString().toUpperCase()),
-                          Spacer(),
+                          const Spacer(),
                           const Icon(Icons.arrow_forward_ios_rounded)
                         ],
                       ),
                     ),
                   ),
-                  Divider(),
+                  const Divider(),
                   Obx(() => attendantController.activePermission.value !=
                           role["key"]
                       ? Container()
@@ -594,7 +595,7 @@ class Permissions extends StatelessWidget {
             }
           },
           child: Container(
-            padding: EdgeInsets.all(10),
+            padding: const EdgeInsets.all(10),
             width: double.infinity,
             decoration: BoxDecoration(
                 border: Border.all(width: 3, color: AppColors.mainColor),

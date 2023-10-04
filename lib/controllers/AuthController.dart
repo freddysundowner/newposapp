@@ -102,7 +102,6 @@ class AuthController extends GetxController {
         };
         loggedInUser.functions
             .call("createAttendantMeta", [updatedCustomUserData]).then((value) {
-
           attendantUidController.clear();
           attendantPasswordController.clear();
 
@@ -215,8 +214,10 @@ class AuthController extends GetxController {
     refresh();
   }
 
-  void resetPasswordEmail(String email, String password) {
-    app.value!.emailPasswordAuthProvider.callResetPasswordFunction(email, password);
+  void resetPasswordEmail(
+      {required String email, required String password, required type}) {
+    app.value!.emailPasswordAuthProvider
+        .callResetPasswordFunction(email, password);
 
     generalAlert(
         title: "Done",
@@ -225,17 +226,20 @@ class AuthController extends GetxController {
         function: () {
           Get.back();
           Get.back();
-          logOut();
+          if (type == "admin") {
+            logOut();
+          }
         });
-    Timer(const Duration(milliseconds:  2000), () {
-      logOut();
-    });
-
+    if (type == "admin") {
+      Timer(const Duration(milliseconds: 2000), () {
+        logOut();
+      });
+    }
   }
 
-  validateEmail(String email){
-
-    return RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+  validateEmail(String email) {
+    return RegExp(
+            r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
         .hasMatch(email);
   }
 }

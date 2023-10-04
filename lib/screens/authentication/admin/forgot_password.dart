@@ -184,8 +184,9 @@ class ForgotPassword extends StatelessWidget {
                               .adminresetPassWordFormKey.currentState!
                               .validate()) {
                             authController.resetPasswordEmail(
-                                authController.emailController.text,
-                                authController.passwordController.text);
+                                email:authController.emailController.text,
+                                password:authController.passwordController.text,
+                            type: "admin");
                           }
                         },
                       );
