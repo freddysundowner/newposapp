@@ -186,11 +186,16 @@ class AttendantsPage extends StatelessWidget {
                 : Get.find<HomeController>().selectedWidget.value = HomePage();
           } else {
             if (!isSmallScreen(context)) {
+              attendantController.nameController.clear();
+              attendantController.passwordController.clear();
               Get.find<HomeController>().selectedWidget.value =
                   AttendantDetails(
                 userModel: null,
               );
             } else {
+              attendantController.nameController.clear();
+              attendantController.passwordController.clear();
+
               Get.to(() => AttendantDetails(
                     userModel: null,
                   ));

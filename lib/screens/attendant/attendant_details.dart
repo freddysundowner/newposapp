@@ -449,7 +449,7 @@ class Permissions extends StatelessWidget {
     ));
     attendantController.roles.clear();
     attendantController.nameController.clear();
-    // attendantController.nameController.clear();
+    attendantController.passwordController.clear();
     if (isSmallScreen(Get.context)) {
       Get.back();
       Get.back();
