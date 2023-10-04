@@ -178,6 +178,7 @@ class ProductStockHistory extends StatelessWidget {
         backgroundColor:
             isSmallScreen(context) ? AppColors.mainColor : Colors.white,
         elevation: 0.2,
+
         leading: IconButton(
           onPressed: () {
             getYearlyRecords(product, function: (Product product,
@@ -358,7 +359,7 @@ class ProductStockHistory extends StatelessWidget {
 
                           final p = invoiceItem.product?.name;
                           final y = invoiceItem.itemCount;
-                          final h = invoiceItem.product!.selling! *
+                          final h = invoiceItem.product!.buyingPrice! *
                               invoiceItem.itemCount!;
                           final z = invoiceItem.attendantid?.username;
                           final w = invoiceItem.createdAt;

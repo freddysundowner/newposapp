@@ -60,7 +60,6 @@ class CreatePurchase extends StatelessWidget {
                     Get.find<HomeController>().selectedWidget.value =
                         StockPage();
                   }
-
                 },
                 icon: const Icon(
                   Icons.arrow_back_ios,
@@ -466,7 +465,7 @@ class CreatePurchase extends StatelessWidget {
                             },
                             child: majorTitle(
                                 title: "Cash in",
-                                color: Colors.black,
+                                color: AppColors.mainColor,
                                 size: 16.0))
                       ],
                     )
