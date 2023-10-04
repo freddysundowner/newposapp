@@ -202,6 +202,7 @@ class AttendantDetails extends StatelessWidget {
     );
   }
 
+
   Widget userDetails(context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

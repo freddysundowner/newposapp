@@ -3,6 +3,7 @@ import 'package:pointify/controllers/sales_controller.dart';
 import 'package:pointify/controllers/user_controller.dart';
 import 'package:pointify/controllers/product_controller.dart';
 import 'package:pointify/controllers/shop_controller.dart';
+import 'package:pointify/responsive/responsiveness.dart';
 import 'package:pointify/widgets/smalltext.dart';
 import 'package:get/get.dart';
 
