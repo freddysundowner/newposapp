@@ -43,7 +43,7 @@ class ShopController extends GetxController {
       generalAlert(title: "Error", message: "Please enter  name");
       return;
     }
-    if (Get.find<ShopController>().selectedCategory.value==null) {
+    if (Get.find<ShopController>().selectedCategory.value == null) {
       generalAlert(title: "Error", message: "Please select business type");
       return;
     }
@@ -192,13 +192,25 @@ class ShopController extends GetxController {
     RealmResults<Shop> response = ShopService().getShop();
     if (response.isNotEmpty) {
       Users().updateAdmin(userController.user.value!, shop: response.first);
-      Get.offAll(() => Home());
+      if (isSmallScreen(context)) {
+        Get.offAll(() => Home());
+      } else {
+        Get.find<HomeController>().selectedWidget.value = ShopsPage();
+      }
     } else {
       Users().updateAdmin(userController.user.value!, shop: null);
-      Get.off(() => CreateShop(
-            page: "home",
-            clearInputs: true,
-          ));
+
+      if (isSmallScreen(context)) {
+        Get.off(() => CreateShop(
+              page: "home",
+              clearInputs: true,
+            ));
+      } else {
+        Get.find<HomeController>().selectedWidget.value = CreateShop(
+          page: "home",
+          clearInputs: true,
+        );
+      }
     }
 
     userController.getUser();

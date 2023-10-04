@@ -17,6 +17,10 @@ class ShopsPage extends StatelessWidget {
   ShopController shopController = Get.find<ShopController>();
   AuthController authController = Get.find<AuthController>();
 
+  ShopsPage({Key? key}) : super(key: key) {
+    shopController.getShops();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -186,9 +190,11 @@ class ShopsPage extends StatelessWidget {
         suffixIcon: IconButton(
           onPressed: () {
             if (shopController.searchController.text == "") {
-            } else  {
+            } else {
               shopController.getShops(
-                  name: shopController.searchController.text.trim().toLowerCase());
+                  name: shopController.searchController.text
+                      .trim()
+                      .toLowerCase());
             }
           },
           icon: const Icon(Icons.search),
