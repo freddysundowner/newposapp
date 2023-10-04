@@ -327,15 +327,22 @@ class ProfilePage extends StatelessWidget {
                                 generalAlert(
                                     title: "Error",
                                     message:
-                                        "Password must be more than 6 charactes");
+                                        "Password must be more than 6 characters");
                                 return;
-                              }authController.showPassword.value = true;
+                              }
+
+                              authController.showPassword.value = true;
                               Get.back();
                               authController.resetPasswordEmail(
                                   profile.email!,
                                   authController
                                       .textEditingControllerConfirmPassword
                                       .text);
+                              authController
+                                  .textEditingControllerConfirmPassword.clear();
+                              authController
+                                  .textEditingControllerNewPassword.clear();
+
                             }
                           },
                           child: majorTitle(

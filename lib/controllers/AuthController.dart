@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
@@ -116,7 +118,9 @@ class AuthController extends GetxController {
           LoginAttendantLoad.value = false;
           Get.offAll(() => const ReloadPage());
         } catch (e) {
-          print(e);
+          if (kDebugMode) {
+            print(e);
+          }
           LoginAttendantLoad.value = false;
           showSnackBar(message: "wrong password", color: Colors.red);
         }
@@ -212,8 +216,7 @@ class AuthController extends GetxController {
   }
 
   void resetPasswordEmail(String email, String password) {
-    app.value!.emailPasswordAuthProvider
-        .callResetPasswordFunction(email, password);
+    app.value!.emailPasswordAuthProvider.callResetPasswordFunction(email, password);
 
     generalAlert(
         title: "Done",
@@ -222,7 +225,12 @@ class AuthController extends GetxController {
         function: () {
           Get.back();
           Get.back();
+          logOut();
         });
+    Timer(const Duration(milliseconds:  2000), () {
+      logOut();
+    });
+
   }
 
   validateEmail(String email){
