@@ -78,57 +78,67 @@ class AuthController extends GetxController {
       generalAlert(title: "Error", message: "Enter user id");
       return;
     }
-    LoginAttendantLoad.value = true;
-    var password = attendantPasswordController.text;
-    var uid = int.parse(attendantUidController.text);
+    try{
+      LoginAttendantLoad.value = true;
+      var password = attendantPasswordController.text;
+      var uid = int.parse(attendantUidController.text);
 
-    Get.put(RealmController()).auth();
-    var response = await Users.getAttendantbyUid(uid.toString());
-    var userdata = response["user"];
-    if (userdata["_id"] != null) {
-      var email = userdata["email"];
-      if (userdata["loggedin"] == null) {
-        await registerUserEmailPassword(email!, password);
-
-        appController.initialize(appId);
-        User? loggedInUser = await logInUserEmailPassword(email!, password);
-        appController.initialize(appId);
-
-        var uid = userdata["UNID"];
-        final updatedCustomUserData = {
-          "uid": uid,
-          "authId": loggedInUser.id,
-          "loggedin": true,
-        };
-        loggedInUser.functions
-            .call("createAttendantMeta", [updatedCustomUserData]).then((value) {
-          attendantUidController.clear();
-          attendantPasswordController.clear();
-
-          Get.offAll(() => const ReloadPage());
-        });
-        LoginAttendantLoad.value = false;
-        await loggedInUser.refreshCustomData();
-      } else {
-        try {
-          appController.initialize(appId);
-          await logInUserEmailPassword(email!, password);
-          appController.initialize(appId);
-          LoginAttendantLoad.value = false;
-          Get.offAll(() => const ReloadPage());
-        } catch (e) {
-          if (kDebugMode) {
-            print(e);
-          }
-          LoginAttendantLoad.value = false;
-          showSnackBar(message: "wrong password", color: Colors.red);
-        }
+      Get.put(RealmController()).auth();
+      var response = await Users.getAttendantbyUid(uid.toString());
+      if (kDebugMode) {
+        print("response is $response");
       }
-    } else {
+      var userdata = response["user"];
+      if (userdata["_id"] != null) {
+        var email = userdata["email"];
+        if (userdata["loggedin"] == null) {
+          await registerUserEmailPassword(email!, password);
+
+          appController.initialize(appId);
+          User? loggedInUser = await logInUserEmailPassword(email!, password);
+          appController.initialize(appId);
+
+          var uid = userdata["UNID"];
+          final updatedCustomUserData = {
+            "uid": uid,
+            "authId": loggedInUser.id,
+            "loggedin": true,
+          };
+          loggedInUser.functions.call("createAttendantMeta", [updatedCustomUserData]).then((value) {
+            attendantUidController.clear();
+            attendantPasswordController.clear();
+
+            Get.offAll(() => const ReloadPage());
+          });
+          LoginAttendantLoad.value = false;
+          await loggedInUser.refreshCustomData();
+        } else {
+          try {
+            appController.initialize(appId);
+            await logInUserEmailPassword(email!, password);
+            appController.initialize(appId);
+            LoginAttendantLoad.value = false;
+            Get.offAll(() => const ReloadPage());
+          } catch (e) {
+            if (kDebugMode) {
+              print(e);
+            }
+            LoginAttendantLoad.value = false;
+            showSnackBar(message: "wrong password", color: Colors.red);
+          }
+        }
+      } else {
+        LoginAttendantLoad.value = false;
+        generalAlert(title: "Error", message: "UID supplied does not exist");
+      }
+      LoginAttendantLoad.value = false;
+    }catch(e){
       LoginAttendantLoad.value = false;
       generalAlert(title: "Error", message: "UID supplied does not exist");
+      if (kDebugMode) {
+        print(e);
+      }
     }
-    LoginAttendantLoad.value = false;
   }
 
   signUser(context) async {
