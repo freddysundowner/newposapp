@@ -312,7 +312,7 @@ class RealmController extends GetxController {
   }
 
   void deleteAdmin() async {
-    try{
+    try {
       AuthController authController = Get.find<AuthController>();
       RealmResults<Shop> shops = ShopService().getShop();
       if (shops.isNotEmpty) {
@@ -320,14 +320,12 @@ class RealmController extends GetxController {
           deleteShopData(element);
         }
       }
+      authController.app.value?.deleteUser(authController.app.value!.currentUser!);
       authController.logOut();
-      await authController.app.value
-          ?.deleteUser(authController.app.value!.currentUser!);
-    }catch(e){
+    } catch (e) {
       if (kDebugMode) {
         print(e);
       }
     }
-
   }
 }

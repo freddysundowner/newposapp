@@ -30,10 +30,11 @@ class Users {
     return roles;
   }
 
-  static RealmResults<UserModel> getAllAttendandsByShop() {
+  static RealmResults<UserModel>  getAllAttendandsByShop() {
     RealmResults<UserModel> user = realmService.realm.query<UserModel>(
         " shop == \$0 AND UNID != ${userController.user.value!.UNID}",
-        [Get.find<ShopController>().currentShop.value]);
+        // [Get.find<ShopController>().currentShop.value]
+    );
 
     return user;
   }
