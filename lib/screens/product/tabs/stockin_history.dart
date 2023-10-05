@@ -178,7 +178,6 @@ class ProductStockHistory extends StatelessWidget {
         backgroundColor:
             isSmallScreen(context) ? AppColors.mainColor : Colors.white,
         elevation: 0.2,
-
         leading: IconButton(
           onPressed: () {
             getYearlyRecords(product, function: (Product product,
@@ -350,6 +349,8 @@ class ProductStockHistory extends StatelessWidget {
                                   textAlign: TextAlign.center)),
                           DataColumn(
                               label: Text('Date', textAlign: TextAlign.center)),
+                          DataColumn(
+                              label: Text('', textAlign: TextAlign.center)),
                         ],
                         rows: List.generate(
                             productController.productInvoices.length, (index) {
@@ -371,6 +372,12 @@ class ProductStockHistory extends StatelessWidget {
                             DataCell(Text(z.toString())),
                             DataCell(
                                 Text(DateFormat("yyyy-dd-MMM ").format(w!))),
+                            DataCell(Text(
+                              invoiceItem.itemCount==0
+                                  ? "Returned"
+                                  : " ",
+                              style: const TextStyle(color: Colors.red),
+                            )),
                           ]);
                         }),
                       ),

@@ -38,7 +38,10 @@ class ShopController extends GetxController {
   RxList<ShopTypes> categories = RxList([]);
   RxList excludefeatures = RxList(["usage", 'stock']);
 
+
+
   createShop({required page, required context}) async {
+    print("shop is $page");
     if (nameController.text.trim().isEmpty) {
       generalAlert(title: "Error", message: "Please enter  name");
       return;
@@ -77,7 +80,7 @@ class ShopController extends GetxController {
         Get.off(() => Home());
       } else {
         Get.find<HomeController>().selectedWidget.value = ShopsPage();
-        Get.find<HomeController>().activeItem.value = "Home";
+        // Get.find<HomeController>().activeItem.value = "";
       }
     } else if (page == "home") {
       Get.off(() => Home());
@@ -187,8 +190,6 @@ class ShopController extends GetxController {
 
   deleteShop({required Shop shop, required context}) async {
     Get.find<RealmController>().deleteShopData(shop);
-
-    //update current shop
     RealmResults<Shop> response = ShopService().getShop();
     if (response.isNotEmpty) {
       Users().updateAdmin(userController.user.value!, shop: response.first);
@@ -206,10 +207,11 @@ class ShopController extends GetxController {
               clearInputs: true,
             ));
       } else {
-        Get.find<HomeController>().selectedWidget.value = CreateShop(
-          page: "home",
-          clearInputs: true,
-        );
+        Get.off(() => CreateShop(
+              page: "home",
+              clearInputs: true,
+            ));
+        Get.find<HomeController>().selectedWidget.value = ShopsPage();
       }
     }
 

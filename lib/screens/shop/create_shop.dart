@@ -34,6 +34,8 @@ class CreateShop extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+
     Get.find<PlanController>().getPlans();
     return Scaffold(
       backgroundColor: Colors.white,

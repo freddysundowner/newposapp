@@ -225,4 +225,6 @@ class UserController extends GetxController {
         message: "Permissions updated successfully",
         negativeText: "");
   }
+
+
 }

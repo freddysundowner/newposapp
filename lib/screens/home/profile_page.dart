@@ -19,8 +19,7 @@ import '../profile/profile_update.dart';
 
 class ProfilePage extends StatelessWidget {
   ProfilePage({Key? key}) : super(key: key);
-  RealmController authController =
-      Get.put(RealmController()); //<RealmService>();
+  RealmController authController =Get.put(RealmController()); //<RealmService>();
   ShopController createShopController = Get.find<ShopController>();
 
   @override
@@ -98,6 +97,7 @@ class ProfilePage extends StatelessWidget {
                         deleteDialog(
                             context: context,
                             onPressed: () {
+
                               authController.deleteAdmin();
                             });
                       }),

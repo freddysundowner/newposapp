@@ -19,11 +19,6 @@ class Users {
         .write<UserModel>(() => realmService.realm.add<UserModel>(userModel));
   }
 
-  static deleteUser(UserModel userModel) {
-    realmService.realm.write(() {
-      realmService.realm.delete(userModel);
-    });
-  }
 
   static createRole(RolesModel rolesModel) {
     realmService.realm.write<RolesModel>(
@@ -118,4 +113,11 @@ class Users {
       }
     });
   }
+
+  static deleteUser(UserModel userModel) {
+    realmService.realm.write(() {
+      realmService.realm.delete(userModel);
+    });
+  }
+
 }

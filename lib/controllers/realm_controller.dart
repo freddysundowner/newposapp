@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:pointify/Real/schema.dart';
 import 'package:pointify/controllers/shop_controller.dart';
@@ -194,7 +195,8 @@ class RealmController extends GetxController {
   }
 
   deleteShopData(element) {
-    List<SalesModel> sales = Sales().getSales(shop: element).map((e) => e).toList();
+    List<SalesModel> sales =
+        Sales().getSales(shop: element).map((e) => e).toList();
     if (sales.isNotEmpty) {
       Sales().deleteSaleByShopId(sales);
     }
@@ -309,20 +311,23 @@ class RealmController extends GetxController {
     ShopService().deleteItem(element);
   }
 
-  void deleteAdmin() {
-    // UserModel user = Get.find<UserController>().user.value!;
-    //delete shops by this admin
-    RealmResults<Shop> shops = ShopService().getShop();
-    if (shops.isNotEmpty) {
-      for (var element in shops) {
-        deleteShopData(element);
+  void deleteAdmin() async {
+    try{
+      AuthController authController = Get.find<AuthController>();
+      RealmResults<Shop> shops = ShopService().getShop();
+      if (shops.isNotEmpty) {
+        for (var element in shops) {
+          deleteShopData(element);
+        }
+      }
+      authController.logOut();
+      await authController.app.value
+          ?.deleteUser(authController.app.value!.currentUser!);
+    }catch(e){
+      if (kDebugMode) {
+        print(e);
       }
     }
-    // Users.deleteUser(user);
-    // Get.find<AuthController>()
-    //     .app
-    //     .value!
-    //     .deleteUser(Get.find<AuthController>().app.value!.currentUser!);
-    // Get.find<AuthController>().logOut();
+
   }
 }
