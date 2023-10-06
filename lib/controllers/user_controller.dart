@@ -213,7 +213,6 @@ class UserController extends GetxController {
   }
 
   deleteAttendant({UserModel? userModel}) async {
-    print("hello${userModel!.id}");
     Users.deleteUser(userModel!);
   }
 
