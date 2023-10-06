@@ -311,10 +311,7 @@ class SalesController extends GetxController
                 (element.quantity! * element.product!.buyingPrice!)));
 
     Get.find<CashflowController>().getCashFlowTransactions(
-      fromDate: fromDate,
-      toDate: toDate,
-      type: "cash-out"
-    );
+        fromDate: fromDate, toDate: toDate, type: "cash-out");
   }
 
   changeSaleItem(ReceiptItem value) {
@@ -502,6 +499,54 @@ class SalesController extends GetxController
       }
       return;
     }
+    if (_paymentType(receipt.value!) == "Wallet" &&
+        (receipt.value!.customerId!.walletBalance == null ||
+            receipt.value!.customerId!.walletBalance! <
+                receipt.value!.grandTotal!)) {
+      showDialog(
+          context: Get.context!,
+          builder: (_) {
+            return AlertDialog(
+              content: const Text(
+                  "Customer Wallet balance is insufficient!! credit the account?"),
+              actions: [
+                TextButton(
+                    onPressed: () {
+                      Get.back();
+                    },
+                    child: Text(
+                      "Cancel".capitalize!,
+                      style: TextStyle(color: AppColors.mainColor),
+                    )),
+                TextButton(
+                    onPressed: () {
+                      Get.back();
+
+                      if (!isSmallScreen(Get.context)) {
+                        Get.back();
+                        Get.find<HomeController>().selectedWidget.value =
+                            WalletPage(
+                              customerModel: receipt.value!.customerId!,
+                              page: "makesale",
+                            );
+                      } else {
+                        Get.to(() => WalletPage(
+                          customerModel: receipt.value!.customerId!,
+                          page: "makesale",
+                        ));
+                      }
+                    },
+                    child: Text(
+                      "Credit".capitalize!,
+                      style: TextStyle(color: AppColors.mainColor),
+                    )),
+
+              ],
+            );
+          });
+
+      return;
+    }
 
     Get.back();
     saveReceipt();
@@ -538,9 +583,9 @@ class SalesController extends GetxController
       }
       var amountPaid = 0;
       if (receiptData.creditTotal!.abs() > walletbalanace) {
-        if(walletbalanace < 0){
+        if (walletbalanace < 0) {
           amountPaid = receiptData.creditTotal!.abs();
-        }else{
+        } else {
           receiptData.creditTotal =
               (walletbalanace - receiptData.creditTotal!.abs()).abs();
           amountPaid = (walletbalanace - receiptData.creditTotal!.abs());
@@ -792,8 +837,8 @@ class SalesController extends GetxController
             previousValue! +
             (element.product!.buyingPrice! * element.quantity!));
 
-    Get.find<CashflowController>()
-        .getCashFlowTransactions(fromDate: fromDate, toDate: toDate,type: "cash-in");
+    Get.find<CashflowController>().getCashFlowTransactions(
+        fromDate: fromDate, toDate: toDate, type: "cash-in");
   }
 
   @override
@@ -946,7 +991,7 @@ class SalesController extends GetxController
 
     //deduct from wallet debt
     if (paynowMethod.value == "Wallet" || walletBalance < 0) {
-      print(walletBalance.abs()-amount);
+      print(walletBalance.abs() - amount);
       Get.find<WalletController>().WalletTransaction(
           customerModel: salesBody.customerId!,
           amount: amount.abs(),
@@ -971,7 +1016,8 @@ class SalesController extends GetxController
         total: total, name: name, key: type, color: color, iconData: icon));
   }
 
-  void getSalesByDate({DateTime? fromDate, DateTime? toDate, String? type, Shop? shop}) {
+  void getSalesByDate(
+      {DateTime? fromDate, DateTime? toDate, String? type, Shop? shop}) {
     todaySales.clear();
     allSales.clear();
     if (type == "today") {
@@ -981,7 +1027,6 @@ class SalesController extends GetxController
     }
     RealmResults<SalesModel> response =
         Sales().getSales(fromDate: fromDate, toDate: toDate, shop: shop);
-
 
     if (type == "today") {
       _generateHomeCard(
@@ -993,10 +1038,7 @@ class SalesController extends GetxController
           icon: Icons.auto_graph_rounded); //0xff34a8e0 //ffbe741f
 
       Get.find<CashflowController>().getCashFlowTransactions(
-        fromDate: fromDate,
-        toDate: toDate,
-        type: "cash-in"
-      );
+          fromDate: fromDate, toDate: toDate, type: "cash-in");
       if (checkPermission(category: "accounts", permission: "analysis")) {
         _generateHomeCard(
             type: "profit",

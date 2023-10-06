@@ -565,8 +565,8 @@ class CreateProduct extends StatelessWidget {
                                                               results
                                                                   .elementAt(
                                                                       index)
-                                                                  .id
-                                                                  .toString();
+
+                                                          ;
 
                                                           Navigator.pop(
                                                               context);

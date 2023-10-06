@@ -55,7 +55,6 @@ class CustomerController extends GetxController
       if (!isSmallScreen(Get.context)) {
         if (page == "customersPage") {
           Get.find<HomeController>().selectedWidget.value = CustomersPage();
-
         }
         if (page == "createSale") {
           function!();
@@ -149,8 +148,7 @@ class CustomerController extends GetxController
           email: emailController.text,
           address: addressController.text);
       Customer().updateCustomer(customer);
-    } catch (e) {
-    }
+    } catch (e) {}
   }
 
   deleteCustomer(CustomerModel customerModel) {

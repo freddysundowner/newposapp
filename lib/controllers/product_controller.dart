@@ -46,7 +46,7 @@ class ProductController extends GetxController {
   RxString selectedSortOrderSearch = RxString("all");
   RxString selectedSortOrderCountSearch = RxString("all");
   RxString supplierName = RxString("None");
-  RxString supplierId = RxString("");
+  Rxn<Supplier> supplierId = Rxn(null);
 
   RxInt initialProductValue = RxInt(0);
   RxInt productHistoryTabIndex = RxInt(0);
@@ -69,6 +69,7 @@ class ProductController extends GetxController {
   TextEditingController searchProductCountController = TextEditingController();
 
   saveProducts({Product? productData}) async {
+
     var name = itemNameController.text;
     var qty = qtyController.text;
     var buying = buyingPriceController.text;
@@ -128,7 +129,7 @@ class ProductController extends GetxController {
         final DateTime now = DateTime.now();
         final DateFormat formatter = DateFormat('yyyy-MM-dd');
         final String formatted = formatter.format(now);
-        print("aaa ${Get.find<UserController>().user.value?.id}");
+
         Product product = Product(
             productData != null ? productData.id : ObjectId(),
             name: name,
@@ -136,8 +137,7 @@ class ProductController extends GetxController {
             buyingPrice: int.parse(buying),
             selling: int.parse(selling),
             invoiceId: null,
-            minPrice:
-                minSelling == "" ? int.parse(selling) : int.parse(minSelling),
+            minPrice: minSelling == "" ? int.parse(selling) : int.parse(minSelling),
             shop: Get.find<ShopController>().currentShop.value,
             attendant: Get.find<UserController>().user.value,
             unit: selectedMeasure.value,
@@ -145,7 +145,7 @@ class ProductController extends GetxController {
             stockLevel: reorder == "" ? 0 : int.parse(reorder),
             discount: discount == "" ? 0 : int.parse(discount),
             description: description.isEmpty ? "" : description,
-            supplier: supplierName.value == "None" ? "" : supplierId.value,
+            supplier: supplierName.value == "None" ? "" : supplierId.value!.id.toString(),
             date: formatted,
             deleted: false,
             createdAt: DateTime.now());
@@ -156,13 +156,17 @@ class ProductController extends GetxController {
         }
 
         //add produc as a purchase
-        Get.find<PurchaseController>().addNewPurchase(InvoiceItem(ObjectId(),
+        Get.find<PurchaseController>().addNewPurchase(
+            InvoiceItem(
+            ObjectId(),
             product: product,
             price: product.buyingPrice,
             total: product.buyingPrice! * int.parse(qty),
             attendantid: userController.user.value,
+            supplier:supplierId.value,
             createdAt: DateTime.now(),
-            itemCount: int.parse(qty)));
+            itemCount: int.parse(qty))
+        );
         Invoice? invoice = Get.find<PurchaseController>().invoice.value;
         Get.find<PurchaseController>().invoice.value?.balance = 0;
         Get.find<PurchaseController>().createPurchase();

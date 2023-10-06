@@ -60,11 +60,11 @@ class PurchaseController extends GetxController {
       }
       SupplierService()
           .updateSupplierWalletbalance(invoiceData.supplier, amount: balance);
-    }else{
+    } else {
       //save purchase invoice
       Purchases().createPurchase(invoiceData);
     }
-
+    print("hello there");
     //update product quantities
     for (var element in invoiceData.items) {
       Products().updateProductPart(
@@ -84,9 +84,9 @@ class PurchaseController extends GetxController {
     Get.back();
     if (isSmallScreen(Get.context!)) {
       Get.to(() => InvoiceScreen(
-        invoice: invoiceData,
-        type: "",
-      ));
+            invoice: invoiceData,
+            type: "",
+          ));
     } else {
       Get.find<HomeController>().selectedWidget.value = InvoiceScreen(
         invoice: invoiceData,
@@ -104,10 +104,6 @@ class PurchaseController extends GetxController {
       DateTime? toDate}) async {
     purchasedItems.clear();
 
-    print(supplier?.id);
-    print(onCredit);
-    print(fromDate);
-    print(toDate);
     RealmResults<Invoice> invoices = Purchases().getPurchase(
         supplier: supplier,
         onCredit: onCredit,
@@ -134,10 +130,8 @@ class PurchaseController extends GetxController {
     }
     if (index == -1) {
       if (invoice.value == null) {
-        invoice.value = Invoice(
-          ObjectId(),
-          items: [value],
-        );
+        invoice.value =
+            Invoice(ObjectId(), items: [value], supplier: value.supplier);
       } else {
         invoice.value =
             Invoice(invoice.value!.id, items: [...invoice.value!.items, value]);
@@ -247,6 +241,7 @@ class PurchaseController extends GetxController {
   }
 
   _onCredit(Invoice invoice) => (invoice.balance ?? 0).abs() > 0;
+
   void returnInvoiceItem(
       InvoiceItem invoiceItem, int quatity, Invoice invoice) {
     var amount = quatity * invoiceItem.price!; // amount to be returned

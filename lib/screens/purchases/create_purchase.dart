@@ -440,7 +440,7 @@ class CreatePurchase extends StatelessWidget {
                       height: 20,
                     ),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         TextButton(
                             onPressed: () {
@@ -448,8 +448,9 @@ class CreatePurchase extends StatelessWidget {
                             },
                             child: majorTitle(
                                 title: "Cancel",
-                                color: Colors.black,
+                                color: Colors.red,
                                 size: 16.0)),
+                        const SizedBox(width: 30),
                         TextButton(
                             onPressed: () {
                               if (purchaseController.invoice.value!.balance! >
@@ -466,7 +467,8 @@ class CreatePurchase extends StatelessWidget {
                             child: majorTitle(
                                 title: "Cash in",
                                 color: AppColors.mainColor,
-                                size: 16.0))
+                                size: 16.0)),
+                        const SizedBox(width: 10),
                       ],
                     )
                   ],
