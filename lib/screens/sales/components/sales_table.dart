@@ -11,7 +11,7 @@ import '../../../functions/functions.dart';
 import '../../../utils/colors.dart';
 import '../sale_order_item.dart';
 
-Widget salesTable(context, page) {
+Widget salesTable({required context, required page, String? type}) {
   SalesController salesController = Get.find<SalesController>();
   ShopController shopController = Get.find<ShopController>();
   return Container(
@@ -35,17 +35,24 @@ Widget salesTable(context, page) {
             columnSpacing: 30.0,
             columns: [
               const DataColumn(
-                  label: Text('Receipt Number', textAlign: TextAlign.center, overflow: TextOverflow.ellipsis)),
+                  label: Text('Receipt Number',
+                      textAlign: TextAlign.center,
+                      overflow: TextOverflow.ellipsis)),
               DataColumn(
                   label: Text(
                       'Amount(${shopController.currentShop.value?.currency})',
                       textAlign: TextAlign.center)),
               const DataColumn(
-                  label: Text('Payment Method', textAlign: TextAlign.center, overflow: TextOverflow.ellipsis,)),
+                  label: Text(
+                'Payment Method',
+                textAlign: TextAlign.center,
+                overflow: TextOverflow.ellipsis,
+              )),
               const DataColumn(
                   label: Text('Cashier', textAlign: TextAlign.center)),
               const DataColumn(
                   label: Text('Date', textAlign: TextAlign.center)),
+              if(type!= "returns"||type==null)
               const DataColumn(
                   label: Text('Actions', textAlign: TextAlign.center)),
             ],
@@ -59,7 +66,9 @@ Widget salesTable(context, page) {
                             : salesController.allSales.length, (index) {
               SalesModel salesModel = salesController.allSales.elementAt(index);
               final y = salesModel.receiptNumber;
-              final h = salesModel.attendantId?.username == null ? " " : salesModel.attendantId?.username?.capitalize;
+              final h = salesModel.attendantId?.username == null
+                  ? " "
+                  : salesModel.attendantId?.username?.capitalize;
               final x = htmlPrice(salesModel.items.fold(
                           0,
                           (previousValue, element) =>
@@ -80,20 +89,22 @@ Widget salesTable(context, page) {
                 DataCell(Text(z!)),
                 DataCell(Text(h!)),
                 DataCell(Text(DateFormat("yyyy-dd-MMM ").format(w!))),
-                DataCell(InkWell(
-                  onTap: () {
-                    Get.find<HomeController>().selectedWidget.value =
-                        SalesReceipt(
-                      salesModel: salesModel,
-                      type: "",
-                      from: page,
-                    );
-                  },
-                  child: Text(
-                    "View",
-                    style: TextStyle(color: AppColors.mainColor),
-                  ),
-                )),
+                if(type!= "returns"||type==null)
+                DataCell(
+                 InkWell(
+                        onTap: () {
+                          Get.find<HomeController>().selectedWidget.value =
+                              SalesReceipt(
+                            salesModel: salesModel,
+                            type: "",
+                            from: page,
+                          );
+                        },
+                        child: Text(
+                          "View",
+                          style: TextStyle(color: AppColors.mainColor),
+                        ),
+                      )),
               ]);
             }),
           ),

@@ -477,7 +477,7 @@ class AllSales extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      salesTable(context, "AllSalesPage"),
+                      salesTable(context:context, page:"AllSalesPage",type: type ),
                       const SizedBox(
                         height: 10,
                       ),

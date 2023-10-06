@@ -336,8 +336,7 @@ class ProductStockHistory extends StatelessWidget {
                         columnSpacing: 30.0,
                         columns: const [
                           DataColumn(
-                              label:
-                                  Text('Product', textAlign: TextAlign.center)),
+                              label: Text('Product', textAlign: TextAlign.center)),
                           DataColumn(
                               label: Text('Quantity',
                                   textAlign: TextAlign.center)),
@@ -349,8 +348,7 @@ class ProductStockHistory extends StatelessWidget {
                                   textAlign: TextAlign.center)),
                           DataColumn(
                               label: Text('Date', textAlign: TextAlign.center)),
-                          DataColumn(
-                              label: Text('', textAlign: TextAlign.center)),
+                          DataColumn(label: Text('', textAlign: TextAlign.center)),
                         ],
                         rows: List.generate(
                             productController.productInvoices.length, (index) {

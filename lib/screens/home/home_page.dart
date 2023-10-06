@@ -460,7 +460,7 @@ class HomePage extends StatelessWidget {
                         ? Center(child: noItemsFound(context, false))
                         : isSmallScreen(context)
                             ? salesListView()
-                            : salesTable(context, "home");
+                            : salesTable(context:context, page:"home");
               })
             ],
           ),
