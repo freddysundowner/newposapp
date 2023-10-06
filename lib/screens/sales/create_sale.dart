@@ -740,7 +740,7 @@ class CreateSale extends StatelessWidget {
               ],
               title: const Text("Select customer"),
             ),
-            body: Customers(type: "sale"),
+            body: Customers(type: "createSale"),
           ));
     } else {
       Get.back();

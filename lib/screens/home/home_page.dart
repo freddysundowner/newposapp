@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:pointify/controllers/expense_controller.dart';
 import 'package:pointify/controllers/user_controller.dart';
@@ -87,7 +89,6 @@ class HomePage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-
               // Obx(
               //   () => (shopController.checkIfTrial() ||
               //       shopController.checkDaysRemaining() < 10)  && userController.user.value?.usertype == "admin"
@@ -168,8 +169,37 @@ class HomePage extends StatelessWidget {
                       children: [
                         IconButton(
                             onPressed: () {
-                              userController.getUser();
-                              userController.user.refresh();
+                              try {
+                                showDialog(
+                                    context: context,
+                                    builder: (_) {
+                                      return const AlertDialog(
+                                        content: Row(
+                                          children: [
+                                            CircularProgressIndicator(),
+                                            Padding(
+                                              padding: EdgeInsets.all(8.0),
+                                              child: Text("Just a moment"),
+                                            )
+                                          ],
+                                        ),
+                                      );
+                                    });
+                                Timer(const Duration(milliseconds: 5000), () {
+                                  // userController.getUser();
+                                  Get.defaultDialog(
+                                      title: "Login in",
+                                      contentPadding: const EdgeInsets.all(10),
+                                      content:
+                                          const CircularProgressIndicator(),
+                                      barrierDismissible: false);
+
+                                  Get.back();
+                                  userController.user.refresh();
+                                });
+                              } catch (e) {
+                                Get.back();
+                              }
                             },
                             icon: const Icon(Icons.refresh)),
                         IconButton(
@@ -330,12 +360,15 @@ class HomePage extends StatelessWidget {
                           onTap: shopController.checkSubscription() == false
                               ? null
                               : () {
-
-                            salesController.getFinanceSummary(
-                              fromDate: DateTime.parse(DateFormat("yyy-MM-dd").format(DateTime.now())),
-                              toDate: DateTime.parse(DateFormat("yyy-MM-dd")
-                                  .format(DateTime.now().add(const Duration(days: 1)))),
-                            );
+                                  salesController.getFinanceSummary(
+                                    fromDate: DateTime.parse(
+                                        DateFormat("yyy-MM-dd")
+                                            .format(DateTime.now())),
+                                    toDate: DateTime.parse(
+                                        DateFormat("yyy-MM-dd").format(
+                                            DateTime.now()
+                                                .add(const Duration(days: 1)))),
+                                  );
                                   isSmallScreen(context)
                                       ? Get.to(() => FinancialPage())
                                       : Get.find<HomeController>()
@@ -460,7 +493,7 @@ class HomePage extends StatelessWidget {
                         ? Center(child: noItemsFound(context, false))
                         : isSmallScreen(context)
                             ? salesListView()
-                            : salesTable(context:context, page:"home");
+                            : salesTable(context: context, page: "home");
               })
             ],
           ),

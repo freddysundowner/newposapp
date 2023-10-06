@@ -83,7 +83,18 @@ Widget salesTable({required context, required page, String? type}) {
               final w = salesModel.createdAt;
 
               return DataRow(cells: [
-                DataCell(Text("#${y!}".toUpperCase())),
+                DataCell(Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text("#${y!}".toUpperCase()),
+                    if (salesModel.returneditems.isNotEmpty)
+                      Text(
+                        "${salesModel.returneditems.length} item Returned",
+                        style: const TextStyle(color: Colors.red),
+                      ),
+                  ],
+                )),
                 DataCell(Text(x)),
                 DataCell(Text(z!)),
                 DataCell(Text(h!)),

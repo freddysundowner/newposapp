@@ -19,6 +19,7 @@ class CreateCustomer extends StatelessWidget {
   final page;
   Function ?function;
 
+
   CreateCustomer({Key? key, required this.page,this.function}) : super(key: key) {
     customersController.nameController.clear();
     customersController.phoneController.clear();
@@ -30,7 +31,7 @@ class CreateCustomer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(page);
+    print("page is $page");
     return Scaffold(
         backgroundColor: Colors.white.withOpacity(0.96),
         appBar: AppBar(
