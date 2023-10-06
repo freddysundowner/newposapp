@@ -62,6 +62,7 @@ class CustomerInfoPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print("on credit ${customerModel.credit}");
     return isSmallScreen(context)
         ? Helper(
             widget: SingleChildScrollView(
@@ -186,12 +187,19 @@ class CustomerInfoPage extends StatelessWidget {
                     category: "customers", permission: "manage"))
                   IconButton(
                       onPressed: () {
-                        generalAlert(
-                            title:
-                                "Are you sure you want to delete ${customerModel.fullName}",
-                            function: () {
-                              customerController.deleteCustomer(customerModel);
-                            });
+                        if (customerModel.onCredit == true) {
+                          generateWarningAlert(
+                              title: "Error",
+                              message: "You cannot delete customer who is on credit ");
+                        } else {
+                          generalAlert(
+                              title:
+                                  "Are you sure you want to delete ${customerModel.fullName}",
+                              function: () {
+                                customerController
+                                    .deleteCustomer(customerModel);
+                              });
+                        }
                       },
                       icon: const Icon(
                         Icons.delete,
@@ -248,13 +256,19 @@ class CustomerInfoPage extends StatelessWidget {
                         leading: const Icon(Icons.delete, color: Colors.red),
                         onTap: () {
                           Get.back();
-                          generalAlert(
-                              title:
-                                  "Are you sure you want to delete ${customerModel.fullName}",
-                              function: () {
-                                customerController
-                                    .deleteCustomer(customerModel);
-                              });
+                          if (customerModel.onCredit == true) {
+                            generateWarningAlert(
+                              title: "Error",
+                                message: "You cannot delete customer who is on credit ");
+                          } else {
+                            generalAlert(
+                                title:
+                                    "Are you sure you want to delete ${customerModel.fullName}",
+                                function: () {
+                                  customerController
+                                      .deleteCustomer(customerModel);
+                                });
+                          }
                         },
                         title: const Text("Delete"),
                       ),
@@ -334,7 +348,7 @@ class CustomerInfoPage extends StatelessWidget {
                       children: [
                         CreditInfo(customerModel: customerModel),
                         SalesTab(),
-                        RetunsTab()
+                        ReturnsTab()
                       ],
                     ),
                   ),
@@ -492,8 +506,7 @@ class SalesTab extends StatelessWidget {
                                   label: Text('Date',
                                       textAlign: TextAlign.center)),
                               DataColumn(
-                                  label: Text('',
-                                      textAlign: TextAlign.center)),
+                                  label: Text('', textAlign: TextAlign.center)),
                             ],
                             rows: List.generate(salesController.allSales.length,
                                 (index) {
@@ -510,20 +523,23 @@ class SalesTab extends StatelessWidget {
                                 DataCell(Text(z.toString())),
                                 DataCell(
                                     Text(DateFormat("dd-MM-yyyy").format(a))),
-
                                 DataCell(InkWell(
-                                  onTap: (){
-                                    Get.find<HomeController>().selectedWidget.value = SalesReceipt(
+                                  onTap: () {
+                                    Get.find<HomeController>()
+                                        .selectedWidget
+                                        .value = SalesReceipt(
                                       salesModel: saleOrder,
                                       type: "",
                                       from: "CustomerInfoPage",
                                     );
                                   },
                                   child: Padding(
-                                    padding: const EdgeInsets.symmetric(vertical: 1.0),
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 1.0),
                                     child: Text(
                                       "View",
-                                      style: TextStyle(color: AppColors.mainColor),
+                                      style:
+                                          TextStyle(color: AppColors.mainColor),
                                     ),
                                   ),
                                 )),
@@ -537,14 +553,15 @@ class SalesTab extends StatelessWidget {
   }
 }
 
-class RetunsTab extends StatelessWidget {
-  RetunsTab({Key? key}) : super(key: key);
+class ReturnsTab extends StatelessWidget {
+  ReturnsTab({Key? key}) : super(key: key);
 
   SalesController salesController = Get.find<SalesController>();
 
   @override
   Widget build(BuildContext context) {
-    print("salesController.currentReceiptReturns.length ${salesController.currentReceiptReturns.length}");
+    print(
+        "salesController.currentReceiptReturns.length ${salesController.currentReceiptReturns.length}");
     return Obx(() {
       return salesController.currentReceiptReturns.isEmpty
           ? Container(
@@ -612,15 +629,18 @@ class RetunsTab extends StatelessWidget {
                             DataCell(Text(x.toString())),
                             DataCell(Text(z.toString())),
                             DataCell(InkWell(
-                              onTap: (){
-                                Get.find<HomeController>().selectedWidget.value =SalesReceipt(
+                              onTap: () {
+                                Get.find<HomeController>()
+                                    .selectedWidget
+                                    .value = SalesReceipt(
                                   salesModel: receiptItem.receipt,
                                   type: "returns",
                                   from: "CustomerInfoPage",
                                 );
                               },
                               child: Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 1.0),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 1.0),
                                 child: Text(
                                   "View",
                                   style: TextStyle(color: AppColors.mainColor),
@@ -725,21 +745,25 @@ class CreditInfo extends StatelessWidget {
                                 DataCell(Text("#${y!}")),
                                 DataCell(Text(x.toString())),
                                 DataCell(Text(z.toString())),
-                                DataCell(Text(
-                                    DateFormat("dd-MM-yyyy").format(a))),
+                                DataCell(
+                                    Text(DateFormat("dd-MM-yyyy").format(a))),
                                 DataCell(InkWell(
-                                  onTap: (){
-                                    Get.find<HomeController>().selectedWidget.value =SalesReceipt(
+                                  onTap: () {
+                                    Get.find<HomeController>()
+                                        .selectedWidget
+                                        .value = SalesReceipt(
                                       salesModel: salesBody,
                                       type: "",
                                       from: "CustomerInfoPage",
                                     );
                                   },
                                   child: Padding(
-                                    padding: const EdgeInsets.symmetric(vertical: 1.0),
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 1.0),
                                     child: Text(
                                       "View",
-                                      style: TextStyle(color: AppColors.mainColor),
+                                      style:
+                                          TextStyle(color: AppColors.mainColor),
                                     ),
                                   ),
                                 )),

@@ -69,7 +69,7 @@ class SalesReceipt extends StatelessWidget {
               }
             }
           },
-          icon: Icon(Icons.clear),
+          icon: const Icon(Icons.clear),
         ),
         title: Text(
           "Receipt#${salesController.currentReceipt.value!.receiptNumber}"
@@ -97,7 +97,7 @@ class SalesReceipt extends StatelessWidget {
         ],
       ),
       body: Container(
-        margin: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+        margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
         child: Obx(
           () => Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -109,7 +109,7 @@ class SalesReceipt extends StatelessWidget {
                       "Customer: ${salesController.currentReceipt.value!.customerId!.fullName!}",
                       style: const TextStyle(fontSize: 13),
                     ),
-                    Spacer(),
+                    const Spacer(),
                     Row(
                       children: [
                         normalText(
@@ -127,7 +127,7 @@ class SalesReceipt extends StatelessWidget {
                     )
                   ],
                 ),
-              SizedBox(
+              const SizedBox(
                 height: 20,
               ),
               if (salesController.currentReceipt.value!.items.fold(
@@ -142,7 +142,7 @@ class SalesReceipt extends StatelessWidget {
                       children: [
                         normalText(
                             title: "Total", color: Colors.black, size: 14.0),
-                        SizedBox(
+                        const SizedBox(
                           height: 10,
                         ),
                         majorTitle(
@@ -152,7 +152,7 @@ class SalesReceipt extends StatelessWidget {
                             size: 18.0)
                       ],
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 40,
                     ),
                     if (salesController.currentReceipt.value!.creditTotal! > 0)
@@ -175,7 +175,7 @@ class SalesReceipt extends StatelessWidget {
                               size: 18.0)
                         ],
                       ),
-                    SizedBox(
+                    const SizedBox(
                       width: 40,
                     ),
                     if (onCredit(salesController.currentReceipt.value!) &&
@@ -187,7 +187,7 @@ class SalesReceipt extends StatelessWidget {
                               title: "Balance",
                               color: Colors.black,
                               size: 14.0),
-                          SizedBox(
+                          const SizedBox(
                             height: 10,
                           ),
                           majorTitle(
@@ -198,12 +198,12 @@ class SalesReceipt extends StatelessWidget {
                               size: 18.0)
                         ],
                       ),
-                    SizedBox(
+                    const SizedBox(
                       width: 30,
                     ),
                   ],
                 ),
-              SizedBox(
+              const SizedBox(
                 height: 20,
               ),
               Row(
@@ -234,7 +234,7 @@ class SalesReceipt extends StatelessWidget {
                     InkWell(
                       child: Container(
                           padding:
-                              EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                              const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
                           decoration: BoxDecoration(
                               border: Border.all(
                                   color: _chechPaymentColor(
@@ -248,7 +248,7 @@ class SalesReceipt extends StatelessWidget {
                     )
                 ],
               ),
-              Divider(
+              const Divider(
                 color: Colors.grey,
               ),
               Expanded(
@@ -326,7 +326,7 @@ class SalesReceipt extends StatelessWidget {
                             );
                           }),
                     ),
-                    Divider(
+                    const Divider(
                       color: Colors.black,
                     ),
                     Expanded(
@@ -370,7 +370,7 @@ class SalesReceipt extends StatelessWidget {
                       children: [
                         normalText(
                             title: "Date", color: Colors.black, size: 14.0),
-                        SizedBox(
+                        const SizedBox(
                           height: 10,
                         ),
                         majorTitle(
@@ -381,7 +381,7 @@ class SalesReceipt extends StatelessWidget {
                             size: 18.0)
                       ],
                     ),
-                    Spacer(),
+                    const Spacer(),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -511,13 +511,13 @@ showAmountDialog(SalesModel salesBody) {
                   "Payment via",
                   style: TextStyle(color: Colors.black, fontSize: 12),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
                 Container(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  margin: EdgeInsets.only(bottom: 10),
+                  margin: const EdgeInsets.only(bottom: 10),
                   decoration: BoxDecoration(
                       border: Border.all(color: Colors.grey),
                       borderRadius: BorderRadius.circular(5)),
@@ -572,7 +572,7 @@ showAmountDialog(SalesModel salesBody) {
                   keyboardType: TextInputType.number,
                   decoration: InputDecoration(
                       hintText: "eg ${salesBody.grandTotal}",
-                      hintStyle: TextStyle(fontSize: 10),
+                      hintStyle: const TextStyle(fontSize: 10),
                       fillColor: Colors.white,
                       filled: true,
                       border: OutlineInputBorder(
@@ -588,7 +588,7 @@ showAmountDialog(SalesModel salesBody) {
               },
               child: Text(
                 "Cancel".toUpperCase(),
-                style: TextStyle(
+                style: const TextStyle(
                   color: Colors.purple,
                   fontWeight: FontWeight.bold,
                 ),
@@ -639,7 +639,7 @@ showAmountDialog(SalesModel salesBody) {
               },
               child: Text(
                 "Pay".toUpperCase(),
-                style: TextStyle(
+                style: const TextStyle(
                   color: Colors.purple,
                   fontWeight: FontWeight.bold,
                 ),

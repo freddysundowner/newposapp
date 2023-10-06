@@ -36,3 +36,28 @@ generalAlert(
             ],
           );
         });
+
+generateWarningAlert({
+  String? title,
+  String message = "",
+  String positiveText = "Okay",
+}) {
+  return showDialog(
+      context: Get.context!,
+      builder: (_) {
+        return AlertDialog(
+          title: Text(title ?? ""),
+          content: Text(message),
+          actions: [
+            TextButton(
+                onPressed: () {
+                  Get.back();
+                },
+                child: Text(
+                  positiveText,
+                  style: TextStyle(color: AppColors.mainColor),
+                )),
+          ],
+        );
+      });
+}
