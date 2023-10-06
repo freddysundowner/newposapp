@@ -427,76 +427,87 @@ class SalesController extends GetxController
             title: "Error!", message: "please select customer to sell to");
         return;
       }
-      if ((receipt.value!.customerId!.walletBalance == null ||
-          receipt.value!.customerId!.walletBalance! <
-              receipt.value!.grandTotal!)) {
-        showDialog(
+      if (receipt.value?.dueDate == null) {
+        showSaleDatePicker(
             context: Get.context!,
-            builder: (_) {
-              return AlertDialog(
-                content: const Text(
-                    "Customer Credit balance is insufficient!! credit the account?"),
-                actions: [
-                  TextButton(
-                      onPressed: () {
-                        Get.back();
-                      },
-                      child: Text(
-                        "Cancel".capitalize!,
-                        style: TextStyle(color: AppColors.mainColor),
-                      )),
-                  TextButton(
-                      onPressed: () {
-                        Get.back();
-
-                        if (!isSmallScreen(Get.context)) {
-                          Get.back();
-                          Get.find<HomeController>().selectedWidget.value =
-                              WalletPage(
-                            customerModel: receipt.value!.customerId!,
-                            page: "makesale",
-                          );
-                        } else {
-                          Get.to(() => WalletPage(
-                                customerModel: receipt.value!.customerId!,
-                                page: "makesale",
-                              ));
-                        }
-                      },
-                      child: Text(
-                        "Credit".capitalize!,
-                        style: TextStyle(color: AppColors.mainColor),
-                      )),
-                  TextButton(
-                      onPressed: () {
-                        if (receipt.value?.dueDate == null) {
-                          showSaleDatePicker(
-                              context: Get.context!,
-                              shopId: Get.find<ShopController>()
-                                  .currentShop
-                                  .value
-                                  ?.id,
-                              attendantsId:
-                                  Get.find<UserController>().user.value?.id,
-                              screen: screen);
-                        } else {
-                          Get.back();
-                          saveReceipt();
-                        }
-                      },
-                      child: Text(
-                        "Continue anyway",
-                        style: TextStyle(color: AppColors.mainColor),
-                      ))
-                ],
-              );
-            });
-        return;
+            shopId: Get.find<ShopController>().currentShop.value?.id,
+            attendantsId: Get.find<UserController>().user.value?.id,
+            screen: screen);
       } else {
         Get.back();
-        Get.back();
-        saveReceipt(page: screen);
+        saveReceipt();
       }
+      // if ((receipt.value!.customerId!.walletBalance == null ||
+      //     receipt.value!.customerId!.walletBalance! <
+      //         receipt.value!.grandTotal!)) {
+      //   showDialog(
+      //       context: Get.context!,
+      //       builder: (_) {
+      //         return AlertDialog(
+      //           content: const Text(
+      //               "Customer Credit balance is insufficient!! credit the account?"),
+      //           actions: [
+      //             TextButton(
+      //                 onPressed: () {
+      //                   Get.back();
+      //                 },
+      //                 child: Text(
+      //                   "Cancel".capitalize!,
+      //                   style: TextStyle(color: AppColors.mainColor),
+      //                 )),
+      //             TextButton(
+      //                 onPressed: () {
+      //                   Get.back();
+      //
+      //                   if (!isSmallScreen(Get.context)) {
+      //                     Get.back();
+      //                     Get.find<HomeController>().selectedWidget.value =
+      //                         WalletPage(
+      //                       customerModel: receipt.value!.customerId!,
+      //                       page: "makesale",
+      //                     );
+      //                   } else {
+      //                     Get.to(() => WalletPage(
+      //                           customerModel: receipt.value!.customerId!,
+      //                           page: "makesale",
+      //                         ));
+      //                   }
+      //                 },
+      //                 child: Text(
+      //                   "Credit".capitalize!,
+      //                   style: TextStyle(color: AppColors.mainColor),
+      //                 )),
+      //             TextButton(
+      //                 onPressed: () {
+      //                   if (receipt.value?.dueDate == null) {
+      //                     showSaleDatePicker(
+      //                         context: Get.context!,
+      //                         shopId: Get.find<ShopController>()
+      //                             .currentShop
+      //                             .value
+      //                             ?.id,
+      //                         attendantsId:
+      //                             Get.find<UserController>().user.value?.id,
+      //                         screen: screen);
+      //                   } else {
+      //                     Get.back();
+      //                     saveReceipt();
+      //                   }
+      //                 },
+      //                 child: Text(
+      //                   "Continue anyway",
+      //                   style: TextStyle(color: AppColors.mainColor),
+      //                 ))
+      //           ],
+      //         );
+      //       });
+      //   return;
+      // }
+      // else {
+      //   Get.back();
+      //   Get.back();
+      //   saveReceipt(page: screen);
+      // }
       return;
     }
     if (_paymentType(receipt.value!) == "Wallet" &&
@@ -526,21 +537,20 @@ class SalesController extends GetxController
                         Get.back();
                         Get.find<HomeController>().selectedWidget.value =
                             WalletPage(
-                              customerModel: receipt.value!.customerId!,
-                              page: "makesale",
-                            );
-                      } else {
-                        Get.to(() => WalletPage(
                           customerModel: receipt.value!.customerId!,
                           page: "makesale",
-                        ));
+                        );
+                      } else {
+                        Get.to(() => WalletPage(
+                              customerModel: receipt.value!.customerId!,
+                              page: "makesale",
+                            ));
                       }
                     },
                     child: Text(
                       "Credit".capitalize!,
                       style: TextStyle(color: AppColors.mainColor),
                     )),
-
               ],
             );
           });
