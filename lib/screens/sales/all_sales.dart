@@ -194,7 +194,8 @@ class AllSalesPage extends StatelessWidget {
                         Obx(
                           () => Text(
                             "${DateFormat("yyyy-MM-dd").format(salesController.filterStartDate.value)} - ${DateFormat("yyyy-MM-dd").format(salesController.filterEndDate.value)}",
-                            style: const TextStyle(color: Colors.blue, fontSize: 13),
+                            style: const TextStyle(
+                                color: Colors.blue, fontSize: 13),
                           ),
                         )
                       ],
@@ -203,35 +204,35 @@ class AllSalesPage extends StatelessWidget {
                       "Sales",
                       style: TextStyle(color: Colors.black),
                     ),
-              leading:  IconButton(
-                      onPressed: () {
-                        print(page);
-                        if (!isSmallScreen(context)) {
-                          if (page == "homePage") {
-                            Get.find<HomeController>().selectedWidget.value =
-                                HomePage();
-                          } else if (page == "saleOrder") {
-                            Get.find<HomeController>().selectedWidget.value =
-                                HomePage();
-                          } else if (page == "financePage") {
-                            Get.find<HomeController>().selectedWidget.value =
-                                FinancialPage();
-                          } else if (page == "profitPage") {
-                            Get.find<HomeController>().selectedWidget.value =
-                                ProfitPage();
-                          } else if (page == "salesPage") {
-                            Get.find<HomeController>().selectedWidget.value =
-                                SalesPage();
-                          }
-                        } else {
-                          Get.back();
-                        }
-                      },
-                      icon: const Icon(
-                        Icons.arrow_back_ios,
-                        color: Colors.black,
-                      ),
-                    ),
+              leading: IconButton(
+                onPressed: () {
+                  print(page);
+                  if (!isSmallScreen(context)) {
+                    if (page == "homePage") {
+                      Get.find<HomeController>().selectedWidget.value =
+                          HomePage();
+                    } else if (page == "saleOrder") {
+                      Get.find<HomeController>().selectedWidget.value =
+                          HomePage();
+                    } else if (page == "financePage") {
+                      Get.find<HomeController>().selectedWidget.value =
+                          FinancialPage();
+                    } else if (page == "profitPage") {
+                      Get.find<HomeController>().selectedWidget.value =
+                          ProfitPage();
+                    } else if (page == "salesPage") {
+                      Get.find<HomeController>().selectedWidget.value =
+                          SalesPage();
+                    }
+                  } else {
+                    Get.back();
+                  }
+                },
+                icon: const Icon(
+                  Icons.arrow_back_ios,
+                  color: Colors.black,
+                ),
+              ),
               actions: [
                 if (usercontroller.user.value?.usertype == "admin")
                   IconButton(
@@ -472,39 +473,50 @@ class AllSales extends StatelessWidget {
               child: normalText(
                   title: "No entries found", color: Colors.black, size: 14.0),
             )
-          :! isSmallScreen(context)
+          : !isSmallScreen(context)
               ? SingleChildScrollView(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      salesTable(context:context, page:"AllSalesPage",type: type ),
+                      type == "returns"
+                          ? salesReturnTable(context: context)
+                          : salesTable(
+                              context: context,
+                              page: "AllSalesPage",
+                              type: type),
                       const SizedBox(
                         height: 10,
                       ),
-                      Align(
-                        alignment: Alignment.bottomRight,
-                        child: Container(
-                          width: 200,
-                          padding: const EdgeInsets.only(right: 10),
-                          child: Column(
-                            children: [
-                              Row(
-                                children: [
-                                  const Text("Total Sales:"),
-                                  const SizedBox(
-                                    width: 10,
-                                  ),
-                                  Text(htmlPrice(salesController.totalSales())),
-                                ],
+                      type == "returns"
+                          ? SizedBox(
+                              height: 0,
+                              width: 0,
+                            )
+                          : Align(
+                              alignment: Alignment.bottomRight,
+                              child: Container(
+                                width: 200,
+                                padding: const EdgeInsets.only(right: 10),
+                                child: Column(
+                                  children: [
+                                    Row(
+                                      children: [
+                                        const Text("Total Sales:"),
+                                        const SizedBox(
+                                          width: 10,
+                                        ),
+                                        Text(htmlPrice(
+                                            salesController.totalSales())),
+                                      ],
+                                    ),
+                                    const Divider(
+                                      thickness: 2,
+                                      color: Colors.black,
+                                    )
+                                  ],
+                                ),
                               ),
-                              const Divider(
-                                thickness: 2,
-                                color: Colors.black,
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
+                            ),
                       const SizedBox(height: 60),
                     ],
                   ),

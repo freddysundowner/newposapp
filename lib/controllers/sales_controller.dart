@@ -1119,6 +1119,7 @@ class SalesController extends GetxController
           -1) {
         currentReceiptReturns.add(e);
       }
+      print("length is ${currentReceiptReturns.length}");
     }
   }
 }
