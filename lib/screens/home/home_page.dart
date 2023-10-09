@@ -168,8 +168,10 @@ class HomePage extends StatelessWidget {
                     Row(
                       children: [
                         IconButton(
-                            onPressed: () {
+                            onPressed: () async {
                               try {
+                                await userController.getUser();
+                                // ignore: use_build_context_synchronously
                                 showDialog(
                                     context: context,
                                     builder: (_) {
@@ -185,15 +187,8 @@ class HomePage extends StatelessWidget {
                                         ),
                                       );
                                     });
-                                Timer(const Duration(milliseconds: 5000), () {
-                                  // userController.getUser();
-                                  Get.defaultDialog(
-                                      title: "Login in",
-                                      contentPadding: const EdgeInsets.all(10),
-                                      content:
-                                          const CircularProgressIndicator(),
-                                      barrierDismissible: false);
 
+                                Timer(const Duration(milliseconds: 3000), () {
                                   Get.back();
                                   userController.user.refresh();
                                 });
