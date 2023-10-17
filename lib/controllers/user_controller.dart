@@ -114,45 +114,35 @@ class UserController extends GetxController {
           RealmResults<UserModel> userdata = Users.getUserUser();
           print(x);
 
-            userController.user.value = userdata.first;
-            Get.find<PlanController>().getPlans();
-            var shop = ShopService().getShop();
-            Get.find<AuthController>().loginuserLoad.value = false;
-            print("shops ${shop.length}");
-            if (shop.isEmpty) {
-              Get.offAll(() =>
-                  CreateShop(
-                    page: "home",
-                    clearInputs: true,
-                  ));
-            } else {
-              Get.offAll(() => Home());
-            }
-
+          userController.user.value = userdata.first;
+          Get.find<PlanController>().getPlans();
+          var shop = ShopService().getShop();
+          Get.find<AuthController>().loginuserLoad.value = false;
+          print("shops ${shop.length}");
+          if (shop.isEmpty) {
+            Get.offAll(() => CreateShop(
+                  page: "home",
+                  clearInputs: true,
+                ));
+          } else {
+            Get.offAll(() => Home());
+          }
         }
       });
     }
   }
+
   getUser({String? type, int? uid}) async {
-    if(type == "login"){
+    if (type == "login") {
       countDownTimer();
-    }else {
+    } else {
       RealmResults<UserModel> userdata = Users.getUserUser(uid: uid);
       user.value = userdata.first;
       if (userdata.isNotEmpty &&
-          userdata
-              .map((e) => e)
-              .toList()
-              .first
-              .shop != null) {
+          userdata.map((e) => e).toList().first.shop != null) {
         shopController.currentShop.value =
-            userdata
-                .map((e) => e)
-                .toList()
-                .first
-                .shop;
+            userdata.map((e) => e).toList().first.shop;
       } else {
-        print("user.value ${user.value}");
         RealmResults<Shop> response = await ShopService().getShop();
         if (response.isNotEmpty) {
           shopController.currentShop.value = response.first;
@@ -162,10 +152,10 @@ class UserController extends GetxController {
       if (user.value!.usertype == "attendant") {
         getRoles(user.value!);
         roles.refresh();
+        print("Roles are ${roles.map((element) => element).toList()}");
       }
       shopController.currentShop.refresh();
     }
-
   }
 
   Future<void> _createDefaultCashFlowCategory() async {
@@ -216,15 +206,11 @@ class UserController extends GetxController {
     Users.deleteUser(userModel!);
   }
 
-  //
   updateUser({required UserModel userModel, String? permissions}) {
-    Users().updateAdmin(userModel,
-        username: nameController.text, permissions: permissions);
+    Users().updateAdmin(userModel, username: nameController.text, permissions: permissions);
     generalAlert(
         title: "Updated",
         message: "Permissions updated successfully",
         negativeText: "");
   }
-
-
 }

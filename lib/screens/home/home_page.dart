@@ -459,23 +459,25 @@ class HomePage extends StatelessWidget {
                 children: [
                   majorTitle(
                       title: "Sales History", color: Colors.black, size: 20.0),
-                  InkWell(
-                      onTap: () {
-                        salesController.salesInitialIndex.value = 0;
-                        salesController.getSales();
-                        if (isSmallScreen(context)) {
-                          Get.to(() => AllSalesPage(
-                                page: "homePage",
-                              ));
-                        } else {
-                          Get.find<HomeController>().selectedWidget.value =
-                              AllSalesPage(
-                            page: "homePage",
-                          );
-                        }
-                      },
-                      child: minorTitle(
-                          title: "See all", color: AppColors.lightDeepPurple))
+
+
+                    InkWell(
+                        onTap: () {
+                          salesController.salesInitialIndex.value = 0;
+                          salesController.getSales();
+                          if (isSmallScreen(context)) {
+                            Get.to(() => AllSalesPage(
+                                  page: "homePage",
+                                ));
+                          } else {
+                            Get.find<HomeController>().selectedWidget.value =
+                                AllSalesPage(
+                              page: "homePage",
+                            );
+                          }
+                        },
+                        child: minorTitle(
+                            title: "See all", color: AppColors.lightDeepPurple))
                 ],
               ),
               const SizedBox(height: 10),

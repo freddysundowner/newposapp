@@ -202,7 +202,6 @@ class AttendantDetails extends StatelessWidget {
     );
   }
 
-
   Widget userDetails(context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -314,8 +313,8 @@ class AttendantDetails extends StatelessWidget {
                                   }
                                   Get.find<AuthController>().resetPasswordEmail(
                                       type: "attendant",
-                                     email: userModel!.email!,
-                                      password:attendantController
+                                      email: userModel!.email!,
+                                      password: attendantController
                                           .passwordController.text);
                                 },
                                 child: majorTitle(
