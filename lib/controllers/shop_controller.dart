@@ -39,7 +39,18 @@ class ShopController extends GetxController {
   RxList excludefeatures = RxList(["usage", 'stock']);
 
   createShop({required page, required context}) async {
-    if (terms.isFalse) {
+
+
+    if ( nameController.text.trim().isEmpty) {
+      generalAlert(title: "Error", message: "Enter shop name");
+      return;
+    }if ( reqionController.text.trim().isEmpty) {
+      generalAlert(title: "Error", message: "Enter shop location");
+      return;
+    }if (Get.find<ShopController>().selectedCategory.value==null) {
+      generalAlert(title: "Error", message: "Select Category");
+      return;
+    } if (terms.isFalse) {
       generalAlert(title: "Error", message: "Accept terms and conditions");
       return;
     }
