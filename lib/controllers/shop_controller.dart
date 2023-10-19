@@ -38,19 +38,24 @@ class ShopController extends GetxController {
   RxList<ShopTypes> categories = RxList([]);
   RxList excludefeatures = RxList(["usage", 'stock']);
 
+
+
   createShop({required page, required context}) async {
+    print("shop is $page");
+    if (nameController.text.trim().isEmpty) {
+      generalAlert(title: "Error", message: "Please enter  name");
+      return;
+    }
+    if (Get.find<ShopController>().selectedCategory.value == null) {
+      generalAlert(title: "Error", message: "Please select business type");
+      return;
+    }
+    if (reqionController.text.trim().isEmpty) {
+      generalAlert(title: "Error", message: "Please enter location");
+      return;
+    }
 
-
-    if ( nameController.text.trim().isEmpty) {
-      generalAlert(title: "Error", message: "Enter shop name");
-      return;
-    }if ( reqionController.text.trim().isEmpty) {
-      generalAlert(title: "Error", message: "Enter shop location");
-      return;
-    }if (Get.find<ShopController>().selectedCategory.value==null) {
-      generalAlert(title: "Error", message: "Select Category");
-      return;
-    } if (terms.isFalse) {
+    if (terms.isFalse) {
       generalAlert(title: "Error", message: "Accept terms and conditions");
       return;
     }
@@ -75,7 +80,7 @@ class ShopController extends GetxController {
         Get.off(() => Home());
       } else {
         Get.find<HomeController>().selectedWidget.value = ShopsPage();
-        Get.find<HomeController>().activeItem.value = "Home";
+        // Get.find<HomeController>().activeItem.value = "";
       }
     } else if (page == "home") {
       Get.off(() => Home());
@@ -185,18 +190,29 @@ class ShopController extends GetxController {
 
   deleteShop({required Shop shop, required context}) async {
     Get.find<RealmController>().deleteShopData(shop);
-
-    //update current shop
     RealmResults<Shop> response = ShopService().getShop();
     if (response.isNotEmpty) {
       Users().updateAdmin(userController.user.value!, shop: response.first);
-      Get.offAll(() => Home());
+      if (isSmallScreen(context)) {
+        Get.offAll(() => Home());
+      } else {
+        Get.find<HomeController>().selectedWidget.value = ShopsPage();
+      }
     } else {
       Users().updateAdmin(userController.user.value!, shop: null);
-      Get.off(() => CreateShop(
-            page: "home",
-            clearInputs: true,
-          ));
+
+      if (isSmallScreen(context)) {
+        Get.off(() => CreateShop(
+              page: "home",
+              clearInputs: true,
+            ));
+      } else {
+        Get.off(() => CreateShop(
+              page: "home",
+              clearInputs: true,
+            ));
+        Get.find<HomeController>().selectedWidget.value = ShopsPage();
+      }
     }
 
     userController.getUser();

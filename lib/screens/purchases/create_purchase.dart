@@ -60,7 +60,6 @@ class CreatePurchase extends StatelessWidget {
                     Get.find<HomeController>().selectedWidget.value =
                         StockPage();
                   }
-
                 },
                 icon: const Icon(
                   Icons.arrow_back_ios,
@@ -441,7 +440,7 @@ class CreatePurchase extends StatelessWidget {
                       height: 20,
                     ),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         TextButton(
                             onPressed: () {
@@ -449,8 +448,9 @@ class CreatePurchase extends StatelessWidget {
                             },
                             child: majorTitle(
                                 title: "Cancel",
-                                color: Colors.black,
+                                color: Colors.red,
                                 size: 16.0)),
+                        const SizedBox(width: 30),
                         TextButton(
                             onPressed: () {
                               if (purchaseController.invoice.value!.balance! >
@@ -466,8 +466,9 @@ class CreatePurchase extends StatelessWidget {
                             },
                             child: majorTitle(
                                 title: "Cash in",
-                                color: Colors.black,
-                                size: 16.0))
+                                color: AppColors.mainColor,
+                                size: 16.0)),
+                        const SizedBox(width: 10),
                       ],
                     )
                   ],

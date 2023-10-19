@@ -446,7 +446,7 @@ class CashFlowManager extends StatelessWidget {
     return Obx(() {
       return Column(
         children: [
-          Container(
+          SizedBox(
             height: 250,
             width: MediaQuery.of(context).size.width,
             child: DataTable(

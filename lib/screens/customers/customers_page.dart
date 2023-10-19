@@ -135,6 +135,7 @@ class Customers extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: Padding(
@@ -154,7 +155,10 @@ class Customers extends StatelessWidget {
                         if (!isSmallScreen(context)) {
                           Get.find<HomeController>().selectedWidget.value =
                               CreateCustomer(
-                            page: "customersPage",
+                            page: type == "createSale"||type=="sale"
+                                ? "createSale"
+                                : "customersPage",
+                                function: function,
                           );
                         } else {
                           Get.to(() => CreateCustomer(

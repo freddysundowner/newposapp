@@ -124,10 +124,11 @@ class AttendantsPage extends StatelessWidget {
                                                           attendantModel);
                                             },
                                             child: Align(
+                                              alignment: Alignment.topRight,
                                               child: Center(
                                                 child: Container(
-                                                  padding: EdgeInsets.all(5),
-                                                  margin: EdgeInsets.all(5),
+                                                  padding: const EdgeInsets.all(5),
+                                                  margin: const EdgeInsets.all(5),
                                                   decoration: BoxDecoration(
                                                       color:
                                                           AppColors.mainColor,
@@ -135,7 +136,7 @@ class AttendantsPage extends StatelessWidget {
                                                           BorderRadius.circular(
                                                               3)),
                                                   width: 75,
-                                                  child: Text(
+                                                  child: const Text(
                                                     "Edit",
                                                     style: TextStyle(
                                                         color: Colors.white),
@@ -143,7 +144,6 @@ class AttendantsPage extends StatelessWidget {
                                                   ),
                                                 ),
                                               ),
-                                              alignment: Alignment.topRight,
                                             ),
                                           ),
                                         ),
@@ -186,11 +186,16 @@ class AttendantsPage extends StatelessWidget {
                 : Get.find<HomeController>().selectedWidget.value = HomePage();
           } else {
             if (!isSmallScreen(context)) {
+              attendantController.nameController.clear();
+              attendantController.passwordController.clear();
               Get.find<HomeController>().selectedWidget.value =
                   AttendantDetails(
                 userModel: null,
               );
             } else {
+              attendantController.nameController.clear();
+              attendantController.passwordController.clear();
+
               Get.to(() => AttendantDetails(
                     userModel: null,
                   ));
@@ -200,7 +205,7 @@ class AttendantsPage extends StatelessWidget {
         child: Align(
           alignment: Alignment.topRight,
           child: Container(
-            padding: EdgeInsets.fromLTRB(10, 5, 10, 5),
+            padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(10),

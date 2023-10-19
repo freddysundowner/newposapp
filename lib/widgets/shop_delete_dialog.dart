@@ -5,7 +5,7 @@ deleteShopDialog(context, onclicked) {
       context: context,
       builder: (_) {
         return AlertDialog(
-          title: Text("Delete this Shop"),
+          title: const Text("Delete this Shop"),
           actions: [
             TextButton(
               onPressed: () {
@@ -13,7 +13,7 @@ deleteShopDialog(context, onclicked) {
               },
               child: Text(
                 "Cancel".toUpperCase(),
-                style: TextStyle(
+                style: const TextStyle(
                     color: Colors.purple, fontWeight: FontWeight.bold),
               ),
             ),
@@ -25,7 +25,7 @@ deleteShopDialog(context, onclicked) {
               child: Text(
                 "Delete".toUpperCase(),
                 style:
-                TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                const TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
               ),
             )
           ],

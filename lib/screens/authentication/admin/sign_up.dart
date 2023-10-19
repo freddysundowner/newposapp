@@ -117,7 +117,13 @@ class SignUp extends StatelessWidget {
                       if (value == null || value.isEmpty) {
                         return 'Please enter your email';
                       }
-                      return null;
+                      else if(!authController.validateEmail(value)){
+                        return 'Please enter a valid email';
+                      }
+                      else{
+                        return null;
+                      }
+
                     },
                   ),
                 ),

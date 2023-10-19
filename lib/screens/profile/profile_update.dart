@@ -60,14 +60,15 @@ class ProfileUpdate extends StatelessWidget {
           children: [
             const SizedBox(height: 10),
             profileInputWidget(
-                controller: authController.nameController, name: "Name"),
+                controller: authController.nameController, name: "Name",type: "text"),
             const SizedBox(height: 10),
             profileInputWidget(
-                controller: authController.emailController, name: "Email"),
+                controller: authController.emailController, name: "Email",type: "email"),
             const SizedBox(height: 10),
             profileInputWidget(
               controller: authController.phoneController,
               name: "Phone",
+              type: "number"
             ),
             const SizedBox(height: 30),
             updateButton(context: context)

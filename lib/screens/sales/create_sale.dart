@@ -340,6 +340,7 @@ class CreateSale extends StatelessWidget {
                                                                               .refresh();
                                                                           Navigator.pop(
                                                                               context);
+
                                                                           confirmPayment(
                                                                             context,
                                                                           );
@@ -396,142 +397,257 @@ class CreateSale extends StatelessWidget {
   }
 
   confirmPayment(context) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor:
-          isSmallScreen(context) ? Colors.white : Colors.transparent,
-      isScrollControlled: true,
-      builder: (context) {
-        return Padding(
-          padding:
-              EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-          child: Container(
-            margin: EdgeInsets.only(
-                left: isSmallScreen(context)
-                    ? 0
-                    : MediaQuery.of(context).size.width * 0.2),
-            color: Colors.white,
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-            child: Obx(
-              () => Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  majorTitle(
-                      title:
-                          "Total Amount ${htmlPrice(salesController.receipt.value?.grandTotal)}",
-                      color: Colors.black,
-                      size: 14.0),
-                  const SizedBox(height: 10),
-                  majorTitle(
-                      title: "Amount paid", color: Colors.black, size: 14.0),
-                  const SizedBox(height: 10),
-                  TextFormField(
-                      controller: salesController.amountPaid,
-                      onChanged: (value) {
-                        salesController.getTotalCredit();
-                        salesController.receipt.refresh();
-                      },
-                      keyboardType: TextInputType.number,
-                      autofocus: true,
-                      decoration: InputDecoration(
-                          contentPadding:
-                              const EdgeInsets.symmetric(horizontal: 5),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
+    if (salesController.receipt.value!.paymentMethod == "Wallet") {
+      showDialog(
+          context: context,
+          builder: (_) {
+            return Dialog(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20)),
+              child: Container(
+                width: 300,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20)),
+                child: Obx(
+                  () => Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Center(
+                        child: majorTitle(
+                            title:
+                                "Total Amount ${htmlPrice(salesController.receipt.value?.grandTotal)}",
+                            color: Colors.black,
+                            size: 14.0),
+                      ),
+                      const SizedBox(height: 10),
+                      if (_needCustomer() &&
+                          salesController.receipt.value?.customerId == null)
+                        InkWell(
+                          onTap: () {
+                            chooseCustomer(context: context);
+                          },
+                          child: Center(
+                            child: majorTitle(
+                                title: "Choose Customer",
+                                color: AppColors.mainColor,
+                                size: 18.0),
                           ),
-                          prefix: Padding(
-                            padding: const EdgeInsets.only(right: 5),
-                            child: Text(
-                                shopController.currentShop.value!.currency!),
-                          ))),
-                  const SizedBox(height: 10),
-                  Obx(
-                    () => majorTitle(
+                        ),
+                      if (_needCustomer() &&
+                          salesController.receipt.value?.customerId != null)
+                        InkWell(
+                          onTap: () {
+                            chooseCustomer(context: context);
+                          },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              majorTitle(
+                                  title: salesController
+                                      .receipt.value?.customerId?.fullName,
+                                  color: AppColors.mainColor,
+                                  size: 18.0),
+                              const SizedBox(
+                                width: 20,
+                              ),
+                              Container(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 5),
+                                decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: (BorderRadius.circular(10)),
+                                    border: Border.all(
+                                        color: AppColors.mainColor, width: 1)),
+                                child: Row(
+                                  children: [
+                                    majorTitle(
+                                        title: "Change",
+                                        color: Colors.red,
+                                        size: 12.0),
+                                    const Icon(
+                                      Icons.edit,
+                                      size: 15,
+                                    )
+                                  ],
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 20.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            TextButton(
+                                onPressed: () {
+                                  Get.back();
+                                },
+                                child: majorTitle(
+                                    title: "Cancel",
+                                    color: AppColors.mainColor,
+                                    size: 16.0)),
+                            TextButton(
+                                onPressed: () {
+                                  salesController.saveSale(
+                                      screen: page ?? "admin");
+                                },
+                                child: majorTitle(
+                                    title: "Confirm payment",
+                                    color: AppColors.mainColor,
+                                    size: 16.0)),
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            );
+          });
+    } else {
+      showModalBottomSheet(
+        context: context,
+        backgroundColor:
+            isSmallScreen(context) ? Colors.white : Colors.transparent,
+        isScrollControlled: true,
+        builder: (context) {
+          return Padding(
+            padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom),
+            child: Container(
+              margin: EdgeInsets.only(
+                  left: isSmallScreen(context)
+                      ? 0
+                      : MediaQuery.of(context).size.width * 0.2),
+              color: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+              child: Obx(
+                () => Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    majorTitle(
                         title:
-                            "${salesController.changeText.value} ${htmlPrice(salesController.change.value)}",
+                            "Total Amount ${htmlPrice(salesController.receipt.value?.grandTotal)}",
                         color: Colors.black,
                         size: 14.0),
-                  ),
-                  const SizedBox(height: 10),
-                  if (_needCustomer() &&
-                      salesController.receipt.value?.customerId == null)
-                    InkWell(
-                      onTap: () {
-                        chooseCustomer(context: context);
-                      },
-                      child: majorTitle(
-                          title: "Choose Customer",
-                          color: AppColors.mainColor,
-                          size: 18.0),
-                    ),
-                  if (_needCustomer() &&
-                      salesController.receipt.value?.customerId != null)
-                    InkWell(
-                      onTap: () {
-                        chooseCustomer(context: context);
-                      },
-                      child: Row(
-                        children: [
-                          majorTitle(
-                              title: salesController
-                                  .receipt.value?.customerId?.fullName,
-                              color: AppColors.mainColor,
-                              size: 18.0),
-                          const SizedBox(
-                            width: 20,
-                          ),
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 5),
-                            decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: (BorderRadius.circular(10)),
-                                border: Border.all(
-                                    color: AppColors.mainColor, width: 1)),
-                            child: Row(
-                              children: [
-                                majorTitle(
-                                    title: "Change",
-                                    color: Colors.red,
-                                    size: 12.0),
-                                const Icon(
-                                  Icons.edit,
-                                  size: 15,
-                                )
-                              ],
+                    const SizedBox(height: 10),
+                    majorTitle(
+                        title: "Amount paid", color: Colors.black, size: 14.0),
+                    const SizedBox(height: 10),
+                    TextFormField(
+                        controller: salesController.amountPaid,
+                        onChanged: (value) {
+                          salesController.getTotalCredit();
+                          salesController.receipt.refresh();
+                        },
+                        keyboardType: TextInputType.number,
+                        autofocus: true,
+                        decoration: InputDecoration(
+                            contentPadding:
+                                const EdgeInsets.symmetric(horizontal: 5),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
                             ),
-                          )
-                        ],
-                      ),
+                            prefix: Padding(
+                              padding: const EdgeInsets.only(right: 5),
+                              child: Text(
+                                  shopController.currentShop.value!.currency!),
+                            ))),
+                    const SizedBox(height: 10),
+                    Obx(
+                      () => majorTitle(
+                          title:
+                              "${salesController.changeText.value} ${htmlPrice(salesController.change.value)}",
+                          color: Colors.black,
+                          size: 14.0),
                     ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      TextButton(
-                          onPressed: () {
-                            Get.back();
-                          },
-                          child: majorTitle(
-                              title: "Cancel",
-                              color: AppColors.mainColor,
-                              size: 16.0)),
-                      TextButton(
-                          onPressed: () {
-                            salesController.saveSale(screen: page ?? "admin");
-                          },
-                          child: majorTitle(
-                              title: "Confirm payment",
-                              color: AppColors.mainColor,
-                              size: 16.0)),
-                    ],
-                  )
-                ],
+                    const SizedBox(height: 10),
+                    if (_needCustomer() &&
+                        salesController.receipt.value?.customerId == null)
+                      InkWell(
+                        onTap: () {
+                          chooseCustomer(context: context);
+                        },
+                        child: majorTitle(
+                            title: "Choose Customer",
+                            color: AppColors.mainColor,
+                            size: 18.0),
+                      ),
+                    if (_needCustomer() &&
+                        salesController.receipt.value?.customerId != null)
+                      InkWell(
+                        onTap: () {
+                          chooseCustomer(context: context);
+                        },
+                        child: Row(
+                          children: [
+                            majorTitle(
+                                title: salesController
+                                    .receipt.value?.customerId?.fullName,
+                                color: AppColors.mainColor,
+                                size: 18.0),
+                            const SizedBox(
+                              width: 20,
+                            ),
+                            Container(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 5),
+                              decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: (BorderRadius.circular(10)),
+                                  border: Border.all(
+                                      color: AppColors.mainColor, width: 1)),
+                              child: Row(
+                                children: [
+                                  majorTitle(
+                                      title: "Change",
+                                      color: Colors.red,
+                                      size: 12.0),
+                                  const Icon(
+                                    Icons.edit,
+                                    size: 15,
+                                  )
+                                ],
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        TextButton(
+                            onPressed: () {
+                              Get.back();
+                            },
+                            child: majorTitle(
+                                title: "Cancel",
+                                color: AppColors.mainColor,
+                                size: 16.0)),
+                        TextButton(
+                            onPressed: () {
+                              salesController.saveSale(screen: page ?? "admin");
+                            },
+                            child: majorTitle(
+                                title: "Confirm payment",
+                                color: AppColors.mainColor,
+                                size: 16.0)),
+                      ],
+                    )
+                  ],
+                ),
               ),
             ),
-          ),
-        );
-      },
-    );
+          );
+        },
+      );
+    }
   }
 
   _needCustomer() {
@@ -610,7 +726,7 @@ class CreateSale extends StatelessWidget {
   }
 
   chooseCustomer({required context}) {
-    if (isSmallScreen(context)) {
+    if (isSmallScreen(Get.context)) {
       Get.to(() => Scaffold(
             appBar: AppBar(
               actions: [
@@ -624,11 +740,12 @@ class CreateSale extends StatelessWidget {
               ],
               title: const Text("Select customer"),
             ),
-            body: Customers(type: "sale"),
+            body: Customers(type: "createSale"),
           ));
     } else {
       Get.back();
-      Get.find<HomeController>().selectedWidget.value = Scaffold(
+      Get.find<HomeController>().selectedWidget.value =
+          Scaffold(
         appBar: AppBar(
           elevation: 0.2,
           backgroundColor: Colors.white,

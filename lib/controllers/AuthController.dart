@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
@@ -76,56 +78,67 @@ class AuthController extends GetxController {
       generalAlert(title: "Error", message: "Enter user id");
       return;
     }
-    LoginAttendantLoad.value = true;
-    var password = attendantPasswordController.text;
-    var uid = int.parse(attendantUidController.text);
+    try{
+      LoginAttendantLoad.value = true;
+      var password = attendantPasswordController.text;
+      var uid = int.parse(attendantUidController.text);
 
-    Get.put(RealmController()).auth();
-    var response = await Users.getAttendantbyUid(uid.toString());
-    var userdata = response["user"];
-    if (userdata["_id"] != null) {
-      var email = userdata["email"];
-      if (userdata["loggedin"] == null) {
-        await registerUserEmailPassword(email!, password);
-
-        appController.initialize(appId);
-        User? loggedInUser = await logInUserEmailPassword(email!, password);
-        appController.initialize(appId);
-
-        var uid = userdata["UNID"];
-        final updatedCustomUserData = {
-          "uid": uid,
-          "authId": loggedInUser.id,
-          "loggedin": true,
-        };
-        loggedInUser.functions
-            .call("createAttendantMeta", [updatedCustomUserData]).then((value) {
-
-          attendantUidController.clear();
-          attendantPasswordController.clear();
-
-          Get.offAll(() => const ReloadPage());
-        });
-        LoginAttendantLoad.value = false;
-        await loggedInUser.refreshCustomData();
-      } else {
-        try {
-          appController.initialize(appId);
-          await logInUserEmailPassword(email!, password);
-          appController.initialize(appId);
-          LoginAttendantLoad.value = false;
-          Get.offAll(() => const ReloadPage());
-        } catch (e) {
-          print(e);
-          LoginAttendantLoad.value = false;
-          showSnackBar(message: "wrong password", color: Colors.red);
-        }
+      Get.put(RealmController()).auth();
+      var response = await Users.getAttendantbyUid(uid.toString());
+      if (kDebugMode) {
+        print("response is $response");
       }
-    } else {
+      var userdata = response["user"];
+      if (userdata["_id"] != null) {
+        var email = userdata["email"];
+        if (userdata["loggedin"] == null) {
+          await registerUserEmailPassword(email!, password);
+
+          appController.initialize(appId);
+          User? loggedInUser = await logInUserEmailPassword(email!, password);
+          appController.initialize(appId);
+
+          var uid = userdata["UNID"];
+          final updatedCustomUserData = {
+            "uid": uid,
+            "authId": loggedInUser.id,
+            "loggedin": true,
+          };
+          loggedInUser.functions.call("createAttendantMeta", [updatedCustomUserData]).then((value) {
+            attendantUidController.clear();
+            attendantPasswordController.clear();
+
+            Get.offAll(() => const ReloadPage());
+          });
+          LoginAttendantLoad.value = false;
+          await loggedInUser.refreshCustomData();
+        } else {
+          try {
+            appController.initialize(appId);
+            await logInUserEmailPassword(email!, password);
+            appController.initialize(appId);
+            LoginAttendantLoad.value = false;
+            Get.offAll(() => const ReloadPage());
+          } catch (e) {
+            if (kDebugMode) {
+              print(e);
+            }
+            LoginAttendantLoad.value = false;
+            showSnackBar(message: "wrong password", color: Colors.red);
+          }
+        }
+      } else {
+        LoginAttendantLoad.value = false;
+        generalAlert(title: "Error", message: "UID supplied does not exist");
+      }
+      LoginAttendantLoad.value = false;
+    }catch(e){
       LoginAttendantLoad.value = false;
       generalAlert(title: "Error", message: "UID supplied does not exist");
+      if (kDebugMode) {
+        print(e);
+      }
     }
-    LoginAttendantLoad.value = false;
   }
 
   signUser(context) async {
@@ -173,8 +186,6 @@ class AuthController extends GetxController {
             color: Colors.red);
         signuserLoad.value = false;
       }
-    } else {
-      showSnackBar(message: "please fill all fields", color: Colors.red);
     }
   }
 
@@ -213,7 +224,8 @@ class AuthController extends GetxController {
     refresh();
   }
 
-  void resetPasswordEmail(String email, String password) {
+  void resetPasswordEmail(
+      {required String email, required String password, required type}) {
     app.value!.emailPasswordAuthProvider
         .callResetPasswordFunction(email, password);
 
@@ -224,6 +236,20 @@ class AuthController extends GetxController {
         function: () {
           Get.back();
           Get.back();
+          if (type == "admin") {
+            logOut();
+          }
         });
+    if (type == "admin") {
+      Timer(const Duration(milliseconds: 2000), () {
+        logOut();
+      });
+    }
+  }
+
+  validateEmail(String email) {
+    return RegExp(
+            r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+        .hasMatch(email);
   }
 }

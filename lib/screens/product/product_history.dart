@@ -21,7 +21,18 @@ import '../../widgets/tab_view.dart';
 class ProductHistory extends StatelessWidget {
   final Product product;
 
-  ProductHistory({Key? key, required this.product}) : super(key: key);
+  ProductHistory({Key? key, required this.product}) : super(key: key) {
+    getYearlyRecords(product,
+        function: (Product p, DateTime firstDayofYear, DateTime lastDayofYear) {
+      salesController.getSalesByProductId(
+          product: product, fromDate: firstDayofYear, toDate: lastDayofYear);
+      productController.getProductPurchaseHistory(product,
+          fromDate: firstDayofYear, toDate: lastDayofYear);
+      productController.getBadStock(
+          fromDate: firstDayofYear, toDate: lastDayofYear, product: product);
+      productController.getCountHistory(product: product);
+    }, year: productController.currentYear.value);
+  }
 
   StockTransferController stockTransferController =
       Get.find<StockTransferController>();

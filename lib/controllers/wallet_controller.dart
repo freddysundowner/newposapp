@@ -67,7 +67,7 @@ class WalletController extends GetxController with GetTickerProviderStateMixin {
           amount: (customerModel.walletBalance ?? 0) + (newbalance ?? amount));
     } else if (type == "usage") {
       var a = (newbalance ?? amount);
-     var b  = (customerModel.walletBalance ?? 0 ) +a;
+     var b  = (customerModel.walletBalance ?? 0 ) -a;
       Customer().updateCustomerWalletbalance(customerModel,
           amount: b);
     }

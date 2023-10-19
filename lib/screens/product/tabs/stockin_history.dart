@@ -336,8 +336,7 @@ class ProductStockHistory extends StatelessWidget {
                         columnSpacing: 30.0,
                         columns: const [
                           DataColumn(
-                              label:
-                                  Text('Product', textAlign: TextAlign.center)),
+                              label: Text('Product', textAlign: TextAlign.center)),
                           DataColumn(
                               label: Text('Quantity',
                                   textAlign: TextAlign.center)),
@@ -349,6 +348,7 @@ class ProductStockHistory extends StatelessWidget {
                                   textAlign: TextAlign.center)),
                           DataColumn(
                               label: Text('Date', textAlign: TextAlign.center)),
+                          DataColumn(label: Text('', textAlign: TextAlign.center)),
                         ],
                         rows: List.generate(
                             productController.productInvoices.length, (index) {
@@ -358,7 +358,7 @@ class ProductStockHistory extends StatelessWidget {
 
                           final p = invoiceItem.product?.name;
                           final y = invoiceItem.itemCount;
-                          final h = invoiceItem.product!.selling! *
+                          final h = invoiceItem.product!.buyingPrice! *
                               invoiceItem.itemCount!;
                           final z = invoiceItem.attendantid?.username;
                           final w = invoiceItem.createdAt;
@@ -370,6 +370,12 @@ class ProductStockHistory extends StatelessWidget {
                             DataCell(Text(z.toString())),
                             DataCell(
                                 Text(DateFormat("yyyy-dd-MMM ").format(w!))),
+                            DataCell(Text(
+                              invoiceItem.itemCount==0
+                                  ? "Returned"
+                                  : " ",
+                              style: const TextStyle(color: Colors.red),
+                            )),
                           ]);
                         }),
                       ),

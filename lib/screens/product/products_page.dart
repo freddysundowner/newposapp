@@ -342,7 +342,6 @@ class ProductPage extends StatelessWidget {
     List<Map<String, dynamic>> data = [
       {"title": "Product History", "icon": Icons.list, "value": "history"},
       {"title": "Edit", "icon": Icons.edit, "value": "edit"},
-      {"title": "Code", "icon": Icons.code, "value": "code"},
       {"title": "Delete", "icon": Icons.delete, "value": "delete"},
       {"title": "Cancel", "icon": Icons.clear, "value": "clear"},
     ];

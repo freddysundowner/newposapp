@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:pointify/controllers/expense_controller.dart';
 import 'package:pointify/controllers/user_controller.dart';
@@ -87,7 +89,6 @@ class HomePage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-
               // Obx(
               //   () => (shopController.checkIfTrial() ||
               //       shopController.checkDaysRemaining() < 10)  && userController.user.value?.usertype == "admin"
@@ -167,9 +168,33 @@ class HomePage extends StatelessWidget {
                     Row(
                       children: [
                         IconButton(
-                            onPressed: () {
-                              userController.getUser();
-                              userController.user.refresh();
+                            onPressed: () async {
+                              try {
+                                await userController.getUser();
+                                // ignore: use_build_context_synchronously
+                                showDialog(
+                                    context: context,
+                                    builder: (_) {
+                                      return const AlertDialog(
+                                        content: Row(
+                                          children: [
+                                            CircularProgressIndicator(),
+                                            Padding(
+                                              padding: EdgeInsets.all(8.0),
+                                              child: Text("Just a moment"),
+                                            )
+                                          ],
+                                        ),
+                                      );
+                                    });
+
+                                Timer(const Duration(milliseconds: 3000), () {
+                                  Get.back();
+                                  userController.user.refresh();
+                                });
+                              } catch (e) {
+                                Get.back();
+                              }
                             },
                             icon: const Icon(Icons.refresh)),
                         IconButton(
@@ -330,12 +355,15 @@ class HomePage extends StatelessWidget {
                           onTap: shopController.checkSubscription() == false
                               ? null
                               : () {
-
-                            salesController.getFinanceSummary(
-                              fromDate: DateTime.parse(DateFormat("yyy-MM-dd").format(DateTime.now())),
-                              toDate: DateTime.parse(DateFormat("yyy-MM-dd")
-                                  .format(DateTime.now().add(const Duration(days: 1)))),
-                            );
+                                  salesController.getFinanceSummary(
+                                    fromDate: DateTime.parse(
+                                        DateFormat("yyy-MM-dd")
+                                            .format(DateTime.now())),
+                                    toDate: DateTime.parse(
+                                        DateFormat("yyy-MM-dd").format(
+                                            DateTime.now()
+                                                .add(const Duration(days: 1)))),
+                                  );
                                   isSmallScreen(context)
                                       ? Get.to(() => FinancialPage())
                                       : Get.find<HomeController>()
@@ -431,23 +459,25 @@ class HomePage extends StatelessWidget {
                 children: [
                   majorTitle(
                       title: "Sales History", color: Colors.black, size: 20.0),
-                  InkWell(
-                      onTap: () {
-                        salesController.salesInitialIndex.value = 0;
-                        salesController.getSales();
-                        if (isSmallScreen(context)) {
-                          Get.to(() => AllSalesPage(
-                                page: "homePage",
-                              ));
-                        } else {
-                          Get.find<HomeController>().selectedWidget.value =
-                              AllSalesPage(
-                            page: "homePage",
-                          );
-                        }
-                      },
-                      child: minorTitle(
-                          title: "See all", color: AppColors.lightDeepPurple))
+
+
+                    InkWell(
+                        onTap: () {
+                          salesController.salesInitialIndex.value = 0;
+                          salesController.getSales();
+                          if (isSmallScreen(context)) {
+                            Get.to(() => AllSalesPage(
+                                  page: "homePage",
+                                ));
+                          } else {
+                            Get.find<HomeController>().selectedWidget.value =
+                                AllSalesPage(
+                              page: "homePage",
+                            );
+                          }
+                        },
+                        child: minorTitle(
+                            title: "See all", color: AppColors.lightDeepPurple))
                 ],
               ),
               const SizedBox(height: 10),
@@ -460,7 +490,7 @@ class HomePage extends StatelessWidget {
                         ? Center(child: noItemsFound(context, false))
                         : isSmallScreen(context)
                             ? salesListView()
-                            : salesTable(context, "home");
+                            : salesTable(context: context, page: "home");
               })
             ],
           ),
