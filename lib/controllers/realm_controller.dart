@@ -70,6 +70,7 @@ class RealmController extends GetxController {
         currentUser?.value != appController.app.value!.currentUser) {
       currentUser?.value ??= appController.app.value!.currentUser;
       realm = Realm(Configuration.flexibleSync(currentUser!.value!, schemas));
+
       realm.subscriptions.update((mutableSubscriptions) {
         mutableSubscriptions.add(realm.all<Shop>());
         mutableSubscriptions.add(realm.all<ShopTypes>());

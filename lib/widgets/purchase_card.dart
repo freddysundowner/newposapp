@@ -50,7 +50,7 @@ Widget returnedIvoiceItemsCard({required context, InvoiceItem? invoiceItem}) {
                     ),
                     SizedBox(height: 3),
                     Text(
-                      "Qty ${invoiceItem.invoice!.returneditems.fold(0, (previousValue, element) => previousValue + element.itemCount!)}, ${htmlPrice(invoiceItem.invoice!.returneditems.fold(0, (previousValue, element) => previousValue + (element.itemCount! * element.price!)))}",
+                      "Qty ${invoiceItem.itemCount}, ${htmlPrice(invoiceItem.price! * invoiceItem.itemCount!)}",
                       style: const TextStyle(
                           color: Colors.grey, fontWeight: FontWeight.w600),
                     ),

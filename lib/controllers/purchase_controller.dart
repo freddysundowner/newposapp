@@ -62,8 +62,9 @@ class PurchaseController extends GetxController {
           .updateSupplierWalletbalance(invoiceData.supplier, amount: balance);
     } else {
       //save purchase invoice
-      Purchases().createPurchase(invoiceData);
+      print("invoiceData invoiceData ${invoiceData.toString()}");
     }
+    Purchases().createPurchase(invoiceData);
     print("hello there");
     //update product quantities
     for (var element in invoiceData.items) {
@@ -83,6 +84,10 @@ class PurchaseController extends GetxController {
     }
     Get.back();
     if (isSmallScreen(Get.context!)) {
+      if(invoiceData.id == null){
+        print("invoiceData ${invoiceData.id}");
+        return;
+      }
       Get.to(() => InvoiceScreen(
             invoice: invoiceData,
             type: "",
@@ -307,9 +312,7 @@ class PurchaseController extends GetxController {
         Purchases().getReturns(invoice: invoice, supplier: supplier);
     List<InvoiceItem> invoiceReturn = response.map((e) => e).toList();
     for (var e in invoiceReturn) {
-      if (currentInvoiceReturns
-              .indexWhere((element) => element.invoice!.id == e.invoice!.id) ==
-          -1) {
+      if (e.type=="return") {
         currentInvoiceReturns.add(e);
       }
     }

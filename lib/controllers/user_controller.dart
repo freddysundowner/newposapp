@@ -109,16 +109,17 @@ class UserController extends GetxController {
   countDownTimer() async {
     for (int x = 5; x > 0; x--) {
       await Future.delayed(const Duration(seconds: 1)).then((_) {
-        print(x);
         if (x == 1) {
           RealmResults<UserModel> userdata = Users.getUserUser();
-          print(x);
-
+          if(userdata.isEmpty){
+            generateWarningAlert(title: "Error",message: "no user with those credentials");
+            Get.find<AuthController>().loginuserLoad.value = false;
+            return;
+          }
           userController.user.value = userdata.first;
           Get.find<PlanController>().getPlans();
           var shop = ShopService().getShop();
           Get.find<AuthController>().loginuserLoad.value = false;
-          print("shops ${shop.length}");
           if (shop.isEmpty) {
             Get.offAll(() => CreateShop(
                   page: "home",
@@ -137,6 +138,10 @@ class UserController extends GetxController {
       countDownTimer();
     } else {
       RealmResults<UserModel> userdata = Users.getUserUser(uid: uid);
+      if(userdata.isEmpty){
+        Get.find<AuthController>().logOut();
+        return;
+      }
       user.value = userdata.first;
       if (userdata.isNotEmpty &&
           userdata.map((e) => e).toList().first.shop != null) {
@@ -152,7 +157,6 @@ class UserController extends GetxController {
       if (user.value!.usertype == "attendant") {
         getRoles(user.value!);
         roles.refresh();
-        print("Roles are ${roles.map((element) => element).toList()}");
       }
       shopController.currentShop.refresh();
     }

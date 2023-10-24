@@ -30,11 +30,9 @@ String appId = 'application-0-iosyj';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   appController.initialize(appId);
-
   if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
     setWindowMinSize(const Size(800, 700));
   }
-
   runApp(MyApp());
 }
 

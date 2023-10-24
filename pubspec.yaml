@@ -13,7 +13,7 @@ dependencies:
     sdk: flutter
   cupertino_icons: ^1.0.2
   get: ^4.6.5
-  http: ^0.13.4
+  http: ^1.1.0
   open_file: ^3.2.1
   mime: ^1.0.2
   switcher_button: ^0.0.4
@@ -26,7 +26,9 @@ dependencies:
   barcode_widget: ^2.0.3
   syncfusion_flutter_charts: ^20.3.48
   url_launcher: ^6.1.10
-  realm: 1.0.0
+  realm_dart: ^1.5.0
+#  realm: 1.0.0
+  realm: ^1.5.0
   syncfusion_flutter_datepicker:
   data_table_2: ^2.5.3
   printing: ^5.11.0

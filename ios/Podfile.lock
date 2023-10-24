@@ -47,9 +47,9 @@ PODS:
     - Flutter
   - realm (1.0.0):
     - Flutter
-  - SDWebImage (5.17.0):
-    - SDWebImage/Core (= 5.17.0)
-  - SDWebImage/Core (5.17.0)
+  - SDWebImage (5.18.3):
+    - SDWebImage/Core (= 5.18.3)
+  - SDWebImage/Core (5.18.3)
   - SwiftyGif (5.4.4)
   - url_launcher_ios (0.0.1):
     - Flutter
@@ -103,7 +103,7 @@ SPEC CHECKSUMS:
   permission_handler_apple: 8f116445eff3c0e7c65ad60f5fef5490aa94b4e4
   printing: 233e1b73bd1f4a05615548e9b5a324c98588640b
   realm: e361423b28ae842fd2ee893235bc98d785c5e87e
-  SDWebImage: 750adf017a315a280c60fde706ab1e552a3ae4e9
+  SDWebImage: 96e0c18ef14010b7485210e92fac888587ebb958
   SwiftyGif: 93a1cc87bf3a51916001cf8f3d63835fb64c819f
   url_launcher_ios: 08a3dfac5fb39e8759aeb0abbd5d9480f30fc8b4
 

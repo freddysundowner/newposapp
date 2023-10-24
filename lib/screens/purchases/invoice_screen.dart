@@ -25,6 +25,7 @@ class InvoiceScreen extends StatelessWidget {
     purchaseController.currentInvoice.value = invoice;
     if (from == "supplierpage") {
     } else {
+      print("invoice! ${invoice!.id}");
       purchaseController.getIvoiceById(invoice!);
     }
   }
@@ -150,7 +151,7 @@ class InvoiceScreen extends StatelessWidget {
                       ],
                     ),
                   const SizedBox(
-                    width: 80,
+                    width: 70,
                   ),
                   if (purchaseController.currentInvoice.value!.balance! < 0 &&
                       type != "returns")

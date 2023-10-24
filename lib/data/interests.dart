@@ -19,12 +19,11 @@ class Interests {
     // print(shopcategories[2].id);
     // print(shopcategories[2].title);
     // Categories().createProductCategory(ProductCategory(ObjectId(),
-    //     name: "test", shopTypes: shopcategories[1]));
+    //     name: "test2", shopTypes: shopcategories[1]));
     if (shopcategories.isEmpty) {
       for (var element in roles) {
-        print(element);
-        // ShopTypes shopTypes = ShopTypes(ObjectId(), title: element);
-        // ShopService().createShopType(shopTypes);
+        ShopTypes shopTypes = ShopTypes(ObjectId(), title: element);
+        ShopService().createShopType(shopTypes);
       }
     }
   }

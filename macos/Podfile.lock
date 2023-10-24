@@ -5,7 +5,7 @@ PODS:
     - FlutterMacOS
   - printing (1.0.0):
     - FlutterMacOS
-  - realm (1.0.0):
+  - realm (1.5.0):
     - FlutterMacOS
   - url_launcher_macos (0.0.1):
     - FlutterMacOS
@@ -38,7 +38,7 @@ SPEC CHECKSUMS:
   FlutterMacOS: 8f6f14fa908a6fb3fba0cd85dbd81ec4b251fb24
   path_provider_foundation: eaf5b3e458fc0e5fbb9940fb09980e853fe058b8
   printing: 1dd6a1fce2209ec240698e2439a4adbb9b427637
-  realm: 441e2bba48bb518bb1cd9c79aebbcd7b8a8fb83d
+  realm: 53f4c44896b0720ce4fc0e1e3db1f6c691b33e6b
   url_launcher_macos: 5335912b679c073563f29d89d33d10d459f95451
   window_size: 339dafa0b27a95a62a843042038fa6c3c48de195
 

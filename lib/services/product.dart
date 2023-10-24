@@ -38,31 +38,33 @@ class Products {
       String? counteddate,
       String? type = ""}) async {
     realmService.realm.write(() {
-      if (buyingPrice != null) {
-        product.buyingPrice = buyingPrice;
-      }
-      if (sellingPrice != null) {
-        product.selling = sellingPrice;
-      }
-      if (invoice != null) {
-        product.invoiceId = invoice;
-      }
-      if (quantity != null) {
-        product.quantity = quantity;
-      }
-      if (counted) {
-        product.counted = counted;
-      }
-      if (updatedAt != null) {
-        product.updatedAt = updatedAt;
-      }
-      if (counteddate != null) {
-        product.counteddate = counteddate;
-      }
-
       if (deleted) {
         product.deleted = deleted;
+      }else {
+        if (buyingPrice != null) {
+          product.buyingPrice = buyingPrice;
+        }
+        if (sellingPrice != null) {
+          product.selling = sellingPrice;
+        }
+        if (invoice != null) {
+          product.invoiceId = invoice;
+        }
+        if (quantity != null) {
+          product.quantity = quantity;
+        }
+        if (counted) {
+          product.counted = counted;
+        }
+        if (updatedAt != null) {
+          product.updatedAt = updatedAt;
+        }
+        if (counteddate != null) {
+          product.counteddate = counteddate;
+        }
       }
+
+
     });
   }
 

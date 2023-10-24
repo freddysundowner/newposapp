@@ -133,7 +133,7 @@ class ProductController extends GetxController {
         Product product = Product(
             productData != null ? productData.id : ObjectId(),
             name: name,
-            quantity: 0,
+            quantity: productData != null ? int.parse(qty) : 0,
             buyingPrice: int.parse(buying),
             selling: int.parse(selling),
             invoiceId: null,
@@ -149,27 +149,27 @@ class ProductController extends GetxController {
             date: formatted,
             deleted: false,
             createdAt: DateTime.now());
+        Invoice? invoice = Get.find<PurchaseController>().invoice.value;
         if (productData == null) {
           await Products().createProduct(product);
+
+          //add produc as a purchase
+          Get.find<PurchaseController>().addNewPurchase(
+              InvoiceItem(
+                  ObjectId(),
+                  product: product,
+                  price: product.buyingPrice,
+                  total: product.buyingPrice! * int.parse(qty),
+                  attendantid: userController.user.value,
+                  supplier:supplierId.value,
+                  createdAt: DateTime.now(),
+                  itemCount: int.parse(qty))
+          );
+          Get.find<PurchaseController>().invoice.value?.balance = 0;
+          Get.find<PurchaseController>().createPurchase();
         } else {
           await Products().updateProduct(product: product);
         }
-
-        //add produc as a purchase
-        Get.find<PurchaseController>().addNewPurchase(
-            InvoiceItem(
-            ObjectId(),
-            product: product,
-            price: product.buyingPrice,
-            total: product.buyingPrice! * int.parse(qty),
-            attendantid: userController.user.value,
-            supplier:supplierId.value,
-            createdAt: DateTime.now(),
-            itemCount: int.parse(qty))
-        );
-        Invoice? invoice = Get.find<PurchaseController>().invoice.value;
-        Get.find<PurchaseController>().invoice.value?.balance = 0;
-        Get.find<PurchaseController>().createPurchase();
         await Products().updateProductPart(product: product, invoice: invoice);
 
         //end add product as a purcharse
